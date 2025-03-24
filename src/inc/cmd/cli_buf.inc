@@ -22,7 +22,7 @@
 # -== > raw set
 
 cli_buf_raw_set:
-  mov $cli_buf_raw, %di
+  mov $cli_buf_raw, %si
   ret
 
 # -== < raw set
@@ -64,6 +64,8 @@ cli_buf_init:
 _cli_buf_init__prol:
   push %bp
   mov %sp, %bp
+  push %si
+  push %ax
 
   mov 4(%bp), %si
 
@@ -83,6 +85,8 @@ _cli_buf_init__lp:
 
 _cli_buf_init__end:
 _cli_buf_init__epil:
+  pop %ax
+  pop %si
   pop %bp
 
 _cli_buf_init__done:

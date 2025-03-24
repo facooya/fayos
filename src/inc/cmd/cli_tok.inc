@@ -36,7 +36,8 @@ _cli_tok__done:
 
 parse_key_buf: # Entry Point
   #mov $key_buf, %si # Main Buffer
-  mov $cli_buf_raw, %si
+  #mov $cli_buf_raw, %si
+  call cli_buf_raw_set
   jmp parse_key_buf_cmd
 
 # ==========----- > Parse Command -----==========

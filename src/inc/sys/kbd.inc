@@ -40,8 +40,8 @@ key_manager:
   mov $0x0E, %ah
   int $0x10
 
-  mov %al, (%di) # DI = key_buf
-  inc %di
+  mov %al, (%si) # SI: cli_buf_raw
+  add $0x01, %si
 
   jmp key_manager_exit
 
@@ -70,25 +70,19 @@ bs_key:
   mov $0x02, %ah # Set Cursor Pos, DH=Y, DL=X
   int $0x10
 
-  # key_buf
-  movb $0x00, -1(%di)
-  dec %di
+  # cli_buf_raw
+  movb $0x00, -1(%si)
+  sub $0x01, %si
 
   jmp key_manager_exit
 
 # --------------- Enter ---------------
 enter_key:
   # Command
-  #call find_cmd # newline() Self
   call parse_key_buf # => cli_tok
   call cmd_exec # (cmd_exec.inc)
 
   # Init buffers
-  # call init_key_buf
-  # call init_cmd_buf
-  # call init_arg_buf
-  # call init_opt_buf
-  # call init_redir_buf
   call cli_buf_init_all
 
   push $kernel_prompt

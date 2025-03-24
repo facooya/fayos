@@ -33,7 +33,7 @@
 # -----========== > Process ==========-----
 
 cmd_exec:
-  #call parse_key_buf # tok.inc
+  call parse_key_buf # tok.inc
 
   mov $cmd_table, %si
 
