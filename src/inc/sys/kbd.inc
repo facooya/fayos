@@ -84,17 +84,20 @@ enter_key:
   call cmd_exec # (cmd_exec.inc)
 
   # Init buffers
-  call init_key_buf
-  call init_cmd_buf
-  call init_arg_buf
-  call init_opt_buf
-  call init_redir_buf
+  # call init_key_buf
+  # call init_cmd_buf
+  # call init_arg_buf
+  # call init_opt_buf
+  # call init_redir_buf
+  call cli_buf_init_all
 
   push $kernel_prompt
   call print_str
   add $0x02, %sp
   
-  mov $key_buf, %di
+  #mov $key_buf, %di
+  call cli_buf_raw_set
+  
   jmp key_manager_exit
 
 # =============== < Key Handlers ===============

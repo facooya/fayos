@@ -47,8 +47,8 @@ _start:
   # Cursor
   call set_cursor_min_x # kbd.inc
 
-  # Key Buffer
-  call set_key_buf # kbd.inc
+  # /inc/cmd/cli_buf.inc
+  call cli_buf_raw_set # cli_buf.inc
 
 # -== < Kernel Start
 # ===

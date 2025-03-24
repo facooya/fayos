@@ -35,14 +35,16 @@ _cli_tok__done:
 # =============== > Parse Key Buffer
 
 parse_key_buf: # Entry Point
-  mov $key_buf, %si # Main Buffer
+  #mov $key_buf, %si # Main Buffer
+  mov $cli_buf_raw, %si
   jmp parse_key_buf_cmd
 
 # ==========----- > Parse Command -----==========
 # !!! Verify First is Char OR Number
 
 parse_key_buf_cmd:
-  mov $cmd_buf, %di
+  #mov $cmd_buf, %di
+  mov $cli_buf_cmd, %di
 
 parse_key_buf_cmd_loop:
   # Compare Null
@@ -92,7 +94,8 @@ parse_verify_key_buf_opt:
 parse_key_buf_opt:
   # [SI]: Hyphen-Minus, [SI+1]: Option Byte
   inc %si
-  mov $opt_buf, %di
+  #mov $opt_buf, %di
+  mov $cli_buf_opt, %di
 
 parse_key_buf_opt_loop:
   # Compare Null, Error => Exit
@@ -134,7 +137,11 @@ parse_verify_key_buf_opt_true:
   jmp parse_key_buf_opt_loop
 
 parse_key_buf_opt_exit:
-  call init_opt_buf
+  #call init_opt_buf
+  push $cli_buf_opt
+  call cli_buf_init
+  add $0x02, %sp
+
   ret
 
 parse_key_buf_opt_done:
@@ -150,7 +157,8 @@ parse_key_buf_opt_done:
 
 parse_key_buf_arg:
   #inc %si # save_opt_buf_done
-  mov $arg_buf, %di
+  #mov $arg_buf, %di
+  mov $cli_buf_arg, %di
 
 parse_key_buf_arg_loop:
   # Compare Null

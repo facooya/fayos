@@ -59,7 +59,8 @@ _cmd_touch__find_free_loop:
 _cmd_touch__find_free_end:
 
 _cmd_touch__name_set:
-  mov $arg_buf, %di
+  #mov $arg_buf, %di
+  mov $cli_buf_arg, %di
   xor %cx, %cx
 
 _cmd_touch__name_size_loop:

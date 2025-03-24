@@ -67,7 +67,8 @@ _cmd_cat__cmp_name_set:
   sub %cx, %di # [DI]: File Name
 
   push %si # Magic
-  mov $arg_buf, %si
+  #mov $arg_buf, %si
+  mov $cli_buf_arg, %si
 
 _cmd_cat__cmp_name_loop:
   # [CX] == 0 ? Match

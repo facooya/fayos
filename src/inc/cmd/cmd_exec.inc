@@ -45,7 +45,8 @@ _cmd_exec__chk_addr:
 
 _cmd_exec__cmp_cmd:
   add $0x02, %si # Command Char
-  mov $cmd_buf, %di
+  #mov $cmd_buf, %di
+  mov $cli_buf_cmd, %di
 
 _cmd_exec__cmp_cmd_lp:
   # Char != : next_lp

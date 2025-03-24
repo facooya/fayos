@@ -23,7 +23,8 @@
 
 cmd_help:
   mov $cmd_table, %si
-  mov $tmp_buf, %di
+  #mov $tmp_buf, %di
+  mov $cli_buf_tmp, %di
 
 cmd_help_check_cmd_addr:
   # Compare Address Null
@@ -65,15 +66,22 @@ cmd_help_output:
   push %si
 
   # Print tmp_buf
-  push $tmp_buf # Output tmp_buf
+  #push $tmp_buf # Output tmp_buf
+  push $cli_buf_tmp
   call print_str
   add $0x02, %sp
 
-  call init_tmp_buf # Init tmp_buf
+  #call init_tmp_buf # Init tmp_buf
+  # Init cli_buf_tmp
+  push cli_buf_tmp
+  call cli_buf_init
+  add $0x02, %sp
+
   pop %si
 
   # Set tmp_buf
-  mov $tmp_buf, %di
+  #mov $tmp_buf, %di
+  mov $cli_buf_tmp, %di
 
   # Next Command Check
   jmp cmd_help_check_cmd_addr

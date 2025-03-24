@@ -15,76 +15,93 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# =============== > CODE ===============
+# === > CODE
 
 .code16
 
-# =============== > Key Buffer ===============
-# --------------- Set Key Buffer ---------------
-set_key_buf:
-  mov $key_buf, %di
+# -== > raw set
+
+cli_buf_raw_set:
+  mov $cli_buf_raw, %di
   ret
-# --------------- Set Key Buffer ---------------
 
-init_key_buf:
-  mov $key_buf, %si
-  jmp init_key_buf_loop
+# -== < raw set
+# ===
+# -== > Init all
 
-init_key_buf_loop:
-  # Compare
+cli_buf_init_all:
+  push $cli_buf_raw
+  call cli_buf_init
+  add $0x02, %sp
+
+  push $cli_buf_cmd
+  call cli_buf_init
+  add $0x02, %sp
+
+  push $cli_buf_arg
+  call cli_buf_init
+  add $0x02, %sp
+
+  push $cli_buf_opt
+  call cli_buf_init
+  add $0x02, %sp
+
+  push $cli_buf_tmp
+  call cli_buf_init
+  add $0x02, %sp
+
+  push $cli_buf_redir
+  call cli_buf_init
+  add $0x02, %sp
+
+  ret
+
+# -== < Init all
+# ===
+# -== > Init
+
+cli_buf_init:
+_cli_buf_init__prol:
+  push %bp
+  mov %sp, %bp
+
+  mov 4(%bp), %si
+
+_cli_buf_init__lp:
+  # Cond: null ? end
   mov (%si), %al
   test %al, %al
-  jz init_key_buf_exit
+  jz _cli_buf_init__end
 
   # Init
   xor %al, %al
   movb %al, (%si)
 
-  # Loop
-  inc %si
-  jmp init_key_buf_loop
+  # Loop: SI++
+  add $0x01, %si
+  jmp _cli_buf_init__lp
 
-init_key_buf_exit:
+_cli_buf_init__end:
+_cli_buf_init__epil:
+  pop %bp
+
+_cli_buf_init__done:
   ret
 
-# using enter_key (kbd.inc)
-init_cmd_buf: # Temporary
-  mov $cmd_buf, %si
-  jmp init_key_buf_loop
-
-init_arg_buf: # Temporary
-  mov $arg_buf, %si
-  jmp init_key_buf_loop
-
-init_opt_buf: # Temporary
-  mov $opt_buf, %si
-  jmp init_key_buf_loop
-
-init_tmp_buf: # Temporary
-  mov $tmp_buf, %si
-  jmp init_key_buf_loop
-
-init_redir_buf: # Temporary
-  mov $redir_buf, %si
-  jmp init_key_buf_loop
-
-# =============== < Key Buffer ===============
-
-# =============== < CODE ===============
-# =============== > DATA ===============
-
-key_buf: .zero 0x40
-cmd_buf: .zero 0x20
-arg_buf: .zero 0x20
-opt_buf: .zero 0x10
-tmp_buf: .zero 0x20
-redir_buf: .zero 0x20
+# -== < Init
+# ===
+# === < CODE
+# ===
+# === > DATA
 
 cli_buf_raw: .zero 0x40
+
 cli_buf_cmd: .zero 0x20
 cli_buf_arg: .zero 0x20
 cli_buf_opt: .zero 0x10
+
 cli_buf_tmp: .zero 0x20
+
 cli_buf_redir: .zero 0x20
 
-# =============== < DATA ===============
+# === < DATA

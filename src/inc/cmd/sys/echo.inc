@@ -28,7 +28,8 @@ cmd_echo: # Entry Point
 
 _cmd_echo__chk_opt:
   # Set Address
-  mov $opt_buf, %si
+  #mov $opt_buf, %si
+  mov $cli_buf_opt, %si
   mov $_cmd_echo__flag, %bx
 
 _cmd_echo__chk_opt_loop:
@@ -94,7 +95,8 @@ _cmd_echo__run:
   jc _cmd_echo__run_e
 
   # Print arg_buf
-  push $arg_buf
+  #push $arg_buf
+  push $cli_buf_arg
   call print_str
   add $0x02, %sp
 
@@ -103,7 +105,8 @@ _cmd_echo__run:
 
 _cmd_echo__run_e: # Run e
   # Print Escape arg_buf
-  push $arg_buf
+  #push $arg_buf
+  push $cli_buf_arg
   call print_esc
   add $0x02, %sp
 
