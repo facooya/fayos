@@ -81,48 +81,38 @@ kernel_prompt: .asciz "fayos> "
 # =============== > Include ===============
 # !!! -T linker.ld, .global abcde
 
-#.include "./inc/print_test_3.inc" # print_string(msg_addr), print.inc
-#.include "./inc/keyboard_test_3.inc" # key_manager(), key_buf, set_cursor_min_x(),cursor_min_x
-# keyboard.inc => kbd.inc, buf.inc
-#.include "./inc/command_logic_test_3.inc" # => tok.inc
-#.include "./inc/command_table_test_3.inc"
-#.include "./inc/command_table_test_3_1.inc" # => cmd_tbl_3_2.inc
-#.include "./inc/command_file_test_3_2.inc"
-#.include "./inc/sector_test_3.inc" # sector.inc => block.inc
-#.include "./inc/block_test_3.inc" # => disk.inc
-
 # -----========== > Library ==========-----
 
-.include "./inc/lib/print_3_1.inc"
+.include "./inc/lib/print.inc"
 
 # -----========== < Library ==========-----
 # -----========== > System ==========-----
 
-.include "./inc/sys/kbd_3_1.inc"
-.include "./inc/sys/disk_3_1.inc"
-.include "./inc/sys/err_3_2.inc"
+.include "./inc/sys/kbd.inc"
+.include "./inc/sys/disk.inc"
+.include "./inc/sys/err.inc"
 
 # -----========== < System ==========-----
 # -----========== > Command ==========-----
 
 # CLI (Command Line Interface)
-.include "./inc/cmd/cli_buf_3_1.inc"
-.include "./inc/cmd/cli_tok_3_1.inc"
+.include "./inc/cmd/cli_buf.inc"
+.include "./inc/cmd/cli_tok.inc"
 
 # Command
-.include "./inc/cmd/cmd_table_3_2.inc"
-.include "./inc/cmd/cmd_exec_3_2.inc"
+.include "./inc/cmd/cmd_table.inc"
+.include "./inc/cmd/cmd_exec.inc"
 
 # System
-.include "./inc/cmd/sys/clear_3_1.inc"
-.include "./inc/cmd/sys/echo_3_1.inc"
-.include "./inc/cmd/sys/help_3_1.inc"
+.include "./inc/cmd/sys/clear.inc"
+.include "./inc/cmd/sys/echo.inc"
+.include "./inc/cmd/sys/help.inc"
 
 # File
-.include "./inc/cmd/file/touch_3_3.inc"
-.include "./inc/cmd/file/ls_3_3.inc"
-.include "./inc/cmd/file/rm_3_3.inc"
-.include "./inc/cmd/file/cat_3_3.inc"
+.include "./inc/cmd/file/touch.inc"
+.include "./inc/cmd/file/ls.inc"
+.include "./inc/cmd/file/rm.inc"
+.include "./inc/cmd/file/cat.inc"
 
 # -----========== < Command ==========-----
 # =============== < Include ===============
