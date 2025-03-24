@@ -1,3 +1,8 @@
+Quick test FAYOS in qemu linux command:
+./make.sh
+./qemu.sh
+
+
 Comment Rule
 
 PREVIEW, CODE, DATA, INCLUDE, FACOOYA

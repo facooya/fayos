@@ -1,7 +1,27 @@
-.global _start
-.code16
+# FAYOS - FAcooYa Operating System
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# =============== > Kernel Start ===============
+# === > CODE
+
+.code16
+#.section .text
+.global _start
+
+# -== > Kernel Start
 
 _start:
   # Print Load Message
@@ -30,8 +50,9 @@ _start:
   # Key Buffer
   call set_key_buf # kbd.inc
 
-# =============== < Kernel Start ===============
-# =============== > Kernel Loop ===============
+# -== < Kernel Start
+# ===
+# -== > Kernel Loop
 
 kernel_loop: # Main Loop
   mov $0x00, %ah # Read Key Press
@@ -43,14 +64,20 @@ kernel_loop: # Main Loop
   # Loop
   jmp kernel_loop
 
-# =============== < Kernel Loop ===============
-# =============== > Data ===============
+# -== < Kernel Loop
+# ===
+# === < CODE
+# ===
+# === > Data
+
+#.section .data
 
 _kernel_load_msg: .asciz "\nKernel Loaded\r\n"
 _kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
 kernel_prompt: .asciz "fayos> "
 
-# =============== < Data ===============
+# === < Data
+
 # =============== > Include ===============
 # !!! -T linker.ld, .global abcde
 
@@ -99,6 +126,3 @@ kernel_prompt: .asciz "fayos> "
 
 # -----========== < Command ==========-----
 # =============== < Include ===============
-# =============== > FACOOYA ===============
-# Copyright 2025 Facooya.
-# =============== < FACOOYA ===============

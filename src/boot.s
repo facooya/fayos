@@ -1,6 +1,26 @@
-.global _start
+# FAYOS - FAcooYa Operating System
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# === > CODE
+
 .code16
-# =============== > Boot Start ===============
+.global _start
+
+# -== > Boot Start
 
 _start:
   # Facooya OS does not use IRQ in x86-16 mode
@@ -36,8 +56,9 @@ _start:
   # Jump Kernel, [CS]: 0x0000, [IP]: 0x1000
   ljmp $0x0000, $0x1000 # 0x1000: Kernel Address
 
-# =============== < Boot Start ===============
-# =============== > Disk ===============
+# -== < Boot Start
+# ===
+# -== > Disk
 
 disk_load:
   # Disk Read
@@ -65,7 +86,9 @@ disk_err:
   # CPU Halt
   hlt
 
-# =============== < Disk ===============
+# -== < Disk
+# ===
+# -== > Print
 
 # print_msg(msg)
 # msg: Message, 0x00: Padding [1 Byte]
@@ -93,7 +116,12 @@ _print_msg__loop:
 _print_msg__done:
   pop %bp
   ret
-# =============== > Data ===============
+
+# -== < Print
+# ===
+# === < CODE
+# ===
+# === > DATA
 
 _os_name_msg: .asciz "\nFAYOS\r\n" # FAYOS: FAcooYa Operating System
 _disk_ok_msg: .asciz "Kernel Disk Ok\r\n"
@@ -110,17 +138,11 @@ _dap_kernel: # Disk Address Packet
   .word 0x00 # Unset
   .word 0x00 # Unset
 
-# =============== < Data ===============
-
 # Set 512 Bytes
 .fill 0x1FE-(.-_start), 0x01, 0x00 # 0x1FE (510)
 .word 0xAA55 # Magic Number (Little Endian), .byte 0x55, 0xAA
 
-# Note
-# boot.img
+# === < DATA
+# === > NOTE
 # Boot: 0x7C00 - 0x7DFF, Kernel: 0x7E00 - (0x0200 * Sector)
-
-# =============== < Include ===============
-# =============== > FACOOYA ===============
-# Copyright 2025 Facooya.
-# =============== < FACOOYA ===============
+# === > NOTE
