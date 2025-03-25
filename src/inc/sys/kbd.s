@@ -22,8 +22,6 @@
 # newline()
 # set_cursor_min_x()
 
-# DEPS
-
 # =============== < PREVIEW ===============
 # =============== > CODE ===============
 
@@ -32,7 +30,7 @@
 
 .global key_manager, newline, set_cursor_min_x
 
-#.extern cmd_exec, cli_buf_init_all, kernel_prompt
+.extern cmd_exec, cli_buf_init_all, kernel_prompt
 
 # =============== > Key Manager ===============
 
@@ -85,18 +83,16 @@ bs_key:
 # --------------- Enter ---------------
 enter_key:
   # Command
-  #call parse_key_buf # => cli_tok
-  call cmd_exec # (cmd_exec.inc)
+  call cmd_exec # cmd_exec.s
 
   # Init buffers
-  call cli_buf_init_all
+  call cli_buf_init_all # cli_buf.s
 
-  push $kernel_prompt
+  push $kernel_prompt # kernel.s
   call print_str
   add $0x02, %sp
   
-  #mov $key_buf, %di
-  call cli_buf_raw_set
+  call cli_buf_raw_set # cli_buf.s
   
   jmp key_manager_exit
 

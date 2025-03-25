@@ -40,7 +40,7 @@
 
 .extern cli_tok # cli_tok.s
 .extern cli_buf_cmd # cli_buf.s
-.extern err_cmd
+.extern err_cmd # err.s
 
 # -== > Execute
 

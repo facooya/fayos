@@ -90,8 +90,8 @@ kernel_loop: # Main Loop
 # -----========== > System ==========-----
 
 #.include "./inc/sys/kbd.inc"
-.include "./inc/sys/disk.inc"
-.include "./inc/sys/err.inc"
+#.include "./inc/sys/disk.inc"
+#.include "./inc/sys/err.inc"
 
 # -----========== < System ==========-----
 # -----========== > Command ==========-----

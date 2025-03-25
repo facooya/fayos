@@ -32,10 +32,12 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global set_dap_lba, disk_rw, dentry_name_align, master_block
 .global dap, dap_master
 
-.extern err_disk
+.extern err_disk # err.s
 
 # -== > Set DAP
 
@@ -193,6 +195,8 @@ _master_block__done:
 # ===
 # -== > DAP
 
+.section .data
+
 dap: # Disk Address Packet
   .byte 0x10 # DAP Size
   .byte 0x00 # Reserved
@@ -219,7 +223,3 @@ dap_master: # Master Block
 # -== < DAP
 # ===
 # === < DATA
-# ===
-# === > FACOOYA
-# Copyright 2025 Facooya.
-# === < FACOOYA
