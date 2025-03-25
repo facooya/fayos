@@ -19,14 +19,20 @@
 
 # FUNC
 # key_manager()
+# newline()
+# set_cursor_min_x()
 
 # DEPS
-# /cmd/proc.inc (FUNC: cmd_proc())
 
 # =============== < PREVIEW ===============
 # =============== > CODE ===============
 
 .code16
+.section .text
+
+.global key_manager, newline, set_cursor_min_x
+
+#.extern cmd_exec, cli_buf_init_all, kernel_prompt
 
 # =============== > Key Manager ===============
 
@@ -118,9 +124,8 @@ set_cursor_min_x:
 # =============== < CODE ===============
 # =============== > DATA ===============
 
+.section .data
+
 cursor_min_x: .byte 0x00
 
 # =============== < DATA ===============
-# =============== > FACOOYA ===============
-# Copyright 2025 Facooya.
-# =============== < FACOOYA ===============

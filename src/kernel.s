@@ -15,12 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# === > PREVIEW
+
+# DATA
+# kernel_prompt
+
+# === < PREVIEW
+# ===
 # === > CODE
 
 .code16
 .section .text
+
 .global _start
-.extern print_str, print_esc
+.global kernel_prompt
+
+.extern print_str, print_esc # print.s
+.extern keyboard_manager, newline, set_cursor_min_x # kbd.s
 
 # -== > Kernel Start
 
@@ -35,7 +46,7 @@ _start:
   call print_str
   add $0x02, %sp
 
-  call newline # kbd.inc
+  call newline # kbd.s
 
   # Print Prompt
   push $kernel_prompt
@@ -46,7 +57,7 @@ _start:
   call master_block # disk.inc
 
   # Cursor
-  call set_cursor_min_x # kbd.inc
+  call set_cursor_min_x # kbd.s
 
   # /inc/cmd/cli_buf.inc
   call cli_buf_raw_set # cli_buf.inc
@@ -60,7 +71,7 @@ kernel_loop: # Main Loop
   int $0x16
 
   # Keyboard, Command
-  call key_manager # kbd.inc
+  call key_manager # kbd.s
 
   # Loop
   jmp kernel_loop
@@ -77,7 +88,7 @@ kernel_loop: # Main Loop
 # -----========== < Library ==========-----
 # -----========== > System ==========-----
 
-.include "./inc/sys/kbd.inc"
+#.include "./inc/sys/kbd.inc"
 .include "./inc/sys/disk.inc"
 .include "./inc/sys/err.inc"
 

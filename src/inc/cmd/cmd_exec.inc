@@ -31,6 +31,7 @@
 # === > CODE
 
 .code16
+.global cmd_exec
 
 # -== > Execute
 

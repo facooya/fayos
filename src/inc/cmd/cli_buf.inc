@@ -34,6 +34,7 @@
 # === > CODE
 
 .code16
+.global cli_buf_raw_set, cli_buf_init_all
 
 # -== > raw set
 
