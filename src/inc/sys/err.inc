@@ -30,6 +30,12 @@
 # =============== > CODE ===============
 
 .code16
+.section .text
+
+.global err_cmd, err_opt, err_disk
+
+.extern newline # kbd.s
+.extern print_str # print.s
 
 # -----========== > Command ==========-----
 
@@ -74,6 +80,8 @@ err_disk:
 
 # =============== < CODE ===============
 # =============== > DATA ===============
+
+.section .data
 
 _err_cmd__msg: .asciz "Command not found. Try \"help\" for a list of commands."
 _err_opt__msg: .asciz "Invalid option."

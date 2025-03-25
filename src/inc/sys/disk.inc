@@ -32,6 +32,10 @@
 # === > CODE
 
 .code16
+.global set_dap_lba, disk_rw, dentry_name_align, master_block
+.global dap, dap_master
+
+.extern err_disk
 
 # -== > Set DAP
 

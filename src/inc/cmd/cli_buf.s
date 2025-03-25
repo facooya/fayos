@@ -34,7 +34,10 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global cli_buf_raw_set, cli_buf_init_all
+.global cli_buf_raw, cli_buf_cmd, cli_buf_arg, cli_buf_opt, cli_buf_redir
 
 # -== > raw set
 

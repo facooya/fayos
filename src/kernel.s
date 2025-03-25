@@ -32,6 +32,7 @@
 
 .extern print_str, print_esc # print.s
 .extern keyboard_manager, newline, set_cursor_min_x # kbd.s
+.extern master_block # disk.inc
 
 # -== > Kernel Start
 
@@ -59,8 +60,8 @@ _start:
   # Cursor
   call set_cursor_min_x # kbd.s
 
-  # /inc/cmd/cli_buf.inc
-  call cli_buf_raw_set # cli_buf.inc
+  # Set Buffer Raw
+  call cli_buf_raw_set # cli_buf.s
 
 # -== < Kernel Start
 # ===
@@ -96,12 +97,12 @@ kernel_loop: # Main Loop
 # -----========== > Command ==========-----
 
 # CLI (Command Line Interface)
-.include "./inc/cmd/cli_buf.inc"
-.include "./inc/cmd/cli_tok.inc"
+#.include "./inc/cmd/cli_buf.inc"
+#.include "./inc/cmd/cli_tok.inc"
 
 # Command
-.include "./inc/cmd/cmd_table.inc"
-.include "./inc/cmd/cmd_exec.inc"
+#.include "./inc/cmd/cmd_table.inc"
+#.include "./inc/cmd/cmd_exec.inc"
 
 # System
 .include "./inc/cmd/sys/clear.inc"

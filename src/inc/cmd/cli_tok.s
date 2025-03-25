@@ -30,6 +30,12 @@
 # === > CODE
 
 .code16
+.section .text
+
+.global cli_tok
+
+.extern cli_buf_raw_set # cli_buf.s
+.extern cli_buf_cmd, cli_buf_opt, cli_buf_arg # cli_buf.s
 
 # -== > CLI Tokenizer
 

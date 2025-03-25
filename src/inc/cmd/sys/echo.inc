@@ -18,6 +18,7 @@
 # === > CODE
 
 .code16
+.global cmd_echo
 
 # -----========== > Command (echo) ==========-----
 

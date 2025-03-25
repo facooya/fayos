@@ -1,9 +1,11 @@
 linker.ld
 modularization
 
-delete inc directory
+makefile
 
 tag v0.1.1
+
+delete inc directory
 
 rm
 cmd kernel time, color, mkdir, rmdir

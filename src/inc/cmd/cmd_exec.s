@@ -20,8 +20,10 @@
 # FUNC
 # cmd_exec()
 
+# DATA
+# cmd_table
+
 # DEPS
-# src/inc/cmd/cmd_table.inc (DATA: cmd_table)
 # src/inc/cmd/cmd_tok.inc (FUNC: cli_tok)
 # src/inc/lib/buf.inc (DATA: cmd_buf)
 # src/inc/sys/err.inc (LABEL: err_cmd)
@@ -31,7 +33,14 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global cmd_exec
+.global cmd_table
+
+.extern cli_tok # cli_tok.s
+.extern cli_buf_cmd # cli_buf.s
+.extern err_cmd
 
 # -== > Execute
 
@@ -87,3 +96,27 @@ _cmd_exec__done:
 
 # -== < Execute
 # === < CODE
+# ===
+# === > DATA
+
+.section .data
+
+cmd_table:
+  .word cmd_clear
+  .asciz "clear"
+  .word cmd_echo
+  .asciz "echo"
+  .word cmd_touch
+  .asciz "touch"
+  .word cmd_rm
+  .asciz "rm"
+  .word cmd_ls
+  .asciz "ls"
+  .word cmd_cat
+  .asciz "cat"
+  .word cmd_help
+  .asciz "help"
+  .word 0x00
+  .asciz ""
+
+# === < DATA
