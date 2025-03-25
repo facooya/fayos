@@ -26,6 +26,8 @@
 # === > CODE
 
 .code16
+.section .text
+.global print_str, print_esc
 
 # -== > Print String
 

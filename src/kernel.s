@@ -18,8 +18,9 @@
 # === > CODE
 
 .code16
-#.section .text
+.section .text
 .global _start
+.extern print_str, print_esc
 
 # -== > Kernel Start
 
@@ -66,24 +67,12 @@ kernel_loop: # Main Loop
 
 # -== < Kernel Loop
 # ===
-# === < CODE
-# ===
-# === > Data
-
-#.section .data
-
-_kernel_load_msg: .asciz "\nKernel Loaded\r\n"
-_kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
-kernel_prompt: .asciz "fayos> "
-
-# === < Data
-
 # =============== > Include ===============
 # !!! -T linker.ld, .global abcde
 
 # -----========== > Library ==========-----
 
-.include "./inc/lib/print.inc"
+#.include "./inc/lib/print.inc"
 
 # -----========== < Library ==========-----
 # -----========== > System ==========-----
@@ -116,3 +105,17 @@ kernel_prompt: .asciz "fayos> "
 
 # -----========== < Command ==========-----
 # =============== < Include ===============
+# ===
+# === < CODE
+# ===
+# === > Data
+
+.section .data
+
+_kernel_load_msg: .asciz "\nKernel Loaded\r\n"
+_kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
+kernel_prompt: .asciz "fayos> "
+
+# === < Data
+
+
