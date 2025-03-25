@@ -15,6 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# === > PREVIEW
+
+# FUNC
+# cli_buf_raw_set()
+# cli_buf_init_all()
+# cli_buf_init(&cli_buf)
+
+# DATA
+# cli_buf_raw
+# cli_buf_cmd
+# cli_buf_arg
+# cli_buf_opt
+# cli_buf_redir
+
+# === < PREVIEW
+# ===
 # === > CODE
 
 .code16
@@ -60,6 +76,7 @@ cli_buf_init_all:
 # ===
 # -== > Init
 
+# cli_buf_init(&cli_buf)
 cli_buf_init:
 _cli_buf_init__prol:
   push %bp

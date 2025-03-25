@@ -15,29 +15,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# =============== > PREVIEW ===============
+# === > PREVIEW
 
 # FUNC
 # cmd_exec()
 
 # DEPS
-# /cmd/cmd_table.inc (DATA: cmd_table)
-# /src/inc/cmd/cmd_tok.inc (FUNC: cli_tok)
-# /lib/buf.inc (DATA: cmd_buf)
-# /sys/err.inc (LABEL: err_cmd)
+# src/inc/cmd/cmd_table.inc (DATA: cmd_table)
+# src/inc/cmd/cmd_tok.inc (FUNC: cli_tok)
+# src/inc/lib/buf.inc (DATA: cmd_buf)
+# src/inc/sys/err.inc (LABEL: err_cmd)
 
-# =============== < PREVIEW ===============
-# =============== > CODE ===============
+# === < PREVIEW
+# ===
+# === > CODE
 
 .code16
 
-# -----========== > Process ==========-----
+# -== > Execute
 
 cmd_exec:
-  #call parse_key_buf # tok.inc
-  call cli_tok
+  call cli_tok # tok.inc
 
-  mov $cmd_table, %si
+  mov $cmd_table, %si # cmd_table.inc
 
 _cmd_exec__chk_addr:
   # Null ? not_found
@@ -46,8 +46,7 @@ _cmd_exec__chk_addr:
   jz err_cmd # ref: err.inc
 
 _cmd_exec__cmp_cmd:
-  add $0x02, %si # Command Char
-  #mov $cmd_buf, %di
+  add $0x02, %si # cmd_table byte
   mov $cli_buf_cmd, %di
 
 _cmd_exec__cmp_cmd_lp:
@@ -85,5 +84,5 @@ _cmd_exec__call:
 _cmd_exec__done:
   ret
 
-# -----========== < Process ==========-----
-# =============== < CODE ===============
+# -== < Execute
+# === < CODE

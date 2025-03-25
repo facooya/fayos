@@ -15,7 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > PRIVIEW
+# === > PREVIEW
+
+# FUNC
+# cli_tok()
 
 # DEPS
 # /src/inc/cmd/cli_buf.inc (
@@ -23,7 +26,7 @@
 #   DATA: cli_buf_cmd, cli_buf_opt, cli_buf_arg
 # )
 
-# === < PRIVIEW
+# === < PREVIEW
 # === > CODE
 
 .code16
