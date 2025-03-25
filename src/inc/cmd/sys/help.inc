@@ -15,83 +15,84 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
+# === > PREVIEW
+
+# FUNC
+# cmd_help()
+
+# DEPS
+# src/inc/cmd/cmd_table.inc (DATA: cmd_table)
+# src/inc/sys/kbd.inc (FUNC: newline)
+
+# === < PREVIEW
+# ===
 # === > CODE
 
 .code16
 
-# -----========== > Command Help ==========-----
+# -== > Command Help
 
 cmd_help:
-  mov $cmd_table, %si
-  #mov $tmp_buf, %di
-  mov $cli_buf_tmp, %di
+_cmd_help__prol:
+  push %si
+  push %ax
+  push %bx
 
-cmd_help_check_cmd_addr:
-  # Compare Address Null
+# --= > Check Address
+
+_cmd_help__chk_addr_set:
+  mov $cmd_table, %si # cmd_table.inc
+  mov $0x0E, %ah # out set
+
+_cmd_help__chk_addr_lp:
+  # Cond: null ? chk_addr_end
   mov (%si), %bx
   test %bx, %bx
-  jz cmd_help_exit
+  jz _cmd_help__chk_addr_end
 
-  # This Command Char
-  add $0x02, %si # Addr Cmd Char
-  jmp cmd_help_loop_cmd_char
+  # Else
+  call newline # kbd.inc
+  # SI: cmd_addr, SI+2: cmd_byte
+  add $0x02, %si
 
-cmd_help_loop_cmd_char:
-  # Compare Char Null
+# --- > Out Byte
+
+_cmd_help__out_byte_lp:
+  # Cond: null ? out_byte_end
   mov (%si), %al
   test %al, %al
-  jz cmd_help_output
+  jz _cmd_help__out_byte_end
 
-  # Save cmd_char => tmp_buf
-  mov %al, (%di)
+  # Out
+  int $0x10
 
   # Loop
-  inc %si
-  inc %di
-  jmp cmd_help_loop_cmd_char
+  add $0x01, %si
+  jmp _cmd_help__out_byte_lp
 
-cmd_help_output:
-  # Next Point [SI], [DI]
-  inc %si
-  inc %di
+_cmd_help__out_byte_end:
+  # SI: null, SI+1: cmd_addr
+  add $0x01, %si
 
-  # Last Null [DI]
-  xor %al, %al
-  mov %al, (%di)
+  # Loop
+  jmp _cmd_help__chk_addr_lp
 
-  # Newline
-  call newline
+# --- < Out Byte
 
-  # print_str() AND init_tmp_buf() Using [SI]
-  push %si
+_cmd_help__chk_addr_end:
 
-  # Print tmp_buf
-  #push $tmp_buf # Output tmp_buf
-  push $cli_buf_tmp
-  call print_str
-  add $0x02, %sp
+# --= < Check Address
 
-  #call init_tmp_buf # Init tmp_buf
-  # Init cli_buf_tmp
-  push cli_buf_tmp
-  call cli_buf_init
-  add $0x02, %sp
-
+_cmd_help__epil:
+  pop %bx
+  pop %ax
   pop %si
 
-  # Set tmp_buf
-  #mov $tmp_buf, %di
-  mov $cli_buf_tmp, %di
-
-  # Next Command Check
-  jmp cmd_help_check_cmd_addr
-
-cmd_help_exit:
-  # Newline
-  call newline
-
-  # Return
+_cmd_help__done:
+  #call newline
   ret
 
-# -----========== < Command Help ==========-----
+# -== < Command Help
+# ===
 # === < CODE
