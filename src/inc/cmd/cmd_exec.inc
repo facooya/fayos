@@ -22,6 +22,7 @@
 
 # DEPS
 # /cmd/cmd_table.inc (DATA: cmd_table)
+# /src/inc/cmd/cmd_tok.inc (FUNC: cli_tok)
 # /lib/buf.inc (DATA: cmd_buf)
 # /sys/err.inc (LABEL: err_cmd)
 
@@ -33,7 +34,8 @@
 # -----========== > Process ==========-----
 
 cmd_exec:
-  call parse_key_buf # tok.inc
+  #call parse_key_buf # tok.inc
+  call cli_tok
 
   mov $cmd_table, %si
 

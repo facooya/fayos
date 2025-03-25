@@ -79,7 +79,7 @@ bs_key:
 # --------------- Enter ---------------
 enter_key:
   # Command
-  call parse_key_buf # => cli_tok
+  #call parse_key_buf # => cli_tok
   call cmd_exec # (cmd_exec.inc)
 
   # Init buffers

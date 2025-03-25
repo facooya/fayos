@@ -15,6 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# === > PRIVIEW
+
+# DEPS
+# /src/inc/cmd/cli_buf.inc (
+#   FUNC: cli_buf_raw_set
+#   DATA: cli_buf_cmd, cli_buf_opt, cli_buf_arg
+# )
+
+# === < PRIVIEW
 # === > CODE
 
 .code16
@@ -23,164 +32,129 @@
 
 cli_tok:
 _cli_tok__prol:
+  call cli_buf_raw_set
 
+# --= > Buffer Command
 
+_cli_tok__buf_cmd_set:
+  mov $cli_buf_cmd, %di
+
+_cli_tok__buf_cmd_lp:
+  # Cond: null ? buf_cmd_exit
+  mov (%si), %al # SI: cli_buf_raw
+  test %al, %al
+  jz _cli_tok__buf_cmd_exit
+
+  # Cond: space ? buf_cmd_end
+  cmp $0x20, %al # 0x20: SPACE
+  jz _cli_tok__buf_cmd_end
+
+  # Save
+  mov %al, (%di) # DI: cli_buf_cmd
+
+  # Loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp _cli_tok__buf_cmd_lp
+
+_cli_tok__buf_cmd_end:
+  # SI: Space, SI+1: Hyphen-Minus || Argument
+  add $0x01, %si
+
+  # Cond: !Hyphen-Minus ? buf_opt_end
+  mov (%si), %al
+  cmp $0x2D, %al # 0x2D: Hyphen-Minus
+  jne _cli_tok__buf_opt_end
+
+  # Else: buf_opt_set
+
+# --= < Buffer Command
+# ===
+# --= > Buffer Option
+
+_cli_tok__buf_opt_set:
+  # SI: Hyphen-Minus, SI+1: Option
+  add $0x01, %si
+  mov $cli_buf_opt, %di
+
+_cli_tok__buf_opt_lp:
+  # Cond: null ? buf_opt_exit
+  mov (%si), %al
+  test %al, %al
+  jz _cli_tok__buf_opt_exit
+
+  # Cond: space ? buf_opt_chk
+  mov (%si), %al
+  cmp $0x20, %al # 0x20: Space
+  je _cli_tok__buf_opt_chk
+
+  # Save
+  mov %al, (%di) # DI: cli_buf_opt
+
+  # Loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp _cli_tok__buf_opt_lp
+
+_cli_tok__buf_opt_chk:
+  # SI: space, SI+1: hyphen-minus || argument
+  add $0x01, %si
+
+  # Cond: !hyphen-minus ? buf_opt_end
+  mov (%si), %al
+  cmp $0x2D, %al # 0x2D: hyphen-minus
+  jne _cli_tok__buf_opt_end
+
+  # Else: continue
+  # SI: hyphen-minus, SI+1: option
+  add $0x01, %si
+  jmp _cli_tok__buf_opt_lp
+
+_cli_tok__buf_opt_end:
+  # SI: argument
+
+# --= < Buffer Option
+# ===
+# --= > Buffer Argument
+
+_cli_tok__buf_arg_set:
+  mov $cli_buf_arg, %di
+
+_cli_tok__buf_arg_lp:
+  # Cond: null ? buf_arg_end
+  mov (%si), %al
+  test %al, %al
+  jz _cli_tok__buf_arg_end
+
+  # Save
+  mov %al, (%di) # DI: cli_buf_arg
+
+  # Loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp _cli_tok__buf_arg_lp
+
+_cli_tok__buf_arg_end:
+  # SI: null
+
+# --= < Buffer Argument
 
 _cli_tok__epli:
 _cli_tok__done:
   ret
 
+_cli_tok__buf_cmd_exit: # !!! Temporary
+  xor %al, %al
+  mov %al, (%di)
+
+  ret
+
+_cli_tok__buf_opt_exit: # !!! Temporary
+  xor %al, %al
+  mov %al, (%di)
+
+  ret
+
 # -== < CLI Tokenizer
-
-# =============== > Parse Key Buffer
-
-parse_key_buf: # Entry Point
-  #mov $key_buf, %si # Main Buffer
-  #mov $cli_buf_raw, %si
-  call cli_buf_raw_set
-  jmp parse_key_buf_cmd
-
-# ==========----- > Parse Command -----==========
-# !!! Verify First is Char OR Number
-
-parse_key_buf_cmd:
-  #mov $cmd_buf, %di
-  mov $cli_buf_cmd, %di
-
-parse_key_buf_cmd_loop:
-  # Compare Null
-  mov (%si), %al
-  test %al, %al
-  jz parse_key_buf_cmd_done
-
-  # Compare Space
-  cmp $0x20, %al
-  jz parse_verify_key_buf_opt # Parse opt => arg
-
-  # Save cmd_buf
-  mov %al, (%di)
-
-  # Loop
-  inc %si
-  inc %di
-  jmp parse_key_buf_cmd_loop
-
-parse_key_buf_cmd_done:
-  # Add Null
-  xor %al, %al
-  mov %al, (%di)
-
-  # Return
-  ret
-
-# ==========----- < Parse Command -----==========
-# ==========----- > Parse Option -----==========
-
-# =====---------- > Verify Option ----------=====
-
-parse_verify_key_buf_opt:
-  # [SI]: Space, [SI+1]: Hyphen-Minus OR Argument Byte
-  inc %si
-
-  # Compare Hyphen-Minus
-  mov (%si), %al
-  cmp $0x2D, %al
-  jz parse_key_buf_opt
-
-  # Not Option
-  jmp parse_key_buf_arg
-
-# =====---------- < Verify Option ----------=====
-# Opt: -a -b -c, -abc = opt_buf: abc
-parse_key_buf_opt:
-  # [SI]: Hyphen-Minus, [SI+1]: Option Byte
-  inc %si
-  #mov $opt_buf, %di
-  mov $cli_buf_opt, %di
-
-parse_key_buf_opt_loop:
-  # Compare Null, Error => Exit
-  mov (%si), %al
-  test %al, %al
-  jz parse_key_buf_opt_exit
-
-  # Compare Space, Safe => Done => Next
-  mov (%si), %al
-  cmp $0x20, %al
-  jz parse_verify_key_buf_opt_is_opt # Check Point 
-
-  # Save: opt_buf
-  mov %al, (%di)
-
-  # Loop
-  inc %si
-  inc %di
-  jmp parse_key_buf_opt_loop
-
-parse_verify_key_buf_opt_is_opt:
-  # [SI]: Space, [SI+1]: Hyphen-Minus OR Argument Byte
-  inc %si
-
-  # Compare Hyphen-Minus
-  mov (%si), %al
-  cmp $0x2D, %al
-  jz parse_verify_key_buf_opt_true
-
-  # Next Point, Option Done
-  jmp parse_key_buf_opt_done # Next Point
-
-parse_verify_key_buf_opt_true:
-  # [SI]: Hyphen-Minus, [SI+1]: Option Byte
-  # [DI](opt_buf): Already Empty Byte
-
-  # Continue Loop
-  inc %si
-  jmp parse_key_buf_opt_loop
-
-parse_key_buf_opt_exit:
-  #call init_opt_buf
-  push $cli_buf_opt
-  call cli_buf_init
-  add $0x02, %sp
-
-  ret
-
-parse_key_buf_opt_done:
-  # Add Null Byte: (opt_buf) + (Null)
-  xor %al, %al
-  mov %al, (%di)
-
-  # Next Point
-  jmp parse_key_buf_arg
-
-# ==========----- < Parse Option -----==========
-# ------------------------------
-
-parse_key_buf_arg:
-  #inc %si # save_opt_buf_done
-  #mov $arg_buf, %di
-  mov $cli_buf_arg, %di
-
-parse_key_buf_arg_loop:
-  # Compare Null
-  mov (%si), %al
-  test %al, %al
-  jz parse_key_buf_arg_done
-
-  # Save arg_buf
-  mov %al, (%di)
-
-  # Loop
-  inc %si
-  inc %di
-  jmp parse_key_buf_arg_loop
-
-parse_key_buf_arg_done:
-  #PRINT arg_buf # print.inc
-
-  #jmp parse_key_buf_done
-  ret
-
-# =============== < Seperate Key Buffer ===============
-
-# =============== < CODE ===============
+# ===
+# === < CODE
