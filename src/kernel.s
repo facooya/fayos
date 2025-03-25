@@ -99,7 +99,6 @@ _kernel__cur_min_x_set:
   # Set kernel__cur_min_x
   mov $kernel__cur_min_x, %si
   mov %dl, (%si)
-  #mov %dl, (kernel__cur_min_x)
   ret
 
 # ===
