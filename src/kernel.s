@@ -27,29 +27,39 @@
 .code16
 .section .text
 
+# FUNC
 .global _start
-.global kernel_prompt
 
-.extern print_str, print_esc # print.s
-.extern keyboard_manager, newline, set_cursor_min_x # kbd.s
+# DATA
+.global kernel_prompt
+.global kernel__cur_min_x
+
+# DEPS
+.extern print_str # print.s
+.extern kbd_disp # kbd.s
 .extern master_block # disk.inc
 
 # -== > Kernel Start
 
 _start:
-  # Print Load Message
+  # Out
   push $_kernel_load_msg
   call print_str
   add $0x02, %sp
 
-  # Print Load Message 2
+  # Out
   push $_kernel_load_msg_2
   call print_str
   add $0x02, %sp
 
-  call newline # kbd.s
+  # Newline
+  mov $0x0E, %ah
+  mov $0x0D, %al # CR
+  int $0x10
+  mov $0x0A, %al # LF
+  int $0x10
 
-  # Print Prompt
+  # Out
   push $kernel_prompt
   call print_str
   add $0x02, %sp
@@ -58,7 +68,7 @@ _start:
   call master_block # disk.inc
 
   # Cursor
-  call set_cursor_min_x # kbd.s
+  call _kernel__cur_min_x_set
 
   # Set Buffer Raw
   call cli_buf_raw_set # cli_buf.s
@@ -68,16 +78,30 @@ _start:
 # -== > Kernel Loop
 
 kernel_loop: # Main Loop
+  # In
   mov $0x00, %ah # Read Key Press
   int $0x16
 
-  # Keyboard, Command
-  call key_manager # kbd.s
+  # Keyboard
+  call kbd_disp # kbd.s
 
   # Loop
   jmp kernel_loop
 
 # -== < Kernel Loop
+
+_kernel__cur_min_x_set:
+  # Get cursor
+  mov $0x03, %ah
+  mov $0x00, %bh
+  int $0x10 # Return: DH = y, DL = x
+
+  # Set kernel__cur_min_x
+  mov $kernel__cur_min_x, %si
+  mov %dl, (%si)
+  #mov %dl, (kernel__cur_min_x)
+  ret
+
 # ===
 # =============== > Include ===============
 # !!! -T linker.ld, .global abcde
@@ -124,9 +148,15 @@ kernel_loop: # Main Loop
 
 .section .data
 
+# Message
 _kernel_load_msg: .asciz "\nKernel Loaded\r\n"
 _kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
+
+# Prompt
 kernel_prompt: .asciz "fayos> "
+
+# Cursor
+kernel__cur_min_x: .byte 0x00
 
 # === < Data
 

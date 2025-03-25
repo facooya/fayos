@@ -15,89 +15,101 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# =============== > PREVIEW ===============
-
-# FUNC
-# key_manager()
-# newline()
-# set_cursor_min_x()
-
-# =============== < PREVIEW ===============
-# =============== > CODE ===============
+# === > CODE
 
 .code16
 .section .text
 
-.global key_manager, newline, set_cursor_min_x
+# FUNC
+.global kbd_disp
+.global newline
+.global set_cursor_min_x
 
-.extern cmd_exec, cli_buf_init_all, kernel_prompt
+# DEPS
+.extern kernel_prompt # kernel.s DATA
+.extern kernel__cur_min_x # kernel.s DATA
+.extern cmd_exec # cmd_exec.s FUNC
+.extern cli_buf_init_all # cli_buf.s FUNC
+.extern print_str # print.s FUNC
 
-# =============== > Key Manager ===============
-
-key_manager:
+# FUNC
+kbd_disp:
+  # Cond: BS ? _kbd_bs
   cmp $0x08, %al # BS
-  jz bs_key
+  je _kbd_bs
+
+  # Cond: CR ? _kbd_enter
   cmp $0x0D, %al # CR
-  jz enter_key
+  je _kbd_enter
 
   # Else
-  mov $0x0E, %ah
-  int $0x10
+  mov $0x0E, %ah # out set
+  int $0x10 # out
 
+  # Save
   mov %al, (%si) # SI: cli_buf_raw
-  add $0x01, %si
+  add $0x01, %si # prepare SI for next byte
 
-  jmp key_manager_exit
-
-key_manager_exit:
+_kbd_disp__done:
   ret
 
-# =============== < Key Manager ===============
-# =============== > Key Handlers ===============
+# FUNC
+_kbd_bs:
+  # Get cursor
+  mov $0x03, %ah
+  mov $0x00, %bh # page number
+  int $0x10 # return: DH=y, DL=x
 
-# --------------- BackSpace ---------------
-bs_key:
-  mov $0x03, %ah # Get Cursor Pos
-  mov $0x00, %bh # Video Page Number
-  int $0x10 # DH=Y, DL=X
+  # Set cursor
+  mov $0x02, %ah
 
-  mov $0x02, %ah # Set Cursor Pos, DH=Y, DL=X
-  cmp (cursor_min_x), %dl
-  jz key_manager_exit
-  dec %dl
-  int $0x10
+  # Cond: (cur_min_x == x) ? done
+  mov $kernel__cur_min_x, %di
+  movb (%di), %al
+  cmp %al, %dl # DL = x
+  #cmp (kernel__cur_min_x), %dl
+  je _kbd_bs__done
 
+  # Back cursor
+  sub $0x01, %dl
+  int $0x10 # Set cursor end
+
+  # Out space
   mov $0x0E, %ah
-  mov $0x20, %al # SP
+  mov $0x20, %al # 0x20: space
   int $0x10
 
-  mov $0x02, %ah # Set Cursor Pos, DH=Y, DL=X
+  # Set cursor back
+  mov $0x02, %ah
   int $0x10
 
-  # cli_buf_raw
-  movb $0x00, -1(%si)
+  # SI: cli_buf_raw
   sub $0x01, %si
+  movb $0x00, (%si)
 
-  jmp key_manager_exit
+_kbd_bs__done:
+  ret
 
-# --------------- Enter ---------------
-enter_key:
+# FUNC
+_kbd_enter:
   # Command
   call cmd_exec # cmd_exec.s
 
-  # Init buffers
+  # Initialize buffers
   call cli_buf_init_all # cli_buf.s
 
+  # Out
   push $kernel_prompt # kernel.s
-  call print_str
+  call print_str # print.s
   add $0x02, %sp
-  
-  call cli_buf_raw_set # cli_buf.s
-  
-  jmp key_manager_exit
 
-# =============== < Key Handlers ===============
-# =============== > Utils ===============
+  # Set buffer raw
+  call cli_buf_raw_set # cli_buf.s
+
+_kdb_enter__done:
+  ret
+
+# =============== > Utils =============== # !!! Temporary
 # --------------- New Line ---------------
 newline:
   mov $0x0E, %ah
@@ -107,21 +119,4 @@ newline:
   int $0x10
   ret
 
-# --------------- Set Cursor Minimum X ---------------
-set_cursor_min_x:
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
-  mov %dl, (cursor_min_x)
-  ret
-
-# =============== < Utils ===============
-
-# =============== < CODE ===============
-# =============== > DATA ===============
-
-.section .data
-
-cursor_min_x: .byte 0x00
-
-# =============== < DATA ===============
+# === < CODE
