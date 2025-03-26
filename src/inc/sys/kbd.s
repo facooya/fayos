@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# DEPS
 # .kbd_bs()
 # - kernel_min_cur_pos_x
 #
@@ -58,7 +59,7 @@ kbd_disp:
 
   ret
 
-# keyboard_backspace()
+# .keyboard_backspace()
 .kbd_bs:
   # get cursor
   mov $0x03, %ah
@@ -93,7 +94,7 @@ kbd_disp:
 .kbd_bs_done:
   ret
 
-# keyboard_enter()
+# .keyboard_enter()
 .kbd_enter:
   call cmd_exec
   call cli_buf_init_all

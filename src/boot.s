@@ -15,134 +15,119 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# NOTE
+# [n_cli]
+# - Fayos does not use IRQ in x86-16 mode
+#
+# [n_init]
+# - Skip initialize (reg: cs, si, di, ip)
+# - CS = 0x07C0, IP = 0x0000
+# - Calc: (CS * 16) + IP = 0x7C00
+# 
+# [n_stack]
+# - memory: 0x7000-0x7BFF
+# - max: 1546 stacks
+#
+# [n_dap]
+# [n_end]
+# - boot sector: 0x7C00-0x7DFF
+# - kernel: 0x7E00-(0x0200 * sectors)
 
 .code16
 .global _start
 
-# -== > Boot Start
-
+# _start()
 _start:
-  # Facooya OS does not use IRQ in x86-16 mode
-  cli # Clear Interrupt
+  cli # [n_cli]
 
-  # Skip Init [CS,SI,DI,IP]
-  # [CS]: 0x07C0, [IP]: 0x0000
-  # (0x07C0 * 16) + 0x0000 = 0x7C00
-
-  # Init [AX,DS,ES,SS]
+  # init [n_init]
   xor %ax, %ax
   mov %ax, %ds
   mov %ax, %es
   mov %ax, %ss
-
-  # Init [BX,CX,DX,BP]
   mov %ax, %bx
   mov %ax, %cx
   mov %ax, %dx
   mov %ax, %bp
 
-  # Stack Start, 0x7000 - 0x7BFF, Max: 1536 Stacks
+  # set stack [n_stack]
   mov $0x7C00, %sp
 
-  # Print
-  push $_os_name_msg
-  call print_msg
+  push $.os_name_str
+  call .out_str
   add $0x02, %sp
 
-  # Disk
-  call disk_load
+  # kernel
+  call .read_disk
+  ljmp $0x0000, $0x1000
 
-  # Jump Kernel, [CS]: 0x0000, [IP]: 0x1000
-  ljmp $0x0000, $0x1000 # 0x1000: Kernel Address
+# .read_disk()
+.read_disk:
+  clc
+  mov $0x42, %ah
+  mov $0x80, %dl
+  mov $.dap, %si
+  int $0x13
+  jc .hdl_disk_err
 
-# -== < Boot Start
-# ===
-# -== > Disk
-
-disk_load:
-  # Disk Read
-  clc # Clear Carry Flag
-  mov $0x42, %ah # Read
-  mov $0x80, %dl # Hard Disk
-  mov $_dap_kernel, %si # DAP
-  int $0x13 # Disk Read
-  jc disk_err # CF ? Error
-
-  # Print
-  push $_disk_ok_msg
-  call print_msg
+  push $.disk_ok_str
+  call .out_str
   add $0x02, %sp
 
-  # Return
   ret
 
-disk_err:
-  # Print
-  push $_disk_err_msg
-  call print_msg
+# .handler_disk_error
+.hdl_disk_err:
+  push $.disk_err_str
+  call .out_str
   add $0x02, %sp
 
-  # CPU Halt
   hlt
 
-# -== < Disk
-# ===
-# -== > Print
-
-# print_msg(msg)
-# msg: Message, 0x00: Padding [1 Byte]
-print_msg: # Entry Point
+# .out_string(str)
+.out_str:
+  # prol
   push %bp
   mov %sp, %bp
+  mov 4(%bp), %si
 
-  # Set
-  mov 4(%bp), %si # msg set
-  mov $0x0E, %ah # Print set
+  mov $0x0E, %ah
 
-_print_msg__loop:
-  # Null ? Done
+.out_str_lp:
+  # cond
   mov (%si), %al
   test %al, %al
-  jz _print_msg__done
+  jz .out_str_done
 
-  # Print
+  # out
   int $0x10
 
-  # Loop
-  inc %si
-  jmp _print_msg__loop
+  # loop
+  add $0x01, %si
+  jmp .out_str_lp
 
-_print_msg__done:
+.out_str_done:
+  # epil
   pop %bp
   ret
 
-# -== < Print
-# ===
-# === < CODE
-# ===
-# === > DATA
+# str
+.os_name_str: .asciz "\nFAYOS\r\n"
+.disk_ok_str: .asciz "Disk ok\r\n"
+.disk_err_str: .asciz "Disk err\r\n"
 
-_os_name_msg: .asciz "\nFAYOS\r\n" # FAYOS: FAcooYa Operating System
-_disk_ok_msg: .asciz "Kernel Disk Ok\r\n"
-_disk_err_msg: .asciz "Kernel Disk Err\r\n"
+# dap [n_dap]
+.dap:
+  .byte 0x10
+  .byte 0x00
+  .word 0x30
+  .word 0x1000
+  .word 0x0000
+  .word 0x20
+  .word 0x00
+  .word 0x00
+  .word 0x00
 
-_dap_kernel: # Disk Address Packet
-  .byte 0x10 # Size
-  .byte 0x00 # Reserved
-  .word 0x30 # Sector Count, Kernel Size
-  .word 0x1000 # Offset, REG IP, Kernel 0x1000
-  .word 0x0000 # Segment, REG CS
-  .word 0x20 # LBA (Low), Kernel: 0x20 - 0x4F
-  .word 0x00 # LBA (High)
-  .word 0x00 # Unset
-  .word 0x00 # Unset
-
-# Set 512 Bytes
-.fill 0x1FE-(.-_start), 0x01, 0x00 # 0x1FE (510)
-.word 0xAA55 # Magic Number (Little Endian), .byte 0x55, 0xAA
-
-# === < DATA
-# === > NOTE
-# Boot: 0x7C00 - 0x7DFF, Kernel: 0x7E00 - (0x0200 * Sector)
-# === > NOTE
+# end [n_end]
+.fill 0x01FE-(.-_start), 0x01, 0x00
+.word 0xAA55
