@@ -20,18 +20,25 @@
 # - Fayos does not use IRQ in x86-16 mode
 #
 # [n_init]
-# - Skip initialize (reg: cs, si, di, ip)
+# - skip init (CS, SI, DI, IP)
 # - CS = 0x07C0, IP = 0x0000
-# - Calc: (CS * 16) + IP = 0x7C00
+# - calc: (CS * 16) + IP = 0x7C00
 # 
 # [n_stack]
+# - SP: 0x7C00 (stack start)
 # - memory: 0x7000-0x7BFF
 # - max: 1546 stacks
 #
 # [n_dap]
+# - for kernel
+# - sector count: 0x30
+# - IP: 0x1000, CS: 0x0000
+# - LBA: 0x20
+#
 # [n_end]
 # - boot sector: 0x7C00-0x7DFF
-# - kernel: 0x7E00-(0x0200 * sectors)
+# - magic number: .word 0xAA55 (little endian)
+# - .word 0xAA55 == .byte 0x55, 0xAA
 
 .code16
 .global _start
@@ -57,7 +64,7 @@ _start:
   call .out_str
   add $0x02, %sp
 
-  # kernel
+  # for kernel
   call .read_disk
   ljmp $0x0000, $0x1000
 
