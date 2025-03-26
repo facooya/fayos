@@ -1,9 +1,14 @@
 FAYOS - FAcooYa Operating System
 
-Main code: src/
+boot/
+build/ - *.o, *.bin, *.img
+cmd/
+drivers/ - keyboard, disk
+kernel/ - kernel start (main loop)
+lib/ - common
 
 Quick test for Linux x86-64 using qemu
 
-./src/make.sh  
-./src/qemu.sh
+./make.sh  
+./qemu.sh
 

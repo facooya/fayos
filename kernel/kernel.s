@@ -102,15 +102,15 @@ kernel_loop:
   ret
 
 # System !!! Temporary
-.include "./inc/cmd/sys/clear.inc"
-.include "./inc/cmd/sys/echo.inc"
-.include "./inc/cmd/sys/help.inc"
+.include "./cmd/sys/clear.inc"
+.include "./cmd/sys/echo.inc"
+.include "./cmd/sys/help.inc"
 
 # File !!! Temporary
-.include "./inc/cmd/file/touch.inc"
-.include "./inc/cmd/file/ls.inc"
-.include "./inc/cmd/file/rm.inc"
-.include "./inc/cmd/file/cat.inc"
+.include "./cmd/file/touch.inc"
+.include "./cmd/file/ls.inc"
+.include "./cmd/file/rm.inc"
+.include "./cmd/file/cat.inc"
 
 
 .section .data

@@ -1,6 +1,7 @@
-linker.ld
-modularization
+delete err.s
+cli_buf.s, cli_tok.s, cmd_exec.s => cli.s (drivers? kernel?)
 
+finish modularization
 makefile
 
 tag v0.1.1
