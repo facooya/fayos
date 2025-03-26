@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # .kbd_bs()
-# - kernel_cur_min_x
+# - kernel_min_cur_pos_x
 #
 # .kbd_enter()
 # - kernel_prompt
@@ -30,7 +30,7 @@
 .global kbd_disp
 .global newline
 
-.extern kernel_cur_min_x
+.extern kernel_min_cur_pos_x
 .extern kernel_prompt
 .extern cmd_exec
 .extern cli_buf_init_all
@@ -70,7 +70,7 @@ kbd_disp:
 
   # reg_dl = x (current)
   # cond
-  cmp (kernel_cur_min_x), %dl
+  cmp (kernel_min_cur_pos_x), %dl
   je .kbd_bs_done
 
   # back cursor

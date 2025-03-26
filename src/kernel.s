@@ -15,148 +15,103 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > PREVIEW
-
-# DATA
-# kernel_prompt
-
-# === < PREVIEW
-# ===
-# === > CODE
+# _start()
+# - print_str
+# - master_block
+# - cli_buf_raw_set
+#
+# kernel_loop()
+# - kbd_disp
 
 .code16
 .section .text
 
-# FUNC
 .global _start
-
-# DATA
 .global kernel_prompt
-.global kernel_cur_min_x
+.global kernel_min_cur_pos_x
 
-# DEPS
-.extern print_str # print.s
-.extern kbd_disp # kbd.s
-.extern master_block # disk.inc
+.extern print_str
+.extern kbd_disp
+.extern master_block
+.extern cli_buf_raw_set
 
-# -== > Kernel Start
-
+# _start()
 _start:
-  # Out
-  push $_kernel_load_msg
+  push $.disk_msg
   call print_str
   add $0x02, %sp
 
-  # Out
-  push $_kernel_load_msg_2
+  push $.kernel_msg
   call print_str
   add $0x02, %sp
 
-  # Newline
+  # newline
   mov $0x0E, %ah
-  mov $0x0D, %al # CR
+  mov $0x0D, %al # carriage return
   int $0x10
-  mov $0x0A, %al # LF
+  mov $0x0A, %al # line feed
   int $0x10
 
-  # Out
   push $kernel_prompt
   call print_str
   add $0x02, %sp
 
-  # Master Block
-  call master_block # disk.inc
+  call master_block
 
-  # Cursor
-  call _kernel__cur_min_x_set
+  call cli_buf_raw_set # set_cli_buf_raw !!!
+  call .set_kernel_min_cur_pos_x
 
-  # Set Buffer Raw
-  call cli_buf_raw_set # cli_buf.s
-
-# -== < Kernel Start
-# ===
-# -== > Kernel Loop
-
-kernel_loop: # Main Loop
-  # In
-  mov $0x00, %ah # Read Key Press
+# kernel_loop()
+kernel_loop:
+  # in
+  mov $0x00, %ah
   int $0x16
 
-  # Keyboard
-  call kbd_disp # kbd.s
-
-  # Loop
+  call kbd_disp
   jmp kernel_loop
 
-# -== < Kernel Loop
+# set_kernel_minimum_cursor_position_x()
+.set_kernel_min_cur_pos_x:
+  # reg_si = cli_buf_raw
+  # prologue
+  push %si
+  push %ax
+  push %bx
+  push %dx
 
-_kernel__cur_min_x_set:
-  # Get cursor
+  # get cursor
   mov $0x03, %ah
   mov $0x00, %bh
-  int $0x10 # Return: DH = y, DL = x
+  int $0x10
 
-  # Set kernel_cur_min_x
-  mov $kernel_cur_min_x, %si
+  # reg_dl = x (current)
+  # set kernel_min_cur_pos_x
+  mov $kernel_min_cur_pos_x, %si
   mov %dl, (%si)
+
+  # epilogue
+  pop %dx
+  pop %bx
+  pop %ax
+  pop %si
   ret
 
-# ===
-# =============== > Include ===============
-# !!! -T linker.ld, .global abcde
-
-# -----========== > Library ==========-----
-
-#.include "./inc/lib/print.inc"
-
-# -----========== < Library ==========-----
-# -----========== > System ==========-----
-
-#.include "./inc/sys/kbd.inc"
-#.include "./inc/sys/disk.inc"
-#.include "./inc/sys/err.inc"
-
-# -----========== < System ==========-----
-# -----========== > Command ==========-----
-
-# CLI (Command Line Interface)
-#.include "./inc/cmd/cli_buf.inc"
-#.include "./inc/cmd/cli_tok.inc"
-
-# Command
-#.include "./inc/cmd/cmd_table.inc"
-#.include "./inc/cmd/cmd_exec.inc"
-
-# System
+# System !!! Temporary
 .include "./inc/cmd/sys/clear.inc"
 .include "./inc/cmd/sys/echo.inc"
 .include "./inc/cmd/sys/help.inc"
 
-# File
+# File !!! Temporary
 .include "./inc/cmd/file/touch.inc"
 .include "./inc/cmd/file/ls.inc"
 .include "./inc/cmd/file/rm.inc"
 .include "./inc/cmd/file/cat.inc"
 
-# -----========== < Command ==========-----
-# =============== < Include ===============
-# ===
-# === < CODE
-# ===
-# === > Data
 
 .section .data
 
-# Message
-_kernel_load_msg: .asciz "\nKernel Loaded\r\n"
-_kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
-
-# Prompt
 kernel_prompt: .asciz "fayos> "
+kernel_min_cur_pos_x: .byte 0x00
 
-# Cursor
-kernel_cur_min_x: .byte 0x00
-
-# === < Data
-
-
+.disk_msg: .asciz "\nKernel Loaded\r\n"
+.kernel_msg: .asciz "Fayos Kernel\r\n"
