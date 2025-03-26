@@ -16,10 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # DEPS
-# .kbd_bs()
+# .hdl_bs()
 # - kernel_min_cur_pos_x
 #
-# .kbd_enter()
+# .hdl_enter()
 # - kernel_prompt
 # - cmd_exec
 # - cli_buf_init_all
@@ -28,25 +28,25 @@
 .code16
 .section .text
 
-.global kbd_disp
-.global newline
+.global hdl_kbd
+.global newline # !!! Delete
 
 .extern kernel_min_cur_pos_x
 .extern kernel_prompt
-.extern cmd_exec
-.extern cli_buf_init_all
-.extern print_str
+.extern cmd_exec # !!! exec_cli
+.extern cli_buf_init_all # !!! init_cli_buf_all
+.extern print_str # !!! out_str
 
-# keyboard_dispatch()
-kbd_disp:
+# handle_keyboard()
+hdl_kbd:
   # reg_al = ascii code
   # cond
   cmp $0x08, %al # backspace
-  je .kbd_bs
+  je .hdl_bs
 
   # cond
   cmp $0x0D, %al # carriage return (enter)
-  je .kbd_enter
+  je .hdl_enter
 
   # out
   mov $0x0E, %ah
@@ -59,8 +59,8 @@ kbd_disp:
 
   ret
 
-# .keyboard_backspace()
-.kbd_bs:
+# .handle_backspace()
+.hdl_bs:
   # get cursor
   mov $0x03, %ah
   mov $0x00, %bh
@@ -72,7 +72,7 @@ kbd_disp:
   # reg_dl = x (current)
   # cond
   cmp (kernel_min_cur_pos_x), %dl
-  je .kbd_bs_done
+  je .hdl_bs_done
 
   # back cursor
   sub $0x01, %dl
@@ -91,11 +91,11 @@ kbd_disp:
   sub $0x01, %si
   movb $0x00, (%si)
 
-.kbd_bs_done:
+.hdl_bs_done:
   ret
 
-# .keyboard_enter()
-.kbd_enter:
+# .handle_enter()
+.hdl_enter:
   call cmd_exec
   call cli_buf_init_all
 

@@ -83,7 +83,7 @@ _start:
 
   ret
 
-# .handler_disk_error
+# .handle_disk_error
 .hdl_disk_err:
   push $.disk_err_str
   call .out_str

@@ -15,13 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# NOTE
+# - kernel LBA: 0x20-0x4F
+# - kernel mem: 0x1000-0x6FFF
+
+# DEPS
 # _start()
 # - print_str
 # - master_block
 # - cli_buf_raw_set
 #
 # kernel_loop()
-# - kbd_disp
+# - hdl_kbd
 
 .code16
 .section .text
@@ -31,17 +36,17 @@
 .global kernel_min_cur_pos_x
 
 .extern print_str
-.extern kbd_disp
+.extern hdl_kbd
 .extern master_block
 .extern cli_buf_raw_set
 
 # _start()
 _start:
-  push $.disk_msg
+  push $.kernel_ok_str
   call print_str
   add $0x02, %sp
 
-  push $.kernel_msg
+  push $.kernel_welcome_str
   call print_str
   add $0x02, %sp
 
@@ -67,13 +72,13 @@ kernel_loop:
   mov $0x00, %ah
   int $0x16
 
-  call kbd_disp
+  call hdl_kbd
   jmp kernel_loop
 
 # set_kernel_minimum_cursor_position_x()
 .set_kernel_min_cur_pos_x:
   # reg_si = cli_buf_raw
-  # prologue
+  # prol
   push %si
   push %ax
   push %bx
@@ -89,7 +94,7 @@ kernel_loop:
   mov $kernel_min_cur_pos_x, %si
   mov %dl, (%si)
 
-  # epilogue
+  # epil
   pop %dx
   pop %bx
   pop %ax
@@ -110,8 +115,8 @@ kernel_loop:
 
 .section .data
 
-kernel_prompt: .asciz "fayos> "
+kernel_prompt: .asciz "fayos:/# "
 kernel_min_cur_pos_x: .byte 0x00
 
-.disk_msg: .asciz "\nKernel Loaded\r\n"
-.kernel_msg: .asciz "Fayos Kernel\r\n"
+.kernel_ok_str: .asciz "\nKernel ok\r\n"
+.kernel_welcome_str: .asciz "Welcome to fayos kernel\r\n"
