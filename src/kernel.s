@@ -32,7 +32,7 @@
 
 # DATA
 .global kernel_prompt
-.global kernel__cur_min_x
+.global kernel_cur_min_x
 
 # DEPS
 .extern print_str # print.s
@@ -96,8 +96,8 @@ _kernel__cur_min_x_set:
   mov $0x00, %bh
   int $0x10 # Return: DH = y, DL = x
 
-  # Set kernel__cur_min_x
-  mov $kernel__cur_min_x, %si
+  # Set kernel_cur_min_x
+  mov $kernel_cur_min_x, %si
   mov %dl, (%si)
   ret
 
@@ -155,7 +155,7 @@ _kernel_load_msg_2: .asciz "Fayos Kernel\r\n"
 kernel_prompt: .asciz "fayos> "
 
 # Cursor
-kernel__cur_min_x: .byte 0x00
+kernel_cur_min_x: .byte 0x00
 
 # === < Data
 

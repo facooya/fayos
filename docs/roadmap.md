@@ -5,6 +5,8 @@ makefile
 
 tag v0.1.1
 
+input arrow key - move cursor
+
 delete inc directory
 
 rm

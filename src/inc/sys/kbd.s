@@ -15,7 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# .kbd_bs()
+# - kernel_cur_min_x
+#
+# .kbd_enter()
+# - kernel_prompt
+# - cmd_exec
+# - cli_buf_init_all
+# - print_str
 
 .code16
 .section .text
@@ -23,85 +30,83 @@
 .global kbd_disp
 .global newline
 
-.extern kernel_prompt # kernel.s DATA
-.extern kernel__cur_min_x # kernel.s DATA
-.extern cmd_exec # cmd_exec.s FUNC
-.extern cli_buf_init_all # cli_buf.s FUNC
-.extern print_str # print.s FUNC
+.extern kernel_cur_min_x
+.extern kernel_prompt
+.extern cmd_exec
+.extern cli_buf_init_all
+.extern print_str
 
 # keyboard_dispatch()
 kbd_disp:
+  # reg_al = ascii code
   # cond
   cmp $0x08, %al # backspace
   je .kbd_bs
 
   # cond
-  cmp $0x0D, %al # carriage_return (enter)
+  cmp $0x0D, %al # carriage return (enter)
   je .kbd_enter
 
   # out
   mov $0x0E, %ah
   int $0x10
 
+  # reg_si = cli_buf_raw + offset
   # write
-  mov %al, (%si) # SI: &cli_buf_raw + offset
-  add $0x01, %si # prepare write
+  mov %al, (%si)
+  add $0x01, %si
 
   ret
 
 # keyboard_backspace()
 .kbd_bs:
-  # Get cursor
+  # get cursor
   mov $0x03, %ah
-  mov $0x00, %bh # page number
-  int $0x10 # return: DH = y, DL = x
+  mov $0x00, %bh
+  int $0x10
 
-  # Try back cursor
+  # try back cursor
   mov $0x02, %ah
 
-  # Cond: (cur_min_x == x) ? .kbd_bs_done
-  mov $kernel__cur_min_x, %di
-  movb (%di), %al
-  cmp %al, %dl # DL = x
+  # reg_dl = x (current)
+  # cond
+  cmp (kernel_cur_min_x), %dl
   je .kbd_bs_done
 
-  # Else: back cursor (x--)
+  # back cursor
   sub $0x01, %dl
-  int $0x10
+  int $0x10 # x--
 
-  # Out space (x++)
+  # overwrite
   mov $0x0E, %ah
-  mov $0x20, %al # 0x20: space
-  int $0x10
+  mov $0x20, %al # space
+  int $0x10 # x++
 
-  # Back cursor (x--)
+  # back cursor (again)
   mov $0x02, %ah
-  int $0x10
+  int $0x10 # x--
 
-  # SI: cli_buf_raw
+  # reg_si = cli_buf_raw + offset
   sub $0x01, %si
   movb $0x00, (%si)
 
 .kbd_bs_done:
   ret
 
+# keyboard_enter()
 .kbd_enter:
-  # Command
-  call cmd_exec # cmd_exec.s
+  call cmd_exec
+  call cli_buf_init_all
 
-  # Initialize buffers
-  call cli_buf_init_all # cli_buf.s
-
-  # Out
-  push $kernel_prompt # kernel.s
-  call print_str # print.s
+  push $kernel_prompt
+  call print_str
   add $0x02, %sp
 
-  # Set buffer raw
-  call cli_buf_raw_set # cli_buf.s
-
+  call cli_buf_raw_set
   ret
 
+
+# !!! Delete
 # =============== > Utils =============== # !!! Temporary
 # --------------- New Line ---------------
 newline:
@@ -111,5 +116,3 @@ newline:
   mov $0x0A, %al # LF
   int $0x10
   ret
-
-# === < CODE
