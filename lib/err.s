@@ -32,14 +32,15 @@
 .code16
 .section .text
 
-.global err_cmd, err_opt, err_disk
+#.global err_cmd, err_opt, err_disk
+.global err_opt, err_disk
 
 .extern newline # kbd.s
 .extern print_str # print.s
 
 # -----========== > Command ==========-----
 
-err_cmd:
+__err_cmd: # !!! err_cmd => cli.s
   call newline # kbd.inc
 
   # Print

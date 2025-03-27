@@ -97,13 +97,13 @@ hdl_kbd:
 # .handle_enter()
 .hdl_enter:
   call cmd_exec
-  call cli_buf_init_all
+  call cli_buf_init_all # init_cli_buf_all() => exec_cli()
 
   push $kernel_prompt
   call print_str
   add $0x02, %sp
 
-  call cli_buf_raw_set
+  call cli_buf_raw_set # set_cli_buf_raw() => exec_cli()
   ret
 
 

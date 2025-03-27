@@ -1,5 +1,5 @@
 delete err.s
-cli_buf.s, cli_tok.s, cmd_exec.s => cli.s (drivers? kernel?)
+cli_buf.s, cli_tok.s, cmd_exec.s => cli.s
 
 finish modularization
 makefile
