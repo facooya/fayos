@@ -9,6 +9,6 @@ lib/ - common
 
 Quick test for Linux x86-64 using qemu
 
-./make.sh  
-./qemu.sh
+`make`  
+`./qemu.sh`  
 
