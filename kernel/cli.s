@@ -91,6 +91,10 @@ exec_cli_cmd:
   add $0x02, %sp
 
   call print_newline
+
+  # done
+  call .init_cli_buf_all
+  mov $cli_buf_raw, %si # default
   ret
 
 # hdl_cli_opt_err
@@ -100,6 +104,10 @@ hdl_cli_opt_err:
   add $0x02, %sp
 
   call print_newline
+  
+  # done
+  call .init_cli_buf_all
+  mov $cli_buf_raw, %si # default
   ret
 
 # .tok_cli_buf()

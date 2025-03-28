@@ -37,8 +37,6 @@
 .global set_dap_lba, disk_rw, dentry_name_align, master_block
 .global dap, dap_master
 
-.extern err_disk # err.s
-
 # -== > Set DAP
 
 # set_dap_lba(low, high)
@@ -96,7 +94,7 @@ _disk_rw__run:
   mov $0x80, %dl # First Hard Disk
   int $0x13 # Disk Interrupt
 
-  jc err_disk # CF ? Error, ref: err.inc
+  jc .hdl_disk_rw_err # CF ? Error, ref: err.inc
 
 _disk_rw__pop:
   pop %si
@@ -189,6 +187,16 @@ _master_block__done:
   pop %si
   ret
 
+.hdl_disk_rw_err:
+  call print_newline
+
+  push $.disk_err_msg
+  call print_str
+  add $0x02, %sp
+
+  call print_newline
+  ret
+
 # === < CODE
 # ===
 # === > DATA
@@ -219,6 +227,8 @@ dap_master: # Master Block
   .word 0x00 # (LBA) Unset in Fayos
 
 # Master Block: 0x10
+
+.disk_err_msg: .asciz "Disk error." 
 
 # -== < DAP
 # ===

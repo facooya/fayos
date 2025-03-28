@@ -8,7 +8,6 @@ SRCS = \
 kernel/kernel.s \
 kernel/cli.s \
 lib/print.s \
-lib/err.s \
 drivers/kbd.s \
 drivers/disk.s \
 cmd/sys/echo.s \

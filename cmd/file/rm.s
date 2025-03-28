@@ -34,7 +34,7 @@ _cmd_rm__run:
   mov $dap, %si
   mov $0x80, %dl
   int $0x13
-  jc err_disk
+  #jc err_disk
 
   mov $0x8000, %si
 
@@ -59,7 +59,7 @@ _cmd_rm__run_end:
   mov $dap, %si
   mov $0x80, %dl
   int $0x13
-  jc err_disk
+  #jc err_disk
 
   # Newline
   call newline
