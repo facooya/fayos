@@ -22,6 +22,7 @@
 
 .global cmd_echo
 
+.extern hdl_cli_opt_err
 .extern print_newline
 
 # -----========== > Command (echo) ==========-----
@@ -152,7 +153,8 @@ _cmd_echo__err_opt: # Error Option
   int $0x10
 
   # Error
-  jmp err_opt # ref: err.inc
+  #jmp err_opt # ref: err.inc
+  jmp hdl_cli_opt_err
 
 # -----========== < Command (echo) ==========-----
 # === < CODE

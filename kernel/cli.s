@@ -15,10 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# DEPS
+# exec_cli_cmd()
+# - print_newline
+
 .code16
 .section .text
 
 .global exec_cli_cmd
+.global hdl_cli_opt_err
 .global cli_cmd_map
 .global cli_buf_raw, cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir
@@ -27,59 +32,55 @@
 
 # exec_cli_cmd()
 exec_cli_cmd:
-  call cli_tok
+  call .tok_cli_buf
 
   mov $cli_cmd_map, %si
 
-_cmd_exec__chk_addr:
-  # Null ? not_found
-  mov (%si), %bx
+.exec_cli_cmd__chk_addr_lp:
+  # cond: null ? err
+  mov (%si), %bx # cmd_addr
   test %bx, %bx
   jz .exec_cli_cmd__err
 
-_cmd_exec__cmp_cmd:
-  add $0x02, %si # cli_cmd_map byte
+  add $0x02, %si # cmd_addr + 2 = cmd_str
   mov $cli_buf_cmd, %di
 
-_cmd_exec__cmp_cmd_lp:
-  # Char != : next_lp
-  mov (%si), %al
-  cmp (%di), %al
-  jne _cmd_exec__next_lp
+.exec_cli_cmd__chk_char_lp:
+  # cond: char != ? skip_char_lp
+  mov (%si), %al # cli_cmd_map, cmd_str
+  cmp (%di), %al # cli_buf_cmd
+  jne .exec_cli_cmd__skip_char_lp
 
-  # Found
+  # cond: last_null ? call
   test %al, %al
-  jz _cmd_exec__call
+  jz .exec_cli_cmd__call
 
-  # Loop
+  # loop
   add $0x01, %si
   add $0x01, %di
-  jmp _cmd_exec__cmp_cmd_lp
+  jmp .exec_cli_cmd__chk_char_lp
 
-_cmd_exec__next_lp:
-  # Char
-  mov (%si), %al
+.exec_cli_cmd__skip_char_lp:
+  # cond: null ? skip_char_end
+  mov (%si), %al # cli_cmd_map, cmd_str
   test %al, %al
-  jz _cmd_exec__next_end
+  jz .exec_cli_cmd__skip_char_end
 
-  # Loop
+  # loop
   add $0x01, %si
-  jmp _cmd_exec__next_lp
+  jmp .exec_cli_cmd__skip_char_lp
 
-_cmd_exec__next_end:
-  add $0x01, %si
-  jmp _cmd_exec__chk_addr
+.exec_cli_cmd__skip_char_end:
+  # loop
+  add $0x01, %si # cli_cmd_map, cmd_addr
+  jmp .exec_cli_cmd__chk_addr_lp
 
-_cmd_exec__call:
-  # reg_bx = cmd_addr
-  call *%bx
+.exec_cli_cmd__call:
+  call *%bx # cli_cmd_map, cmd_addr
 
-_cmd_exec__done:
+  # done
   call .init_cli_buf_all
-
-  # default
-  mov $cli_buf_raw, %si
-
+  mov $cli_buf_raw, %si # default
   ret
 
 .exec_cli_cmd__err:
@@ -90,40 +91,127 @@ _cmd_exec__done:
   add $0x02, %sp
 
   call print_newline
+  ret
 
+# hdl_cli_opt_err
+hdl_cli_opt_err:
+  push $.cli_opt_err_msg
+  call print_str
+  add $0x02, %sp
+
+  call print_newline
+  ret
+
+# .tok_cli_buf()
+.tok_cli_buf:
+  mov $cli_buf_raw, %si
+  mov $cli_buf_cmd, %di
+
+.tok_cli_buf__write_cmd_lp:
+  # cond: null ? err
+  mov (%si), %al # cli_buf_raw
+  test %al, %al
+  jz .tok_cli_buf__err
+
+  # cond: space ? set_opt (end)
+  cmp $0x20, %al # space
+  jz .tok_cli_buf__set_opt
+
+  # write
+  mov %al, (%di) # cli_buf_cmd
+
+  # loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp .tok_cli_buf__write_cmd_lp
+
+.tok_cli_buf__set_opt:
+  mov $cli_buf_opt, %di
+
+.tok_cli_buf__chk_opt_lp:
+  add $0x01, %si # cli_buf_raw, hyphen-minus or arg
+
+  # cond: hyphen-minus != ? set_arg (end)
+  mov (%si), %al # cli_buf_raw
+  cmp $0x2D, %al # hyphen-minus
+  jne .tok_cli_buf__set_arg
+
+  # set opt
+  add $0x01, %si # cli_buf_raw, opt_char
+
+.tok_cli_buf__write_opt_lp:
+  # cond: null ? err
+  mov (%si), %al
+  test %al, %al
+  jz .tok_cli_buf__err
+
+  # cond: space ? buf_opt_chk
+  mov (%si), %al
+  cmp $0x20, %al # space
+  je .tok_cli_buf__chk_opt_lp
+
+  # write
+  mov %al, (%di) # cli_buf_opt
+
+  # loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp .tok_cli_buf__write_opt_lp
+
+.tok_cli_buf__set_arg:
+  mov $cli_buf_arg, %di
+
+.tok_cli_buf__write_arg_lp:
+  # cond: null ? done
+  mov (%si), %al
+  test %al, %al
+  jz .tok_cli_buf__done
+
+  # write
+  mov %al, (%di) # cli_buf_arg
+
+  # loop
+  add $0x01, %si
+  add $0x01, %di
+  jmp .tok_cli_buf__write_arg_lp
+
+.tok_cli_buf__done:
+  ret
+
+.tok_cli_buf__err:
+  xor %al, %al
+  mov %al, (%di)
   ret
 
 # .init_cli_buf_all()
 .init_cli_buf_all:
   push $cli_buf_raw
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_cmd
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_arg
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_opt
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_tmp
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_redir
-  call init_cli_buf
+  call .init_cli_buf
   add $0x02, %sp
-
   ret
 
-# init_cli_buf(cli_buf)
-init_cli_buf:
-_cli_buf_init__prol:
+# .init_cli_buf(cli_buf)
+.init_cli_buf:
   push %bp
   mov %sp, %bp
   push %si
@@ -131,144 +219,25 @@ _cli_buf_init__prol:
 
   mov 4(%bp), %si
 
-_cli_buf_init__lp:
-  # Cond: null ? end
+.init_cli_buf__lp:
+  # cond: null ? end
   mov (%si), %al
   test %al, %al
-  jz _cli_buf_init__end
+  jz .init_cli_buf__end
 
-  # Init
+  # init
   xor %al, %al
   movb %al, (%si)
 
-  # Loop: SI++
+  # loop
   add $0x01, %si
-  jmp _cli_buf_init__lp
+  jmp .init_cli_buf__lp
 
-_cli_buf_init__end:
-_cli_buf_init__epil:
+.init_cli_buf__end:
   pop %ax
   pop %si
   pop %bp
-
-_cli_buf_init__done:
   ret
-
-# tok_cli_buf()
-cli_tok:
-_cli_tok__prol:
-  mov $cli_buf_raw, %si
-
-_cli_tok__buf_cmd_set:
-  mov $cli_buf_cmd, %di
-
-_cli_tok__buf_cmd_lp:
-  # Cond: null ? buf_cmd_exit
-  mov (%si), %al # SI: cli_buf_raw
-  test %al, %al
-  jz _cli_tok__buf_cmd_exit
-
-  # Cond: space ? buf_cmd_end
-  cmp $0x20, %al # 0x20: SPACE
-  jz _cli_tok__buf_cmd_end
-
-  # Save
-  mov %al, (%di) # DI: cli_buf_cmd
-
-  # Loop
-  add $0x01, %si
-  add $0x01, %di
-  jmp _cli_tok__buf_cmd_lp
-
-_cli_tok__buf_cmd_end:
-  # SI: Space, SI+1: Hyphen-Minus || Argument
-  add $0x01, %si
-
-  # Cond: !Hyphen-Minus ? buf_opt_end
-  mov (%si), %al
-  cmp $0x2D, %al # 0x2D: Hyphen-Minus
-  jne _cli_tok__buf_opt_end
-
-  # Else: buf_opt_set
-
-_cli_tok__buf_opt_set:
-  # SI: Hyphen-Minus, SI+1: Option
-  add $0x01, %si
-  mov $cli_buf_opt, %di
-
-_cli_tok__buf_opt_lp:
-  # Cond: null ? buf_opt_exit
-  mov (%si), %al
-  test %al, %al
-  jz _cli_tok__buf_opt_exit
-
-  # Cond: space ? buf_opt_chk
-  mov (%si), %al
-  cmp $0x20, %al # 0x20: Space
-  je _cli_tok__buf_opt_chk
-
-  # Save
-  mov %al, (%di) # DI: cli_buf_opt
-
-  # Loop
-  add $0x01, %si
-  add $0x01, %di
-  jmp _cli_tok__buf_opt_lp
-
-_cli_tok__buf_opt_chk:
-  # SI: space, SI+1: hyphen-minus || argument
-  add $0x01, %si
-
-  # Cond: !hyphen-minus ? buf_opt_end
-  mov (%si), %al
-  cmp $0x2D, %al # 0x2D: hyphen-minus
-  jne _cli_tok__buf_opt_end
-
-  # Else: continue
-  # SI: hyphen-minus, SI+1: option
-  add $0x01, %si
-  jmp _cli_tok__buf_opt_lp
-
-_cli_tok__buf_opt_end:
-  # SI: argument
-
-_cli_tok__buf_arg_set:
-  mov $cli_buf_arg, %di
-
-_cli_tok__buf_arg_lp:
-  # Cond: null ? buf_arg_end
-  mov (%si), %al
-  test %al, %al
-  jz _cli_tok__buf_arg_end
-
-  # Save
-  mov %al, (%di) # DI: cli_buf_arg
-
-  # Loop
-  add $0x01, %si
-  add $0x01, %di
-  jmp _cli_tok__buf_arg_lp
-
-_cli_tok__buf_arg_end:
-  # SI: null
-
-_cli_tok__epli:
-_cli_tok__done:
-  ret
-
-_cli_tok__buf_cmd_exit: # !!! Temporary
-  xor %al, %al
-  mov %al, (%di)
-
-  ret
-
-_cli_tok__buf_opt_exit: # !!! Temporary
-  xor %al, %al
-  mov %al, (%di)
-
-  ret
-
-
 
 .section .data
 
@@ -301,4 +270,4 @@ cli_buf_redir: .zero 0x20
 
 # *_err_msg
 .cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
-# .cli_opt_err_msg: .asciz "Invalid option."
+.cli_opt_err_msg: .asciz "Invalid option."
