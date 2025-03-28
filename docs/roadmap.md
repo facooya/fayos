@@ -1,14 +1,8 @@
 delete err.s
-cli_buf.s, cli_tok.s, cmd_exec.s => cli.s
-
 finish modularization
-makefile
-
-tag v0.1.1
+tag v0.1.2
 
 input arrow key - move cursor
-
-delete inc directory
 
 rm
 cmd kernel time, color, mkdir, rmdir

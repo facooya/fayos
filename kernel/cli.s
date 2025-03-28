@@ -1,5 +1,4 @@
 # FAYOS - FAcooYa Operating System
-#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
 #

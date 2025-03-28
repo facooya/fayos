@@ -1,38 +1,47 @@
-OBJS = ./build/kernel.o ./build/cli.o ./build/print.o \
-  ./build/err.o ./build/kbd.o ./build/disk.o
+BUILD = ./build
 
-all: ./build/boot.img
+AS = as --32
+LD_BOOT = ld --oformat binary -m elf_i386 -Ttext 0x7C00
+LD_KERNEL = ld -m elf_i386 -T $(BUILD)/linker.ld
 
-./build/boot.img: ./build/boot.bin ./build/kernel.bin
-	dd if=/dev/zero of=./build/boot.img bs=512 count=2880
-	dd if=./build/boot.bin of=./build/boot.img bs=512 count=1 conv=notrunc
-	dd if=./build/kernel.bin of=./build/boot.img bs=512 seek=32 conv=notrunc
+SRCS = \
+./kernel/kernel.s \
+./kernel/cli.s \
+./lib/print.s \
+./lib/err.s \
+./drivers/kbd.s \
+./drivers/disk.s
 
-./build/boot.bin: ./boot/boot.s
-	as --32 ./boot/boot.s -o ./build/boot.o
-	ld --oformat binary -m elf_i386 -Ttext 0x7C00 ./build/boot.o -o ./build/boot.bin
+#OBJS = \
+# $(BUILD)/kernel.o \
+# $(BUILD)/cli.o \
+# $(BUILD)/print.o \
+# $(BUILD)/err.o \
+# $(BUILD)/kbd.o \
+# $(BUILD)/disk.o
 
-./build/kernel.bin: $(OBJS)
-	ld -m elf_i386 -T ./build/linker.ld $(OBJS) -o ./build/kernel.bin
+OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 
-./build/kernel.o: ./kernel/kernel.s
-	as --32 ./kernel/kernel.s -o ./build/kernel.o
+all: $(BUILD)/boot.img
 
-./build/cli.o: ./kernel/cli.s
-	as --32 ./kernel/cli.s -o ./build/cli.o
+$(BUILD)/boot.img: $(BUILD)/boot.bin $(BUILD)/kernel.bin
+	dd if=/dev/zero of=$(BUILD)/boot.img bs=512 count=2880
+	dd if=$(BUILD)/boot.bin of=$(BUILD)/boot.img bs=512 count=1 conv=notrunc
+	dd if=$(BUILD)/kernel.bin of=$(BUILD)/boot.img bs=512 seek=32 conv=notrunc
 
-./build/print.o: ./lib/print.s
-	as --32 ./lib/print.s -o ./build/print.o
+$(BUILD)/boot.bin: ./boot/boot.s
+	$(AS) ./boot/boot.s -o $(BUILD)/boot.o
+	$(LD_BOOT) $(BUILD)/boot.o -o $(BUILD)/boot.bin
 
-./build/err.o: ./lib/err.s
-	as --32 ./lib/err.s -o ./build/err.o
+$(BUILD)/kernel.bin: $(OBJS)
+	$(LD_KERNEL) $(OBJS) -o $(BUILD)/kernel.bin
 
-./build/kbd.o: ./drivers/kbd.s
-	as --32 ./drivers/kbd.s -o ./build/kbd.o
-
-./build/disk.o: ./drivers/disk.s
-	as --32 ./drivers/disk.s -o ./build/disk.o
-
-clean:
-	rm -f ./build/*.o ./build/*.bin ./build/*.img
+$(BUILD)/%.o: %.s
+	mkdir -p $(dir $@)
+	$(AS) $< -o $@
 	
+clean:
+	find $(BUILD) -name "*.o" -delete
+	find $(BUILD) -name "*.bin" -delete
+	find $(BUILD) -name "*.img" -delete
+	find $(BUILD) -type d -empty -delete
