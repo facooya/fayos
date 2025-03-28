@@ -1,14 +1,15 @@
 delete err.s
 cmd opt flags => cli.s
-finish modularization
 tag v0.1.2
 
+Feature
 input arrow key - move cursor
 
+Feature
 rm
-cmd kernel time, color, mkdir, rmdir
-
 directory
+
+cmd kernel time, color, mkdir, rmdir
 
 cli_buf
 buf [A-Za-z0-9], ignore space, . / > >> <

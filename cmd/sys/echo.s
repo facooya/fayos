@@ -22,6 +22,8 @@
 
 .global cmd_echo
 
+.extern print_newline
+
 # -----========== > Command (echo) ==========-----
 
 cmd_echo: # Entry Point
@@ -31,7 +33,6 @@ cmd_echo: # Entry Point
 
 _cmd_echo__chk_opt:
   # Set Address
-  #mov $opt_buf, %si
   mov $cli_buf_opt, %si
   mov $_cmd_echo__flag, %bx
 
@@ -90,15 +91,13 @@ _cmd_echo__set_flag_n_end: # End n
 # ----------===== > (echo) Run =====----------
 
 _cmd_echo__run:
-  # Newline
-  call newline
+  call print_newline
 
   # Flag e ? Run e
   btw $0x0, (%bx)
   jc _cmd_echo__run_e
 
   # Print arg_buf
-  #push $arg_buf
   push $cli_buf_arg
   call print_str
   add $0x02, %sp
@@ -108,7 +107,6 @@ _cmd_echo__run:
 
 _cmd_echo__run_e: # Run e
   # Print Escape arg_buf
-  #push $arg_buf
   push $cli_buf_arg
   call print_esc
   add $0x02, %sp
@@ -121,8 +119,7 @@ _cmd_echo__run_e_end: # e End
   btw $0x1, (%bx)
   jc _cmd_echo__run_n
 
-  # Newline
-  call newline
+  call print_newline
 
   # n Skip
   jmp _cmd_echo__run_n_end
@@ -143,7 +140,7 @@ _cmd_echo__run_n_end: # n End
 
 _cmd_echo__err_opt: # Error Option
   # Error Option
-  call newline
+  call print_newline
 
   # Print error option byte
   mov $0x0E, %ah

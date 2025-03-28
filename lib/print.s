@@ -27,7 +27,10 @@
 
 .code16
 .section .text
-.global print_str, print_esc
+
+.global print_str
+.global print_esc
+.global print_newline
 
 # -== > Print String
 
@@ -154,5 +157,14 @@ _print_esc__done:
   ret
 
 # -== < Print Escape
+
+print_newline:
+  mov $0x0E, %ah
+  mov $0x0D, %al # CR
+  int $0x10
+  mov $0x0A, %al # LF
+  int $0x10
+  ret
+
 # ===
 # === < CODE

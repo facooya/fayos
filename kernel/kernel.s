@@ -23,7 +23,7 @@
 # _start()
 # - print_str
 # - master_block
-# - cli_buf_raw_set
+# - cli_buf_raw
 #
 # kernel_loop()
 # - hdl_kbd
@@ -38,7 +38,7 @@
 .extern print_str
 .extern hdl_kbd
 .extern master_block
-.extern cli_buf_raw_set
+.extern cli_buf_raw
 
 # _start()
 _start:
@@ -63,7 +63,7 @@ _start:
 
   call master_block
 
-  call cli_buf_raw_set # set_cli_buf_raw !!!
+  mov $cli_buf_raw, %si
   call .set_kernel_min_cur_pos_x
 
 # kernel_loop()

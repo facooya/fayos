@@ -15,24 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-# === > PREVIEW
-
-# FUNC
-# cmd_help()
-
 # DEPS
-# src/inc/cmd/cmd_table.inc (DATA: cmd_table)
-# src/inc/sys/kbd.inc (FUNC: newline)
-
-# === < PREVIEW
-# ===
-# === > CODE
+# cmd_help()
+# - print_newline
+# - cli_cmd_map
 
 .code16
 .section .text
 
 .global cmd_help
+
+.extern print_newline
+.extern cli_cmd_map
 
 # -== > Command Help
 
@@ -45,7 +39,7 @@ _cmd_help__prol:
 # --= > Check Address
 
 _cmd_help__chk_addr_set:
-  mov $cmd_table, %si # cmd_table.inc
+  mov $cli_cmd_map, %si
   mov $0x0E, %ah # out set
 
 _cmd_help__chk_addr_lp:
@@ -54,8 +48,8 @@ _cmd_help__chk_addr_lp:
   test %bx, %bx
   jz _cmd_help__chk_addr_end
 
-  # Else
-  call newline # kbd.inc
+  call print_newline
+
   # SI: cmd_addr, SI+2: cmd_byte
   add $0x02, %si
 
@@ -93,7 +87,6 @@ _cmd_help__epil:
   pop %si
 
 _cmd_help__done:
-  #call newline
   ret
 
 # -== < Command Help

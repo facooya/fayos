@@ -21,8 +21,7 @@
 #
 # .hdl_enter()
 # - kernel_prompt
-# - cmd_exec
-# - cli_buf_init_all
+# - exec_cli_cmd
 # - print_str
 
 .code16
@@ -33,20 +32,19 @@
 
 .extern kernel_min_cur_pos_x
 .extern kernel_prompt
-.extern cmd_exec # !!! exec_cli
-.extern cli_buf_init_all # !!! init_cli_buf_all
-.extern print_str # !!! out_str
+.extern exec_cli_cmd
+.extern print_str
 
-# handle_keyboard()
+# hdl_kbd()
 hdl_kbd:
   # reg_al = ascii code
   # cond
   cmp $0x08, %al # backspace
-  je .hdl_bs
+  je .hdl_kbd_bs
 
   # cond
   cmp $0x0D, %al # carriage return (enter)
-  je .hdl_enter
+  je .hdl_kbd_enter
 
   # out
   mov $0x0E, %ah
@@ -59,8 +57,8 @@ hdl_kbd:
 
   ret
 
-# .handle_backspace()
-.hdl_bs:
+# .hdl_kbd_bs()
+.hdl_kbd_bs:
   # get cursor
   mov $0x03, %ah
   mov $0x00, %bh
@@ -72,7 +70,7 @@ hdl_kbd:
   # reg_dl = x (current)
   # cond
   cmp (kernel_min_cur_pos_x), %dl
-  je .hdl_bs_done
+  je .hdl_kbd_bs_done
 
   # back cursor
   sub $0x01, %dl
@@ -91,19 +89,17 @@ hdl_kbd:
   sub $0x01, %si
   movb $0x00, (%si)
 
-.hdl_bs_done:
+.hdl_kbd_bs_done:
   ret
 
-# .handle_enter()
-.hdl_enter:
-  call cmd_exec
-  call cli_buf_init_all # init_cli_buf_all() => exec_cli()
+# .hdl_kbd_enter()
+.hdl_kbd_enter:
+  call exec_cli_cmd
 
   push $kernel_prompt
   call print_str
   add $0x02, %sp
 
-  call cli_buf_raw_set # set_cli_buf_raw() => exec_cli()
   ret
 
 

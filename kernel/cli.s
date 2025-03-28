@@ -18,27 +18,27 @@
 .code16
 .section .text
 
-.global cmd_exec # exec_cli() !!!
-.global cli_buf_raw_set # set_cli_buf_raw() !!!
-.global cli_buf_init_all # init_cli_buf_init() !!!\
-.global cmd_table
+.global exec_cli_cmd
+.global cli_cmd_map
 .global cli_buf_raw, cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir
 
-# exec_cli()
-cmd_exec:
+.extern print_newline
+
+# exec_cli_cmd()
+exec_cli_cmd:
   call cli_tok
 
-  mov $cmd_table, %si
+  mov $cli_cmd_map, %si
 
 _cmd_exec__chk_addr:
   # Null ? not_found
   mov (%si), %bx
   test %bx, %bx
-  jz err_cmd # ref: err.inc
+  jz .exec_cli_cmd__err
 
 _cmd_exec__cmp_cmd:
-  add $0x02, %si # cmd_table byte
+  add $0x02, %si # cli_cmd_map byte
   mov $cli_buf_cmd, %di
 
 _cmd_exec__cmp_cmd_lp:
@@ -71,46 +71,58 @@ _cmd_exec__next_end:
   jmp _cmd_exec__chk_addr
 
 _cmd_exec__call:
+  # reg_bx = cmd_addr
   call *%bx
 
 _cmd_exec__done:
-  ret
+  call .init_cli_buf_all
 
-# set_cli_buf_raw()
-cli_buf_raw_set:
+  # default
   mov $cli_buf_raw, %si
+
   ret
 
-# init_cli_buf_all()
-cli_buf_init_all:
+.exec_cli_cmd__err:
+  call print_newline
+
+  push $.cli_cmd_err_msg
+  call print_str
+  add $0x02, %sp
+
+  call print_newline
+
+  ret
+
+# .init_cli_buf_all()
+.init_cli_buf_all:
   push $cli_buf_raw
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_cmd
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_arg
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_opt
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_tmp
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   push $cli_buf_redir
-  call cli_buf_init
+  call init_cli_buf
   add $0x02, %sp
 
   ret
 
 # init_cli_buf(cli_buf)
-cli_buf_init:
+init_cli_buf:
 _cli_buf_init__prol:
   push %bp
   mov %sp, %bp
@@ -145,7 +157,7 @@ _cli_buf_init__done:
 # tok_cli_buf()
 cli_tok:
 _cli_tok__prol:
-  call cli_buf_raw_set
+  mov $cli_buf_raw, %si
 
 _cli_tok__buf_cmd_set:
   mov $cli_buf_cmd, %di
@@ -256,21 +268,12 @@ _cli_tok__buf_opt_exit: # !!! Temporary
 
   ret
 
-err_cmd: # !!! err_cmd => cli.s
-  call newline # kbd.inc !!! Delete
 
-  # Print
-  push $.cmd_err_msg
-  call print_str # print.inc
-  add $0x02, %sp
-
-  call newline # kbd.inc !!! Delete
-  ret
 
 .section .data
 
-# cmd_table
-cmd_table:
+# cli_cmd_map
+cli_cmd_map:
   .word cmd_clear
   .asciz "clear"
   .word cmd_echo
@@ -288,7 +291,7 @@ cmd_table:
   .word 0x00
   .asciz ""
 
-# cli buffers
+# cli_buf_*
 cli_buf_raw: .zero 0x40
 cli_buf_cmd: .zero 0x20
 cli_buf_arg: .zero 0x20
@@ -296,5 +299,6 @@ cli_buf_opt: .zero 0x10
 cli_buf_tmp: .zero 0x20
 cli_buf_redir: .zero 0x20
 
-# err
-.cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
+# *_err_msg
+.cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
+# .cli_opt_err_msg: .asciz "Invalid option."
