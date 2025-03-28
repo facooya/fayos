@@ -18,6 +18,8 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global cmd_rm
 
 # -----========== > Command (rm) ==========-----

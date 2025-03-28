@@ -1,4 +1,5 @@
 delete err.s
+cmd opt flags => cli.s
 finish modularization
 tag v0.1.2
 

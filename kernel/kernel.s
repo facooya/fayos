@@ -101,17 +101,6 @@ kernel_loop:
   pop %si
   ret
 
-# System !!! Temporary
-.include "./cmd/sys/clear.inc"
-.include "./cmd/sys/echo.inc"
-.include "./cmd/sys/help.inc"
-
-# File !!! Temporary
-.include "./cmd/file/touch.inc"
-.include "./cmd/file/ls.inc"
-.include "./cmd/file/rm.inc"
-.include "./cmd/file/cat.inc"
-
 
 .section .data
 

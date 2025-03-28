@@ -18,6 +18,8 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global cmd_echo
 
 # -----========== > Command (echo) ==========-----
@@ -158,6 +160,8 @@ _cmd_echo__err_opt: # Error Option
 # -----========== < Command (echo) ==========-----
 # === < CODE
 # =============== > Data ===============
+
+.section .data
 
 _cmd_echo__flag: .word 0x00 # 0: e, 1: n
 

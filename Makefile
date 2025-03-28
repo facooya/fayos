@@ -5,20 +5,19 @@ LD_BOOT = ld --oformat binary -m elf_i386 -Ttext 0x7C00
 LD_KERNEL = ld -m elf_i386 -T $(BUILD)/linker.ld
 
 SRCS = \
-./kernel/kernel.s \
-./kernel/cli.s \
-./lib/print.s \
-./lib/err.s \
-./drivers/kbd.s \
-./drivers/disk.s
-
-#OBJS = \
-# $(BUILD)/kernel.o \
-# $(BUILD)/cli.o \
-# $(BUILD)/print.o \
-# $(BUILD)/err.o \
-# $(BUILD)/kbd.o \
-# $(BUILD)/disk.o
+kernel/kernel.s \
+kernel/cli.s \
+lib/print.s \
+lib/err.s \
+drivers/kbd.s \
+drivers/disk.s \
+cmd/sys/echo.s \
+cmd/sys/help.s \
+cmd/sys/clear.s \
+cmd/file/cat.s \
+cmd/file/ls.s \
+cmd/file/touch.s \
+cmd/file/rm.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 
@@ -39,7 +38,7 @@ $(BUILD)/kernel.bin: $(OBJS)
 $(BUILD)/%.o: %.s
 	mkdir -p $(dir $@)
 	$(AS) $< -o $@
-	
+
 clean:
 	find $(BUILD) -name "*.o" -delete
 	find $(BUILD) -name "*.bin" -delete

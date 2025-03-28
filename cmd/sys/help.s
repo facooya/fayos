@@ -30,6 +30,8 @@
 # === > CODE
 
 .code16
+.section .text
+
 .global cmd_help
 
 # -== > Command Help
