@@ -28,7 +28,7 @@
 
 cmd_rm:
 _cmd_rm__run:
-  # Remov Arg !!!!!!
+  # Remove Arg !!!!!!
 
   # Disk Read
   clc
