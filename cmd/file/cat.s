@@ -29,14 +29,14 @@ _cmd_cat__set_dap:
   # Set DAP
   push $0x00 # high
   push $0x80 # low
-  call set_dap_lba # block.inc
+  call set_dap_lba
   add $0x04, %sp
 
 _cmd_cat__disk_read:
   # Disk Read
   push $dap
   push $0x42
-  call disk_rw # block.inc
+  call rw_disk
   add $0x04, %sp
 
   # Newline
@@ -121,10 +121,10 @@ _cmd_cat__cmp_name_match:
   call set_dap_lba # block.inc
   add $0x04, %sp
   
-  # disk_rw(mode, &DAP)
+  # read disk
   push $dap
   push $0x42
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
 
   # Data Read Set

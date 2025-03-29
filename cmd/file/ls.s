@@ -22,6 +22,8 @@
 
 .global cmd_ls
 
+.extern rw_disk
+
 # -----========== > Command (ls) ==========-----
 
 # Current Directory !!!
@@ -39,7 +41,7 @@ _cmd_ls__read:
   # Disk Read
   push $dap
   push $0x42
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
 
   # Newline

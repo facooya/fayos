@@ -22,6 +22,8 @@
 
 .global cmd_touch
 
+.extern rw_disk
+
 # -----========== > Command (touch) ==========-----
 
 # cmd_touch()
@@ -42,7 +44,7 @@ _cmd_touch__disk_read:
   # Disk Read
   push $dap
   push $0x42
-  call disk_rw # block.inc
+  call rw_disk
   add $0x04, %sp
 
 _cmd_touch__find_free:
@@ -102,7 +104,7 @@ _cmd_touch__sector_addr: # !!!!!!!!!
   push %si
   push $dap_master
   push $0x42
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
   pop %si
 
@@ -125,7 +127,7 @@ _cmd_touch__sector_addr: # !!!!!!!!!
   push %si
   push $dap_master
   push $0x43
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
   pop %si
 
@@ -136,7 +138,7 @@ _cmd_touch__sector_addr: # !!!!!!!!!
 _cmd_touch__disk_write:
   push $dap
   push $0x43
-  call disk_rw # block.inc
+  call rw_disk
   add $0x04, %sp
 
   call newline

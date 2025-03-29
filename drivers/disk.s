@@ -15,179 +15,158 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > PREVIEW
+# NOTE
+# [n_set_dap_lba]
+# - set_dap_lba(lba_low_addr, lba_high_addr)
+# - lba_low_addr (DAP + 8)
+# - lba_high_addr (DAP + 10)
+#
+# [n_rw_disk]
+# - rw_disk(rw_mode, dap_struct_addr)
+# - rw_mode 0x42 (read), 0x43 (write)
+#
+# [n_dap]
+# - Sector count: 8
+# - Offset: 0x8000
+# - Fayos uses only 4-byte LBA.
+# - LBA low addr: 0x80-0xFFFF
+# - LBA high addr: 0x00-0xFFFF
+#
+# [n_dap_master]
+# - Sector count: 4
+# - Offset: 0x0600
+# - LBA addr: 0x10, 0x10-0x13
 
-# FUNC
-# set_dap_lba(low, high)
-# disk_rw(mode)
-# dentry_name_align(name_size)
-# master_block()
-
-# DATA
-# dap
-# dap_master
-
-# === < PREVIEW
-# ===
-# === > CODE
+# DEPS
+# .hdl_rw_disk_err
+# - print_newline
+# - print_str
 
 .code16
 .section .text
 
-.global set_dap_lba, disk_rw, dentry_name_align, master_block
+.global set_dap_lba, rw_disk, dentry_name_align, master_block
 .global dap, dap_master
 
-# -== > Set DAP
+.extern print_newline
+.extern print_str
 
-# set_dap_lba(low, high)
-# low: LBA Low Address (DAP + 8)
-# high: LBA High Address (DAP + 10)
+# set_dap_lba(lba_low_addr, lba_high_addr), [n_set_dap_lba]
 set_dap_lba:
-_set_dap_lba__set_bp:
+  # prol
   push %bp
   mov %sp, %bp
-
-_set_dap_lba__set_bx:
   push %bx
-  mov $dap, %bx
-
-_set_dap_lba__push:
   push %ax
 
-_set_dap_lba__run:
-  movw 4(%bp), %ax # low
-  movw %ax, 8(%bx) # DAP + 8
-
-  movw 6(%bp), %ax # high
-  movw %ax, 10(%bx) # DAP + 10
+  # set
+  mov $dap, %bx
+  mov 4(%bp), %ax # low
+  mov %ax, 8(%bx)
+  mov 6(%bp), %ax # high
+  mov %ax, 10(%bx)
   
-_set_dap_lba__pop:
+  # epli
   pop %ax
   pop %bx
   pop %bp
-
-_set_dap_lba__done:
   ret
 
-# -== < Set DAP
-# ===
-# -== > Disk Read Write
-
-# disk_rw(mode, &DAP)
-# mode: 0x42 (Read), 0x43 (Write)
-# DAP: Disk Address Packet (Struct)
-disk_rw:
-_disk_rw__set_bp:
+# rw_disk(rw_mode, dap_struct_addr) [n_rw_disk]
+rw_disk:
+  # prol
   push %bp
   mov %sp, %bp
-
-_disk_rw__push:
   push %ax
   push %dx
   push %si
 
-_disk_rw__run:
-  clc # Clear Carry Flag
-  mov 4(%bp), %ah # mode
-  mov 6(%bp), %si # DAP
+  # try
+  clc
+  mov 4(%bp), %ah
+  mov 6(%bp), %si
+  mov $0x80, %dl
+  int $0x13
+  jc .hdl_rw_disk_err
 
-  mov $0x80, %dl # First Hard Disk
-  int $0x13 # Disk Interrupt
-
-  jc .hdl_disk_rw_err # CF ? Error, ref: err.inc
-
-_disk_rw__pop:
+  # epil
   pop %si
   pop %dx
   pop %ax
   pop %bp
-
-_disk_rw__done:
   ret
 
-# -== < Disk Read Write 
-# ===
-# -== > Word Align 
-
+# !!! temporary
 # dentry_name_align(name_size)
 # name_size: name_size / 2 = Even [0 Bytes], Odd [1 Bytes] [SI]++
 dentry_name_align:
+  # prol
   push %sp
   mov %sp, %bp
-
-  # Push
   push %ax
   push %bx
   push %dx
 
-  # Division
+  # div for align
   mov 4(%bp), %ax
   mov $0x02, %bx
   xor %dx, %dx
   div %bx
 
-  # Memory Offset
-  add %dx, %si # Memory Offset
+  # dentry magic
+  add %dx, %si # mem align
+  movw $0xFADE, (%si) # magic: FacooyA Directory Entry
 
-  # Add Magic
-  movw $0xFADE, (%si) # 0xFADE: FacooyA Directory Entry
-
-  # Add Name Size
+  # dentry name
   mov 4(%bp), %al
-  mov %al, 2(%si)
-  
-  # Add Name Align
-  mov %dl, 3(%si)
+  mov %al, 2(%si) # name size
+  mov %dl, 3(%si) # name align
 
-  # Add Entry Level
-  movb $0x01, 8(%si)
+  # dentry etc
+  movb $0x01, 8(%si) # entry level
+  movb $0xFE, 9(%si) # file type
 
-  # Add File Type
-  movb $0xFE, 9(%si)
-
-  # Pop
+  # epil
   pop %dx
   pop %bx
   pop %ax
   pop %bp
   ret
 
-# -== < Word Align
-
+# master_block()
 master_block:
-_master_block__set:
   push %si
   push %ax
 
+  # read disk
   push $dap_master
   push $0x42
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
 
-_master_block__chk:
-  # !Null ? Done
+  # cond: null != ? done
   mov $0x0600, %si
   mov (%si), %ax
   or 2(%si), %ax
-  jnz _master_block__done
+  jnz .master_block__done
 
-_master_block__base:
-  # 0x80: Root Directory, 0x88: Assign Start
-  mov $0x80, %ax
-  movw %ax, (%si)
+  # write mem
+  mov $0x80, %ax # root dir
+  mov %ax, (%si)
 
-_master_block__write:
+  # write disk
   push $dap_master
   push $0x43
-  call disk_rw
+  call rw_disk
   add $0x04, %sp
 
-_master_block__done:
+.master_block__done:
   pop %ax
   pop %si
   ret
 
-.hdl_disk_rw_err:
+# .hdl_rw_disk_err
+.hdl_rw_disk_err:
   call print_newline
 
   push $.disk_err_msg
@@ -197,39 +176,28 @@ _master_block__done:
   call print_newline
   ret
 
-# === < CODE
-# ===
-# === > DATA
-# ===
-# -== > DAP
-
 .section .data
 
-dap: # Disk Address Packet
-  .byte 0x10 # DAP Size
-  .byte 0x00 # Reserved
-  .word 0x08 # Sector Count, Block: 512 * 8
-  .word 0x8000 # Offset, REG IP
-  .word 0x0000 # Segment, REG CS
-  .word 0x80 # Low Address (LBA), 0x80 - 0xFFFF
-  .word 0x00 # High Address (LBA), 0x00 - 0xFFFF
-  .word 0x00 # (LBA) Unset in Facooya OS
-  .word 0x00 # (LBA) Unset in Facooya OS
-
-dap_master: # Master Block
+dap: # [n_dap]
   .byte 0x10
   .byte 0x00
-  .word 0x04 # Sector Count, Master Block: 512 * 4, 0x0600 - 0x0FFF
-  .long 0x00000600
-  .word 0x10 # Address (LBA), 0x10 - 0x13
-  .word 0x00 # (LBA) Unset in master block
-  .word 0x00 # (LBA) Unset in Fayos
-  .word 0x00 # (LBA) Unset in Fayos
+  .word 0x08
+  .word 0x8000
+  .word 0x00
+  .word 0x80
+  .word 0x00 
+  .word 0x00
+  .word 0x00
 
-# Master Block: 0x10
+dap_master: # [n_dap_master]
+  .byte 0x10
+  .byte 0x00
+  .word 0x04
+  .word 0x0600
+  .word 0x00
+  .word 0x10
+  .word 0x00
+  .word 0x00
+  .word 0x00
 
 .disk_err_msg: .asciz "Disk error." 
-
-# -== < DAP
-# ===
-# === < DATA
