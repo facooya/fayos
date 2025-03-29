@@ -15,6 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# INDEX
+# exec_cli_cmd()
+# hdl_cli_opt_err
+# cli_cmd_map
+# cli_buf_*
+#
+# .tok_cli_buf()
+# .init_cli_buf_all()
+# .init_cli_buf(cli_buf)
+
 # DEPS
 # exec_cli_cmd()
 # - print_newline
@@ -104,7 +114,7 @@ hdl_cli_opt_err:
   add $0x02, %sp
 
   call print_newline
-  
+
   # done
   call .init_cli_buf_all
   mov $cli_buf_raw, %si # default

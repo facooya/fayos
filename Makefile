@@ -10,6 +10,8 @@ kernel/cli.s \
 lib/print.s \
 drivers/kbd.s \
 drivers/disk.s \
+fs/fayfs.s \
+fs/block.s \
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \

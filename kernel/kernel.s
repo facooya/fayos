@@ -15,18 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# NOTE
-# - kernel LBA: 0x20-0x4F
-# - kernel mem: 0x1000-0x6FFF
+# INDEX
+# _start()
+# kernel_loop()
+# kernel_prompt
+# kernel_min_cur_pos_x
+#
+# .set_kernel_minimum_cursor_position_x()
 
 # DEPS
 # _start()
 # - print_str
-# - master_block
+# - print_newline
+# - init_master_block
 # - cli_buf_raw
 #
 # kernel_loop()
 # - hdl_kbd
+
+# NOTE
+# - kernel LBA: 0x20-0x4F
+# - kernel mem: 0x1000-0x6FFF
 
 .code16
 .section .text
@@ -36,8 +45,9 @@
 .global kernel_min_cur_pos_x
 
 .extern print_str
+.extern print_newline
 .extern hdl_kbd
-.extern master_block
+.extern init_master_block
 .extern cli_buf_raw
 
 # _start()
@@ -50,18 +60,13 @@ _start:
   call print_str
   add $0x02, %sp
 
-  # newline
-  mov $0x0E, %ah
-  mov $0x0D, %al # carriage return
-  int $0x10
-  mov $0x0A, %al # line feed
-  int $0x10
+  call print_newline
 
   push $kernel_prompt
   call print_str
   add $0x02, %sp
 
-  call master_block
+  call init_master_block
 
   mov $cli_buf_raw, %si
   call .set_kernel_min_cur_pos_x

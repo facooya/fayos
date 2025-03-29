@@ -23,6 +23,8 @@
 .global cmd_touch
 
 .extern rw_disk
+.extern set_dentry
+.extern master_dap
 
 # -----========== > Command (touch) ==========-----
 
@@ -90,8 +92,8 @@ _cmd_touch__name_align:
   add $0x01, %cx # Add Null Size
 
   # Return [SI] OR [SI]++
-  push %cx # size
-  call dentry_name_align # block.inc
+  push %cx # name_size
+  call set_dentry
   add $0x02, %sp
 
 #_cmd_touch__file_type:
@@ -102,13 +104,13 @@ _cmd_touch__name_align:
 _cmd_touch__sector_addr: # !!!!!!!!!
   # Read Master Sector
   push %si
-  push $dap_master
+  push $master_dap
   push $0x42
   call rw_disk
   add $0x04, %sp
   pop %si
 
-  mov $0x0600, %di # dap_master Offset
+  mov $0x0600, %di # master_dap Offset
 
   # Low
   mov (%di), %ax
@@ -125,7 +127,7 @@ _cmd_touch__sector_addr: # !!!!!!!!!
 
   # Write Master Sector
   push %si
-  push $dap_master
+  push $master_dap
   push $0x43
   call rw_disk
   add $0x04, %sp

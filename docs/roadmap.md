@@ -1,7 +1,3 @@
-delete err.s
-cmd opt flags => cli.s
-tag v0.1.2
-
 Feature
 input arrow key - move cursor
 

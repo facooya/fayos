@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# INDEX
+# print_str()
+# print_esc()
+# print_newline()
+
 .code16
 .section .text
 

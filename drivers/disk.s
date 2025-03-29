@@ -15,6 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# INDEX
+# set_dap_lba()
+# rw_disk()
+# dap
+# master_dap
+#
+# .hdl_rw_disk_err
+
+# DEPS
+# .hdl_rw_disk_err
+# - print_newline
+# - print_str
+
 # NOTE
 # [n_set_dap_lba]
 # - set_dap_lba(lba_low_addr, lba_high_addr)
@@ -32,21 +45,18 @@
 # - LBA low addr: 0x80-0xFFFF
 # - LBA high addr: 0x00-0xFFFF
 #
-# [n_dap_master]
+# [n_master_dap]
 # - Sector count: 4
 # - Offset: 0x0600
 # - LBA addr: 0x10, 0x10-0x13
 
-# DEPS
-# .hdl_rw_disk_err
-# - print_newline
-# - print_str
-
 .code16
 .section .text
 
-.global set_dap_lba, rw_disk, dentry_name_align, master_block
-.global dap, dap_master
+.global set_dap_lba
+.global rw_disk
+.global dap
+.global master_dap
 
 .extern print_newline
 .extern print_str
@@ -96,75 +106,6 @@ rw_disk:
   pop %bp
   ret
 
-# !!! temporary
-# dentry_name_align(name_size)
-# name_size: name_size / 2 = Even [0 Bytes], Odd [1 Bytes] [SI]++
-dentry_name_align:
-  # prol
-  push %sp
-  mov %sp, %bp
-  push %ax
-  push %bx
-  push %dx
-
-  # div for align
-  mov 4(%bp), %ax
-  mov $0x02, %bx
-  xor %dx, %dx
-  div %bx
-
-  # dentry magic
-  add %dx, %si # mem align
-  movw $0xFADE, (%si) # magic: FacooyA Directory Entry
-
-  # dentry name
-  mov 4(%bp), %al
-  mov %al, 2(%si) # name size
-  mov %dl, 3(%si) # name align
-
-  # dentry etc
-  movb $0x01, 8(%si) # entry level
-  movb $0xFE, 9(%si) # file type
-
-  # epil
-  pop %dx
-  pop %bx
-  pop %ax
-  pop %bp
-  ret
-
-# master_block()
-master_block:
-  push %si
-  push %ax
-
-  # read disk
-  push $dap_master
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
-
-  # cond: null != ? done
-  mov $0x0600, %si
-  mov (%si), %ax
-  or 2(%si), %ax
-  jnz .master_block__done
-
-  # write mem
-  mov $0x80, %ax # root dir
-  mov %ax, (%si)
-
-  # write disk
-  push $dap_master
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
-
-.master_block__done:
-  pop %ax
-  pop %si
-  ret
-
 # .hdl_rw_disk_err
 .hdl_rw_disk_err:
   call print_newline
@@ -178,6 +119,7 @@ master_block:
 
 .section .data
 
+# dap
 dap: # [n_dap]
   .byte 0x10
   .byte 0x00
@@ -189,7 +131,8 @@ dap: # [n_dap]
   .word 0x00
   .word 0x00
 
-dap_master: # [n_dap_master]
+# master_dap
+master_dap: # [n_master_dap]
   .byte 0x10
   .byte 0x00
   .word 0x04
@@ -200,4 +143,5 @@ dap_master: # [n_dap_master]
   .word 0x00
   .word 0x00
 
+# msg
 .disk_err_msg: .asciz "Disk error." 
