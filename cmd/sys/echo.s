@@ -15,7 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# INDEX
+# cmd_echo()
+# 
+# .cmd_echo__opt_err
+# .cmd_echo__opt_flag
+
+# DEPS
+# cmd_echo()
+#   print_newline
+#   hdl_cli_opt_err
+
+# NOTE
+# [n_cmd_echo__opt_flag]
+#   0: e (escape)
+#   1: n (no-newline)
 
 .code16
 .section .text
@@ -25,143 +39,121 @@
 .extern hdl_cli_opt_err
 .extern print_newline
 
-# -----========== > Command (echo) ==========-----
+# cmd_echo()
+cmd_echo:
+  # prol
+  push %si
+  push %ax
+  push %bx
 
-cmd_echo: # Entry Point
-  jmp _cmd_echo__chk_opt
-
-# ----------===== > (echo) Option Check =====----------
-
-_cmd_echo__chk_opt:
-  # Set Address
+  # set opt
   mov $cli_buf_opt, %si
-  mov $_cmd_echo__flag, %bx
+  mov $.cmd_echo__opt_flag, %bx
 
-_cmd_echo__chk_opt_loop:
-  # Null ? End => Run
-  mov (%si), %al
+.cmd_echo__chk_opt_lp:
+  # cond: null ? main
+  mov (%si), %al # cli_buf_opt
   test %al, %al
-  jz _cmd_echo__chk_opt_end
+  jz .cmd_echo__main
 
-  # Set Flag
-  jmp _cmd_echo__set_flag
+  # cond: e ? set_opt_flag_e
+  cmp $0x65, %al # e
+  jz .cmd_echo__set_opt_e
 
-_cmd_echo__chk_opt_end:
-  jmp _cmd_echo__run
+  # cond: n ? set_opt_n
+  cmp $0x6E, %al # n
+  jz .cmd_echo__set_opt_n
 
-# ----------===== < (echo) Option Check =====----------
-# ----------===== > (echo) Flag =====----------
+  # opt err
+  jmp .cmd_echo__opt_err
 
-_cmd_echo__set_flag: # Set Flag
-  # e ? Set e
-  cmp $'e', %al
-  jz _cmd_echo__set_flag_e
+.cmd_echo__set_opt_e:
+  btsw $0x00, (%bx) # opt_flag
+  add $0x01, %si
+  jmp .cmd_echo__chk_opt_lp
 
-  # End e
-  jmp _cmd_echo__set_flag_e_end
+.cmd_echo__set_opt_n:
+  btsw $0x01, (%bx) # opt_flag
+  add $0x01, %si
+  jmp .cmd_echo__chk_opt_lp
 
-_cmd_echo__set_flag_e: # Set e
-  # Set Flag, 0: e
-  btsw $0x0, (%bx)
-
-  # Loop
-  inc %si
-  jmp _cmd_echo__chk_opt_loop
-
-_cmd_echo__set_flag_e_end: # End e
-  # n ? Set n
-  cmp $'n', %al
-  jz _cmd_echo__set_flag_n
-
-  # End n
-  jmp _cmd_echo__set_flag_n_end
-
-_cmd_echo__set_flag_n: # Set n
-  # Set Flag, 1: n
-  btsw $0x1, (%bx)
-  
-  # Loop
-  inc %si
-  jmp _cmd_echo__chk_opt_loop
-
-_cmd_echo__set_flag_n_end: # End n
-  # Option Error
-  jmp _cmd_echo__err_opt
-
-# ----------===== < (echo) Flag =====----------
-# ----------===== > (echo) Run =====----------
-
-_cmd_echo__run:
+.cmd_echo__main:
   call print_newline
 
-  # Flag e ? Run e
-  btw $0x0, (%bx)
-  jc _cmd_echo__run_e
+  # cond: e ? main_opt_e
+  btw $0x0, (%bx) # opt_flag
+  jc .cmd_echo__main_opt_e
 
-  # Print arg_buf
+  # default
   push $cli_buf_arg
   call print_str
   add $0x02, %sp
 
-  # e Skip
-  jmp _cmd_echo__run_e_end
+  # skip opt e
+  jmp .cmd_echo__main_opt_e_end
 
-_cmd_echo__run_e: # Run e
-  # Print Escape arg_buf
+.cmd_echo__main_opt_e:
   push $cli_buf_arg
   call print_esc
   add $0x02, %sp
 
-  # e End
-  jmp _cmd_echo__run_e_end
+.cmd_echo__main_opt_e_end:
+  # cond: n ? main_opt_n
+  btw $0x1, (%bx) # opt_flag
+  jc .cmd_echo__main_opt_n
 
-_cmd_echo__run_e_end: # e End
-  # Flag n ? Run n
-  btw $0x1, (%bx)
-  jc _cmd_echo__run_n
-
+  # default
   call print_newline
 
-  # n Skip
-  jmp _cmd_echo__run_n_end
+  # skip opt n
+  jmp .cmd_echo__main_opt_n_end
 
-_cmd_echo__run_n: # Run n
-  # n End
-  jmp _cmd_echo__run_n_end
+.cmd_echo__main_opt_n:
+  nop
 
-_cmd_echo__run_n_end: # n End
-  # Init Flag
+.cmd_echo__main_opt_n_end:
+  nop
+  # next opt cond
+  # default
+  # skip opt
+
+.cmd_echo__done:
+  # init opt flag
   xor %ax, %ax
   mov %ax, (%bx)
 
-  # Return
+  # epil
+  pop %bx
+  pop %ax
+  pop %si
   ret
 
-# ----------===== < (echo) Run =====----------
-
-_cmd_echo__err_opt: # Error Option
-  # Error Option
+# .cmd_echo__opt_err
+.cmd_echo__opt_err:
   call print_newline
 
-  # Print error option byte
+  # print opt err char
   mov $0x0E, %ah
-  mov (%si), %al # [SI]: Option Byte
+  mov (%si), %al # opt err char
   int $0x10
-  mov $0x3A, %al # Colon
+  mov $0x3A, %al # colon
   int $0x10
-  mov $0x20, %al # Space
+  mov $0x20, %al # space
   int $0x10
 
-  # Error
-  #jmp err_opt # ref: err.inc
+  # init opt flag
+  xor %ax, %ax
+  mov %ax, (%bx)
+
+  # epil
+  pop %bx
+  pop %ax
+  pop %si
+
+  # print common err msg
   jmp hdl_cli_opt_err
-
-# -----========== < Command (echo) ==========-----
-# === < CODE
-# =============== > Data ===============
 
 .section .data
 
-_cmd_echo__flag: .word 0x00 # 0: e, 1: n
-
-# =============== < Data ===============
+# .cmd_echo__opt_flag [n_cmd_echo__opt_flag]
+.cmd_echo__opt_flag: .word 0x00
