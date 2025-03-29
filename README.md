@@ -12,5 +12,6 @@ boot/
 build/ - *.o, *.bin, *.img  
 cmd/  
 drivers/ - keyboard, disk  
+fs/ - fayfs, block  
 kernel/ - kernel start (main loop)  
 lib/ - common  

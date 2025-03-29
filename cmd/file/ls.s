@@ -23,6 +23,7 @@
 .global cmd_ls
 
 .extern rw_disk
+.extern print_newline
 
 # -----========== > Command (ls) ==========-----
 
@@ -44,8 +45,7 @@ _cmd_ls__read:
   call rw_disk
   add $0x04, %sp
 
-  # Newline
-  call newline
+  call print_newline
 
   # Ready
   mov $0x8000, %si
@@ -105,7 +105,7 @@ _cmd_ls__name_end:
   jmp _cmd_ls__magic_loop
 
 _cmd_ls__done:
-  call newline
+  call print_newline
   ret
 
 # -----========== < Command (ls) ==========-----

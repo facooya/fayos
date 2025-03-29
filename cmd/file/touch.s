@@ -25,6 +25,7 @@
 .extern rw_disk
 .extern set_dentry
 .extern master_dap
+.extern print_newline
 
 # -----========== > Command (touch) ==========-----
 
@@ -143,7 +144,7 @@ _cmd_touch__disk_write:
   call rw_disk
   add $0x04, %sp
 
-  call newline
+  call print_newline
 
 _cmd_touch__done:
   ret

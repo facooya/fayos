@@ -22,6 +22,8 @@
 
 .global cmd_rm
 
+.extern print_newline
+
 # -----========== > Command (rm) ==========-----
 
 cmd_rm:
@@ -61,8 +63,7 @@ _cmd_rm__run_end:
   int $0x13
   #jc err_disk
 
-  # Newline
-  call newline
+  call print_newline
 
   # Return
   ret

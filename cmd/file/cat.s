@@ -22,6 +22,8 @@
 
 .global cmd_cat
 
+.extern print_newline
+
 # -----========== > Command (cat) ==========-----
 
 cmd_cat:
@@ -39,8 +41,7 @@ _cmd_cat__disk_read:
   call rw_disk
   add $0x04, %sp
 
-  # Newline
-  call newline
+  call print_newline
 
   # Memory
   mov $0x8000, %si

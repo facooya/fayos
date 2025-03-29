@@ -28,7 +28,6 @@
 .section .text
 
 .global hdl_kbd
-.global newline # !!! Delete
 
 .extern kernel_min_cur_pos_x
 .extern kernel_prompt
@@ -100,16 +99,4 @@ hdl_kbd:
   call print_str
   add $0x02, %sp
 
-  ret
-
-
-# !!! Delete
-# =============== > Utils =============== # !!! Temporary
-# --------------- New Line ---------------
-newline:
-  mov $0x0E, %ah
-  mov $0x0D, %al # CR
-  int $0x10
-  mov $0x0A, %al # LF
-  int $0x10
   ret
