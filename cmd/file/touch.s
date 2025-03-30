@@ -15,7 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# INDEX
+# cmd_touch()
+
+# DEPS
+# cmd_touch()
+#   rw_disk
+#   set_dentry
+#   print_newline
+#   master_dap
+#   cli_buf_arg
 
 .code16
 .section .text
@@ -24,121 +33,100 @@
 
 .extern rw_disk
 .extern set_dentry
-.extern master_dap
 .extern print_newline
-
-# -----========== > Command (touch) ==========-----
+.extern master_dap
+.extern cli_buf_arg
 
 # cmd_touch()
-# cmd_table => cmd_touch()
-# Block Entry => Disk Read => Directory Entry => Disk Write
 cmd_touch:
+  # prol
+  push %si
+  push %di
+  push %ax
+  push %cx
 
-# ----------===== > Touch (name) =====----------
-
-_cmd_touch__set_dap:
-  # set_dap_lba(low, high)
-  push $0x00 # high
-  push $0x80 # low
-  call set_dap_lba # block.inc
+  # set lba
+  push $0x00
+  push $0x80 # !!! root dir
+  call set_dap_lba
   add $0x04, %sp
 
-_cmd_touch__disk_read:
-  # Disk Read
+  # read disk
   push $dap
   push $0x42
   call rw_disk
   add $0x04, %sp
 
-_cmd_touch__find_free:
+  # set mem ptr
   mov $0x8000, %si
 
-_cmd_touch__find_free_loop:
-  # Null ? Check
+.cmd_touch__find_free_lp:
+  # cond: null ? write_name
   mov (%si), %ax
   test %ax, %ax
   or 2(%si), %ax
-  jz _cmd_touch__find_free_end
+  jz .cmd_touch__write_name
 
-  # Loop
+  # loop
   add $0x02, %si
-  jmp _cmd_touch__find_free_loop
+  jmp .cmd_touch__find_free_lp
 
-_cmd_touch__find_free_end:
-
-_cmd_touch__name_set:
-  #mov $arg_buf, %di
+.cmd_touch__write_name:
   mov $cli_buf_arg, %di
   xor %cx, %cx
 
-_cmd_touch__name_size_loop:
-  # Null ? Name Size End
-  mov (%di), %al
+.cmd_touch__write_name_lp:
+  # cond: null ? write_name_end
+  mov (%di), %al # cli_buf_arg
   test %al, %al
-  jz _cmd_touch__name_size_end
+  jz .cmd_touch__write_name_end
 
-  # Memory Write
+  # write mem
   mov %al, (%si)
 
-  # Loop
+  # loop
   add $0x01, %si
   add $0x01, %di
   add $0x01, %cx
-  jmp _cmd_touch__name_size_loop
+  jmp .cmd_touch__write_name_lp
 
-_cmd_touch__name_size_end:
+.cmd_touch__write_name_end:
+  # add null char
+  add $0x01, %si # mem ptr
+  add $0x01, %cx # name size
 
-_cmd_touch__name_align:
-  add $0x01, %si # Add Null
-  add $0x01, %cx # Add Null Size
-
-  # Return [SI] OR [SI]++
-  push %cx # name_size
+  # set dentry
+  push %cx
   call set_dentry
   add $0x02, %sp
 
-#_cmd_touch__file_type:
-#  movb $0x0F, (%si) # File Type
-#  movb $0x00, 1(%si) # Block Level
-#  add $0x02, %si
-
-_cmd_touch__sector_addr: # !!!!!!!!!
-  # Read Master Sector
-  push %si
+  # read disk (master)
   push $master_dap
   push $0x42
   call rw_disk
   add $0x04, %sp
-  pop %si
 
-  mov $0x0600, %di # master_dap Offset
+  # set mem ptr
+  mov $0x0600, %di
 
-  # Low
-  mov (%di), %ax
+  # get lba
+  mov (%di), %ax # low
   mov %ax, 4(%si)
-
-  # High
-  mov 2(%di), %ax
+  mov 2(%di), %ax # high
   mov %ax, 6(%si)
 
-  # Next Sector Number !!!!! 2 Bytes
+  # write next block num
   mov (%di), %ax
   add $0x08, %ax
   mov %ax, (%di)
 
-  # Write Master Sector
-  push %si
+  # write disk (master)
   push $master_dap
   push $0x43
   call rw_disk
   add $0x04, %sp
-  pop %si
 
-  jmp _cmd_touch__disk_write
-
-# ----------===== < Touch (name) =====----------
-
-_cmd_touch__disk_write:
+  # write disk
   push $dap
   push $0x43
   call rw_disk
@@ -146,8 +134,9 @@ _cmd_touch__disk_write:
 
   call print_newline
 
-_cmd_touch__done:
+  # epil
+  pop %cx
+  pop %ax
+  pop %di
+  pop %si
   ret
-
-# -----========== < Command (touch) ==========-----
-# === < CODE

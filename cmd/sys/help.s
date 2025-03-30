@@ -15,10 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# INDEX
+# cmd_help()
+
 # DEPS
 # cmd_help()
-# - print_newline
-# - cli_cmd_map
+#   print_newline
+#   cli_cmd_map
 
 .code16
 .section .text
