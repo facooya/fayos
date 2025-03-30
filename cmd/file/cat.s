@@ -15,7 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# INDEX
+# cmd_cat()
+
+# DEPS
+# cmd_cat()
+#   print_newline
+#   rw_disk
+#   set_dap_lba
+
+# NOTE
+# [n_skip_dentry]
+#   2 (magic num)
+#   + 1 (name size)
+#   + 1 (padding size)
+#   + 4 (block entry)
+#   + 1 (entry level)
+#   + 1 (file type)
+#   = 10 = 0x0A
 
 .code16
 .section .text
@@ -23,19 +40,24 @@
 .global cmd_cat
 
 .extern print_newline
+.extern rw_disk
+.extern set_dap_lba
 
-# -----========== > Command (cat) ==========-----
-
+# cmd_cat()
 cmd_cat:
-_cmd_cat__set_dap:
-  # Set DAP
-  push $0x00 # high
-  push $0x80 # low
+  # prol
+  push %si
+  push %di
+  push %ax
+  push %cx
+
+  # set lba
+  push $0x00
+  push $0x80 # !!! root dir
   call set_dap_lba
   add $0x04, %sp
 
-_cmd_cat__disk_read:
-  # Disk Read
+  # read disk
   push $dap
   push $0x42
   call rw_disk
@@ -43,83 +65,90 @@ _cmd_cat__disk_read:
 
   call print_newline
 
-  # Memory
+  # set mem ptr
   mov $0x8000, %si
 
-_cmd_cat__magic_loop:
-  # Magic ? Compare Name
+.cmd_cat__find_magic_lp:
+  # cond: magic ? cmp_name
   mov (%si), %ax
   cmp $0xFADE, %ax
-  je _cmd_cat__cmp_name_set
+  je .cmd_cat__cmp_name
 
-  # Null ? Done
+  # cond: null ? done
   mov (%si), %ax
   or 2(%si), %ax
-  jz _cmd_cat__done
+  jz .cmd_cat__done
 
-  # Loop
+  # loop
   add $0x02, %si
-  jmp _cmd_cat__magic_loop
+  jmp .cmd_cat__find_magic_lp
 
-_cmd_cat__cmp_name_set:
-  mov %si, %di # [DI]: Magic
+.cmd_cat__cmp_name:
+  # set ptr (magic)
+  mov %si, %di
 
-  xor %cx, %cx # Init
-  mov 2(%si), %cl # Name Size
-  add 3(%si), %cl # Name Align
+  # get name total size
+  xor %cx, %cx
+  mov 2(%si), %cl # name size
+  add 3(%si), %cl # padding size
 
-  sub %cx, %di # [DI]: File Name
+  # set ptr (name)
+  sub %cx, %di
 
-  push %si # Magic
-  #mov $arg_buf, %si
+  # setup
+  push %si # main mem ptr
   mov $cli_buf_arg, %si
 
-_cmd_cat__cmp_name_loop:
-  # [CX] == 0 ? Match
+.cmd_cat__cmp_name_lp:
+  # cond: 0 ? main
   test %cx, %cx
-  jz _cmd_cat__cmp_name_match
+  jz .cmd_cat__main
 
-  # [DI] != [SI] ? No Match  
-  mov (%si), %al
-  cmp (%di), %al
-  jne _cmd_cat__cmp_name_no_match
+  # cond: char != ? skip_dentry
+  mov (%si), %al # cli_buf_arg
+  cmp (%di), %al # name ptr
+  jne .cmd_cat__skip_dentry
 
-  # Loop
+  # loop
   add $0x01, %si
   add $0x01, %di
   sub $0x01, %cx
-  jmp _cmd_cat__cmp_name_loop
+  jmp .cmd_cat__cmp_name_lp
 
-_cmd_cat__cmp_name_no_match:
-  pop %si # [SI]: Memory Address
+.cmd_cat__skip_dentry:
+  pop %si # main mem ptr
 
+  # !!! temp
   mov $0x0E, %ah
   mov $'N', %al
   int $0x10
 
-  # [SI]: Magic
-  add $0x0A, %si  # [SI]: Next Name
-  jmp _cmd_cat__magic_loop
+  # skip dentry [n_skip_dentry]
+  add $0x0A, %si
 
-_cmd_cat__cmp_name_match:
-  # Print Data
-  pop %si # [SI]: Memory Address, Magic
+  # loop
+  jmp .cmd_cat__find_magic_lp
 
+.cmd_cat__main:
+  pop %si # main mem ptr
+
+  # !!! temp
   mov $0x0E, %ah
   mov $'M', %al
   int $0x10
 
-  # Block Level Check
-  mov 8(%si), %al # Entry Level
+  # cond: 1 != ? done
+  # !!! temp, only entry level 1
+  mov 8(%si), %al # entry level
   cmp $0x01, %al
-  jnz _cmd_cat__done # Only Direct Block
+  jnz .cmd_cat__done
 
-  # set_dap_lba(low, high)
-  mov 6(%si), %ax
-  push %ax # high
-  mov 4(%si), %ax
-  push %ax # low
-  call set_dap_lba # block.inc
+  # set lba
+  mov 6(%si), %ax # high
+  push %ax
+  mov 4(%si), %ax # low
+  push %ax
+  call set_dap_lba
   add $0x04, %sp
   
   # read disk
@@ -128,25 +157,28 @@ _cmd_cat__cmp_name_match:
   call rw_disk
   add $0x04, %sp
 
-  # Data Read Set
+  # set data mem ptr
   mov $0x8000, %si
+
   mov $0x0E, %ah
 
-_cmd_cat__print_loop:
-  # Null ? Done
+.cmd_cat__out_data:
+  # cond: null ? done
   movb (%si), %al
   test %al, %al
-  jz _cmd_cat__done
+  jz .cmd_cat__done
 
-  # Print
+  # out
   int $0x10
 
-  # Loop
+  # loop
   add $0x01, %si
-  jmp _cmd_cat__print_loop
+  jmp .cmd_cat__out_data
 
-_cmd_cat__done:
+.cmd_cat__done:
+  # epil
+  pop %cx
+  pop %ax
+  pop %di
+  pop %si
   ret
-
-# -----========== < Command (cat) ==========-----
-# === < CODE

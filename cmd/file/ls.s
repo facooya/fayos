@@ -20,6 +20,7 @@
 
 # DEPS
 # cmd_ls()
+#   set_dap_lba
 #   rw_disk
 #   print_newline
 
@@ -27,7 +28,7 @@
 # [n_skip_dentry]
 #   2 (magic num)
 #   + 1 (name size)
-#   + 1 (name padding size)
+#   + 1 (padding size)
 #   + 4 (block entry)
 #   + 1 (entry level)
 #   + 1 (file type)
@@ -85,10 +86,10 @@ cmd_ls:
   # copy mem ptr
   mov %si, %di
 
-  # get name size
+  # get name total size
   xor %cx, %cx
   mov 2(%si), %cl # name size
-  add 3(%si), %cl # name padding size
+  add 3(%si), %cl # padding size
 
   # set name ptr
   sub %cx, %di
