@@ -16,63 +16,33 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # INDEX
-# init_master_block()
+# cmd_mkdir()
 
 # DEPS
-# init_master_block()
+# cmd_mkdir()
+#   set_dap_lba
 #   rw_disk
-#   master_dap
-#   cli_cwd_lba
-
-# NOTE
-# 0x10: master
-#   0x00: next LBA
-#   0x04: root LBA
-# 0x80: root
+#   dap
 
 .code16
 .section .text
 
-.global init_master_block
+.global cmd_mkdir
 
+.extern print_newline
+.extern set_dap_lba
 .extern rw_disk
-.extern master_dap
-.extern cli_cwd_lba
+.extern dap
 
-# init_master_block()
-init_master_block:
-  push %si
-  push %ax
+# cmd_mkdir()
+cmd_mkdir:
+  # prol
 
-  # read disk
-  push $master_dap
-  push $0x42
-  call rw_disk
+  push $0x00
+  push $0x00
+  call set_dap_lba
   add $0x04, %sp
 
-  # set mem ptr
-  mov $0x0600, %si
-
-  # cond: null != ? done
-  mov (%si), %ax
-  or 2(%si), %ax
-  jnz .init_master_block__done
-
-  # write mem
-  mov $0x88, %ax # next
-  mov %ax, (%si)
-  mov $0x80, %ax # root
-  mov %ax, 4(%si)
-  mov %ax, (cli_cwd_lba) # set
-
-  # write disk
-  push $master_dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
-
-.init_master_block__done:
-  pop %ax
-  pop %si
+  # epil
   ret
   

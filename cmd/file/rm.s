@@ -113,8 +113,9 @@ cmd_rm:
 .cmd_rm__main:
   pop %si # main mem ptr
 
+  # bit test set
   xor %ax, %ax
-  bts $0x07, %ax
+  bts $0x07, %ax # msb
   mov %al, 9(%si)
 
   # write disk

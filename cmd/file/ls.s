@@ -83,10 +83,10 @@ cmd_ls:
   jmp .cmd_ls__find_magic_lp
 
 .cmd_ls__chk_del:
-  # cond: bit ? chk_del_end
+  # cond: bit test ? chk_del_end
   xor %ax, %ax
   mov 9(%si), %al # file type
-  bt $0x07, %ax
+  bt $0x07, %ax # msb
   jc .cmd_ls__chk_del_end
 
   # default

@@ -25,6 +25,7 @@
 #   print_newline
 #   master_dap
 #   cli_buf_arg
+#   cli_cwd_lba
 
 .code16
 .section .text
@@ -36,6 +37,7 @@
 .extern print_newline
 .extern master_dap
 .extern cli_buf_arg
+.extern cli_cwd_lba
 
 # cmd_touch()
 cmd_touch:
@@ -47,7 +49,9 @@ cmd_touch:
 
   # set lba
   push $0x00
-  push $0x80 # !!! root dir
+  # push $0x80 # !!! root dir
+  mov (cli_cwd_lba), %ax # !!! test
+  push %ax # !!! test
   call set_dap_lba
   add $0x04, %sp
 
@@ -109,7 +113,7 @@ cmd_touch:
   # set mem ptr
   mov $0x0600, %di
 
-  # get lba
+  # get lba (master), set lba (dentry)
   mov (%di), %ax # low
   mov %ax, 4(%si)
   mov 2(%di), %ax # high

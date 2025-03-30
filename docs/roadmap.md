@@ -2,7 +2,6 @@ Feature
 input arrow key - move cursor
 
 Feature
-rm
 directory
 
 cmd kernel time, color, mkdir, rmdir

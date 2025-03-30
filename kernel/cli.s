@@ -20,6 +20,7 @@
 # hdl_cli_opt_err
 # cli_cmd_map
 # cli_buf_*
+# cli_cwd_lba
 #
 # .tok_cli_buf()
 # .init_cli_buf_all()
@@ -27,7 +28,10 @@
 
 # DEPS
 # exec_cli_cmd()
-# - print_newline
+#   print_newline
+#
+# cli_cmd_map
+#   cmd_*
 
 .code16
 .section .text
@@ -35,10 +39,19 @@
 .global exec_cli_cmd
 .global hdl_cli_opt_err
 .global cli_cmd_map
+.global cli_cwd_lba
 .global cli_buf_raw, cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir
 
 .extern print_newline
+.extern cmd_clear
+.extern cmd_echo
+.extern cmd_touch
+.extern cmd_rm
+.extern cmd_ls
+.extern cmd_cat
+.extern cmd_help
+.extern cmd_mkdir
 
 # exec_cli_cmd()
 exec_cli_cmd:
@@ -275,6 +288,8 @@ cli_cmd_map:
   .asciz "cat"
   .word cmd_help
   .asciz "help"
+  .word cmd_mkdir
+  .asciz "mkdir"
   .word 0x00
   .asciz ""
 
@@ -285,6 +300,9 @@ cli_buf_arg: .zero 0x20
 cli_buf_opt: .zero 0x10
 cli_buf_tmp: .zero 0x20
 cli_buf_redir: .zero 0x20
+
+# cli_cwd_lba
+cli_cwd_lba: .long 0x00
 
 # *_err_msg
 .cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
