@@ -16,6 +16,11 @@ func_name() = Function, (Call)
 func_name_exit = Exit (Error)
 func_name_done = Done (Safe)
 
+Function naming
+verb_noun
+verb_prefix
+verb_noun_prefix__detail
+
 O: cmp $0x01, %ax
 X: cmp $0x00, %ax, O: test %ax, %ax
 X: mov $0x00, %ax, O: xor %ax, %ax
@@ -104,8 +109,8 @@ movw (%ax), %bx
 movw %ax, (%bx)
 
 Unit Rule
-[AH][8-bits]
-[AL][1 Byte]
-[AX][2 Bytes]
+[AH][8-bit]
+[AL][1-byte]
+[AX][2-byte]
 [1 KiB], [2 MiB]
 

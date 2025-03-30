@@ -28,67 +28,48 @@
 .extern print_newline
 .extern cli_cmd_map
 
-# -== > Command Help
-
+# cmd_help()
 cmd_help:
-_cmd_help__prol:
+  # prol
   push %si
   push %ax
   push %bx
 
-# --= > Check Address
-
-_cmd_help__chk_addr_set:
+  # set
   mov $cli_cmd_map, %si
-  mov $0x0E, %ah # out set
+  mov $0x0E, %ah
 
-_cmd_help__chk_addr_lp:
-  # Cond: null ? chk_addr_end
+.cmd_help__chk_addr_lp:
+  # cond: null ? done
   mov (%si), %bx
   test %bx, %bx
-  jz _cmd_help__chk_addr_end
+  jz .cmd_help__done
 
   call print_newline
 
-  # SI: cmd_addr, SI+2: cmd_byte
-  add $0x02, %si
+  add $0x02, %si # cli_cmd_map (cmd_str)
 
-# --- > Out Byte
-
-_cmd_help__out_byte_lp:
-  # Cond: null ? out_byte_end
+.cmd_help__out_char_lp:
+  # cond: null ? out_char_end
   mov (%si), %al
   test %al, %al
-  jz _cmd_help__out_byte_end
+  jz .cmd_help__out_char_end
 
-  # Out
+  # out
   int $0x10
 
-  # Loop
+  # loop
   add $0x01, %si
-  jmp _cmd_help__out_byte_lp
+  jmp .cmd_help__out_char_lp
 
-_cmd_help__out_byte_end:
-  # SI: null, SI+1: cmd_addr
-  add $0x01, %si
+.cmd_help__out_char_end:
+  # loop
+  add $0x01, %si # cli_cmd_map (cmd_addr)
+  jmp .cmd_help__chk_addr_lp
 
-  # Loop
-  jmp _cmd_help__chk_addr_lp
-
-# --- < Out Byte
-
-_cmd_help__chk_addr_end:
-
-# --= < Check Address
-
-_cmd_help__epil:
+.cmd_help__done:
+  # epil
   pop %bx
   pop %ax
   pop %si
-
-_cmd_help__done:
   ret
-
-# -== < Command Help
-# ===
-# === < CODE
