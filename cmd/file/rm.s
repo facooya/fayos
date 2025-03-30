@@ -15,7 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# INDEX
+# cmd_rm()
+
+# DEPS
+# cmd_rm()
+#   print_newline
+#   rw_disk
+#   dap
 
 .code16
 .section .text
@@ -23,49 +30,57 @@
 .global cmd_rm
 
 .extern print_newline
+.extern dap
+.extern rw_disk
 
-# -----========== > Command (rm) ==========-----
-
+# cmd_rm()
 cmd_rm:
-_cmd_rm__run:
-  # Remove Arg !!!!!!
+  # !!! remove arg
+  # prol
+  push %si
+  push %ax
 
-  # Disk Read
-  clc
-  mov $0x42, %ah
-  mov $dap, %si
-  mov $0x80, %dl
-  int $0x13
-  #jc err_disk
+  # set lba
+  push $0x00
+  push $0x80 # !!! root dir
+  call set_dap_lba
+  add $0x04, %sp
 
+  # read disk
+  push $dap
+  push $0x42
+  call rw_disk
+  add $0x04, %sp
+
+  # set mem ptr
   mov $0x8000, %si
 
-_cmd_rm__run_loop:
-  # Null ? End
+.cmd_rm__lp:
+  # cond: null ? done
   mov (%si), %al
   test %al, %al
-  jz _cmd_rm__run_end
+  jz .cmd_rm__done
 
-  # Init
+  # init
   xor %al, %al
   mov %al, (%si)
 
-  # Loop
-  inc %si
-  jmp _cmd_rm__run_loop
+  # loop
+  add $0x01, %si
+  jmp .cmd_rm__lp
 
-_cmd_rm__run_end:
-  # Disk Write
-  clc
-  mov $0x43, %ah
-  mov $dap, %si
-  mov $0x80, %dl
-  int $0x13
-  #jc err_disk
+.cmd_rm__done:
+  # write disk
+  push $dap
+  push $0x43
+  call rw_disk
+  add $0x04, %sp
 
   call print_newline
 
-  # Return
+  # epil
+  pop %ax
+  pop %si
   ret
 
 # -----========== < Command (rm) ==========-----
