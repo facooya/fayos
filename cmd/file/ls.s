@@ -15,7 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === > CODE
+# INDEX
+# cmd_ls()
+
+# DEPS
+# cmd_ls()
+#   rw_disk
+#   print_newline
+
+# NOTE
+# [n_skip_dentry]
+#   2 (magic num)
+#   + 1 (name size)
+#   + 1 (name padding size)
+#   + 4 (block entry)
+#   + 1 (entry level)
+#   + 1 (file type)
+#   = 10 = 0x0A
 
 .code16
 .section .text
@@ -25,21 +41,21 @@
 .extern rw_disk
 .extern print_newline
 
-# -----========== > Command (ls) ==========-----
-
-# Current Directory !!!
-# Find Magic, Name Size, Padding, Next Magic ...
+# cmd_ls() !!! current dir
 cmd_ls:
+  # prol
+  push %si
+  push %di
+  push %ax
+  push %cx
 
-_cmd_ls__set_dap:
-  # Set DAP
-  push $0x00 # high
-  push $0x80 # low
-  call set_dap_lba # block.inc
+  # set lba
+  push $0x00
+  push $0x80 # root dir
+  call set_dap_lba
   add $0x04, %sp
 
-_cmd_ls__read:
-  # Disk Read
+  # read disk
   push $dap
   push $0x42
   call rw_disk
@@ -47,83 +63,69 @@ _cmd_ls__read:
 
   call print_newline
 
-  # Ready
+  # set mem ptr
   mov $0x8000, %si
 
-_cmd_ls__magic_loop:
-  # Magic ? Name Set
+.cmd_ls__find_magic_lp:
+  # cond: magic ? read_name
   mov (%si), %ax
   cmp $0xFADE, %ax
-  je _cmd_ls__name_set
+  je .cmd_ls__read_name
 
-  # Null ? Done
+  # cond: null ? done
   test %ax, %ax
   or 2(%si), %ax
-  jz _cmd_ls__done
+  jz .cmd_ls__done
 
-  # Loop
+  # loop
   add $0x02, %si
-  jmp _cmd_ls__magic_loop
+  jmp .cmd_ls__find_magic_lp
 
-_cmd_ls__name_set:
-  # Set
-  mov %si, %di # Magic
-  #add $0x02, %si
+.cmd_ls__read_name:
+  # copy mem ptr
+  mov %si, %di
 
-  # CL = Name Size + Name Align
-  xor %cx, %cx # Init
-  mov 2(%si), %cl # Name Size
-  add 3(%si), %cl # Name Align
+  # get name size
+  xor %cx, %cx
+  mov 2(%si), %cl # name size
+  add 3(%si), %cl # name padding size
 
-  # DI = Name Start Pointer
+  # set name ptr
   sub %cx, %di
-  mov $0x0E, %ah # Print
 
-_cmd_ls__name_loop:
-  # Null ? End
+  mov $0x0E, %ah
+
+.cmd_ls__read_name_lp:
+  # cond: null ? read_name_end
   mov (%di), %al
   test %al, %al
-  jz _cmd_ls__name_end
+  jz .cmd_ls__read_name_end
 
-  # Print
+  # out
   int $0x10
 
-  # Loop
-  inc %di
-  jmp _cmd_ls__name_loop
+  # loop
+  add $0x01, %di
+  jmp .cmd_ls__read_name_lp
 
-_cmd_ls__name_end:
-  # Skip Directory Entry
-  add $0x0A, %si # 2 (MN) + 1 (NS) + 1 (PD) + 4 (BE) + 1 (EL) + 1 (FT) = 10, NOTE Dentry
-
-  # Space * 2
-  mov $0x20, %al
+.cmd_ls__read_name_end:
+  # skip dentry [n_skip_dentry]
+  add $0x0A, %si
+ 
+  # division
+  mov $0x20, %al # space
   int $0x10
   int $0x10
   
-  # Next Magic Check
-  jmp _cmd_ls__magic_loop
+  # loop
+  jmp .cmd_ls__find_magic_lp
 
-_cmd_ls__done:
+.cmd_ls__done:
   call print_newline
+  
+  # epil
+  pop %cx
+  pop %ax
+  pop %di
+  pop %si
   ret
-
-# -----========== < Command (ls) ==========-----
-# === < CODE
-# =============== > NOTE ===============
-# -----========== > Dentry ==========-----
-
-# NOTE ID: Dentry
-# Dentry: Directory Entry
-# DN: Directory Name
-# NP: Name Padding
-# MN: Magic Number
-# NS: Name Size
-# PS: Padding Size
-# BE: Block Entry
-# EL: Entry Level
-# FT: File Type
-
-# -----========== < Dentry ==========-----
-
-# =============== < NOTE ===============
