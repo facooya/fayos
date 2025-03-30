@@ -68,10 +68,10 @@ cmd_ls:
   mov $0x8000, %si
 
 .cmd_ls__find_magic_lp:
-  # cond: magic ? read_name
+  # cond: magic ? chk_del
   mov (%si), %ax
   cmp $0xFADE, %ax
-  je .cmd_ls__read_name
+  je .cmd_ls__chk_del
 
   # cond: null ? done
   test %ax, %ax
@@ -80,6 +80,21 @@ cmd_ls:
 
   # loop
   add $0x02, %si
+  jmp .cmd_ls__find_magic_lp
+
+.cmd_ls__chk_del:
+  # cond: bit ? chk_del_end
+  xor %ax, %ax
+  mov 9(%si), %al # file type
+  bt $0x07, %ax
+  jc .cmd_ls__chk_del_end
+
+  # default
+  jmp .cmd_ls__read_name
+
+.cmd_ls__chk_del_end:
+  # loop
+  add $0x0A, %si # [n_skip_dentry]
   jmp .cmd_ls__find_magic_lp
 
 .cmd_ls__read_name:

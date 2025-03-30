@@ -19,10 +19,15 @@
 # set_dentry()
 
 # NOTE
-# [n_set_dentry] set_dentry(name_size)
-# - align: name_size % 2 = DL, SI: memory offset
-#   - mem_align: SI += DL
-#   - name_align: 3(SI) = DL
+# [common_file_type]
+#   0x0D: dir, 0x0E: exec, 0x0F: file 
+#   MSB 1 is deleted. file_type << 7 == 1 ? deleted
+#   E.g., 0x0F (file) + 0x80 = 0x8F (deleted file)
+# 
+# [n_set_dentry]
+#   align: name_size % 2 = DL, SI += DL
+#     SI: mem ptr (magic num)
+#     padding size: 3(SI) = DL
 
 .code16
 .section .text
@@ -55,7 +60,7 @@ set_dentry:
 
   # dentry etc
   movb $0x01, 8(%si) # entry level
-  movb $0xFE, 9(%si) # file type
+  movb $0x0F, 9(%si) # file type
 
   # epil
   pop %dx

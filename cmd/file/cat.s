@@ -84,7 +84,7 @@ cmd_cat:
   jmp .cmd_cat__find_magic_lp
 
 .cmd_cat__cmp_name:
-  # set ptr (magic)
+  # copy ptr (magic)
   mov %si, %di
 
   # get name total size
