@@ -290,6 +290,8 @@ cli_cmd_map:
   .asciz "help"
   .word cmd_mkdir
   .asciz "mkdir"
+  .word cmd_cd
+  .asciz "cd"
   .word 0x00
   .asciz ""
 

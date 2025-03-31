@@ -119,6 +119,12 @@ cmd_touch:
   mov 2(%di), %ax # high
   mov %ax, 6(%si)
 
+  # set parent lba (dentry)
+  mov (cli_cwd_lba), %ax # low
+  mov %ax, 8(%si)
+  mov (cli_cwd_lba+2), %ax # high
+  mov %ax, 10(%si)
+
   # write next block num
   mov (%di), %ax
   add $0x08, %ax

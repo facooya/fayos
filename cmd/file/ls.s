@@ -23,6 +23,7 @@
 #   set_dap_lba
 #   rw_disk
 #   print_newline
+#   cli_cwd_lba
 
 # NOTE
 # [n_skip_dentry]
@@ -41,6 +42,7 @@
 
 .extern rw_disk
 .extern print_newline
+.extern cli_cwd_lba
 
 # cmd_ls() !!! current dir
 cmd_ls:
@@ -52,7 +54,9 @@ cmd_ls:
 
   # set lba
   push $0x00
-  push $0x80 # root dir
+  # push $0x80 # !!! root dir
+  mov (cli_cwd_lba), %ax
+  push %ax
   call set_dap_lba
   add $0x04, %sp
 
@@ -85,7 +89,7 @@ cmd_ls:
 .cmd_ls__chk_del:
   # cond: bit test ? chk_del_end
   xor %ax, %ax
-  mov 9(%si), %al # file type
+  mov 13(%si), %al # file type
   bt $0x07, %ax # msb
   jc .cmd_ls__chk_del_end
 

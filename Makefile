@@ -19,7 +19,8 @@ cmd/file/cat.s \
 cmd/file/ls.s \
 cmd/file/touch.s \
 cmd/file/rm.s \
-cmd/dir/mkdir.s
+cmd/dir/mkdir.s \
+cmd/dir/cd.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 

@@ -116,7 +116,7 @@ cmd_rm:
   # bit test set
   xor %ax, %ax
   bts $0x07, %ax # msb
-  mov %al, 9(%si)
+  mov %al, 13(%si) # file type
 
   # write disk
   push $dap

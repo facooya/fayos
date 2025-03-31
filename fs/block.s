@@ -58,7 +58,7 @@ init_master_block:
   or 2(%si), %ax
   jnz .init_master_block__done
 
-  # write mem
+  # write mem !!! change 4 bytes
   mov $0x88, %ax # next
   mov %ax, (%si)
   mov $0x80, %ax # root

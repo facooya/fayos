@@ -19,6 +19,27 @@
 # set_dentry()
 
 # NOTE
+# [common_dentry]
+#   [dentry_variable]
+#     [off-((name_size)+(padding_size))] name: 1-242 bytes (256 - [dentry_fixed])
+#     [off-1] name_align: 0-1 byte
+#
+#   [dentry_fixed]
+#     [off+0] magic_num: 2 bytes (0xFADE: FacooyA Directory Entry)
+#     [off+2] name_size: 1 byte (for name)
+#     [off+3] padding_size: 1 byte (for name_align)
+#     [off+4] data_lba: 4 bytes (total)
+#       [off+4] data_lba_low: 2 bytes (part of data_lba)
+#       [off+6] data_lba_high: 2 bytes (part of data_lba)
+#     [off+8] parent_lba: 4 bytes (total)
+#       [off+8] parent_lba_low: 2 bytes (part of parent_lba)
+#       [off+10] parent_lba_high: 2 bytes (part of parent_lba)
+#     [off+12] entry_level: 1 byte
+#     [off+13] file_type: 1 byte
+#   
+#     (more: time)
+#
+#
 # [common_file_type]
 #   0x0D: dir, 0x0E: exec, 0x0F: file 
 #   MSB 1 is deleted. file_type << 7 == 1 ? deleted
@@ -59,8 +80,8 @@ set_dentry:
   mov %dl, 3(%si) # name align
 
   # dentry etc
-  movb $0x01, 8(%si) # entry level
-  movb $0x0F, 9(%si) # file type
+  movb $0x01, 12(%si) # entry level
+  movb $0x0F, 13(%si) # file type
 
   # epil
   pop %dx
