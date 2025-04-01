@@ -23,7 +23,7 @@
 #   rw_disk
 #   set_dentry
 #   print_newline
-#   master_dap
+#   !!! master_dap
 #   cli_buf_arg
 #   cli_cwd_lba_*
 #   write_meta_data
@@ -36,7 +36,7 @@
 .extern rw_disk
 .extern set_dentry
 .extern print_newline
-.extern master_dap
+# !!! .extern master_dap
 .extern cli_buf_arg
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 .extern write_meta_data
@@ -52,9 +52,9 @@ cmd_touch:
   # set lba
   # push $0x00
   # push $0x80 # !!! root dir
-  movw (cli_cwd_lba_high), %ax
-  push %ax
   movw (cli_cwd_lba_low), %ax
+  push %ax
+  movw (cli_cwd_lba_high), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -108,8 +108,21 @@ cmd_touch:
   call set_dentry
   add $0x02, %sp
 
+  # !!! temp
+  push $0x0600
+  push $0x00
+  push $0x04
+  call set_dap_target
+  add $0x06, %sp
+
+  # !!! temp
+  push $0x10
+  push $0x00
+  call set_dap_lba
+  add $0x04, %sp
+
   # read disk (master)
-  push $master_dap
+  push $dap
   push $0x42
   call rw_disk
   add $0x04, %sp
@@ -117,6 +130,7 @@ cmd_touch:
   # set mem ptr
   mov $0x0600, %di
 
+  # !!! get lba => cache.s
   # get lba (master), set lba (dentry)
   mov (%di), %ax # low
   mov %ax, 4(%si)
@@ -135,9 +149,20 @@ cmd_touch:
   mov %ax, (%di)
 
   # write disk (master)
-  push $master_dap
+  push $dap
   push $0x43
   call rw_disk
+  add $0x04, %sp
+
+  # !!! temp
+  call reset_dap_target
+
+  # !!! temp set lba
+  movw (cli_cwd_lba_low), %ax
+  push %ax
+  movw (cli_cwd_lba_high), %ax
+  push %ax
+  call set_dap_lba
   add $0x04, %sp
 
   # write disk

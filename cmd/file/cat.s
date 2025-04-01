@@ -52,8 +52,8 @@ cmd_cat:
   push %cx
 
   # set lba
-  push $0x00
   push $0x80 # !!! root dir
+  push $0x00
   call set_dap_lba
   add $0x04, %sp
 
@@ -144,9 +144,9 @@ cmd_cat:
   jnz .cmd_cat__done
 
   # set lba
-  mov 6(%si), %ax # high
-  push %ax
   mov 4(%si), %ax # low
+  push %ax
+  mov 6(%si), %ax # high
   push %ax
   call set_dap_lba
   add $0x04, %sp

@@ -55,9 +55,9 @@ cmd_ls:
   # set lba
   # push $0x00
   # push $0x80 # !!! root dir
-  movw (cli_cwd_lba_high), %ax
+  mov (cli_cwd_lba_low), %ax
   push %ax
-  movw (cli_cwd_lba_low), %ax
+  mov (cli_cwd_lba_high), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp

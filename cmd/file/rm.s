@@ -42,8 +42,8 @@ cmd_rm:
   push %cx
 
   # set lba
-  push $0x00
   push $0x80 # !!! root dir
+  push $0x00
   call set_dap_lba
   add $0x04, %sp
 

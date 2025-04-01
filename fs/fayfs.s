@@ -21,10 +21,11 @@
 
 # DEPS
 # write_meta_data() !!! test
-#   set_meta_dap_lba
+#   !!! set_meta_dap_lba
+#   set_dap_lba
 #   rw_disk
-#   meta_dap
-#   cli_cwd_lba_*
+#   !!! meta_dap
+#   cli_cwd_lba_* !!! temp
 
 # NOTE
 # [common_dentry]
@@ -64,9 +65,11 @@
 .global set_dentry
 .global write_meta_data # !!! test
 
-.extern set_meta_dap_lba
+#.extern set_meta_dap_lba
+.extern set_dap_lba
 .extern rw_disk
-.extern meta_dap
+#.extern meta_dap
+.extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 
 # set_dentry(name_size) [n_set_dentry]
@@ -110,17 +113,17 @@ write_meta_data:
   mov (%di), %ax
   sub $0x08, %ax
   mov %ax, (%di)
-  
-  # set meta lba
-  movw 2(%di), %ax # high
+
+  # set lba
+  mov (%di), %ax # low
   push %ax
-  movw (%di), %ax # low
+  mov 2(%di), %ax # high
   push %ax
-  call set_meta_dap_lba
+  call set_dap_lba
   add $0x04, %sp
 
   # read disk
-  push $meta_dap
+  push $dap
   push $0x42
   call rw_disk
   add $0x04, %sp
@@ -129,14 +132,14 @@ write_meta_data:
   mov $0x8000, %si
 
   # write meta data
-  movw (cli_cwd_lba_low), %ax # low
-  movw %ax, (%si)
-  movw (cli_cwd_lba_high), %ax # high
-  movw %ax, 2(%si)
-  movw $0xFADA, 4(%si) # magic
+  mov (cli_cwd_lba_low), %ax # low
+  mov %ax, (%si)
+  mov (cli_cwd_lba_high), %ax # high
+  mov %ax, 2(%si)
+  mov $0xFADA, 4(%si) # magic
 
   # write disk
-  push $meta_dap
+  push $dap
   push $0x43
   call rw_disk
   add $0x04, %sp

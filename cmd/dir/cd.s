@@ -49,9 +49,9 @@ cmd_cd:
   jz .cmd_cd__back
 
   # set lba
-  mov (cli_cwd_lba_high), %ax
-  push %ax
   mov (cli_cwd_lba_low), %ax
+  push %ax
+  mov (cli_cwd_lba_high), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -145,15 +145,15 @@ cmd_cd:
 
   # !!! meta_data
   # set meta lba
-  movw (cli_cwd_lba_high), %ax
+  mov (cli_cwd_lba_low), %ax
   push %ax
-  movw (cli_cwd_lba_low), %ax
+  mov (cli_cwd_lba_high), %ax
   push %ax
-  call set_meta_dap_lba
+  call set_dap_lba
   add $0x04, %sp
 
   # read disk
-  push $meta_dap
+  push $dap
   push $0x42
   call rw_disk
   add $0x04, %sp
