@@ -23,7 +23,7 @@
 #   set_dap_lba
 #   rw_disk
 #   dap
-#   cli_cwd_lba
+#   cli_cwd_lba_*
 #   cli_buf_arg
 
 .code16
@@ -35,23 +35,23 @@
 .extern set_dap_lba
 .extern rw_disk
 .extern dap
-.extern cli_cwd_lba
+.extern cli_cwd_lba_low, cli_cwd_lba_high
 .extern cli_buf_arg
 
 # cmd_cd()
 cmd_cd:
   # prol
 
-  # cond: period ? back
+  # cond: period ? back !!! test
   mov $cli_buf_arg, %di
   mov (%di), %ax
   cmp $0x2E2E, %ax # period
   jz .cmd_cd__back
 
   # set lba
-  mov (cli_cwd_lba+2), %ax
+  mov (cli_cwd_lba_high), %ax
   push %ax
-  mov (cli_cwd_lba), %ax
+  mov (cli_cwd_lba_low), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -122,16 +122,18 @@ cmd_cd:
 .cmd_cd__main:
   pop %si # main mem ptr
 
-  # get lba (dentry), set lba (cli_cwd_lba)
+  mov $0x0E, %ah
+  mov $'M', %al
+  int $0x10
+
+  # get data lba (dentry), set lba (cli_cwd_lba_*)
   mov 4(%si), %ax # low
-  mov %ax, (cli_cwd_lba)
+  mov %ax, (cli_cwd_lba_low)
   mov 6(%si), %ax # high
-  mov %ax, (cli_cwd_lba+2)
+  mov %ax, (cli_cwd_lba_high)
 
 .cmd_cd__done:
   call print_newline
-  # cmp name
-  # main change cli_cwd_lba
 
   # epil
   ret
@@ -141,10 +143,28 @@ cmd_cd:
   mov $'A', %al
   int $0x10
 
-  # get parent lba (dentry), set lba (cli_cwd_lba)
-  mov 8(%si), %ax # low
-  mov %ax, (cli_cwd_lba)
-  mov 10(%si), %ax # high
-  mov %ax, (cli_cwd_lba+2)
+  # !!! meta_data
+  # set meta lba
+  movw (cli_cwd_lba_high), %ax
+  push %ax
+  movw (cli_cwd_lba_low), %ax
+  push %ax
+  call set_meta_dap_lba
+  add $0x04, %sp
+
+  # read disk
+  push $meta_dap
+  push $0x42
+  call rw_disk
+  add $0x04, %sp
+
+  # set mem ptr
+  mov $0x8000, %si
+
+  # get parent lba (dentry !!! mata_data), set lba (cli_cwd_lba_*)
+  movw (%si), %ax # low
+  movw %ax, (cli_cwd_lba_low)
+  movw 2(%si), %ax # high
+  movw %ax, (cli_cwd_lba_high)
 
   jmp .cmd_cd__done

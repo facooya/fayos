@@ -20,7 +20,7 @@
 # hdl_cli_opt_err
 # cli_cmd_map
 # cli_buf_*
-# cli_cwd_lba
+# cli_cwd_lba_*
 #
 # .tok_cli_buf()
 # .init_cli_buf_all()
@@ -39,7 +39,7 @@
 .global exec_cli_cmd
 .global hdl_cli_opt_err
 .global cli_cmd_map
-.global cli_cwd_lba
+.global cli_cwd_lba_low, cli_cwd_lba_high
 .global cli_buf_raw, cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir
 
@@ -303,8 +303,9 @@ cli_buf_opt: .zero 0x10
 cli_buf_tmp: .zero 0x20
 cli_buf_redir: .zero 0x20
 
-# cli_cwd_lba
-cli_cwd_lba: .long 0x00
+# cli_cwd_lba_*
+cli_cwd_lba_low: .word 0x80 # root dir
+cli_cwd_lba_high: .word 0x00
 
 # *_err_msg
 .cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."

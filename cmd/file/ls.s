@@ -23,7 +23,7 @@
 #   set_dap_lba
 #   rw_disk
 #   print_newline
-#   cli_cwd_lba
+#   cli_cwd_lba_*
 
 # NOTE
 # [n_skip_dentry]
@@ -42,7 +42,7 @@
 
 .extern rw_disk
 .extern print_newline
-.extern cli_cwd_lba
+.extern cli_cwd_lba_low, cli_cwd_lba_high
 
 # cmd_ls() !!! current dir
 cmd_ls:
@@ -53,9 +53,11 @@ cmd_ls:
   push %cx
 
   # set lba
-  push $0x00
+  # push $0x00
   # push $0x80 # !!! root dir
-  mov (cli_cwd_lba), %ax
+  movw (cli_cwd_lba_high), %ax
+  push %ax
+  movw (cli_cwd_lba_low), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp

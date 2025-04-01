@@ -17,18 +17,30 @@
 
 # INDEX
 # init_master_block()
+#
+# .init_root_meta_data() !!! test
 
 # DEPS
 # init_master_block()
 #   rw_disk
 #   master_dap
-#   cli_cwd_lba
+#   cli_cwd_lba_*
+#
+# .init_root_meta_data() !!! test
+#   set_meta_dap_lba
+#   meta_dap
 
 # NOTE
 # 0x10: master
 #   0x00: next LBA
 #   0x04: root LBA
 # 0x80: root
+# 
+# [meta_data]
+#   parent_lba: 4 bytes
+#     parent_lba_low: 2 bytes
+#     parent_lba_high: 2 bytes
+#   magic_num: 2 bytes (0xFADA: FacooyA meta DatA)
 
 .code16
 .section .text
@@ -37,7 +49,9 @@
 
 .extern rw_disk
 .extern master_dap
-.extern cli_cwd_lba
+.extern cli_cwd_lba_low, cli_cwd_lba_high
+.extern meta_dap # !!! test 
+.extern set_meta_dap_lba # !!! test
 
 # init_master_block()
 init_master_block:
@@ -61,9 +75,9 @@ init_master_block:
   # write mem !!! change 4 bytes
   mov $0x88, %ax # next
   mov %ax, (%si)
-  mov $0x80, %ax # root
-  mov %ax, 4(%si)
-  mov %ax, (cli_cwd_lba) # set
+
+  # init root meta data
+  call .init_root_meta_data
 
   # write disk
   push $master_dap
@@ -75,4 +89,42 @@ init_master_block:
   pop %ax
   pop %si
   ret
+
+.init_root_meta_data:
+  mov $0x80, %ax # root dir
+  mov %ax, 4(%si)
+  # mov %ax, (cli_cwd_lba_low) # set
+
+  push %si
+
+  # set meta lba
+  push $0x00
+  push $0x80 # root dir
+  call set_meta_dap_lba
+  add $0x04, %sp
+
+  # read disk
+  push $meta_dap
+  push $0x42
+  call rw_disk
+  add $0x04, %sp
+
+  # set mem ptr
+  mov $0x8000, %si
+
+  # write meta data
+  movw $0x80, (%si) # low
+  movw $0x00, 2(%si) # high
+  movw $0xFADA, 4(%si) # magic
+
+  # write disk
+  push $meta_dap
+  push $0x43
+  call rw_disk
+  add $0x04, %sp
+
+  pop %si
+
+  ret
+
   

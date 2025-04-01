@@ -17,6 +17,14 @@
 
 # INDEX
 # set_dentry()
+# write_meta_data() !!! test
+
+# DEPS
+# write_meta_data() !!! test
+#   set_meta_dap_lba
+#   rw_disk
+#   meta_dap
+#   cli_cwd_lba_*
 
 # NOTE
 # [common_dentry]
@@ -54,11 +62,17 @@
 .section .text
 
 .global set_dentry
+.global write_meta_data # !!! test
+
+.extern set_meta_dap_lba
+.extern rw_disk
+.extern meta_dap
+.extern cli_cwd_lba_low, cli_cwd_lba_high
 
 # set_dentry(name_size) [n_set_dentry]
 set_dentry:
   # prol
-  push %sp
+  push %bp
   mov %sp, %bp
   push %ax
   push %bx
@@ -88,4 +102,43 @@ set_dentry:
   pop %bx
   pop %ax
   pop %bp
+  ret
+
+# write meta data() !!! test
+write_meta_data:
+  # reverse reg_di
+  mov (%di), %ax
+  sub $0x08, %ax
+  mov %ax, (%di)
+  
+  # set meta lba
+  movw 2(%di), %ax # high
+  push %ax
+  movw (%di), %ax # low
+  push %ax
+  call set_meta_dap_lba
+  add $0x04, %sp
+
+  # read disk
+  push $meta_dap
+  push $0x42
+  call rw_disk
+  add $0x04, %sp
+
+  # set ptr
+  mov $0x8000, %si
+
+  # write meta data
+  movw (cli_cwd_lba_low), %ax # low
+  movw %ax, (%si)
+  movw (cli_cwd_lba_high), %ax # high
+  movw %ax, 2(%si)
+  movw $0xFADA, 4(%si) # magic
+
+  # write disk
+  push $meta_dap
+  push $0x43
+  call rw_disk
+  add $0x04, %sp
+
   ret

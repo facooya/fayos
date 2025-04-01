@@ -25,7 +25,8 @@
 #   print_newline
 #   master_dap
 #   cli_buf_arg
-#   cli_cwd_lba
+#   cli_cwd_lba_*
+#   write_meta_data
 
 .code16
 .section .text
@@ -37,7 +38,8 @@
 .extern print_newline
 .extern master_dap
 .extern cli_buf_arg
-.extern cli_cwd_lba
+.extern cli_cwd_lba_low, cli_cwd_lba_high
+.extern write_meta_data
 
 # cmd_touch()
 cmd_touch:
@@ -48,10 +50,12 @@ cmd_touch:
   push %cx
 
   # set lba
-  push $0x00
+  # push $0x00
   # push $0x80 # !!! root dir
-  mov (cli_cwd_lba), %ax # !!! test
-  push %ax # !!! test
+  movw (cli_cwd_lba_high), %ax
+  push %ax
+  movw (cli_cwd_lba_low), %ax
+  push %ax
   call set_dap_lba
   add $0x04, %sp
 
@@ -120,12 +124,12 @@ cmd_touch:
   mov %ax, 6(%si)
 
   # set parent lba (dentry)
-  mov (cli_cwd_lba), %ax # low
+  mov (cli_cwd_lba_low), %ax # low
   mov %ax, 8(%si)
-  mov (cli_cwd_lba+2), %ax # high
+  mov (cli_cwd_lba_high), %ax # high
   mov %ax, 10(%si)
 
-  # write next block num
+  # write next block num !!! 2 bytes
   mov (%di), %ax
   add $0x08, %ax
   mov %ax, (%di)
@@ -141,6 +145,9 @@ cmd_touch:
   push $0x43
   call rw_disk
   add $0x04, %sp
+
+  # write meta data !!! test
+  call write_meta_data
 
   call print_newline
 
