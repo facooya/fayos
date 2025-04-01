@@ -162,9 +162,9 @@ cmd_cd:
   mov $0x8000, %si
 
   # get parent lba (dentry !!! mata_data), set lba (cli_cwd_lba_*)
-  movw (%si), %ax # low
-  movw %ax, (cli_cwd_lba_low)
-  movw 2(%si), %ax # high
-  movw %ax, (cli_cwd_lba_high)
+  mov (%si), %ax # low
+  mov %ax, (cli_cwd_lba_low)
+  mov 2(%si), %ax # high
+  mov %ax, (cli_cwd_lba_high)
 
   jmp .cmd_cd__done

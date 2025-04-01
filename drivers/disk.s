@@ -17,13 +17,10 @@
 
 # INDEX
 # set_dap_lba(lba_high, lba_low)
-# !!! set_meta_dap_lba() !!! test
-# rw_disk(rw_mode, dap_struct_addr)
+# rw_disk(rw_mode, dap_struct)
 # set_dap_target(count, segment, offset)
 # reset_dap_target()
 # dap
-# !!! master_dap
-# !!! meta_dap
 #
 # .hdl_rw_disk_err
 
@@ -64,18 +61,15 @@
 .section .text
 
 .global set_dap_lba
-# .global set_meta_dap_lba # !!! test
 .global rw_disk
 .global dap
-# .global master_dap
-# .global meta_dap
 .global set_dap_target
 .global reset_dap_target
 
 .extern print_newline
 .extern print_str
 
-# set_dap_lba(lba_high, lba_low), [n_set_dap_lba]
+# set_dap_lba(lba_high, lba_low), [n_set_dap]
 set_dap_lba:
   # prol
   push %bp
@@ -96,7 +90,7 @@ set_dap_lba:
   pop %bp
   ret
 
-# set_dap_target(count, segment, offset) [n_set_dap_target]
+# set_dap_target(count, segment, offset) [n_set_dap]
 set_dap_target:
   # prol
   push %bp
@@ -128,28 +122,7 @@ reset_dap_target:
   add $0x06, %sp
   ret
 
-# set_meta_dap_lba(lba_low_addr, lba_high_addr) !!! test
-# set_meta_dap_lba:
-#   # prol
-#   push %bp
-#   mov %sp, %bp
-#   push %bx
-#   push %ax
-
-#   # set
-#   mov $meta_dap, %bx
-#   mov 4(%bp), %ax # low
-#   mov %ax, 8(%bx)
-#   mov 6(%bp), %ax # high
-#   mov %ax, 10(%bx)
-  
-#   # epli
-#   pop %ax
-#   pop %bx
-#   pop %bp
-#   ret
-
-# rw_disk(rw_mode, dap_struct_addr) [n_rw_disk]
+# rw_disk(rw_mode, dap_struct) [n_rw_disk] !!! only get mode
 rw_disk:
   # prol
   push %bp
@@ -197,30 +170,6 @@ dap: # [n_dap]
   .word 0x00 
   .word 0x00
   .word 0x00
-
-# master_dap
-# master_dap: # [n_master_dap]
-#   .byte 0x10
-#   .byte 0x00
-#   .word 0x04
-#   .word 0x0600
-#   .word 0x00
-#   .word 0x10
-#   .word 0x00
-#   .word 0x00
-#   .word 0x00
-
-# meta_dap
-# meta_dap:
-#   .byte 0x10
-#   .byte 0x00
-#   .word 0x08
-#   .word 0x8000
-#   .word 0x00
-#   .word 0x80
-#   .word 0x00
-#   .word 0x00
-#   .word 0x00
 
 # msg
 .disk_err_msg: .asciz "Disk error." 

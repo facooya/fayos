@@ -23,7 +23,6 @@
 # DEPS
 # init_master_block()
 #   rw_disk
-#   !!! master_dap
 #   set_dap_target
 #   reset_dap_target
 #   set_dap_lba
@@ -31,8 +30,6 @@
 #   cli_cwd_lba_*
 #
 # .init_root_meta_data() !!! test
-#   !!! set_meta_dap_lba
-#   !!! meta_dap
 #   set_dap_lba
 #   dap
 
@@ -54,14 +51,11 @@
 .global init_master_block
 
 .extern rw_disk
-#.extern master_dap
 .extern set_dap_lba
 .extern set_dap_target
 .extern reset_dap_target
 .extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
-#.extern meta_dap # !!! test 
-#.extern set_meta_dap_lba # !!! test
 
 # init_master_block()
 init_master_block:
@@ -74,6 +68,12 @@ init_master_block:
   push $0x04
   call set_dap_target
   add $0x06, %sp
+
+  # set lba
+  push $0x10
+  push $0x00
+  call set_dap_lba
+  add $0x04, %sp
 
   # read disk
   push $dap
@@ -101,6 +101,12 @@ init_master_block:
 
   call reset_dap_target
 
+  # set lba
+  push $0x80
+  push $0x00
+  call set_dap_lba
+  add $0x04, %sp
+
   # init root meta data
   call .init_root_meta_data
 
@@ -110,12 +116,6 @@ init_master_block:
   ret
 
 .init_root_meta_data:
-  mov $0x80, %ax # root dir
-  mov %ax, 4(%si)
-  # mov %ax, (cli_cwd_lba_low) # set
-
-  push %si
-
   # set meta lba
   push $0x80 # root dir
   push $0x00
@@ -141,8 +141,6 @@ init_master_block:
   push $0x43
   call rw_disk
   add $0x04, %sp
-
-  pop %si
 
   ret
 

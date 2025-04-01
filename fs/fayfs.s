@@ -40,9 +40,9 @@
 #     [off+4] data_lba: 4 bytes (total)
 #       [off+4] data_lba_low: 2 bytes (part of data_lba)
 #       [off+6] data_lba_high: 2 bytes (part of data_lba)
-#     [off+8] parent_lba: 4 bytes (total)
-#       [off+8] parent_lba_low: 2 bytes (part of parent_lba)
-#       [off+10] parent_lba_high: 2 bytes (part of parent_lba)
+#     !!! [off+8] parent_lba: 4 bytes (total)
+#     !!!  [off+8] parent_lba_low: 2 bytes (part of parent_lba)
+#     !!!  [off+10] parent_lba_high: 2 bytes (part of parent_lba)
 #     [off+12] entry_level: 1 byte
 #     [off+13] file_type: 1 byte
 #   
@@ -65,10 +65,8 @@
 .global set_dentry
 .global write_meta_data # !!! test
 
-#.extern set_meta_dap_lba
 .extern set_dap_lba
 .extern rw_disk
-#.extern meta_dap
 .extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 

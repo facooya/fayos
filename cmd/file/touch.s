@@ -23,7 +23,6 @@
 #   rw_disk
 #   set_dentry
 #   print_newline
-#   !!! master_dap
 #   cli_buf_arg
 #   cli_cwd_lba_*
 #   write_meta_data
@@ -36,7 +35,6 @@
 .extern rw_disk
 .extern set_dentry
 .extern print_newline
-# !!! .extern master_dap
 .extern cli_buf_arg
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 .extern write_meta_data
@@ -50,8 +48,6 @@ cmd_touch:
   push %cx
 
   # set lba
-  # push $0x00
-  # push $0x80 # !!! root dir
   movw (cli_cwd_lba_low), %ax
   push %ax
   movw (cli_cwd_lba_high), %ax
