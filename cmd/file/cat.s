@@ -21,7 +21,8 @@
 # DEPS
 # cmd_cat()
 #   print_newline
-#   rw_disk
+#   read_disk
+#   write_disk !!! redir
 #   set_dap_lba
 
 # NOTE
@@ -40,7 +41,8 @@
 .global cmd_cat
 
 .extern print_newline
-.extern rw_disk
+.extern read_disk
+.extern write_disk
 .extern set_dap_lba
 
 # cmd_cat()
@@ -57,11 +59,7 @@ cmd_cat:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   call print_newline
 
@@ -151,11 +149,7 @@ cmd_cat:
   call set_dap_lba
   add $0x04, %sp
   
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set data mem ptr
   mov $0x8000, %si

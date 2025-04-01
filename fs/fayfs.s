@@ -21,10 +21,9 @@
 
 # DEPS
 # write_meta_data() !!! test
-#   !!! set_meta_dap_lba
 #   set_dap_lba
-#   rw_disk
-#   !!! meta_dap
+#   read_disk
+#   write_disk
 #   cli_cwd_lba_* !!! temp
 
 # NOTE
@@ -66,7 +65,8 @@
 .global write_meta_data # !!! test
 
 .extern set_dap_lba
-.extern rw_disk
+.extern read_disk
+.extern write_disk
 .extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 
@@ -120,11 +120,7 @@ write_meta_data:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set ptr
   mov $0x8000, %si
@@ -136,10 +132,6 @@ write_meta_data:
   mov %ax, 2(%si)
   mov $0xFADA, 4(%si) # magic
 
-  # write disk
-  push $dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
+  call write_disk
 
   ret

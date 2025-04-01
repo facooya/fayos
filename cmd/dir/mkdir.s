@@ -21,7 +21,8 @@
 # DEPS
 # cmd_mkdir()
 #   set_dap_lba
-#   rw_disk
+#   read_disk
+#   write_disk
 #   dap
 
 .code16
@@ -31,7 +32,8 @@
 
 .extern print_newline
 .extern set_dap_lba
-.extern rw_disk
+.extern read_disk
+.extern write_disk
 .extern dap
 
 # cmd_mkdir()

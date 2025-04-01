@@ -21,7 +21,7 @@
 # DEPS
 # cmd_cd()
 #   set_dap_lba
-#   rw_disk
+#   read_disk
 #   dap
 #   cli_cwd_lba_*
 #   cli_buf_arg
@@ -33,7 +33,7 @@
 
 .extern print_newline
 .extern set_dap_lba
-.extern rw_disk
+.extern read_disk
 .extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 .extern cli_buf_arg
@@ -56,11 +56,7 @@ cmd_cd:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set mem ptr
   mov $0x8000, %si
@@ -152,11 +148,7 @@ cmd_cd:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set mem ptr
   mov $0x8000, %si

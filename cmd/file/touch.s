@@ -20,7 +20,8 @@
 
 # DEPS
 # cmd_touch()
-#   rw_disk
+#   read_disk
+#   write_disk
 #   set_dentry
 #   print_newline
 #   cli_buf_arg
@@ -32,7 +33,8 @@
 
 .global cmd_touch
 
-.extern rw_disk
+.extern read_disk
+.extern write_disk
 .extern set_dentry
 .extern print_newline
 .extern cli_buf_arg
@@ -55,11 +57,7 @@ cmd_touch:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set mem ptr
   mov $0x8000, %si
@@ -117,11 +115,7 @@ cmd_touch:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk (master)
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk # master
 
   # set mem ptr
   mov $0x0600, %di
@@ -144,11 +138,7 @@ cmd_touch:
   add $0x08, %ax
   mov %ax, (%di)
 
-  # write disk (master)
-  push $dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
+  call write_disk # master
 
   # !!! temp
   call reset_dap_target
@@ -161,11 +151,7 @@ cmd_touch:
   call set_dap_lba
   add $0x04, %sp
 
-  # write disk
-  push $dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
+  call write_disk
 
   # write meta data !!! test
   call write_meta_data

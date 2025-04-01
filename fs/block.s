@@ -22,10 +22,11 @@
 
 # DEPS
 # init_master_block()
-#   rw_disk
 #   set_dap_target
 #   reset_dap_target
 #   set_dap_lba
+#   read_disk
+#   write_disk
 #   dap
 #   cli_cwd_lba_*
 #
@@ -50,10 +51,11 @@
 
 .global init_master_block
 
-.extern rw_disk
 .extern set_dap_lba
 .extern set_dap_target
 .extern reset_dap_target
+.extern read_disk
+.extern write_disk
 .extern dap
 .extern cli_cwd_lba_low, cli_cwd_lba_high
 
@@ -75,11 +77,7 @@ init_master_block:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set mem ptr
   mov $0x0600, %si
@@ -93,11 +91,7 @@ init_master_block:
   mov $0x88, %ax # next
   mov %ax, (%si)
 
-  # write disk
-  push $dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
+  call write_disk
 
   call reset_dap_target
 
@@ -122,11 +116,7 @@ init_master_block:
   call set_dap_lba
   add $0x04, %sp
 
-  # read disk
-  push $dap
-  push $0x42
-  call rw_disk
-  add $0x04, %sp
+  call read_disk
 
   # set mem ptr
   mov $0x8000, %si
@@ -136,12 +126,7 @@ init_master_block:
   movw $0x00, 2(%si) # high
   movw $0xFADA, 4(%si) # magic
 
-  # write disk
-  push $dap
-  push $0x43
-  call rw_disk
-  add $0x04, %sp
-
+  call write_disk
   ret
 
   

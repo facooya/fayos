@@ -17,11 +17,13 @@
 
 # INDEX
 # set_dap_lba(lba_high, lba_low)
-# rw_disk(rw_mode, dap_struct)
 # set_dap_target(count, segment, offset)
 # reset_dap_target()
+# read_disk()
+# write_disk()
 # dap
 #
+# .rw_disk(mode)
 # .hdl_rw_disk_err
 
 # DEPS
@@ -42,7 +44,7 @@
 #   [dap+10] lba high
 #
 # [n_rw_disk]
-#   rw_mode: 0x42 (read), 0x43 (write)
+#   mode: 0x42 (read), 0x43 (write)
 #
 # [n_dap]
 #   Common
@@ -61,10 +63,11 @@
 .section .text
 
 .global set_dap_lba
-.global rw_disk
-.global dap
 .global set_dap_target
 .global reset_dap_target
+.global read_disk
+.global write_disk
+.global dap
 
 .extern print_newline
 .extern print_str
@@ -122,8 +125,22 @@ reset_dap_target:
   add $0x06, %sp
   ret
 
-# rw_disk(rw_mode, dap_struct) [n_rw_disk] !!! only get mode
-rw_disk:
+# read_disk()
+read_disk:
+  push $0x42
+  call .rw_disk
+  add $0x02, %sp
+  ret
+
+# write_disk()
+write_disk:
+  push $0x43
+  call .rw_disk
+  add $0x02, %sp
+  ret
+
+# .rw_disk(mode) [n_rw_disk]
+.rw_disk:
   # prol
   push %bp
   mov %sp, %bp
@@ -134,7 +151,7 @@ rw_disk:
   # try
   clc
   mov 4(%bp), %ah
-  mov 6(%bp), %si
+  mov $dap, %si
   mov $0x80, %dl
   int $0x13
   jc .hdl_rw_disk_err
