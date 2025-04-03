@@ -4,14 +4,19 @@ FAYOS targets 16-bit x86 (real mode), uses BIOS interrupts, and is written in GN
 
 # Quick test for Linux x86-64 using qemu
 
+Build  
 `make`  
 `./qemu.sh`  
 
+Clean  
+`make clean`  
+
 # Directory Note  
-boot/  
-build/ - *.o, *.bin, *.img  
-cmd/  
+boot/ - boot  
+build/ - linker.ld, make (*.o, *.bin, *.img)  
+cmd/ - commands  
+docs/ - documentation  
 drivers/ - keyboard, disk  
-fs/ - fayfs, block  
+fs/fayfs/ - file system  
 kernel/ - kernel start (main loop)  
 lib/ - common  

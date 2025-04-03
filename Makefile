@@ -11,8 +11,8 @@ kernel/cache.s \
 lib/print.s \
 drivers/kbd.s \
 drivers/disk.s \
-fs/fayfs.s \
-fs/block.s \
+fs/fayfs/fayfs.s \
+fs/fayfs/block.s \
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \

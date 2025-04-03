@@ -110,7 +110,7 @@ cmd_touch:
   mov (free_lba+2), %ax
   mov %ax, 6(%si)
 
-  # set parent lba (dentry) !!! parent lba (metadata)
+  # set parent lba (dentry) !!! del: parent lba (metadata)
   mov (cwd_lba), %ax
   mov %ax, 8(%si)
   mov (cwd_lba+2), %ax
@@ -121,7 +121,7 @@ cmd_touch:
   # write meta data !!! test
   call write_meta_data
 
-  # allocate free lba, !!! seq: write_meta_data
+  # allocate free lba, !!! low only, seq: write_meta_data
   mov (free_lba), %ax
   add $0x08, %ax
   mov %ax, (free_lba)
