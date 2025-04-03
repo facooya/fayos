@@ -28,7 +28,6 @@
 #   read_disk
 #   write_disk
 #   dap
-#   cli_cwd_lba_*
 #
 # .init_root_meta_data() !!! test
 #   set_dap_lba
@@ -57,7 +56,6 @@
 .extern read_disk
 .extern write_disk
 .extern dap
-.extern cli_cwd_lba_low, cli_cwd_lba_high
 
 # init_master_block()
 init_master_block:

@@ -25,7 +25,7 @@
 #   set_dentry
 #   print_newline
 #   cli_buf_arg
-#   cli_cwd_lba_*
+#   cwd_lba
 #   write_meta_data
 
 .code16
@@ -38,7 +38,7 @@
 .extern set_dentry
 .extern print_newline
 .extern cli_buf_arg
-.extern cli_cwd_lba_low, cli_cwd_lba_high
+.extern cwd_lba
 .extern write_meta_data
 
 # cmd_touch()
@@ -50,9 +50,9 @@ cmd_touch:
   push %cx
 
   # set lba
-  movw (cli_cwd_lba_low), %ax
+  movw (cwd_lba), %ax
   push %ax
-  movw (cli_cwd_lba_high), %ax
+  movw (cwd_lba+2), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -128,9 +128,9 @@ cmd_touch:
   mov %ax, 6(%si)
 
   # set parent lba (dentry)
-  mov (cli_cwd_lba_low), %ax # low
+  mov (cwd_lba), %ax # low
   mov %ax, 8(%si)
-  mov (cli_cwd_lba_high), %ax # high
+  mov (cwd_lba+2), %ax # high
   mov %ax, 10(%si)
 
   # write next block num !!! 2 bytes
@@ -144,9 +144,9 @@ cmd_touch:
   call reset_dap_target
 
   # !!! temp set lba
-  movw (cli_cwd_lba_low), %ax
+  mov (cwd_lba), %ax # low
   push %ax
-  movw (cli_cwd_lba_high), %ax
+  mov (cwd_lba+2), %ax # high
   push %ax
   call set_dap_lba
   add $0x04, %sp

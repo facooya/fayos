@@ -24,7 +24,7 @@
 #   set_dap_lba
 #   read_disk
 #   write_disk
-#   cli_cwd_lba_* !!! temp
+#   cwd_lba
 
 # NOTE
 # [common_dentry]
@@ -68,7 +68,7 @@
 .extern read_disk
 .extern write_disk
 .extern dap
-.extern cli_cwd_lba_low, cli_cwd_lba_high
+.extern cwd_lba
 
 # set_dentry(name_size) [n_set_dentry]
 set_dentry:
@@ -126,9 +126,9 @@ write_meta_data:
   mov $0x8000, %si
 
   # write meta data
-  mov (cli_cwd_lba_low), %ax # low
+  mov (cwd_lba), %ax # low
   mov %ax, (%si)
-  mov (cli_cwd_lba_high), %ax # high
+  mov (cwd_lba+2), %ax # high
   mov %ax, 2(%si)
   mov $0xFADA, 4(%si) # magic
 

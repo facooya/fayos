@@ -7,6 +7,7 @@ LD_KERNEL = ld -m elf_i386 -T $(BUILD)/linker.ld
 SRCS = \
 kernel/kernel.s \
 kernel/cli.s \
+kernel/cache.s \
 lib/print.s \
 drivers/kbd.s \
 drivers/disk.s \

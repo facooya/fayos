@@ -23,7 +23,7 @@
 #   set_dap_lba
 #   read_disk
 #   dap
-#   cli_cwd_lba_*
+#   cwd_lba
 #   cli_buf_arg
 
 .code16
@@ -35,7 +35,7 @@
 .extern set_dap_lba
 .extern read_disk
 .extern dap
-.extern cli_cwd_lba_low, cli_cwd_lba_high
+.extern cwd_lba
 .extern cli_buf_arg
 
 # cmd_cd()
@@ -49,9 +49,9 @@ cmd_cd:
   jz .cmd_cd__back
 
   # set lba
-  mov (cli_cwd_lba_low), %ax
+  mov (cwd_lba), %ax
   push %ax
-  mov (cli_cwd_lba_high), %ax
+  mov (cwd_lba+2), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -122,11 +122,11 @@ cmd_cd:
   mov $'M', %al
   int $0x10
 
-  # get data lba (dentry), set lba (cli_cwd_lba_*)
+  # get data lba (dentry), set lba (cwd_lba)
   mov 4(%si), %ax # low
-  mov %ax, (cli_cwd_lba_low)
+  mov %ax, (cwd_lba)
   mov 6(%si), %ax # high
-  mov %ax, (cli_cwd_lba_high)
+  mov %ax, (cwd_lba+2)
 
 .cmd_cd__done:
   call print_newline
@@ -141,9 +141,9 @@ cmd_cd:
 
   # !!! meta_data
   # set meta lba
-  mov (cli_cwd_lba_low), %ax
+  mov (cwd_lba), %ax
   push %ax
-  mov (cli_cwd_lba_high), %ax
+  mov (cwd_lba+2), %ax
   push %ax
   call set_dap_lba
   add $0x04, %sp
@@ -153,10 +153,10 @@ cmd_cd:
   # set mem ptr
   mov $0x8000, %si
 
-  # get parent lba (dentry !!! mata_data), set lba (cli_cwd_lba_*)
+  # get parent lba (dentry !!! mata_data), set lba (cwd_lba)
   mov (%si), %ax # low
-  mov %ax, (cli_cwd_lba_low)
+  mov %ax, (cwd_lba)
   mov 2(%si), %ax # high
-  mov %ax, (cli_cwd_lba_high)
+  mov %ax, (cwd_lba+2)
 
   jmp .cmd_cd__done
