@@ -1,7 +1,11 @@
-Quick test FAYOS in qemu linux command:
-./make.sh
-./qemu.sh
-
+commit prefix
+chore
+docs
+refactor
+feat (Feature)
+test
+fix
+wip (Work In Progress)
 
 Comment Rule
 
