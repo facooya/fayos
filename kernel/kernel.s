@@ -29,6 +29,7 @@
 # - print_newline
 # - init_master_block
 # - cli_buf_raw
+#   set_free_lba
 #
 # kernel_loop()
 # - hdl_kbd
@@ -49,6 +50,7 @@
 .extern hdl_kbd
 .extern init_master_block
 .extern cli_buf_raw
+.extern set_free_lba
 
 # _start()
 _start:
@@ -67,6 +69,7 @@ _start:
   add $0x02, %sp
 
   call init_master_block
+  call set_free_lba
 
   mov $cli_buf_raw, %si
   call .set_kernel_min_cur_pos_x

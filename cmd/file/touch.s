@@ -27,6 +27,7 @@
 #   cli_buf_arg
 #   cwd_lba
 #   write_meta_data
+#   free_lba
 
 .code16
 .section .text
@@ -40,6 +41,7 @@
 .extern cli_buf_arg
 .extern cwd_lba
 .extern write_meta_data
+.extern free_lba
 
 # cmd_touch()
 cmd_touch:
@@ -102,59 +104,27 @@ cmd_touch:
   call set_dentry
   add $0x02, %sp
 
-  # !!! temp
-  push $0x0600
-  push $0x00
-  push $0x04
-  call set_dap_target
-  add $0x06, %sp
-
-  # !!! temp
-  push $0x10
-  push $0x00
-  call set_dap_lba
-  add $0x04, %sp
-
-  call read_disk # master
-
-  # set mem ptr
-  mov $0x0600, %di
-
-  # !!! get lba => cache.s
-  # get lba (master), set lba (dentry)
-  mov (%di), %ax # low
+  # set lba (dentry)
+  mov (free_lba), %ax
   mov %ax, 4(%si)
-  mov 2(%di), %ax # high
+  mov (free_lba+2), %ax
   mov %ax, 6(%si)
 
-  # set parent lba (dentry)
-  mov (cwd_lba), %ax # low
+  # set parent lba (dentry) !!! parent lba (metadata)
+  mov (cwd_lba), %ax
   mov %ax, 8(%si)
-  mov (cwd_lba+2), %ax # high
+  mov (cwd_lba+2), %ax
   mov %ax, 10(%si)
-
-  # write next block num !!! 2 bytes
-  mov (%di), %ax
-  add $0x08, %ax
-  mov %ax, (%di)
-
-  call write_disk # master
-
-  # !!! temp
-  call reset_dap_target
-
-  # !!! temp set lba
-  mov (cwd_lba), %ax # low
-  push %ax
-  mov (cwd_lba+2), %ax # high
-  push %ax
-  call set_dap_lba
-  add $0x04, %sp
 
   call write_disk
 
   # write meta data !!! test
   call write_meta_data
+
+  # allocate free lba, !!! seq: write_meta_data
+  mov (free_lba), %ax
+  add $0x08, %ax
+  mov %ax, (free_lba)
 
   call print_newline
 

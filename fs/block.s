@@ -17,6 +17,7 @@
 
 # INDEX
 # init_master_block()
+# set_free_lba()
 #
 # .init_root_meta_data() !!! test
 
@@ -28,6 +29,9 @@
 #   read_disk
 #   write_disk
 #   dap
+#
+# set_free_lba()
+#   free_lba
 #
 # .init_root_meta_data() !!! test
 #   set_dap_lba
@@ -49,6 +53,7 @@
 .section .text
 
 .global init_master_block
+.global set_free_lba
 
 .extern set_dap_lba
 .extern set_dap_target
@@ -56,6 +61,7 @@
 .extern read_disk
 .extern write_disk
 .extern dap
+.extern free_lba
 
 # init_master_block()
 init_master_block:
@@ -103,6 +109,13 @@ init_master_block:
   call .init_root_meta_data
 
 .init_master_block__done:
+  # reset
+  call reset_dap_target
+  push $0x80
+  push $0x00
+  call set_dap_lba
+  add $0x04, %sp
+
   pop %ax
   pop %si
   ret
@@ -127,4 +140,41 @@ init_master_block:
   call write_disk
   ret
 
+
+set_free_lba:
+  # prol
+  push %si
+  push %ax
+
+  # mem ptr
+  mov $0x8000, %si
+
+.set_free_lba__lp:
+  # set dap lba
+  mov (free_lba), %ax
+  push %ax
+  mov (free_lba+2), %ax
+  push %ax
+  call set_dap_lba
+  add $0x04, %sp
+
+  call read_disk
+
+  # cond: null ? done
+  mov (%si), %ax
+  test %ax, %ax
+  or 2(%si), %ax
+  jz .set_free_lba__done
+
+  # loop
+  mov (free_lba), %ax
+  add $0x08, %ax
+  mov %ax, (free_lba)
+  jmp .set_free_lba__lp
+
+.set_free_lba__done:
+  # epil
+  pop %ax
+  pop %si
+  ret
   

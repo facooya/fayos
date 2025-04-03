@@ -23,17 +23,17 @@
 #   (*_lba): low
 #   (*_lba+2): high
 #
-# [n_next_free_lba]
+# [n_free_lba]
 #   value: set by kernel
 
 .code16
 .section .data
 
 .global cwd_lba
-.global next_free_lba
+.global free_lba
 
 # cwd_lba [n_lba]
 cwd_lba: .long 0x80
 
-# next_free_lba [n_lba], [n_next_free_lba]
-next_free_lba: .long 0x88
+# free_lba [n_lba], [n_free_lba]
+free_lba: .long 0x88

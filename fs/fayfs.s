@@ -107,15 +107,10 @@ set_dentry:
 
 # write meta data() !!! test
 write_meta_data:
-  # reverse reg_di
-  mov (%di), %ax
-  sub $0x08, %ax
-  mov %ax, (%di)
-
   # set lba
-  mov (%di), %ax # low
+  mov (free_lba), %ax # low
   push %ax
-  mov 2(%di), %ax # high
+  mov (free_lba+2), %ax # high
   push %ax
   call set_dap_lba
   add $0x04, %sp
