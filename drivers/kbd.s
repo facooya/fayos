@@ -15,14 +15,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# DEPS
-# .hdl_bs()
-# - kernel_min_cur_pos_x
+# INDEX
+# hdl_kbd()
 #
-# .hdl_enter()
-# - kernel_prompt
-# - exec_cli_cmd
-# - print_str
+# .hdl_kbd__bs()
+# .hdl_kbd__enter()
+# .hdl_kbd__left()
+# .hdl_kbd__right()
+# .hdl_kbd__up()
+# .hdl_kbd__down()
+
+# DEPS
+# .hdl_kbd__bs()
+#   kernel_min_cur_pos_x
+#
+# .hdl_kbd__enter()
+#   kernel_prompt
+#   exec_cli_cmd
+#   print_str
+
+# NOTE
+# [n_arrow]
+#   normal only
+#   AL: 0x00 - no ascii code
+#   AH:
+#     0x4B - left
+#     0x4D - right
+#     0x48 - up
+#     0x50 - down
 
 .code16
 .section .text
@@ -39,11 +59,21 @@ hdl_kbd:
   # reg_al = ascii code
   # cond
   cmp $0x08, %al # backspace
-  je .hdl_kbd_bs
+  je .hdl_kbd__bs
 
   # cond
   cmp $0x0D, %al # carriage return (enter)
-  je .hdl_kbd_enter
+  je .hdl_kbd__enter
+
+  # cond arrow [n_arrow]
+  cmp $0x4B00, %ax # left
+  je .hdl_kbd__left
+  cmp $0x4D00, %ax # right
+  je .hdl_kbd__right
+  cmp $0x4800, %ax # up
+  je .hdl_kbd__up
+  cmp $0x5000, %ax # down
+  je .hdl_kbd__down
 
   # out
   mov $0x0E, %ah
@@ -53,11 +83,10 @@ hdl_kbd:
   # write
   mov %al, (%si)
   add $0x01, %si
-
   ret
 
-# .hdl_kbd_bs()
-.hdl_kbd_bs:
+# .hdl_kbd__bs()
+.hdl_kbd__bs:
   # get cursor
   mov $0x03, %ah
   mov $0x00, %bh
@@ -69,7 +98,7 @@ hdl_kbd:
   # reg_dl = x (current)
   # cond
   cmp (kernel_min_cur_pos_x), %dl
-  je .hdl_kbd_bs_done
+  je .hdl_kbd__bs_done
 
   # back cursor
   sub $0x01, %dl
@@ -88,15 +117,63 @@ hdl_kbd:
   sub $0x01, %si
   movb $0x00, (%si)
 
-.hdl_kbd_bs_done:
+.hdl_kbd__bs_done:
   ret
 
-# .hdl_kbd_enter()
-.hdl_kbd_enter:
+# .hdl_kbd__enter()
+.hdl_kbd__enter:
   call exec_cli_cmd
 
   push $kernel_prompt
   call print_str
   add $0x02, %sp
+  ret
 
+# .hdl_kbd__left()
+.hdl_kbd__left:
+  # get cursor
+  mov $0x03, %ah
+  mov $0x00, %bh
+  int $0x10
+
+  # try left cursor
+  mov $0x02, %ah
+
+  # reg_dl = x (current)
+  # cond
+  cmp (kernel_min_cur_pos_x), %dl
+  je .hdl_kbd__bs_done
+
+  # left cursor
+  sub $0x01, %dl
+  int $0x10 # x--
+  ret
+
+# .hdl_kbd__right()
+.hdl_kbd__right:
+  # get cursor
+  mov $0x03, %ah
+  mov $0x00, %bh
+  int $0x10
+
+  # try right cursor
+  mov $0x02, %ah
+
+  # right cursor !!! max_cur_pos_x
+  add $0x01, %dl
+  int $0x10 # x++
+  ret
+
+# .hdl_kbd__up()
+.hdl_kbd__up:
+  mov $0x0E, %ah
+  mov $'U', %al
+  int $0x10
+  ret
+
+# .hdl_kbd__down()
+.hdl_kbd__down:
+  mov $0x0E, %ah
+  mov $'D', %al
+  int $0x10
   ret
