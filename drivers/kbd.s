@@ -75,7 +75,14 @@ hdl_kbd:
   cmp $0x5000, %ax # down
   je .hdl_kbd__down
 
-  # out
+  push %ax
+  # cond: null != ? .hdl_kbd__shf_buf
+  mov (%si), %al
+  test %al, %al
+  jnz .hdl_kbd__shf_buf
+  pop %ax
+
+  # default
   mov $0x0E, %ah
   int $0x10
 
@@ -83,6 +90,94 @@ hdl_kbd:
   # write
   mov %al, (%si)
   add $0x01, %si
+  ret
+
+.hdl_kbd__shf_buf:
+  # mov (%si), %al
+  # mov %al, 1(%si)
+
+  # pop %ax
+
+  # mov $0x0E, %ah
+  # int $0x10
+  # mov 1(%si), %al
+  # int $0x10
+
+  # add $0x01, %si
+  mov %si, %di
+
+.hdl_kbd__shf_buf_lp:
+  # cond: null ? end
+  mov (%si), %al
+  test %al, %al
+  jz .hdl_kbd__shf_buf_end
+
+  # loop
+  add $0x01, %si
+  add $0x01, %bx
+  jmp .hdl_kbd__shf_buf_lp
+
+.hdl_kbd__shf_buf_end:
+# .hdl_kbd__out:
+#   sub $0x01, %bx
+#   mov %di, %si
+
+# .hdl_kbd__out_lp:
+#   mov (%bx,%si), %al
+#   mov %al, 1(%bx,%si)
+#   mov $0x0E, %ah
+#   int $0x10
+
+#   test %bx, %bx
+#   jz .hdl_kbd__out_end
+
+#   #add $0x01, %si
+#   sub $0x01, %bx
+#   jmp .hdl_kbd__out_lp
+
+# .hdl_kbd__out_end:
+#   add $0x01, %si
+#   xor %bx, %bx
+#   pop %ax
+#   ret
+
+.hdl_kbd__write:
+  mov %di, %si
+
+.hdl_kbd__write_lp:
+  # right shift
+  mov (%bx,%si), %al
+  mov %al, 1(%bx,%si)
+
+  # cond: 0 ? write_end
+  test %bx, %bx
+  jz .hdl_kbd__write_end
+
+  # loop
+  sub $0x01, %bx
+  jmp .hdl_kbd__write_lp
+
+.hdl_kbd__write_end:
+  pop %ax
+  mov %al, (%si)
+
+.hdl_kbd__out:
+  mov $0x0E, %ah
+
+.hdl_kbd__out_lp:
+  # cond: null ? out_end
+  mov (%si), %al
+  test %al, %al
+  jz .hdl_kbd__out_end
+
+  # out
+  int $0x10
+
+  # loop
+  add $0x01, %si
+  jmp .hdl_kbd__out_lp
+
+.hdl_kbd__out_end:
   ret
 
 # .hdl_kbd__bs()
@@ -147,6 +242,8 @@ hdl_kbd:
   # left cursor
   sub $0x01, %dl
   int $0x10 # x--
+
+  sub $0x01, %si # buf_raw
   ret
 
 # .hdl_kbd__right()
