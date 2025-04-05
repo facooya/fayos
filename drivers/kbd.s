@@ -54,6 +54,7 @@
 .global hdl_kbd
 
 .extern kernel_min_cur_pos_x
+.extern kernel_max_cur_pos_x
 .extern kernel_prompt
 .extern exec_cli_cmd
 .extern print_str
@@ -98,6 +99,11 @@ hdl_kbd:
   # write
   mov %al, (%si)
   add $0x01, %si
+
+  # !!! test
+  mov (kernel_max_cur_pos_x), %al
+  add $0x01, %al
+  mov %al, (kernel_max_cur_pos_x)
 
 .hdl_kbd__done:
   pop %bx
@@ -173,6 +179,11 @@ hdl_kbd:
   mov $0x00, %bh
   int $0x10
 
+  # !!! test
+  mov (kernel_max_cur_pos_x), %al
+  add $0x01, %al
+  mov %al, (kernel_max_cur_pos_x)
+
   # epil
   pop %dx
   pop %cx
@@ -194,7 +205,7 @@ hdl_kbd:
   mov $0x02, %ah
 
   # reg_dl = x (current)
-  # cond
+  # cond: max ? done
   cmp (kernel_min_cur_pos_x), %dl
   je .hdl_kbd__done
 
@@ -215,6 +226,11 @@ hdl_kbd:
   sub $0x01, %si
   movb $0x00, (%si)
 
+  # !!! test
+  mov (kernel_max_cur_pos_x), %al
+  sub $0x01, %al
+  mov %al, (kernel_max_cur_pos_x)
+
   jmp .hdl_kbd__done
 
 # .hdl_enter()
@@ -224,7 +240,11 @@ hdl_kbd:
   push $kernel_prompt
   call print_str
   add $0x02, %sp
-  
+
+  # !!! test
+  mov (kernel_min_cur_pos_x), %al
+  mov %al, (kernel_max_cur_pos_x)
+
   jmp .hdl_kbd__done
 
 # .hdl_left()
@@ -259,7 +279,11 @@ hdl_kbd:
   # try right cursor
   mov $0x02, %ah
 
-  # right cursor !!! max_cur_pos_x
+  # cond
+  cmp (kernel_max_cur_pos_x), %dl # !!! test
+  je .hdl_kbd__done
+
+  # right cursor
   add $0x01, %dl
   int $0x10 # x++
 

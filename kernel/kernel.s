@@ -44,6 +44,7 @@
 .global _start
 .global kernel_prompt
 .global kernel_min_cur_pos_x
+.global kernel_max_cur_pos_x
 
 .extern print_str
 .extern print_newline
@@ -102,6 +103,9 @@ kernel_loop:
   mov $kernel_min_cur_pos_x, %si
   mov %dl, (%si)
 
+  # !!! test
+  mov %dl, (kernel_max_cur_pos_x)
+
   # epil
   pop %dx
   pop %bx
@@ -114,6 +118,7 @@ kernel_loop:
 
 kernel_prompt: .asciz "fayos:/# "
 kernel_min_cur_pos_x: .byte 0x00
+kernel_max_cur_pos_x: .byte 0x00
 
 .kernel_ok_str: .asciz "\nKernel ok\r\n"
 .kernel_welcome_str: .asciz "Welcome to fayos kernel\r\n"

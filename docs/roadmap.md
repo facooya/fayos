@@ -1,7 +1,9 @@
 Feature
-fix right arrow - max_cur_pos_x
 fix backspace left shift
 up down - raw history
+
+Rename
+dirvers/ -> io/ ?
 
 Seperate fayfs.s
 dentry.s
