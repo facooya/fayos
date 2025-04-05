@@ -27,6 +27,9 @@
 # .hdl_down()
 
 # DEPS
+# .hdl_ins()
+#   print_str
+#
 # .hdl_bs()
 #   kernel_min_cur_pos_x
 #
@@ -57,7 +60,11 @@
 
 # hdl_kbd()
 hdl_kbd:
-  # reg_al = ascii code
+  # prol
+  push %ax
+  push %bx
+
+  # al = ascii code
   # cond
   cmp $0x08, %al # backspace
   je .hdl_bs
@@ -87,24 +94,36 @@ hdl_kbd:
   mov $0x0E, %ah
   int $0x10
 
-  # reg_si = cli_buf_raw + offset
+  # si = cli_buf_raw + offset
   # write
   mov %al, (%si)
   add $0x01, %si
+
+.hdl_kbd__done:
+  pop %bx
+  pop %ax
   ret
 
 .hdl_kbd__call_ins:
-  push %bx
+  push %bx # bx = ax
   push %si # origin
   call .hdl_ins
   add $0x04, %sp
-  ret
+
+  add $0x01, %si # for next
+  jmp .hdl_kbd__done
 
 # .hdl_ins()
 .hdl_ins:
   # prol
   push %bp
   mov %sp, %bp
+  push %si
+  push %di
+  push %ax
+  push %bx # cursor
+  push %cx # cursor
+  push %dx # cursor
 
   mov 4(%bp), %di # set origin
 
@@ -113,64 +132,54 @@ hdl_kbd:
   mov $0x00, %bh
   int $0x10
 
-.hdl_kbd__tail_lp: # !!! change name .hdl_ins__*
-  # cond: null ? rewrite
+.hdl_ins__tail_lp:
+  # cond: null ? rsh
   mov (%di), %al
   test %al, %al
-  jz .hdl_kbd__rewrite
+  jz .hdl_ins__rsh
 
   # loop
   add $0x01, %di
-  jmp .hdl_kbd__tail_lp
+  jmp .hdl_ins__tail_lp
 
-.hdl_kbd__rewrite:
+.hdl_ins__rsh:
   sub $0x01, %di # last char
 
-.hdl_kbd__rewrite_lp:
+.hdl_ins__rsh_lp:
   # right shift
   mov (%di), %al
   mov %al, 1(%di)
 
-  # cond: origin ? rewrite_end
+  # cond: origin ? rsh_end
   cmp %di, %si
-  je .hdl_kbd__rewrite_end
+  je .hdl_ins__rsh_end
 
   # loop
   sub $0x01, %di
-  jmp .hdl_kbd__rewrite_lp
+  jmp .hdl_ins__rsh_lp
 
-.hdl_kbd__rewrite_end:
-  mov 6(%bp), %ax
+.hdl_ins__rsh_end:
+  # insert
+  mov 6(%bp), %ax # al = ascii code
   mov %al, (%si)
 
-.hdl_kbd__out:
-  mov $0x0E, %ah
-
-.hdl_kbd__out_lp:
-  # cond: null ? out_end
-  mov (%si), %al
-  test %al, %al
-  jz .hdl_kbd__out_end
-
-  # out
-  int $0x10
-
-  # loop
-  add $0x01, %si
-  jmp .hdl_kbd__out_lp
-
-.hdl_kbd__out_end:
-  # get origin
-  mov 4(%bp), %si
-  add $0x01, %si
+  push %si # origin
+  call print_str
+  add $0x02, %sp
 
   # set cursor
-  add $0x01, %dl
+  add $0x01, %dl # x++
   mov $0x02, %ah
   mov $0x00, %bh
   int $0x10
 
   # epil
+  pop %dx
+  pop %cx
+  pop %bx
+  pop %ax
+  pop %di
+  pop %si
   pop %bp
   ret
 
@@ -187,7 +196,7 @@ hdl_kbd:
   # reg_dl = x (current)
   # cond
   cmp (kernel_min_cur_pos_x), %dl
-  je .hdl_bs__done
+  je .hdl_kbd__done
 
   # back cursor
   sub $0x01, %dl
@@ -206,8 +215,7 @@ hdl_kbd:
   sub $0x01, %si
   movb $0x00, (%si)
 
-.hdl_bs__done:
-  ret
+  jmp .hdl_kbd__done
 
 # .hdl_enter()
 .hdl_enter:
@@ -216,7 +224,8 @@ hdl_kbd:
   push $kernel_prompt
   call print_str
   add $0x02, %sp
-  ret
+  
+  jmp .hdl_kbd__done
 
 # .hdl_left()
 .hdl_left:
@@ -228,10 +237,9 @@ hdl_kbd:
   # try left cursor
   mov $0x02, %ah
 
-  # reg_dl = x (current)
-  # cond
+  # cond: min ? done
   cmp (kernel_min_cur_pos_x), %dl
-  je .hdl_left__done
+  je .hdl_kbd__done
 
   # left cursor
   sub $0x01, %dl
@@ -239,8 +247,7 @@ hdl_kbd:
 
   sub $0x01, %si # buf_raw
 
-.hdl_left__done:
-  ret
+  jmp .hdl_kbd__done
 
 # .hdl_right()
 .hdl_right:
@@ -257,18 +264,18 @@ hdl_kbd:
   int $0x10 # x++
 
   add $0x01, %si # buf_raw
-  ret
+  jmp .hdl_kbd__done
 
 # .hdl_up()
 .hdl_up:
   mov $0x0E, %ah
   mov $'U', %al
   int $0x10
-  ret
+  jmp .hdl_kbd__done
 
 # .hdl_down()
 .hdl_down:
   mov $0x0E, %ah
   mov $'D', %al
   int $0x10
-  ret
+  jmp .hdl_kbd__done

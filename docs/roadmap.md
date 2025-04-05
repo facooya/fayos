@@ -1,5 +1,6 @@
 Feature
-left right - move cursor
+fix right arrow - max_cur_pos_x
+fix backspace left shift
 up down - raw history
 
 Seperate fayfs.s
