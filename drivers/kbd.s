@@ -19,12 +19,13 @@
 # hdl_kbd()
 #
 # .hdl_ins()
-# .hdl_bs()
-# .hdl_enter()
-# .hdl_left()
-# .hdl_right()
-# .hdl_up()
-# .hdl_down()
+# .hdl_del()
+# .hdl_bs
+# .hdl_enter
+# .hdl_left
+# .hdl_right
+# .hdl_up
+# .hdl_down
 
 # DEPS
 # .hdl_ins()
@@ -100,7 +101,7 @@ hdl_kbd:
   mov %al, (%si)
   add $0x01, %si
 
-  # !!! test
+  # max cursor
   mov (kernel_max_cur_pos_x), %al
   add $0x01, %al
   mov %al, (kernel_max_cur_pos_x)
@@ -179,7 +180,7 @@ hdl_kbd:
   mov $0x00, %bh
   int $0x10
 
-  # !!! test
+  # max cursor
   mov (kernel_max_cur_pos_x), %al
   add $0x01, %al
   mov %al, (kernel_max_cur_pos_x)
@@ -194,7 +195,7 @@ hdl_kbd:
   pop %bp
   ret
 
-# .hdl_bs()
+# .hdl_bs
 .hdl_bs:
   # get cursor
   mov $0x03, %ah
@@ -222,18 +223,86 @@ hdl_kbd:
   mov $0x02, %ah
   int $0x10 # x--
 
-  # reg_si = cli_buf_raw + offset
-  sub $0x01, %si
-  movb $0x00, (%si)
-
-  # !!! test
+  # max cursor
   mov (kernel_max_cur_pos_x), %al
   sub $0x01, %al
   mov %al, (kernel_max_cur_pos_x)
 
+  # cond: null != ? call_del
+  mov (%si), %al # si = buf_raw + offset
+  test %al, %al
+  jnz .hdl_bs__call_del
+
+  sub $0x01, %si # next origin
+  movb $0x00, (%si)
+
   jmp .hdl_kbd__done
 
-# .hdl_enter()
+.hdl_bs__call_del:
+  push %si # origin
+  call .hdl_del
+  add $0x02, %sp
+
+  jmp .hdl_kbd__done
+
+# .hdl_del()
+.hdl_del:
+  # prol
+  push %bp
+  mov %sp, %bp
+  push %di
+  push %ax
+  push %bx
+  push %cx
+  push %dx
+
+  mov 4(%bp), %di # set origin
+
+  # get cursor
+  mov $0x03, %ah
+  mov $0x00, %bh
+  int $0x10
+
+.hdl_del__lsh_lp:
+  # left shift
+  mov (%di), %al
+  mov %al, -1(%di)
+
+  # cond: null ? lsh_end
+  mov (%di), %al
+  test %al, %al
+  jz .hdl_del__lsh_end
+
+  # loop
+  add $0x01, %di
+  jmp .hdl_del__lsh_lp
+
+.hdl_del__lsh_end:
+  # screen delete
+  mov $0x20, %al # space
+  mov %al, -1(%di)
+
+  sub $0x01, %si # next origin
+  
+  push %si # origin
+  call print_str
+  add $0x02, %sp
+
+  # set cursor
+  mov $0x02, %ah
+  mov $0x00, %bh
+  int $0x10
+
+  # epil
+  pop %dx
+  pop %cx
+  pop %bx
+  pop %ax
+  pop %di
+  pop %bp
+  ret
+
+# .hdl_enter
 .hdl_enter:
   call exec_cli_cmd
 
@@ -241,13 +310,13 @@ hdl_kbd:
   call print_str
   add $0x02, %sp
 
-  # !!! test
+  # init max cursor
   mov (kernel_min_cur_pos_x), %al
   mov %al, (kernel_max_cur_pos_x)
 
   jmp .hdl_kbd__done
 
-# .hdl_left()
+# .hdl_left
 .hdl_left:
   # get cursor
   mov $0x03, %ah
@@ -269,7 +338,7 @@ hdl_kbd:
 
   jmp .hdl_kbd__done
 
-# .hdl_right()
+# .hdl_right
 .hdl_right:
   # get cursor
   mov $0x03, %ah
@@ -279,8 +348,8 @@ hdl_kbd:
   # try right cursor
   mov $0x02, %ah
 
-  # cond
-  cmp (kernel_max_cur_pos_x), %dl # !!! test
+  # cond: max ? done
+  cmp (kernel_max_cur_pos_x), %dl
   je .hdl_kbd__done
 
   # right cursor
@@ -290,14 +359,14 @@ hdl_kbd:
   add $0x01, %si # buf_raw
   jmp .hdl_kbd__done
 
-# .hdl_up()
+# .hdl_up
 .hdl_up:
   mov $0x0E, %ah
   mov $'U', %al
   int $0x10
   jmp .hdl_kbd__done
 
-# .hdl_down()
+# .hdl_down
 .hdl_down:
   mov $0x0E, %ah
   mov $'D', %al
