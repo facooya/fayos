@@ -16,7 +16,6 @@ boot/ - boot
 build/ - linker.ld, make (*.o, *.bin, *.img)  
 cmd/ - commands  
 docs/ - documentation  
-drivers/ - keyboard, disk  
 fs/fayfs/ - file system  
-kernel/ - kernel start (main loop)  
-lib/ - common  
+io/ - keyboard, disk  
+kernel/ - main  

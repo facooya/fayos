@@ -8,9 +8,9 @@ SRCS = \
 kernel/kernel.s \
 kernel/cli.s \
 kernel/cache.s \
-lib/print.s \
-drivers/kbd.s \
-drivers/disk.s \
+io/print.s \
+io/kbd.s \
+io/disk.s \
 fs/fayfs/fayfs.s \
 fs/fayfs/block.s \
 cmd/sys/echo.s \

@@ -1,9 +1,6 @@
 Feature
 up down - raw history
 
-Rename
-dirvers/ -> io/ ?
-
 tag v0.1.3
 
 Seperate fayfs.s

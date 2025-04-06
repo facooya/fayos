@@ -19,7 +19,7 @@
 # hdl_kbd()
 #
 # .hdl_ins()
-# .hdl_del()
+# .hdl_bs_del()
 # .hdl_bs
 # .hdl_enter
 # .hdl_left
@@ -31,8 +31,10 @@
 # .hdl_ins()
 #   print_str
 #
-# .hdl_bs()
+# .hdl_bs_del()
 #   kernel_min_cur_pos_x
+#   kernel_max_cur_pos_x
+#   print_str
 #
 # .hdl_enter()
 #   kernel_prompt
@@ -210,18 +212,19 @@ hdl_kbd:
   cmp (kernel_min_cur_pos_x), %dl
   je .hdl_kbd__done
 
-  # back cursor
+  # Debug "." = cursor, "," = si
+  # back cursor !!! hel.,lo
   sub $0x01, %dl
-  int $0x10 # x--
+  int $0x10 # x-- !!! he.l,lo
 
   # overwrite
   mov $0x0E, %ah
   mov $0x20, %al # space
-  int $0x10 # x++
+  int $0x10 # x++ !!! he .,lo
 
   # back cursor (again)
   mov $0x02, %ah
-  int $0x10 # x--
+  int $0x10 # x-- !!! he. ,lo
 
   # max cursor
   mov (kernel_max_cur_pos_x), %al
@@ -229,7 +232,7 @@ hdl_kbd:
   mov %al, (kernel_max_cur_pos_x)
 
   # cond: null != ? call_del
-  mov (%si), %al # si = buf_raw + offset
+  mov (%si), %al # si = buf_raw + offset !!! he. ,lo
   test %al, %al
   jnz .hdl_bs__call_del
 
@@ -239,14 +242,14 @@ hdl_kbd:
   jmp .hdl_kbd__done
 
 .hdl_bs__call_del:
-  push %si # origin
-  call .hdl_del
+  push %si # origin !!! he ,lo
+  call .hdl_bs_del
   add $0x02, %sp
 
   jmp .hdl_kbd__done
 
-# .hdl_del()
-.hdl_del:
+# .hdl_bs_del()
+.hdl_bs_del:
   # prol
   push %bp
   mov %sp, %bp
@@ -256,39 +259,39 @@ hdl_kbd:
   push %cx
   push %dx
 
-  mov 4(%bp), %di # set origin
+  mov 4(%bp), %di # set origin !!! he ,lo
 
-  # get cursor
+  # get cursor !!! he. lo
   mov $0x03, %ah
   mov $0x00, %bh
   int $0x10
 
-.hdl_del__lsh_lp:
-  # left shift
+.hdl_bs_del__lsh_lp:
+  # left shift !!! he ,lo[0] => helo[0],
   mov (%di), %al
   mov %al, -1(%di)
 
   # cond: null ? lsh_end
   mov (%di), %al
   test %al, %al
-  jz .hdl_del__lsh_end
+  jz .hdl_bs_del__lsh_end
 
   # loop
   add $0x01, %di
-  jmp .hdl_del__lsh_lp
+  jmp .hdl_bs_del__lsh_lp
 
-.hdl_del__lsh_end:
-  # screen delete
+.hdl_bs_del__lsh_end:
+  # screen delete !!! helo[0], => helo[space],
   mov $0x20, %al # space
   mov %al, -1(%di)
 
-  sub $0x01, %si # next origin
-  
-  push %si # origin
+  sub $0x01, %si # next origin !!! si = 2, he[si]lo[space]
+
+  push %si # origin !!! he[cur]lo[space] => lo[space][cur]
   call print_str
   add $0x02, %sp
 
-  # set cursor
+  # set cursor !!! helo(1)[c] => he[c]lo[1][0]
   mov $0x02, %ah
   mov $0x00, %bh
   int $0x10
