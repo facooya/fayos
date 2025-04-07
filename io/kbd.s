@@ -1,94 +1,9 @@
-# FAYOS - FAcooYa Operating System
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Keyboard handler for kernel (docs/io/kbd.txt)
+#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# INDEX
-# hdl_kbd()
-#
-# .hdl_ins()
-# .hdl_bs_lsh()
-# .hdl_bs
-# .hdl_enter
-# .hdl_left
-# .hdl_right
-# .hdl_up
-# .hdl_down
-
-# DEPS
-# .hdl_ins()
-#   print_str
-#
-# .hdl_bs_lsh()
-#   kernel_min_cur_pos_x
-#   kernel_max_cur_pos_x
-#   print_str
-#
-# .hdl_enter()
-#   kernel_prompt
-#   exec_cli_cmd
-#   print_str
-
-# NOTE
-# [n_arrow]
-#   normal only
-#   AL: 0x00 - no ascii code
-#   AH:
-#     0x4B - left
-#     0x4D - right
-#     0x48 - up
-#     0x50 - down
-#
-# [d_nsh]
-#   c: cursor, si: buf_raw ptr, dl: cursor x
-#     [0]: null (buf), [ ]: space (screen)
-#     {c,si,dl}: idx
-#
-#   <buf> facooya{si}[0]
-#   <screen> facooya{c,dl}[ ]
-#
-#   [d_nsh.1] # back cursor
-#     <screen> facooya{c,dl}[ ]
-#       (c--)
-#       ah=set;
-#       dl--; facooy{dl}a{c}[ ]
-#       int; facooy{c,dl}a[ ]
-#
-#   [d_nsh.2] # overwrite
-#     <screen> facooy{c,dl}a[ ]
-#       (c++)
-#       ah=out;
-#       al=[ ];
-#       int; facooy{dl}[ ]{c}[ ]
-#
-#   [d_nsh.3] # back cursor
-#     <screen> facooy{dl}[ ]{c}[ ]
-#       (c=dl)
-#       ah=set;
-#       int; facooy{c,dl}[ ][ ]
-#
-#   [d_nsh.4] # ptr, buf
-#     <buf> facooya{si}[0]
-#       si--; facooy{si}a[0]
-#       (si)=[0]; facooy{si}[0][0]
-#
-#   <buf> facooy{si}[0]
-#   <screen> facooy{c}[ ]
-#
-# [d_lsh]
-# 
 
 .code16
 .section .text
@@ -101,7 +16,7 @@
 .extern exec_cli_cmd
 .extern print_str
 
-# hdl_kbd()
+# hdl_kbd() - main keyborad handler
 hdl_kbd:
   # prol
   push %ax
@@ -161,7 +76,7 @@ hdl_kbd:
   add $0x01, %si # for next
   jmp .hdl_kbd__done
 
-# .hdl_ins()
+# .hdl_ins() - insert text
 .hdl_ins:
   # prol
   push %bp
@@ -169,13 +84,13 @@ hdl_kbd:
   push %si
   push %di
   push %ax
-  push %bx # cursor
-  push %cx # cursor
-  push %dx # cursor
+  push %bx
+  push %cx
+  push %dx
 
   mov 4(%bp), %di # set origin
 
-  # get cursor
+  # get {cur}
   mov $0x03, %ah
   mov $0x00, %bh
   int $0x10
@@ -215,13 +130,13 @@ hdl_kbd:
   call print_str
   add $0x02, %sp
 
-  # set cursor
-  add $0x01, %dl # x++
+  # set {cur}
+  add $0x01, %dl
   mov $0x02, %ah
   mov $0x00, %bh
   int $0x10
 
-  # max cursor
+  # set max {cur}
   mov (kernel_max_cur_pos_x), %al
   add $0x01, %al
   mov %al, (kernel_max_cur_pos_x)
@@ -258,7 +173,7 @@ hdl_kbd:
   jnz .hdl_bs__call_lsh
 
   # default {nsh} [d_nsh]
-  # back cursor {cur,nsh} [d_nsh.1]
+  # back {cur,nsh} [d_nsh.1]
   mov $0x02, %ah
   sub $0x01, %dl
   int $0x10
@@ -268,7 +183,7 @@ hdl_kbd:
   mov $0x20, %al # space
   int $0x10
 
-  # back cursor {cur,nsh} [d_nsh.3]
+  # back {cur,nsh} [d_nsh.3]
   mov $0x02, %ah
   int $0x10
 
@@ -279,13 +194,13 @@ hdl_kbd:
   jmp .hdl_kbd__done
 
 .hdl_bs__call_lsh:
-  push %si # origin !!! facoo{c,si}ya[0]
+  push %si # buf_raw ptr
   call .hdl_bs_lsh
   add $0x02, %sp
 
   jmp .hdl_kbd__done
 
-# .hdl_bs_lsh()
+# .hdl_bs_lsh() - delete text
 .hdl_bs_lsh:
   # prol
   push %bp
@@ -296,15 +211,14 @@ hdl_kbd:
   push %cx
   push %dx
 
-  mov 4(%bp), %di # set origin !!! facoo{c,si,di}ya[0]
+  mov 4(%bp), %di # buf_raw ptr
 
   # get cursor
   mov $0x03, %ah
   mov $0x00, %bh
   int $0x10
 
-.hdl_bs_lsh__lp:
-  # !!! buf: facoo{si,di}ya[0], screen: facoo{c}ya[ ]
+.hdl_bs_lsh__lp: # [d_lsh.1]
   # left shift
   mov (%di), %al
   mov %al, -1(%di)
@@ -319,30 +233,27 @@ hdl_kbd:
   jmp .hdl_bs_lsh__lp
 
 .hdl_bs_lsh__end:
-  # !!! buf: facoy{si}a[0]{di}[0]
-  # !!! buf: facoy{si}a[0], screen: facoo{c}ya[ ]
-
-  sub $0x01, %si # next origin !!! buf: faco{si}ya[0]
-
-  # set cursor
+  # back {cur} [d_lsh.2]
   sub $0x01, %dl
   mov $0x02, %ah
   mov $0x00, %bh
-  int $0x10 # !!! screen: faco{c}oya[ ]
+  int $0x10
 
-  push %si # origin !!! screen: faco{c}oya[ ] => print: {si}ya{c}, screen: facoya{c}a[ ]
+  # write [d_lsh.3]
+  sub $0x01, %si
+  push %si
   call print_str
   add $0x02, %sp
 
-  # overwrite
+  # overwrite [d_lsh.4]
   mov $0x0E, %ah
   mov $0x20, %al # space
-  int $0x10 # !!! screen: faco{si}oy[ ]{c}[ ]
+  int $0x10
 
-  # set cursor
+  # back {cur} [d_lsh.5]
   mov $0x02, %ah
   mov $0x00, %bh
-  int $0x10 # !!! screen: faco{c,si}ya{c}[ ][ ]
+  int $0x10
 
   # epil
   pop %dx

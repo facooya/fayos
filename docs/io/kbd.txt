@@ -1,0 +1,110 @@
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+
+# INDEX
+# hdl_kbd()
+#
+# .hdl_ins()
+# .hdl_bs_lsh()
+# .hdl_bs
+# .hdl_enter
+# .hdl_left
+# .hdl_right
+# .hdl_up
+# .hdl_down
+
+# DEPS
+# .hdl_ins()
+#   print_str
+#
+# .hdl_bs_lsh()
+#   kernel_min_cur_pos_x
+#   kernel_max_cur_pos_x
+#   print_str
+#
+# .hdl_enter()
+#   kernel_prompt
+#   exec_cli_cmd
+#   print_str
+
+# NOTE
+# [n_arrow]
+#   normal only
+#   AL: 0x00 - no ascii code
+#   AH:
+#     0x4B - left
+#     0x4D - right
+#     0x48 - up
+#     0x50 - down
+#
+# [d_nsh]
+#   c: cursor, si: buf_raw ptr, dl: cursor x
+#     [0]: null (buf), [ ]: space (screen)
+#     {c,si,dl}: idx
+#
+#   <buf> facooya{si}[0]
+#   <screen> facooya{c,dl}[ ]
+#
+#   [d_nsh.1] # back cursor
+#     <screen> facooya{c,dl}[ ]
+#       (c--;)
+#       dl--; facooy{dl}a{c}[ ]
+#       int; facooy{c,dl}a[ ]
+#
+#   [d_nsh.2] # overwrite
+#     <screen> facooy{c,dl}a[ ]
+#       (c++;)
+#       ah=write;
+#       al=[ ];
+#       int; facooy{dl}[ ]{c}[ ]
+#
+#   [d_nsh.3] # back cursor
+#     <screen> facooy{dl}[ ]{c}[ ]
+#       (c=dl;)
+#       int; facooy{c,dl}[ ][ ]
+#
+#   [d_nsh.4] # ptr, buf
+#     <buf> facooya{si}[0]
+#       si--; facooy{si}a[0]
+#       (si)=[0]; facooy{si}[0][0]
+#
+#   <buf> facooy{si}[0]
+#   <screen> facooy{c}[ ]
+#
+# [d_lsh]
+#   c: cursor, si,di: buf_raw ptr, dl: cursor x
+#     [0]: null (buf), [ ]: space (screen)
+#     {c,si,di,dl}: idx
+# 
+#   <buf> facoo{si,di}ya[0]
+#   <screen> facoo{c}ya[ ]
+#   
+#   [d_lsh.1] # lp
+#     <buf> facoo{si,di}ya[0]
+#       -1(di)=(di);
+#       di==[0]?end;
+#       di++;
+#       facoy{si}a[0]{di}[0]
+#
+#   [d_lsh.2] # back cursor
+#     <screen> facoo{c}ya[ ]
+#       (c--;)
+#       dl--;
+#       int; faco{c}oya[ ]
+#
+#   [d_lsh.3] # write
+#     <buf> facoy{si}a[0]
+#       si--; faco{si}ya[0]
+#     <screen> faco{c}oya[ ]
+#       print_str; {si}ya{c} => facoya{c}a[ ]
+#
+#   [d_lsh.4] # overwrite
+#     <screen> facoya{c}a[ ]
+#       ah=write;
+#       al=[ ];
+#       int; facoya[ ]{c}[ ]
+#
+#   [d_lsh.5] # back cursor
+#     <screen> faco{dl}ya[ ]{c}[ ]
+#       int; faco{c,dl}ya[ ]
+#
