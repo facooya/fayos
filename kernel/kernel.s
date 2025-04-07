@@ -19,9 +19,9 @@
 # _start()
 # kernel_loop()
 # kernel_prompt
-# kernel_min_cur_pos_x
+# cur
 #
-# .set_kernel_minimum_cursor_position_x()
+# .set_cur()
 
 # DEPS
 # _start()
@@ -43,8 +43,7 @@
 
 .global _start
 .global kernel_prompt
-.global kernel_min_cur_pos_x
-.global kernel_max_cur_pos_x
+.global cur
 
 .extern print_str
 .extern print_newline
@@ -73,9 +72,9 @@ _start:
   call set_free_lba
 
   mov $cli_buf_raw, %si
-  call .set_kernel_min_cur_pos_x
+  call .set_cur
 
-# kernel_loop()
+# kernel_loop() - main loop
 kernel_loop:
   # in
   mov $0x00, %ah
@@ -84,13 +83,12 @@ kernel_loop:
   call hdl_kbd
   jmp kernel_loop
 
-# set_kernel_minimum_cursor_position_x()
-.set_kernel_min_cur_pos_x:
-  # reg_si = cli_buf_raw
+# .set_cur() - set cursor
+.set_cur:
   # prol
-  push %si
   push %ax
   push %bx
+  push %cx
   push %dx
 
   # get cursor
@@ -98,27 +96,24 @@ kernel_loop:
   mov $0x00, %bh
   int $0x10
 
-  # reg_dl = x (current)
-  # set kernel_min_cur_pos_x
-  mov $kernel_min_cur_pos_x, %si
-  mov %dl, (%si)
-
-  # !!! test
-  mov %dl, (kernel_max_cur_pos_x)
+  # set min {cur}
+  mov %dl, (cur) # min
+  mov %dl, (cur+1) # max
 
   # epil
   pop %dx
+  pop %cx
   pop %bx
   pop %ax
-  pop %si
   ret
 
 
 .section .data
 
 kernel_prompt: .asciz "fayos:/# "
-kernel_min_cur_pos_x: .byte 0x00
-kernel_max_cur_pos_x: .byte 0x00
+cur:
+  .byte 0x00 # min pos x
+  .byte 0x00 # max pos x
 
 .kernel_ok_str: .asciz "\nKernel ok\r\n"
 .kernel_welcome_str: .asciz "Welcome to fayos kernel\r\n"

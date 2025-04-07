@@ -10,8 +10,7 @@
 
 .global hdl_kbd
 
-.extern kernel_min_cur_pos_x
-.extern kernel_max_cur_pos_x
+.extern cur
 .extern kernel_prompt
 .extern exec_cli_cmd
 .extern print_str
@@ -58,9 +57,9 @@ hdl_kbd:
   add $0x01, %si
 
   # max cursor
-  mov (kernel_max_cur_pos_x), %al
+  mov (cur+1), %al
   add $0x01, %al
-  mov %al, (kernel_max_cur_pos_x)
+  mov %al, (cur+1)
 
 .hdl_kbd__done:
   pop %bx
@@ -137,9 +136,9 @@ hdl_kbd:
   int $0x10
 
   # set max {cur}
-  mov (kernel_max_cur_pos_x), %al
+  mov (cur+1), %al
   add $0x01, %al
-  mov %al, (kernel_max_cur_pos_x)
+  mov %al, (cur+1)
 
   # epil
   pop %dx
@@ -159,13 +158,13 @@ hdl_kbd:
   int $0x10
 
   # cond: min ? done {cur}
-  cmp (kernel_min_cur_pos_x), %dl # dl: cur pos x
+  cmp (cur), %dl # dl: cur pos x
   je .hdl_kbd__done
 
   # dec max {cur}
-  mov (kernel_max_cur_pos_x), %al
+  mov (cur+1), %al # max
   sub $0x01, %al
-  mov %al, (kernel_max_cur_pos_x)
+  mov %al, (cur+1)
 
   # cond: null != ? call_lsh {lsh}
   mov (%si), %al # si: buf_raw ptr
@@ -273,8 +272,8 @@ hdl_kbd:
   add $0x02, %sp
 
   # init max cursor
-  mov (kernel_min_cur_pos_x), %al
-  mov %al, (kernel_max_cur_pos_x)
+  mov (cur), %al
+  mov %al, (cur+1)
 
   jmp .hdl_kbd__done
 
@@ -289,7 +288,7 @@ hdl_kbd:
   mov $0x02, %ah
 
   # cond: min ? done
-  cmp (kernel_min_cur_pos_x), %dl
+  cmp (cur), %dl
   je .hdl_kbd__done
 
   # left cursor
@@ -311,7 +310,7 @@ hdl_kbd:
   mov $0x02, %ah
 
   # cond: max ? done
-  cmp (kernel_max_cur_pos_x), %dl
+  cmp (cur+1), %dl
   je .hdl_kbd__done
 
   # right cursor
@@ -326,6 +325,7 @@ hdl_kbd:
   mov $0x0E, %ah
   mov $'U', %al
   int $0x10
+
   jmp .hdl_kbd__done
 
 # .hdl_down
@@ -333,4 +333,5 @@ hdl_kbd:
   mov $0x0E, %ah
   mov $'D', %al
   int $0x10
+
   jmp .hdl_kbd__done
