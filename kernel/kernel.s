@@ -1,42 +1,9 @@
-# FAYOS - FAcooYa Operating System
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Kernel for Fayos (docs/kernel/kernel.txt)
+#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# INDEX
-# _start()
-# kernel_loop()
-# kernel_prompt
-# cur
-#
-# .set_cur()
-
-# DEPS
-# _start()
-# - print_str
-# - print_newline
-# - init_master_block
-# - cli_buf_raw
-#   set_free_lba
-#
-# kernel_loop()
-# - hdl_kbd
-
-# NOTE
-# - kernel LBA: 0x20-0x4F
-# - kernel mem: 0x1000-0x6FFF
 
 .code16
 .section .text
@@ -72,31 +39,32 @@ _start:
   call set_free_lba
 
   mov $cli_buf_raw, %si
-  call .set_cur
+  call .init_cur
 
-# kernel_loop() - main loop
-kernel_loop:
-  # in
+# .kernel_lp() - main loop
+.kernel_lp:
+  # read
   mov $0x00, %ah
   int $0x16
 
   call hdl_kbd
-  jmp kernel_loop
 
-# .set_cur() - set cursor
-.set_cur:
+  jmp .kernel_lp
+
+# .init_cur() - init cursor
+.init_cur:
   # prol
   push %ax
   push %bx
   push %cx
   push %dx
 
-  # get cursor
+  # get {cur}
   mov $0x03, %ah
   mov $0x00, %bh
   int $0x10
 
-  # set min {cur}
+  # init {cur}
   mov %dl, (cur) # min
   mov %dl, (cur+1) # max
 
@@ -106,7 +74,6 @@ kernel_loop:
   pop %bx
   pop %ax
   ret
-
 
 .section .data
 

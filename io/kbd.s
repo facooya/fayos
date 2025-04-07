@@ -284,15 +284,13 @@ hdl_kbd:
   mov $0x00, %bh
   int $0x10
 
-  # try left cursor
-  mov $0x02, %ah
-
   # cond: min ? done
   cmp (cur), %dl
   je .hdl_kbd__done
 
   # left cursor
   sub $0x01, %dl
+  mov $0x02, %ah
   int $0x10 # x--
 
   sub $0x01, %si # buf_raw
@@ -306,15 +304,13 @@ hdl_kbd:
   mov $0x00, %bh
   int $0x10
 
-  # try right cursor
-  mov $0x02, %ah
-
   # cond: max ? done
   cmp (cur+1), %dl
   je .hdl_kbd__done
 
   # right cursor
   add $0x01, %dl
+  mov $0x02, %ah
   int $0x10 # x++
 
   add $0x01, %si # buf_raw

@@ -1,8 +1,3 @@
-Feature
-up down - raw history
-
-tag v0.1.3
-
 Seperate fayfs.s
 dentry.s
 metadata.s
@@ -17,6 +12,9 @@ no dir
 no file
 same file name
 same dir name
+
+Feature
+up down - raw history
 
 Feature
 PWD: Print Working Directory

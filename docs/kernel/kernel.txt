@@ -1,0 +1,25 @@
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+
+# INDEX
+# _start()
+# kernel_prompt
+# cur
+#
+# .kernel_lp()
+# .init_cur()
+
+# DEPS
+# _start()
+#   print_str
+#   print_newline
+#   init_master_block
+#   cli_buf_raw
+#   set_free_lba
+#
+# .kernel_lp()
+#   hdl_kbd
+
+# NOTE
+#   kernel LBA: 0x20-0x4F
+#   kernel mem: 0x1000-0x6FFF
