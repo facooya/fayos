@@ -78,9 +78,11 @@ _start:
 .section .data
 
 kernel_prompt: .asciz "fayos:/# "
+
+# cur [s_cur]
 cur:
-  .byte 0x00 # min pos x
-  .byte 0x00 # max pos x
+  .byte 0x00
+  .byte 0x00
 
 .kernel_ok_str: .asciz "\nKernel ok\r\n"
 .kernel_welcome_str: .asciz "Welcome to fayos kernel\r\n"

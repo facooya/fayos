@@ -23,3 +23,6 @@
 # NOTE
 #   kernel LBA: 0x20-0x4F
 #   kernel mem: 0x1000-0x6FFF
+#   [s_cur]
+#     [cur+0] min cur pos x
+#     [cur+1] max cur pos x

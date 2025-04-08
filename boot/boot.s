@@ -1,44 +1,9 @@
-# FAYOS - FAcooYa Operating System
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Boot for Fayos (docs/boot/boot.txt)
+#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# NOTE
-# [n_cli]
-# - Fayos does not use IRQ in x86-16 mode
-#
-# [n_init]
-# - skip init (CS, SI, DI, IP)
-# - CS = 0x07C0, IP = 0x0000
-# - calc: (CS * 16) + IP = 0x7C00
-# 
-# [n_stack]
-# - SP: 0x7C00 (stack start)
-# - memory: 0x7000-0x7BFF
-# - max: 1546 stacks
-#
-# [n_dap]
-# - for kernel
-# - sector count: 0x30
-# - IP: 0x1000, CS: 0x0000
-# - LBA: 0x20
-#
-# [n_end]
-# - boot sector: 0x7C00-0x7DFF
-# - magic number: .word 0xAA55 (little endian)
-# - .word 0xAA55 == .byte 0x55, 0xAA
 
 .code16
 .global _start
@@ -64,64 +29,80 @@ _start:
   call .out_str
   add $0x02, %sp
 
-  # for kernel
-  call .read_disk
+  # kernel
+  call .read_block
   ljmp $0x0000, $0x1000
 
-# .read_disk()
-.read_disk:
+# .read_block()
+.read_block:
+  # prol
+  push %si
+  push %ax
+  push %dx
+
+  # read block
   clc
   mov $0x42, %ah
   mov $0x80, %dl
   mov $.dap, %si
   int $0x13
-  jc .hdl_disk_err
+  jc .read_block__err
 
-  push $.disk_ok_str
+  push $.boot_ok_msg
   call .out_str
   add $0x02, %sp
 
+  # epil
+  pop %dx
+  pop %ax
+  pop %si
   ret
 
-# .handle_disk_error
-.hdl_disk_err:
-  push $.disk_err_str
+.read_block__err:
+  push $.boot_err_msg
   call .out_str
   add $0x02, %sp
 
+  # epil
+  pop %dx
+  pop %ax
+  pop %si
   hlt
 
-# .out_string(str)
+# .out_str(str)
 .out_str:
   # prol
   push %bp
   mov %sp, %bp
-  mov 4(%bp), %si
+  push %si
+  push %ax
 
+  mov 4(%bp), %si
   mov $0x0E, %ah
 
-.out_str_lp:
-  # cond
+.out_str__lp:
+  # cond: null ? done
   mov (%si), %al
   test %al, %al
-  jz .out_str_done
+  jz .out_str__done
 
-  # out
   int $0x10
 
   # loop
   add $0x01, %si
-  jmp .out_str_lp
+  jmp .out_str__lp
 
-.out_str_done:
+.out_str__done:
   # epil
+  pop %ax
+  pop %si
   pop %bp
   ret
 
-# str
+# data
 .os_name_str: .asciz "\nFAYOS\r\n"
-.disk_ok_str: .asciz "Disk ok\r\n"
-.disk_err_str: .asciz "Disk err\r\n"
+.boot_ok_msg: .asciz "Boot ok\r\n"
+.boot_err_msg: .asciz "Boot err\r\n"
 
 # dap [n_dap]
 .dap:
