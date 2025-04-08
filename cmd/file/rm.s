@@ -114,7 +114,7 @@ cmd_rm:
   # bit test set
   xor %ax, %ax
   bts $0x07, %ax # msb
-  mov %al, 13(%si) # file type
+  mov %al, 9(%si) # file type
 
   call write_block
 

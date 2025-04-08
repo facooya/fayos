@@ -22,11 +22,11 @@
 # cmd_touch()
 #   read_block
 #   write_block
-#   set_dentry
+#   write_dentry
 #   print_newline
 #   cli_buf_arg
 #   cwd_lba
-#   write_meta_data
+#   write_meta
 #   free_lba
 
 .code16
@@ -36,11 +36,11 @@
 
 .extern read_block
 .extern write_block
-.extern set_dentry
+.extern write_dentry
 .extern print_newline
 .extern cli_buf_arg
 .extern cwd_lba
-.extern write_meta_data
+.extern write_meta
 .extern free_lba
 
 # cmd_touch()
@@ -99,29 +99,23 @@ cmd_touch:
   add $0x01, %si # mem ptr
   add $0x01, %cx # name size
 
-  # set dentry
+  # write dentry
   push %cx
-  call set_dentry
+  call write_dentry
   add $0x02, %sp
 
-  # set lba (dentry)
+  # set data lba (dentry)
   mov (free_lba), %ax
   mov %ax, 4(%si)
   mov (free_lba+2), %ax
   mov %ax, 6(%si)
 
-  # set parent lba (dentry) !!! del: parent lba (metadata)
-  mov (cwd_lba), %ax
-  mov %ax, 8(%si)
-  mov (cwd_lba+2), %ax
-  mov %ax, 10(%si)
-
   call write_block
 
-  # write meta data !!! test
-  call write_meta_data
+  # write meta !!! test
+  call write_meta
 
-  # allocate free lba, !!! low only, seq: write_meta_data
+  # allocate free lba, !!! low only, seq: write_meta
   mov (free_lba), %ax
   add $0x08, %ax
   mov %ax, (free_lba)

@@ -137,7 +137,7 @@ cmd_cat:
 
   # cond: 1 != ? done
   # !!! temp, only entry level 1
-  mov 12(%si), %al # entry level
+  mov 8(%si), %al # entry level
   cmp $0x01, %al
   jnz .cmd_cat__done
 

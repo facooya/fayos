@@ -1,0 +1,10 @@
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+
+# INDEX
+# set_free_lba()
+
+# DEPS
+# set_free_lba()
+#   free_lba
+#   read_block

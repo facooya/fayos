@@ -11,8 +11,10 @@ kernel/cache.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
-fs/fayfs/fayfs.s \
-fs/fayfs/block.s \
+fs/fayfs/super.s \
+fs/fayfs/dir.s \
+fs/fayfs/meta.s \
+fs/fayfs/alloc.s \
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \

@@ -1,0 +1,20 @@
+# Copyright (C) 2025 Facooya
+# Copyright (C) 2025 Fanone Facooya
+
+# INDEX
+# init_root_meta()
+# write_meta()
+
+# DEPS
+# write_meta()
+#   set_dap_lba
+#   read_block
+#   write_block
+#   cwd_lba
+#   free_lba
+
+# [n_meta]
+#   parent_lba: 4 bytes
+#     parent_lba_low: 2 bytes
+#     parent_lba_high: 2 bytes
+#   magic_num: 2 bytes (0xFADA: FAcooya metaDatA)

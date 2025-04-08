@@ -85,7 +85,7 @@ cmd_ls:
 .cmd_ls__chk_del:
   # cond: bit test ? chk_del_end
   xor %ax, %ax
-  mov 13(%si), %al # file type
+  mov 9(%si), %al # file type
   bt $0x07, %ax # msb
   jc .cmd_ls__chk_del_end
 

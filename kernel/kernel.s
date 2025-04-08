@@ -15,17 +15,22 @@
 .extern print_str
 .extern print_newline
 .extern hdl_kbd
-.extern init_master_block
 .extern cli_buf_raw
-.extern set_free_lba
+.extern init_super_block
+.extern init_root_meta
+.extern init_free_lba
 
 # _start()
 _start:
-  push $.kernel_ok_str
+  call init_super_block
+  call init_root_meta
+  call init_free_lba
+
+  push $.kernel_ok_msg
   call print_str
   add $0x02, %sp
 
-  push $.kernel_welcome_str
+  push $.kernel_welcome_msg
   call print_str
   add $0x02, %sp
 
@@ -34,9 +39,6 @@ _start:
   push $kernel_prompt
   call print_str
   add $0x02, %sp
-
-  call init_master_block
-  call set_free_lba
 
   mov $cli_buf_raw, %si
   call .init_cur
@@ -84,5 +86,5 @@ cur:
   .byte 0x00
   .byte 0x00
 
-.kernel_ok_str: .asciz "\nKernel ok\r\n"
-.kernel_welcome_str: .asciz "Welcome to fayos kernel\r\n"
+.kernel_ok_msg: .asciz "\nKernel ok\r\n"
+.kernel_welcome_msg: .asciz "Welcome to Fayos kernel\r\n"
