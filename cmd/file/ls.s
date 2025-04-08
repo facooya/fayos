@@ -21,7 +21,7 @@
 # DEPS
 # cmd_ls()
 #   set_dap_lba
-#   read_disk
+#   read_block
 #   print_newline
 #   cwd_lba
 
@@ -40,7 +40,7 @@
 
 .global cmd_ls
 
-.extern read_disk
+.extern read_block
 .extern print_newline
 .extern cwd_lba
 
@@ -60,7 +60,7 @@ cmd_ls:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   call print_newline
 

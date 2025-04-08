@@ -21,8 +21,8 @@
 # DEPS
 # cmd_rm()
 #   print_newline
-#   read_disk
-#   write_disk
+#   read_block
+#   write_block
 #   dap
 
 .code16
@@ -31,8 +31,8 @@
 .global cmd_rm
 
 .extern print_newline
-.extern read_disk
-.extern write_disk
+.extern read_block
+.extern write_block
 .extern dap
 
 # cmd_rm()
@@ -49,7 +49,7 @@ cmd_rm:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   # set mem ptr
   mov $0x8000, %si
@@ -116,7 +116,7 @@ cmd_rm:
   bts $0x07, %ax # msb
   mov %al, 13(%si) # file type
 
-  call write_disk
+  call write_block
 
 .cmd_rm__done:
   call print_newline

@@ -26,8 +26,8 @@
 #   set_dap_target
 #   reset_dap_target
 #   set_dap_lba
-#   read_disk
-#   write_disk
+#   read_block
+#   write_block
 #   dap
 #
 # set_free_lba()
@@ -58,8 +58,8 @@
 .extern set_dap_lba
 .extern set_dap_target
 .extern reset_dap_target
-.extern read_disk
-.extern write_disk
+.extern read_block
+.extern write_block
 .extern dap
 .extern free_lba
 
@@ -81,7 +81,7 @@ init_master_block:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   # set mem ptr
   mov $0x0600, %si
@@ -95,7 +95,7 @@ init_master_block:
   mov $0x88, %ax # next
   mov %ax, (%si)
 
-  call write_disk
+  call write_block
 
   call reset_dap_target
 
@@ -127,7 +127,7 @@ init_master_block:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   # set mem ptr
   mov $0x8000, %si
@@ -137,7 +137,7 @@ init_master_block:
   movw $0x00, 2(%si) # high
   movw $0xFADA, 4(%si) # magic
 
-  call write_disk
+  call write_block
   ret
 
 
@@ -158,7 +158,7 @@ set_free_lba:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   # cond: null ? done
   mov (%si), %ax

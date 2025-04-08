@@ -10,7 +10,7 @@ kernel/cli.s \
 kernel/cache.s \
 io/print.s \
 io/kbd.s \
-io/disk.s \
+io/block.s \
 fs/fayfs/fayfs.s \
 fs/fayfs/block.s \
 cmd/sys/echo.s \

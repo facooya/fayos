@@ -20,8 +20,8 @@
 
 # DEPS
 # cmd_touch()
-#   read_disk
-#   write_disk
+#   read_block
+#   write_block
 #   set_dentry
 #   print_newline
 #   cli_buf_arg
@@ -34,8 +34,8 @@
 
 .global cmd_touch
 
-.extern read_disk
-.extern write_disk
+.extern read_block
+.extern write_block
 .extern set_dentry
 .extern print_newline
 .extern cli_buf_arg
@@ -59,7 +59,7 @@ cmd_touch:
   call set_dap_lba
   add $0x04, %sp
 
-  call read_disk
+  call read_block
 
   # set mem ptr
   mov $0x8000, %si
@@ -116,7 +116,7 @@ cmd_touch:
   mov (cwd_lba+2), %ax
   mov %ax, 10(%si)
 
-  call write_disk
+  call write_block
 
   # write meta data !!! test
   call write_meta_data
