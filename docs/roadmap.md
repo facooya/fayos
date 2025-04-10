@@ -1,8 +1,6 @@
 Handle error
 no dir (rmdir)
 no file, not file (cat, rm)
-same file name (touch)
-same dir name (mkdir)
 
 Feature
 up down - raw history
@@ -20,6 +18,8 @@ Feature ls
 colorful file dir
 
 cli_buf
+allow ., _, - (front disallow)
+disallow /, \, SP, all
 buf [A-Za-z0-9], ignore space, . / > >> <
 E.g., ignore space, SP: space
 O: cmd
