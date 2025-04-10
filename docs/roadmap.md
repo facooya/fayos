@@ -17,17 +17,12 @@ cmd kernel time, color, mkdir, rmdir
 Feature ls
 colorful file dir
 
-cli_buf
+File or dir name rule
 allow ., _, - (front disallow)
 disallow /, \, SP, all
-buf [A-Za-z0-9], ignore space, . / > >> <
-E.g., ignore space, SP: space
-O: cmd
-O: SPcmd
-O: SPSPSP...cmd
-O: SPSPcmdSPSPoptSPSPSParg
 
-Ignore prompt space, null
+Feature multiple arguments
+echo O: hello world, O: "hello world"
 
 redirection (>, >>)
 cat arg > file

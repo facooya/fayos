@@ -136,6 +136,16 @@ hdl_cli_opt_err:
   mov $cli_buf_raw, %si
   mov $cli_buf_cmd, %di
 
+.tok_cli_buf__ltrim_lp:
+  # cond: space != ? write_cmd_lp
+  mov (%si), %al
+  cmp $0x20, %al
+  jnz .tok_cli_buf__write_cmd_lp
+
+  # loop
+  add $0x01, %si
+  jmp .tok_cli_buf__ltrim_lp
+
 .tok_cli_buf__write_cmd_lp:
   # cond: null ? err
   mov (%si), %al # cli_buf_raw
@@ -155,10 +165,23 @@ hdl_cli_opt_err:
   jmp .tok_cli_buf__write_cmd_lp
 
 .tok_cli_buf__set_opt:
+  # add $0x01, %si
   mov $cli_buf_opt, %di
 
+.tok_cli_buf__trim_opt_lp:
+  # loop
+  add $0x01, %si
+
+  # cond: space != ? chk_opt_lp
+  mov (%si), %al
+  cmp $0x20, %al
+  jne .tok_cli_buf__chk_opt_lp
+
+  # loop
+  jmp .tok_cli_buf__trim_opt_lp
+
 .tok_cli_buf__chk_opt_lp:
-  add $0x01, %si # cli_buf_raw, hyphen-minus or arg
+  # add $0x01, %si # cli_buf_raw, hyphen-minus or arg
 
   # cond: hyphen-minus != ? set_arg (end)
   mov (%si), %al # cli_buf_raw
@@ -174,10 +197,10 @@ hdl_cli_opt_err:
   test %al, %al
   jz .tok_cli_buf__err
 
-  # cond: space ? buf_opt_chk
+  # cond: space ? trim_opt_lp
   mov (%si), %al
   cmp $0x20, %al # space
-  je .tok_cli_buf__chk_opt_lp
+  je .tok_cli_buf__trim_opt_lp
 
   # write
   mov %al, (%di) # cli_buf_opt
@@ -194,6 +217,11 @@ hdl_cli_opt_err:
   # cond: null ? done
   mov (%si), %al
   test %al, %al
+  jz .tok_cli_buf__done
+
+  # cond: space ? done !!! single arg
+  mov (%si), %al
+  cmp $0x20, %al
   jz .tok_cli_buf__done
 
   # write
