@@ -1,19 +1,9 @@
-# FAYOS - FAcooYa Operating System
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Change directory
+#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # INDEX
 # cmd_cd()
@@ -41,8 +31,12 @@
 # cmd_cd()
 cmd_cd:
   # prol
+  push %si
+  push %di
+  push %ax
+  push %cx
 
-  # cond: period ? back !!! test
+  # cond: period ? back
   mov $cli_buf_arg, %di
   mov (%di), %ax
   cmp $0x2E2E, %ax # period
@@ -62,19 +56,29 @@ cmd_cd:
   mov $0x8000, %si
 
 .cmd_cd__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? chk_type
   mov (%si), %ax
   cmp $0xFADE, %ax
   je .cmd_cd__cmp_name
 
-  # cond: null ? done
+  # cond: null ? done !!! err hdl no found dir
   test %ax, %ax
   or 2(%si), %ax
-  jz .cmd_cd__done
+  jz .cmd_cd__err_no_dir
 
   # loop
   add $0x02, %si
   jmp .cmd_cd__find_magic_lp
+
+# .cmd_cd__chk_type:
+#   # cond: dir_type ? cmp_name
+#   movb 9(%si), %al
+#   cmp $0x0D, %al
+#   je .cmd_cd__cmp_name
+
+#   # loop
+#   add $0x0A, %si
+#   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__cmp_name:
   # copy ptr (magic)
@@ -89,7 +93,7 @@ cmd_cd:
   sub %cx, %di
 
   # setup
-  push %si # main mem ptr
+  push %si # main mem ptr !!! danger
   mov $cli_buf_arg, %si
 
 .cmd_cd__cmp_name_lp:
@@ -118,9 +122,10 @@ cmd_cd:
 .cmd_cd__main:
   pop %si # main mem ptr
 
-  mov $0x0E, %ah
-  mov $'M', %al
-  int $0x10
+  # cond: dir_type != ? err_not_dir
+  movb 9(%si), %al
+  cmp $0x0D, %al
+  jne .cmd_cd__err_not_dir
 
   # get data lba (dentry), set lba (cwd_lba)
   mov 4(%si), %ax # low
@@ -132,6 +137,10 @@ cmd_cd:
   call print_newline
 
   # epil
+  pop %cx
+  pop %ax
+  pop %di
+  pop %si
   ret
 
 .cmd_cd__back:
@@ -160,3 +169,26 @@ cmd_cd:
   mov %ax, (cwd_lba+2)
 
   jmp .cmd_cd__done
+
+.cmd_cd__err_no_dir:
+  call print_newline
+
+  push $.cd_err_no_dir_msg
+  call print_str
+  add $0x02, %sp
+
+  jmp .cmd_cd__done
+
+.cmd_cd__err_not_dir:
+  call print_newline
+
+  push $.cd_err_not_dir_msg
+  call print_str
+  add $0x02, %sp
+
+  jmp .cmd_cd__done
+
+.section .data
+
+.cd_err_no_dir_msg: .asciz "No found directory."
+.cd_err_not_dir_msg: .asciz "Not a directory."

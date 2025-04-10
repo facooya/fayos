@@ -1,9 +1,3 @@
-docs
-fs/fayfs/README.md
-
-Feature
-directory
-
 Handle error
 no dir
 no file
@@ -35,4 +29,3 @@ Ignore prompt space, null
 redirection (>, >>)
 cat arg > file
 cmd arg redir redir_target
-

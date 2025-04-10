@@ -35,6 +35,10 @@
 # cmd_mkdir()
 cmd_mkdir:
   # prol
+  push %si
+  push %di
+  push %ax
+  push %cx
 
   # set lba
   mov (cwd_lba), %ax
@@ -89,7 +93,7 @@ cmd_mkdir:
   add $0x02, %sp
 
   # write dentry type
-  push $0x0D
+  push $0x0D # directory
   call write_dentry__type
   add $0x02, %sp
 
@@ -103,6 +107,7 @@ cmd_mkdir:
 
   call write_meta
 
+  # allocate
   mov (free_lba), %ax
   add $0x08, %ax
   mov %ax, (free_lba)
@@ -110,4 +115,8 @@ cmd_mkdir:
   call print_newline
 
   # epil
+  pop %cx
+  pop %ax
+  pop %di
+  pop %si
   ret
