@@ -56,12 +56,12 @@ cmd_cd:
   mov $0x8000, %si
 
 .cmd_cd__find_magic_lp:
-  # cond: magic ? chk_type
+  # cond: magic ? cmp_name
   mov (%si), %ax
   cmp $0xFADE, %ax
   je .cmd_cd__cmp_name
 
-  # cond: null ? done !!! err hdl no found dir
+  # cond: null ? done
   test %ax, %ax
   or 2(%si), %ax
   jz .cmd_cd__err_no_dir
@@ -69,16 +69,6 @@ cmd_cd:
   # loop
   add $0x02, %si
   jmp .cmd_cd__find_magic_lp
-
-# .cmd_cd__chk_type:
-#   # cond: dir_type ? cmp_name
-#   movb 9(%si), %al
-#   cmp $0x0D, %al
-#   je .cmd_cd__cmp_name
-
-#   # loop
-#   add $0x0A, %si
-#   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__cmp_name:
   # copy ptr (magic)
