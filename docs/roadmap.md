@@ -1,7 +1,4 @@
-Seperate fayfs.s
-dentry.s
-metadata.s
-super.s
+docs
 fs/fayfs/README.md
 
 Feature
@@ -15,6 +12,9 @@ same dir name
 
 Feature
 up down - raw history
+
+Feature
+tab autocomplete file or dir
 
 Feature
 PWD: Print Working Directory
@@ -36,5 +36,3 @@ redirection (>, >>)
 cat arg > file
 cmd arg redir redir_target
 
-Feature
-tab autocomplete file or dir

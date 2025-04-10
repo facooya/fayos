@@ -1,19 +1,9 @@
-# FAYOS - FAcooYa Operating System
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Make directory
+#
 # Copyright (C) 2025 Facooya
 # Copyright (C) 2025 Fanone Facooya
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # INDEX
 # cmd_mkdir()
@@ -35,15 +25,89 @@
 .extern read_block
 .extern write_block
 .extern dap
+.extern wirte_meta
+.extern write_dentry
+.extern write_dentry__type
+.extern cwd_lba
+.extern free_lba
+.extern cli_buf_arg
 
 # cmd_mkdir()
 cmd_mkdir:
   # prol
 
-  push $0x00
-  push $0x00
+  # set lba
+  mov (cwd_lba), %ax
+  push %ax
+  mov (cwd_lba+2), %ax
+  push %ax
   call set_dap_lba
   add $0x04, %sp
+
+  call read_block
+
+  mov $0x8000, %si # mem ptr
+
+.cmd_mkdir__find_free_lp:
+  # cond: null ? write_name
+  mov (%si), %ax
+  test %ax, %ax
+  or 2(%si), %ax
+  jz .cmd_mkdir__write_name
+
+  # loop
+  add $0x02, %si
+  jmp .cmd_mkdir__find_free_lp
+
+.cmd_mkdir__write_name:
+  mov $cli_buf_arg, %di
+  xor %cx, %cx
+
+.cmd_mkdir__write_name_lp:
+  # cond: null ? write_name_end
+  mov (%di), %al # cli_buf_arg
+  test %al, %al
+  jz .cmd_mkdir__write_name_end
+
+  # write mem
+  mov %al, (%si)
+
+  # loop
+  add $0x01, %si
+  add $0x01, %di
+  add $0x01, %cx
+  jmp .cmd_mkdir__write_name_lp
+
+.cmd_mkdir__write_name_end:
+  # add null char
+  add $0x01, %si # mem ptr
+  add $0x01, %cx # name size
+
+  # write dentry
+  push %cx
+  call write_dentry
+  add $0x02, %sp
+
+  # write dentry type
+  push $0x0D
+  call write_dentry__type
+  add $0x02, %sp
+
+  # write dentry data lba
+  mov (free_lba), %ax
+  mov %ax, 4(%si)
+  mov (free_lba+2), %ax
+  mov %ax, 6(%si)
+
+  call write_block
+
+  call write_meta
+
+  mov (free_lba), %ax
+  add $0x08, %ax
+  mov %ax, (free_lba)
+
+  call print_newline
 
   # epil
   ret
