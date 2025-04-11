@@ -27,3 +27,5 @@ echo O: hello world, O: "hello world"
 redirection (>, >>)
 cat arg > file
 cmd arg redir redir_target
+
+Ignore error enter, SPSPSP

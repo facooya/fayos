@@ -38,6 +38,7 @@
 
 .extern hdl_cli_opt_err
 .extern print_newline
+.extern cli_buf_stdout
 
 # cmd_echo()
 cmd_echo:

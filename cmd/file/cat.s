@@ -54,8 +54,12 @@ cmd_cat:
   push %cx
 
   # set lba
-  push $0x80 # !!! root dir
-  push $0x00
+  # push $0x80 # !!! root dir
+  # push $0x00
+  mov (cwd_lba), %ax
+  push %ax
+  mov (cwd_lba+2), %ax
+  push %ax
   call set_dap_lba
   add $0x04, %sp
 
@@ -116,11 +120,6 @@ cmd_cat:
 .cmd_cat__skip_dentry:
   pop %si # main mem ptr
 
-  # !!! temp
-  mov $0x0E, %ah
-  mov $'N', %al
-  int $0x10
-
   # skip dentry [n_skip_dentry]
   add $0x0A, %si
 
@@ -129,11 +128,6 @@ cmd_cat:
 
 .cmd_cat__main:
   pop %si # main mem ptr
-
-  # !!! temp
-  mov $0x0E, %ah
-  mov $'M', %al
-  int $0x10
 
   # cond: 1 != ? done
   # !!! temp, only entry level 1
@@ -152,7 +146,7 @@ cmd_cat:
   call read_block
 
   # set data mem ptr
-  mov $0x8000, %si
+  mov $0x8006, %si
 
   mov $0x0E, %ah
 
@@ -170,6 +164,8 @@ cmd_cat:
   jmp .cmd_cat__out_data
 
 .cmd_cat__done:
+  call print_newline
+
   # epil
   pop %cx
   pop %ax
