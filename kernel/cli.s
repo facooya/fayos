@@ -38,7 +38,7 @@
 .global exec_cli_cmd
 .global hdl_cli_opt_err
 .global cli_cmd_map
-.global cli_buf_raw, cli_buf_cmd, cli_buf_arg
+.global cli_buf_raw, cli_buf_trim, cli_buf_norm, cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir, cli_buf_stdout
 
 .extern print_newline
@@ -51,8 +51,13 @@
 .extern cmd_help
 .extern cmd_mkdir
 
+.extern norm_ws
+.extern trim
+
 # exec_cli_cmd()
 exec_cli_cmd:
+  call trim
+  # call norm_ws
   call .tok_cli_buf
 
   mov $cli_cmd_map, %si
@@ -133,7 +138,7 @@ hdl_cli_opt_err:
 
 # .tok_cli_buf()
 .tok_cli_buf:
-  mov $cli_buf_raw, %si
+  mov $cli_buf_trim, %si
   mov $cli_buf_cmd, %di
 
 .tok_cli_buf__ltrim_lp:
@@ -402,6 +407,14 @@ hdl_cli_opt_err:
   push $cli_buf_redir
   call .init_cli_buf
   add $0x02, %sp
+
+  push $cli_buf_norm
+  call .init_cli_buf
+  add $0x02, %sp
+
+  push $cli_buf_trim
+  call .init_cli_buf
+  add $0x02, %sp
   ret
 
 # .init_cli_buf(cli_buf)
@@ -460,6 +473,8 @@ cli_cmd_map:
 
 # cli_buf_*
 cli_buf_raw: .zero 0x40
+cli_buf_trim: .zero 0x40
+cli_buf_norm: .zero 0x40
 cli_buf_cmd: .zero 0x20
 cli_buf_arg: .zero 0x20
 cli_buf_opt: .zero 0x10

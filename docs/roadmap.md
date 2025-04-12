@@ -28,4 +28,10 @@ redirection (>, >>)
 cat arg > file
 cmd arg redir redir_target
 
+file_cache file match return lba
+trim.s
+err_msg.s
+buf.s
+cache.s
+
 Ignore error enter, SPSPSP
