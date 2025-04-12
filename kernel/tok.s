@@ -82,10 +82,10 @@ trim:
   push %si
   push %di
   push %ax
+  push %bx
   push %cx
 
   mov $cli_buf_raw, %si
-  mov $cli_buf_trim, %di
 
 .trim__left_lp:
   # cond: null ? done
@@ -93,43 +93,44 @@ trim:
   test %al, %al
   jz .trim__done
 
-  # cond: space != ? next
+  # cond: space != ? left_end
   cmp $0x20, %al
-  jne .trim__next
+  jne .trim__left_end
 
   # loop
   add $0x01, %si
   jmp .trim__left_lp
 
-.trim__next:
-  push %si # start char
+.trim__left_end:
+  mov %si, %bx # start char
 
-.trim__end_lp:
-  # cond: null ? done
+.trim__find_last_lp:
+  # cond: null ? right
   mov (%si), %al
   test %al, %al
   jz .trim__right
 
   # loop
   add $0x01, %si
-  jmp .trim__end_lp
+  jmp .trim__find_last_lp
 
 .trim__right:
   sub $0x01, %si
 
 .trim__right_lp:
-  # cond: space != ? right_end
+  # cond: space != ? write
   mov (%si), %al
   cmp $0x20, %al
-  jne .trim__right_end
+  jne .trim__write
 
   # loop
   sub $0x01, %si
   jmp .trim__right_lp
 
-.trim__right_end:
+.trim__write:
   mov %si, %cx # last char
-  pop %si # start char
+  mov %bx, %si # start char
+  mov $cli_buf_trim, %di
 
 .trim__write_lp:
   # write
@@ -148,6 +149,7 @@ trim:
 .trim__done:
   # epil
   pop %cx
+  pop %bx
   pop %ax
   pop %di
   pop %si
