@@ -12,6 +12,7 @@ kernel/cache.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
+lib/trim.s \
 fs/fayfs/super.s \
 fs/fayfs/dir.s \
 fs/fayfs/meta.s \

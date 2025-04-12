@@ -56,7 +56,10 @@
 
 # exec_cli_cmd()
 exec_cli_cmd:
+  push $cli_buf_trim
+  push $cli_buf_raw
   call trim
+  add $0x04, %sp
   # call norm_ws
   call .tok_cli_buf
 

@@ -18,4 +18,5 @@ cmd/ - commands
 docs/ - documentation  
 fs/fayfs/ - file system  
 io/ - keyboard, disk  
+lib/ - library  
 kernel/ - main  
