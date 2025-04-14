@@ -41,8 +41,6 @@
 .global cli_buf_raw, cli_buf_trim, cli_buf_split, cli_buf_norm
 .global cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir, cli_buf_stdout
-.global argc
-.global argv
 
 .extern print_newline
 .extern cmd_clear
@@ -72,7 +70,9 @@ exec_cli_cmd:
   call split
   add $0x04, %sp
 
-  # call norm_ws
+  # build_args
+  call build_args
+  
   call .tok_cli_buf
 
   mov $cli_cmd_map, %si
@@ -491,19 +491,16 @@ cli_cmd_map:
   .asciz ""
 
 # cli_buf_*
-cli_buf_raw: .zero 0x40
-cli_buf_trim: .zero 0x40
-cli_buf_split: .zero 0x40
-cli_buf_norm: .zero 0x40
+cli_buf_raw: .zero 0x100
+cli_buf_trim: .zero 0x100
+cli_buf_split: .zero 0x100
+cli_buf_norm: .zero 0x100
 cli_buf_cmd: .zero 0x20
 cli_buf_arg: .zero 0x20
 cli_buf_opt: .zero 0x10
 cli_buf_tmp: .zero 0x20
 cli_buf_redir: .zero 0x20
 cli_buf_stdout: .zero 0x40
-
-argc: .word 0x00
-argv: .zero 0xFF
 
 # *_err_msg
 .cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."

@@ -2,6 +2,9 @@ Handle error
 no dir (rmdir)
 no file, not file (cat, rm)
 
+Refactor in-place
+trim_buf, split_buf, arg_buf => raw_buf
+
 Feature
 up down - raw history
 

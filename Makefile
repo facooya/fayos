@@ -8,6 +8,7 @@ SRCS = \
 kernel/kernel.s \
 kernel/cli.s \
 kernel/cache.s \
+kernel/args.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
