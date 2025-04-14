@@ -38,8 +38,11 @@
 .global exec_cli_cmd
 .global hdl_cli_opt_err
 .global cli_cmd_map
-.global cli_buf_raw, cli_buf_trim, cli_buf_norm, cli_buf_cmd, cli_buf_arg
+.global cli_buf_raw, cli_buf_trim, cli_buf_split, cli_buf_norm
+.global cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir, cli_buf_stdout
+.global argc
+.global argv
 
 .extern print_newline
 .extern cmd_clear
@@ -53,13 +56,22 @@
 
 .extern norm_ws
 .extern trim
+.extern split
 
 # exec_cli_cmd()
 exec_cli_cmd:
+  # trim
   push $cli_buf_trim
   push $cli_buf_raw
   call trim
   add $0x04, %sp
+
+  # split
+  push $cli_buf_split
+  push $cli_buf_trim
+  call split
+  add $0x04, %sp
+
   # call norm_ws
   call .tok_cli_buf
 
@@ -418,6 +430,10 @@ hdl_cli_opt_err:
   push $cli_buf_trim
   call .init_cli_buf
   add $0x02, %sp
+
+  push $cli_buf_split
+  call .init_cli_buf
+  add $0x02, %sp
   ret
 
 # .init_cli_buf(cli_buf)
@@ -477,6 +493,7 @@ cli_cmd_map:
 # cli_buf_*
 cli_buf_raw: .zero 0x40
 cli_buf_trim: .zero 0x40
+cli_buf_split: .zero 0x40
 cli_buf_norm: .zero 0x40
 cli_buf_cmd: .zero 0x20
 cli_buf_arg: .zero 0x20
@@ -484,6 +501,9 @@ cli_buf_opt: .zero 0x10
 cli_buf_tmp: .zero 0x20
 cli_buf_redir: .zero 0x20
 cli_buf_stdout: .zero 0x40
+
+argc: .word 0x00
+argv: .zero 0xFF
 
 # *_err_msg
 .cli_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."

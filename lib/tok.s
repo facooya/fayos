@@ -8,10 +8,18 @@
 .code16
 .section .text
 
-.global norm_ws
+.global tok
 
-.extern cli_buf_norm
-.extern cli_buf_trim
+# tok(src, argc, argv)
+tok:
+  # prol
+  push %bp
+  mov %sp, %bp
+
+  
+
+  # epil
+  pop %bp
 
 # norm_ws()
 norm_ws:

@@ -1,11 +1,12 @@
-commit prefix
-chore
-docs
-refactor
-feat (Feature)
-test
-fix
-wip (Work In Progress)
+Commit prefix: verb
+chore: clean, add, remove
+docs: update
+refactor: refactor, optimize, extract
+feat: add, implement
+fix: fix
+
+WIP is temporary commit. don't push. "commit -amend"
+wip: update
 
 Comment Rule
 

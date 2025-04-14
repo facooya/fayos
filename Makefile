@@ -7,12 +7,13 @@ LD_KERNEL = ld -m elf_i386 -T $(BUILD)/linker.ld
 SRCS = \
 kernel/kernel.s \
 kernel/cli.s \
-kernel/tok.s \
 kernel/cache.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
 lib/trim.s \
+lib/split.s \
+lib/tok.s \
 fs/fayfs/super.s \
 fs/fayfs/dir.s \
 fs/fayfs/meta.s \
