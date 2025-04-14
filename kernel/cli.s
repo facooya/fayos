@@ -72,7 +72,7 @@ exec_cli_cmd:
 
   # build_args
   call build_args
-  
+
   call .tok_cli_buf
 
   mov $cli_cmd_map, %si
@@ -431,9 +431,10 @@ hdl_cli_opt_err:
   call .init_cli_buf
   add $0x02, %sp
 
-  push $cli_buf_split
-  call .init_cli_buf
-  add $0x02, %sp
+  # push $cli_buf_split
+  # call .init_cli_buf
+  # add $0x02, %sp
+  call .init_cli_buf_split # tmp
   ret
 
 # .init_cli_buf(cli_buf)
@@ -463,6 +464,45 @@ hdl_cli_opt_err:
   pop %ax
   pop %si
   pop %bp
+  ret
+
+.init_cli_buf_split: # !!! tmp
+  push %si
+  push %ax
+
+  mov $cli_buf_split, %si
+  mov $0x0E, %ah
+
+.init_cli_buf_split__lp:
+  mov (%si), %al # load
+
+  # cond: null ? chk
+  test %al, %al
+  jz .init_cli_buf_split__chk
+
+  # init
+  xor %al, %al
+  mov %al, (%si)
+
+  # loop
+  add $0x01, %si
+  jmp .init_cli_buf_split__lp
+
+.init_cli_buf_split__chk:
+  add $0x01, %si
+  mov (%si), %al # load
+
+  # cond: null ? done
+  test %al, %al
+  jz .init_cli_buf_split__done
+
+  # loop
+  jmp .init_cli_buf_split__lp
+  
+
+.init_cli_buf_split__done:
+  pop %ax
+  pop %si
   ret
 
 .section .data

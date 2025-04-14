@@ -14,6 +14,38 @@
 
 .extern cli_buf_split
 
+# !!! .dout() tmp debug for split buffer
+.dout:
+  mov $cli_buf_split, %si
+  mov $0x0E, %ah
+
+.dout_lp:
+  mov (%si), %al # load
+
+  # cond: null ? chk
+  test %al, %al
+  jz .dout_chk
+
+  int $0x10 # out
+
+  # loop
+  add $0x01, %si
+  jmp .dout_lp
+
+.dout_chk:
+  add $0x01, %si
+  mov (%si), %al # load
+
+  # cond: null ? done
+  test %al, %al
+  jz .dout_done
+
+  # loop
+  jmp .dout_lp
+
+.dout_done:
+  ret
+
 # build_args()
 build_args:
   # prol
@@ -23,9 +55,11 @@ build_args:
   push %bx
   push %cx
 
+  call .dout # !!! tmp
+
   # init
   call .clear_args
-  mov $cli_buf_split, %si # !!! FIXME: split init
+  mov $cli_buf_split, %si
   mov $argv, %di
   xor %bx, %bx # off
   xor %cx, %cx # argc
@@ -64,6 +98,11 @@ build_args:
   # write argc
   mov $argc, %si
   mov %cx, (%si)
+
+  mov $0x0E, %ah
+  mov (%si), %al
+  add $0x30, %al
+  int $0x10
 
   # epil
   pop %cx
