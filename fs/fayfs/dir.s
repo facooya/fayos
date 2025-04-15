@@ -1,9 +1,8 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
 #
 # Directory entry (docs/fs/fayfs/dir.txt)
-#
-# Copyright (C) 2025 Facooya
-# Copyright (C) 2025 Fanone Facooya
 
 .code16
 .section .text
