@@ -50,7 +50,7 @@ hdl_kbd:
   mov $0x0E, %ah
   int $0x10
 
-  # si = cli_buf_raw + offset
+  # si = raw_buf + offset
   # write
   mov %al, (%si)
   add $0x01, %si

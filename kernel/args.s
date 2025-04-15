@@ -7,6 +7,8 @@
 .code16
 .section .text
 
+.global trim_raw
+.global split_raw
 .global build_args
 
 .global argc
@@ -45,6 +47,143 @@
 .dout_done:
   ret
 
+# trim_raw()
+trim_raw:
+  # prol
+  push %si
+  push %di
+  push %ax
+
+  # init
+  mov $raw_buf, %si
+  xor %cx, %cx
+
+.trim_raw__left_lp: # !!! {si}[ ][ ]echo[ ]facooya[ ][ ][0]
+  # cond: null ? done
+  mov (%si), %al
+  test %al, %al
+  jz .trim_raw__done
+
+  # cond: space != ? left_end
+  cmp $0x20, %al
+  jne .trim_raw__left_end
+
+  # loop
+  add $0x01, %si
+  add $0x01, %cx
+  jmp .trim_raw__left_lp
+
+.trim_raw__left_end:
+  # !!! si,cx=2
+  # !!! [ ][ ]{si}echo[ ]facooya[ ][ ][0]
+  mov %si, %di # di = left valid idx
+  # !!! di=2
+
+  # !!! for push $raw_buf => push %si
+  sub %cx, %si # si = left idx
+  xor %cx, %cx
+
+  # TODO
+  # push $raw_buf
+  # call strlen
+  # add $0x02, %sp
+  # mov $raw_buf, %si
+  # add %cx, %si
+
+.trim_raw__strlen_lp: # !!! tmp strlen
+  # !!! [ ][ ]echo[ ]facooya[ ][ ]{si,cx}[0] si,cx=16
+  # cond: null ? right
+  mov (%si), %al
+  test %al, %al
+  jz .trim_raw__right
+
+  # loop
+  add $0x01, %si
+  add $0x01, %cx
+  jmp .trim_raw__strlen_lp
+
+.trim_raw__right:
+  sub $0x01, %si
+  mov %si, %bx # bx = right idx
+  # !!! si,bx=15, cx=16
+  # !!! [ ][ ]echo[ ]facooya[ ]{si,bx}[ ][0]
+
+.trim_raw__right_lp:
+  # !!! si,bx=15 - 2 = 13
+  # !!! [ ][ ]echo[ ]facooy{si,bx}a[ ][ ][0]
+  # load
+  mov (%si), %al
+
+  # cond: space != ? compact
+  cmp $0x20, %al
+  jne .trim_raw__compact
+
+  # loop
+  sub $0x01, %si
+  sub $0x01, %bx
+  jmp .trim_raw__right_lp
+
+.trim_raw__compact:
+  # di = left valid idx !!! 2
+  # bx = right valid idx !!! 13
+  # cx = str len !!! 16
+
+  # init
+  mov $raw_buf, %si # dst
+
+.trim_raw__compact_lp:
+  # !!! {si}[ ][ ]{di}echo[ ]facooy{bx}a[ ][ ]{cx}[0]
+  # copy
+  mov (%di), %al
+  mov %al, (%si)
+  
+  # cond: di == bx ? zero
+  cmp %bx, %di
+  je .trim_raw__zero
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  jmp .trim_raw__compact_lp
+
+.trim_raw__zero:
+  # !!! di,bx = right valid idx
+  # !!! cx = str len
+
+  # init
+  add $0x01, %si
+
+.trim_raw__zero_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? done
+  test %al, %al
+  jz .trim_raw__done
+
+  # store zero
+  xor %al, %al
+  mov %al, (%si)
+
+  # step
+  add $0x01, %si
+  jmp .trim_raw__zero_lp
+
+.trim_raw__done:
+  push $raw_buf
+  call print_str
+  add $0x02, %sp
+
+  # epil
+  pop %ax
+  pop %di
+  pop %si
+  ret
+
+# split_raw()
+split_raw:
+  ret
+
 # build_args()
 build_args:
   # prol
@@ -54,7 +193,7 @@ build_args:
   push %bx
   push %cx
 
-  call .dout # !!! tmp
+  #call .dout # !!! tmp
 
   # init
   call .clear_args

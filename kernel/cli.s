@@ -27,7 +27,7 @@
 .global exec_cli_cmd
 .global hdl_cli_opt_err
 .global cli_cmd_map
-.global cli_buf_raw, cli_buf_trim, cli_buf_split, cli_buf_norm
+.global cli_buf_trim, cli_buf_split, cli_buf_norm
 .global cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir, cli_buf_stdout
 
@@ -44,12 +44,15 @@
 .extern norm_ws
 .extern trim
 .extern split
+.extern raw_buf
 
 # exec_cli_cmd()
 exec_cli_cmd:
+  call trim_raw
+
   # trim
   push $cli_buf_trim
-  push $cli_buf_raw
+  push $raw_buf
   call trim
   add $0x04, %sp
 
@@ -110,7 +113,7 @@ exec_cli_cmd:
 
   # done
   call .init_cli_buf_all
-  mov $cli_buf_raw, %si # default
+  mov $raw_buf, %si # default
   ret
 
 .exec_cli_cmd__err:
@@ -124,7 +127,7 @@ exec_cli_cmd:
 
   # done
   call .init_cli_buf_all
-  mov $cli_buf_raw, %si # default
+  mov $raw_buf, %si # default
   ret
 
 # hdl_cli_opt_err
@@ -137,7 +140,7 @@ hdl_cli_opt_err:
 
   # done
   call .init_cli_buf_all
-  mov $cli_buf_raw, %si # default
+  mov $raw_buf, %si # default
   ret
 
 # .tok_cli_buf()
@@ -388,9 +391,9 @@ hdl_cli_opt_err:
 
 # .init_cli_buf_all()
 .init_cli_buf_all:
-  push $cli_buf_raw
-  call .init_cli_buf
-  add $0x02, %sp
+  # push $cli_buf_raw
+  # call .init_cli_buf
+  # add $0x02, %sp
 
   push $cli_buf_cmd
   call .init_cli_buf
@@ -520,7 +523,7 @@ cli_cmd_map:
   .asciz ""
 
 # cli_buf_*
-cli_buf_raw: .zero 0x100
+# cli_buf_raw: .zero 0x100
 cli_buf_trim: .zero 0x100
 cli_buf_split: .zero 0x100
 cli_buf_norm: .zero 0x100

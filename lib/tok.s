@@ -19,6 +19,7 @@ tok:
 
   # epil
   pop %bp
+  ret
 
 # norm_ws()
 norm_ws:

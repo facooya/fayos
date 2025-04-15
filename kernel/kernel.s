@@ -14,7 +14,7 @@
 .extern print_str
 .extern print_newline
 .extern hdl_kbd
-.extern cli_buf_raw
+.extern raw_buf
 .extern init_super_block
 .extern init_root_meta
 .extern init_free_lba
@@ -39,7 +39,7 @@ _start:
   call print_str
   add $0x02, %sp
 
-  mov $cli_buf_raw, %si
+  mov $raw_buf, %si
   call .init_cur
 
 # .kernel_lp() - main loop
