@@ -53,6 +53,8 @@ trim_raw:
   push %si
   push %di
   push %ax
+  push %bx
+  push %cx
 
   # init
   mov $raw_buf, %si
@@ -170,11 +172,9 @@ trim_raw:
   jmp .trim_raw__zero_lp
 
 .trim_raw__done:
-  push $raw_buf
-  call print_str
-  add $0x02, %sp
-
   # epil
+  pop %cx
+  pop %bx
   pop %ax
   pop %di
   pop %si
@@ -182,6 +182,88 @@ trim_raw:
 
 # split_raw()
 split_raw:
+  # prol
+  push %si
+  push %di
+  push %ax
+
+  # init
+  mov $raw_buf, %si
+  mov %si, %di
+
+.split_raw__write_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? zero
+  test %al, %al
+  jz .split_raw__zero
+
+  # cond: space ? skip_spaces
+  cmp $0x20, %al
+  je .split_raw__skip_spaces
+
+  # store
+  mov %al, (%di)
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  jmp .split_raw__write_lp
+
+.split_raw__skip_spaces:
+  # store null
+  xor %al, %al
+  mov %al, (%di)
+  add $0x01, %di
+
+  # init
+  add $0x01, %si
+
+.split_raw__skip_spaces_lp:
+  # load
+  mov (%si), %al
+
+  # cond: space != ? next
+  cmp $0x20, %al
+  jne .split_raw__next
+
+  # step
+  add $0x01, %si
+  jmp .split_raw__skip_spaces_lp
+
+.split_raw__next:
+  jmp .split_raw__write_lp
+
+.split_raw__zero:
+  # init
+  # mov %al, (%di)
+  # add $0x01, %di
+
+.split_raw__zero_lp:
+  # load
+  mov (%di), %al
+
+  # cond: null ? done
+  test %al, %al
+  jz .split_raw__done
+
+  # zero
+  xor %al, %al
+  mov %al, (%di)
+
+  # step
+  add $0x01, %di
+  jmp .split_raw__zero_lp
+
+.split_raw__done:
+  # !!! REMOVE
+  call .dout
+
+  # epil
+  pop %ax
+  pop %di
+  pop %si
   ret
 
 # build_args()
@@ -192,8 +274,6 @@ build_args:
   push %ax
   push %bx
   push %cx
-
-  #call .dout # !!! tmp
 
   # init
   call .clear_args

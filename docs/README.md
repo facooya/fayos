@@ -8,12 +8,17 @@ fix
 WIP is temporary commit. don't push. "commit -amend"
 wip
 
-Comment Rule
-
-PREVIEW, CODE, DATA, INCLUDE, FACOOYA
-PREVIEW: (EXPORT: FUNC, LABEL, DATA), DEPS
-FUNC: Function
+Docs rule
+INDEX: file function
 DEPS: Dependencies
+NOTE:
+  n: note, d: debug, c: common
+
+Function namming
+V: verb, O: object, SF: suffix, TV: task verb, TO: task object
+V_O__TV_TO_SF
+suffix:
+  lp: loop, end, init
 
 MACRO_NAME() = Macro
 label_name = Label, (Jump)
