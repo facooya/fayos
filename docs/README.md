@@ -20,85 +20,73 @@ V_O__TV_TO_SF
 suffix:
   lp: loop, end, init
 
-MACRO_NAME() = Macro
-label_name = Label, (Jump)
-func_name() = Function, (Call)
-func_name_exit = Exit (Error)
-func_name_done = Done (Safe)
+label_name
+func_name()
+MACRO_NAME()
 
-Function naming
-verb_noun
-verb_prefix
-verb_noun_prefix__detail
-
+Cond rule
 O: cmp $0x01, %ax
 X: cmp $0x00, %ax, O: test %ax, %ax
 X: mov $0x00, %ax, O: xor %ax, %ax
 
-done: Function, end: Loop OR Task, exit: Error
-_func_name: Private
-
-e.g.,
-# func_name(arg_1, arg_2)
+E.g.,
 push $arg_2
 push $arg_1
 call func_name # arg_0
-add $0x04, %sp # Clear Stack
-func_name: # Entry Point
-_func_name__set_bp:
+add $0x04, %sp # clear stack
+
+\# func_name(arg_1, arg_2)
+func_name: # entry point
+  \# prol
   push %bp
   mov %sp, %bp
-
-_func_name__push:
+  push %si
+  push %di
   push %ax
   push %cx
 
-# run OR main
-_func_name__run: # Main
-  # AX ? Pop
-  mov $0x10, %ax
-  cmp $0x01, %ax
-  jz _func_name__pop
+  \# init
+  mov 4(%bp), %si
+  mov 6(%bp), %di
 
-# task OR task_set OR task_loop_set
-_func_name__run_task_set: # *_set
+.func_name__chk:
+  mov $0x10, %ax
+
+  \# cond: ax == 1 ? done
+  cmp $0x01, %ax
+  jz .func_name__done
+
+.func_name__task:
   mov $0x03, %cx
 
-# task_loop OR task_[sub_task]_loop
-_func_name__run_task_loop: # *_loop
-  # CX ? End
+.func_name__task_lp:
+  \# cx == 0 ? task_end
   test %cx, %cx
-  jz _func_name__run_task_end
+  jz .func_name__task_end
 
-  # Loop
-  dec %cx
-  jmp _func_name__run_task_loop
+  \# step
+  sub $0x01, %cx
+  jmp .func_name__task_lp
 
-# task_end OR (task_loop_end | task_end)
-_func_name__run_task_end: # *_end
+.func_name__task_end:
   mov $0x10, %ax
 
-_func_name__pop:
+.func_name__done:
+  \# epil
   pop %cx
   pop %ax
+  pop %di
+  pop %si
   pop %bp
-
-_func_name__done:
   ret
 
-Number Style
-X: Decimal
-O: Comment (Decimal)
-
-Align [1 Byte]
+Align
 X: 0x1, 0x123
 O: 0x01, 0x0123, 0x1234
 
 Data Type
-O: .byte, .word, .long, .quad, .fill, .asciz, .ascii
-X: .short, .int, .zero, .string
-
-X: .macro
+O: .byte, .word, .long, .quad, .fill, .zero, .asciz, .ascii
+X: .short, .int, .string
 
 Instruction
 X: lods, stos, rep, loop
@@ -106,21 +94,8 @@ X: lods, stos, rep, loop
 O: add, sub
 X: inc, dec
 
-
-UPPERCASE = AND, OR
-[REGISTER] e.g., [AX], [BX], Using [SI], Save [BP]
-Calculation
-[(AL)+1] = [Value+1], [AX+1] = [Addr+1]
-
-b, w, l
-mov %ax, %bx
-mov $0x10, %bx
-movw (%ax), %bx
-movw %ax, (%bx)
-
-Unit Rule
-[AH][8-bit]
-[AL][1-byte]
-[AX][2-byte]
-[1 KiB], [2 MiB]
-
+Skip b, w
+X: movw (%si), %ax
+O: mov (%si), %ax
+X: movb (%si), %al
+O: mov (%si), %al
