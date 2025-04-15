@@ -8,14 +8,14 @@
 .section .text
 
 .global build_args
+
 .global argc
 .global argv
+.global raw_buf
 
-.extern cli_buf_split
-
-# !!! .dout() tmp debug for split buffer
+# !!! .dout() tmp debug
 .dout:
-  mov $cli_buf_split, %si
+  mov $raw_buf, %si
   mov $0x0E, %ah
 
 .dout_lp:
@@ -58,7 +58,8 @@ build_args:
 
   # init
   call .clear_args
-  mov $cli_buf_split, %si
+  call .clear_raw_buf
+  mov $raw_buf, %si
   mov $argv, %di
   xor %bx, %bx # off
   xor %cx, %cx # argc
@@ -149,10 +150,54 @@ build_args:
   pop %si
   ret
 
+# .clear_raw_buf()
+.clear_raw_buf:
+  # prol
+  push %si
+  push %ax
+
+  # init
+  mov $raw_buf, %si
+
+.clear_raw_buf__zero_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? chk_zero
+  test %al, %al
+  jz .clear_raw_buf__chk_zero
+
+  # store zero
+  xor %al, %al
+  mov %al, (%si)
+
+  # loop
+  add $0x01, %si
+  jmp .clear_raw_buf__zero_lp
+
+.clear_raw_buf__chk_zero:
+  # next load
+  add $0x01, %si
+  mov (%si), %al
+
+  # cond: null ? done
+  test %al, %al
+  jz .clear_raw_buf__done
+
+  # loop
+  jmp .clear_raw_buf__zero_lp
+
+.clear_raw_buf__done:
+  # epil
+  pop %ax
+  pop %si
+  ret
+
 .section .data
 
 # args
 argc: .word 0x00
 argv: .zero 0x100
 
-# !!! raw: .zero 0x400
+# raw_buf
+raw_buf: .zero 0x400
