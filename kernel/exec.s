@@ -17,7 +17,7 @@
 # exec_cmd()
 exec_cmd:
   # prol
-  # push %si
+  push %si
   push %di
   push %ax
   push %bx
@@ -32,8 +32,9 @@ exec_cmd:
   mov $raw_buf, %si
   mov $cmd_map, %di
 
-  # mov $argc, %cx
-  # mov (%cx), %cx
+  # !!! TODO: ignore empty input
+  # mov $argc, %di
+  # mov (%di), %cx
 
   # cond: argc == 0 ? done
   # test %cx, %cx
@@ -103,16 +104,12 @@ exec_cmd:
   call *%bx
 
 .exec_cmd__done:
-  # default
-  call clear_raw_buf
-  mov $raw_buf, %si
-
   # epil
   pop %cx
   pop %bx
   pop %ax
   pop %di
-  # pop %si
+  pop %si
   ret
 
 .exec_cmd__err:

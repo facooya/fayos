@@ -281,7 +281,6 @@ build_args:
 
   # init
   call .clear_args
-  #call .clear_raw_buf
   mov $raw_buf, %si
   mov $argv, %di
   xor %bx, %bx # off
@@ -327,9 +326,9 @@ build_args:
   # mov (%si), %al
   # add $0x30, %al
   # int $0x10
-  push $raw_buf
-  call print_str
-  add $0x02, %sp
+  # push $raw_buf
+  # call print_str
+  # add $0x02, %sp
 
   # epil
   pop %cx

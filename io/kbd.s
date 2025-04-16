@@ -265,9 +265,7 @@ hdl_kbd:
 
 # .hdl_enter
 .hdl_enter:
-  # call exec_cli_cmd
   call exec_cmd
-  #call clear_raw_buf
 
   push $kernel_prompt
   call print_str
@@ -276,6 +274,10 @@ hdl_kbd:
   # init max cursor
   mov (cur), %al
   mov %al, (cur+1)
+
+  # init raw buf
+  call clear_raw_buf
+  mov $raw_buf, %si
 
   jmp .hdl_kbd__done
 
