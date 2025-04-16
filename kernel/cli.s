@@ -24,9 +24,9 @@
 .code16
 .section .text
 
-.global exec_cli_cmd
+# .global exec_cli_cmd
 .global hdl_cli_opt_err
-.global cli_cmd_map
+# .global cli_cmd_map
 .global cli_buf_trim, cli_buf_split, cli_buf_norm
 .global cli_buf_cmd, cli_buf_arg
 .global cli_buf_opt, cli_buf_tmp, cli_buf_redir, cli_buf_stdout
@@ -57,7 +57,7 @@ exec_cli_cmd:
 
   # call .tok_cli_buf !!! 
 
-  mov $cli_cmd_map, %si
+  #mov $cli_cmd_map, %si
 
 .exec_cli_cmd__chk_addr_lp:
   # cond: null ? err

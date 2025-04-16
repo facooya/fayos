@@ -10,7 +10,7 @@
 # DEPS
 # cmd_help()
 #   print_newline
-#   cli_cmd_map
+#   cmd_map
 
 .code16
 .section .text
@@ -18,7 +18,7 @@
 .global cmd_help
 
 .extern print_newline
-.extern cli_cmd_map
+.extern cmd_map
 
 # cmd_help()
 cmd_help:
@@ -28,7 +28,7 @@ cmd_help:
   push %bx
 
   # set
-  mov $cli_cmd_map, %si
+  mov $cmd_map, %si
   mov $0x0E, %ah
 
 .cmd_help__chk_addr_lp:
@@ -39,7 +39,7 @@ cmd_help:
 
   call print_newline
 
-  add $0x02, %si # cli_cmd_map (cmd_str)
+  add $0x02, %si # cmd_map (cmd_str)
 
 .cmd_help__out_char_lp:
   # cond: null ? out_char_end
@@ -56,7 +56,7 @@ cmd_help:
 
 .cmd_help__out_char_end:
   # loop
-  add $0x01, %si # cli_cmd_map (cmd_addr)
+  add $0x01, %si # cmd_map (cmd_addr)
   jmp .cmd_help__chk_addr_lp
 
 .cmd_help__done:

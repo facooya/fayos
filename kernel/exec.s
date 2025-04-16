@@ -17,7 +17,7 @@
 # exec_cmd()
 exec_cmd:
   # prol
-  push %si
+  # push %si
   push %di
   push %ax
   push %bx
@@ -55,12 +55,12 @@ exec_cmd:
   mov (%di), %al
 
   # !!! DEBUG
-  mov $0x0E, %ah
-  int $0x10
-  push %ax
-  mov (%si), %al
-  int $0x10
-  pop %ax
+  # mov $0x0E, %ah
+  # int $0x10
+  # push %ax
+  # mov (%si), %al
+  # int $0x10
+  # pop %ax
 
   # cond: al != si ? skip_char_lp
   cmp (%si), %al
@@ -71,9 +71,9 @@ exec_cmd:
   jz .exec_cmd__call
 
   # !!! DEBUG
-  mov $0x0E, %ah
-  mov $'A', %al
-  int $0x10
+  # mov $0x0E, %ah
+  # mov $'A', %al
+  # int $0x10
 
   # step
   add $0x01, %si
@@ -103,12 +103,16 @@ exec_cmd:
   call *%bx
 
 .exec_cmd__done:
+  # default
+  call clear_raw_buf
+  mov $raw_buf, %si
+
   # epil
   pop %cx
   pop %bx
   pop %ax
   pop %di
-  pop %si
+  # pop %si
   ret
 
 .exec_cmd__err:

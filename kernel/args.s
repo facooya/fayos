@@ -16,8 +16,12 @@
 .global argv
 .global raw_buf
 
-# !!! .dout() tmp debug
-.dout:
+.global dout # !!! DEBUG
+# !!! dout() tmp debug
+dout:
+  push %si
+  push %ax
+
   mov $raw_buf, %si
   mov $0x0E, %ah
 
@@ -46,6 +50,8 @@
   jmp .dout_lp
 
 .dout_done:
+  pop %ax
+  pop %si
   ret
 
 # trim_raw()
@@ -317,10 +323,13 @@ build_args:
   mov %cx, (%si)
 
   # !!! DEBUG
-  mov $0x0E, %ah
-  mov (%si), %al
-  add $0x30, %al
-  int $0x10
+  # mov $0x0E, %ah
+  # mov (%si), %al
+  # add $0x30, %al
+  # int $0x10
+  push $raw_buf
+  call print_str
+  add $0x02, %sp
 
   # epil
   pop %cx

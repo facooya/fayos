@@ -267,7 +267,7 @@ hdl_kbd:
 .hdl_enter:
   # call exec_cli_cmd
   call exec_cmd
-  call clear_raw_buf
+  #call clear_raw_buf
 
   push $kernel_prompt
   call print_str
