@@ -49,27 +49,13 @@
 .extern trim_raw
 .extern split_raw
 
-# exec_cli_cmd()
+# exec_cli_cmd() !!!
 exec_cli_cmd:
   call trim_raw
   call split_raw
-
-  # trim
-  # push $cli_buf_trim
-  # push $raw_buf
-  # call trim
-  # add $0x04, %sp
-
-  # split
-  # push $cli_buf_split
-  # push $cli_buf_trim
-  # call split
-  # add $0x04, %sp
-
-  # build_args
   call build_args
 
-  call .tok_cli_buf
+  # call .tok_cli_buf !!! 
 
   mov $cli_cmd_map, %si
 

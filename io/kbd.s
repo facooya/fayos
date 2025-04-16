@@ -11,7 +11,8 @@
 
 .extern cur
 .extern kernel_prompt
-.extern exec_cli_cmd
+# .extern exec_cli_cmd
+.extern exec_cmd
 .extern print_str
 
 # hdl_kbd() - main keyborad handler
@@ -264,7 +265,9 @@ hdl_kbd:
 
 # .hdl_enter
 .hdl_enter:
-  call exec_cli_cmd
+  # call exec_cli_cmd
+  call exec_cmd
+  call clear_raw_buf
 
   push $kernel_prompt
   call print_str

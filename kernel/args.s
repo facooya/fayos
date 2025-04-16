@@ -10,6 +10,7 @@
 .global trim_raw
 .global split_raw
 .global build_args
+.global clear_raw_buf
 
 .global argc
 .global argv
@@ -257,9 +258,6 @@ split_raw:
   jmp .split_raw__zero_lp
 
 .split_raw__done:
-  # !!! REMOVE
-  call .dout
-
   # epil
   pop %ax
   pop %di
@@ -277,7 +275,7 @@ build_args:
 
   # init
   call .clear_args
-  call .clear_raw_buf
+  #call .clear_raw_buf
   mov $raw_buf, %si
   mov $argv, %di
   xor %bx, %bx # off
@@ -318,6 +316,7 @@ build_args:
   mov $argc, %si
   mov %cx, (%si)
 
+  # !!! DEBUG
   mov $0x0E, %ah
   mov (%si), %al
   add $0x30, %al
@@ -369,8 +368,8 @@ build_args:
   pop %si
   ret
 
-# .clear_raw_buf()
-.clear_raw_buf:
+# clear_raw_buf()
+clear_raw_buf:
   # prol
   push %si
   push %ax

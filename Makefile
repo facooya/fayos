@@ -9,6 +9,7 @@ kernel/kernel.s \
 kernel/cli.s \
 kernel/cache.s \
 kernel/args.s \
+kernel/exec.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
