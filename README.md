@@ -10,14 +10,12 @@ FAYOS targets 16-bit x86 (real mode), uses BIOS interrupts, and is written in GN
 - `make clean`
 
 # Directory note
-```
-boot/ - boot
-build/ - linker.ld, make (*.o, *.bin, *.img)
-cmd/ - commands
-docs/ - documentation
-fs/fayfs/ - file system
-io/ - keyboard, disk
-lib/ - library
-kernel/ - main
-templates/ - copy and paste
-```
+boot/ - boot  
+build/ - linker.ld, make (*.o, *.bin, *.img)  
+cmd/ - commands  
+docs/ - documentation  
+fs/fayfs/ - file system  
+io/ - keyboard, disk  
+lib/ - library  
+kernel/ - main  
+templates/ - copy and paste  

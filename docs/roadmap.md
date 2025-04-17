@@ -1,6 +1,6 @@
 ## Handle error
-no dir (rmdir)
-no file, not file (cat, rm)
+no dir (rmdir)  
+no file, not file (cat, rm)  
 
 ## Feature history
 up down - raw history
@@ -9,10 +9,8 @@ up down - raw history
 tab autocomplete file or dir
 
 ## Feature pwd
-```
-PWD: Print Working Directory
-fayos:[PWD]#
-```
+PWD: Print Working Directory  
+fayos:[PWD]#  
 
 ## Feature ls
 colorful file dir
@@ -21,14 +19,12 @@ colorful file dir
 echo O: hello world, O: "hello world"
 
 ## Feature redir
-```
-redirection (>, >>)
-cat arg > file
-cmd arg redir redir_target
-```
+redirection (>, >>)  
+cat arg > file  
+cmd arg redir redir_target  
 
 ## Feature file cache
-file_cache file match return lba
+file_cache file match return lba  
 
 ## HMI
 Ignore error enter, SPSPSP
@@ -37,7 +33,5 @@ Ignore error enter, SPSPSP
 kernel time, color
 
 ## File or dir name
-```
-allow ., _, - (front disallow)
-disallow /, \, SP, all
-```
+allow ., _, - (front disallow)  
+disallow /, \, SP, all  

@@ -5,11 +5,10 @@
 - feat
 - fix
 - wip
-```
-type(scope): message
-type: message
-WIP is temporary commit. Don't push. Use "commit -amend".
-```
+
+type(scope): message  
+type: message  
+WIP is temporary commit. Don't push. Use "commit -amend".  
 
 **Docs rule**
 - INDEX: file function
@@ -20,16 +19,19 @@ WIP is temporary commit. Don't push. Use "commit -amend".
   - n: note
 
 **Function namming**
-```
-V: verb, O: object, SF: suffix, TV: task verb, TO: task object  
-V_O__TV_TO_SF  
-suffix:  
-  lp: loop, end, init  
+**V_O__TV_TO_SF**
+- V: verb
+- O: object
+- SF: suffix
+  - lp: loop
+  - end
+  - done
+- TV: task verb
+- TO: task object
 
-label_name  
-func_name()  
-MACRO_NAME()  
-```
+- label_name
+- func_name()
+- MACRO_NAME()
 
 **Cond rule**
 - O: cmp $0x01, %ax
