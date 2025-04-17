@@ -39,6 +39,9 @@ dout:
   jmp .dout_lp
 
 .dout_chk:
+  mov $'0', %al
+  int $0x10
+
   add $0x01, %si
   mov (%si), %al # load
 
@@ -282,28 +285,34 @@ build_args:
   # init
   call .clear_args
   mov $raw_buf, %si
+
+  # init argv
   mov $argv, %di
   xor %bx, %bx # off
+  mov %bx, (%di)
+  add $0x02, %di
+
+  # init argc
   xor %cx, %cx # argc
 
 .build_args__argv_lp:
-  mov (%si), %al # load (raw)
+  mov (%si), %al # load (raw_buf)
 
   # cond: null ? argc
   test %al, %al
   jz .build_args__argc
 
   # loop
-  add $0x01, %si
-  add $0x01, %bx # off (raw)
+  add $0x01, %si # raw_buf
+  add $0x01, %bx # offset
   jmp .build_args__argv_lp
 
 .build_args__argc:
   add $0x01, %cx # argc
 
   # write argv
+  add $0x01, %bx # skip null
   mov %bx, (%di) # store (argv)
-  xor %bx, %bx
   add $0x02, %di # argv
 
   add $0x01, %si

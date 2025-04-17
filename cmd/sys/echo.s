@@ -38,6 +38,7 @@ cmd_echo:
 
   # set opt
   # mov $cli_buf_opt, %si !!! FIXME
+  mov $.cmd_echo__opt_flag, %si # !!! TMP
   mov $.cmd_echo__opt_flag, %bx
 
 .cmd_echo__chk_opt_lp:
@@ -76,6 +77,20 @@ cmd_echo:
 
   # default
   # push $cli_buf_arg !!! FIXME
+  # !!! TEST
+  mov $argv, %di
+  add $0x02, %di # start str
+  mov (%di), %cx
+  mov $raw_buf, %si
+  add %cx, %si
+
+  # !!! DEBUG
+  # mov $0x0E, %ah
+  # mov %cl, %al
+  # add $0x30, %al
+  # int $0x10
+
+  push %si
   call print_str
   add $0x02, %sp
 
