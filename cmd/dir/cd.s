@@ -13,7 +13,6 @@
 #   read_block
 #   dap
 #   cwd_lba
-#   cli_buf_arg
 
 .code16
 .section .text
@@ -25,7 +24,6 @@
 .extern read_block
 .extern dap
 .extern cwd_lba
-.extern cli_buf_arg
 
 # cmd_cd()
 cmd_cd:
@@ -36,7 +34,7 @@ cmd_cd:
   push %cx
 
   # cond: period ? back
-  mov $cli_buf_arg, %di
+  # mov $cli_buf_arg, %di !!! FIXME
   mov (%di), %ax
   cmp $0x2E2E, %ax # period
   jz .cmd_cd__back
@@ -83,7 +81,7 @@ cmd_cd:
 
   # setup
   push %si # main mem ptr !!! danger
-  mov $cli_buf_arg, %si
+  # mov $cli_buf_arg, %si !!! FIXME
 
 .cmd_cd__cmp_name_lp:
   # cond: 0 ? main

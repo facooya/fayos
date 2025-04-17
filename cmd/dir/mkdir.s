@@ -29,7 +29,6 @@
 .extern write_dentry__type
 .extern cwd_lba
 .extern free_lba
-.extern cli_buf_arg
 
 # cmd_mkdir()
 cmd_mkdir:
@@ -80,7 +79,7 @@ cmd_mkdir:
 
   # setup
   push %si # main mem ptr !!! danger
-  mov $cli_buf_arg, %si
+  # mov $cli_buf_arg, %si !!! FIXME
 
 .cmd_mkdir__cmp_name_lp:
   # cond: 0 ? err_exist
@@ -117,7 +116,7 @@ cmd_mkdir:
 #   jmp .cmd_mkdir__find_free_lp
 
 .cmd_mkdir__write_name:
-  mov $cli_buf_arg, %di
+  # mov $cli_buf_arg, %di !!! FIXME
   xor %cx, %cx
 
 .cmd_mkdir__write_name_lp:

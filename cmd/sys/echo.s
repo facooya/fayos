@@ -37,7 +37,7 @@ cmd_echo:
   push %bx
 
   # set opt
-  mov $cli_buf_opt, %si
+  # mov $cli_buf_opt, %si !!! FIXME
   mov $.cmd_echo__opt_flag, %bx
 
 .cmd_echo__chk_opt_lp:
@@ -75,7 +75,7 @@ cmd_echo:
   jc .cmd_echo__main_opt_e
 
   # default
-  push $cli_buf_arg
+  # push $cli_buf_arg !!! FIXME
   call print_str
   add $0x02, %sp
 
@@ -83,7 +83,7 @@ cmd_echo:
   jmp .cmd_echo__main_opt_e_end
 
 .cmd_echo__main_opt_e:
-  push $cli_buf_arg
+  # push $cli_buf_arg !!! FIXME
   call print_esc
   add $0x02, %sp
 
@@ -141,7 +141,8 @@ cmd_echo:
   pop %si
 
   # print common err msg
-  jmp hdl_cli_opt_err
+  # jmp hdl_cli_opt_err !!! FIXME
+  jmp .cmd_echo__done # !!! TMP
 
 .section .data
 

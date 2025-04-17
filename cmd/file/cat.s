@@ -88,7 +88,7 @@ cmd_cat:
 
   # setup
   push %si # main mem ptr
-  mov $cli_buf_arg, %si
+  # mov $cli_buf_arg, %si !!! FIXME
 
 .cmd_cat__cmp_name_lp:
   # cond: 0 ? main

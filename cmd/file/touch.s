@@ -13,7 +13,6 @@
 #   write_block
 #   write_dentry
 #   print_newline
-#   cli_buf_arg
 #   cwd_lba
 #   write_meta
 #   free_lba
@@ -27,7 +26,6 @@
 .extern write_block
 .extern write_dentry
 .extern print_newline
-.extern cli_buf_arg
 .extern cwd_lba
 .extern write_meta
 .extern free_lba
@@ -82,7 +80,7 @@ cmd_touch:
 
   # setup
   push %si # main mem ptr !!! danger
-  mov $cli_buf_arg, %si
+  # mov $cli_buf_arg, %si !!! FIXME
 
 .cmd_touch__cmp_name_lp:
   # cond: 0 ? err_exist
@@ -107,19 +105,8 @@ cmd_touch:
   add $0x0A, %si
   jmp .cmd_touch__find_magic_lp
 
-# .cmd_touch__find_free_lp:
-#   # cond: null ? write_name
-#   mov (%si), %ax
-#   test %ax, %ax
-#   or 2(%si), %ax
-#   jz .cmd_touch__write_name
-
-#   # loop
-#   add $0x02, %si
-#   jmp .cmd_touch__find_free_lp
-
 .cmd_touch__write_name:
-  mov $cli_buf_arg, %di
+  # mov $cli_buf_arg, %di !!! FIXME
   xor %cx, %cx
 
 .cmd_touch__write_name_lp:

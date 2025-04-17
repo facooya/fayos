@@ -72,7 +72,7 @@ cmd_rm:
 
   # setup
   push %si # main mem ptr
-  mov $cli_buf_arg, %si
+  # mov $cli_buf_arg, %si !!! FIXME
 
 .cmd_rm__cmp_name_lp:
   # cond: 0 ? main
