@@ -13,19 +13,21 @@
 .global norm_args
 
 .global clear_args
-.global clear_raw_buf
+.global clear_buf
 
 .global argc
 .global argv
 .global raw_buf
 
 .global dout # !!! DEBUG
-# !!! dout() tmp debug
+# !!! dout() TMP
 dout:
+  push %bp
+  mov %sp, %bp
   push %si
   push %ax
 
-  mov $raw_buf, %si
+  mov 4(%bp), %si
   mov $0x0E, %ah
 
 .dout_lp:
@@ -58,6 +60,7 @@ dout:
 .dout_done:
   pop %ax
   pop %si
+  pop %bp
   ret
 
 # trim_raw()
@@ -194,17 +197,26 @@ trim_raw:
   ret
 
 # split_raw()
+#   si = raw_buf (src)
+#   di = tmp_buf (dst)
 split_raw:
   # prol
   push %si
   push %di
   push %ax
 
+  # clear tmp_buf
+  push $tmp_buf
+  call clear_buf
+  add $0x02, %sp
+
   # init
   mov $raw_buf, %si
-  mov %si, %di
+  mov $tmp_buf, %di
 
 .split_raw__write_lp:
+  # pre: si = next_char
+  # pre: di = write
   # load
   mov (%si), %al
 
@@ -212,9 +224,9 @@ split_raw:
   test %al, %al
   jz .split_raw__zero
 
-  # cond: space ? skip_spaces
+  # cond: space ? skip_space
   cmp $0x20, %al
-  je .split_raw__skip_spaces
+  je .split_raw__skip_space
 
   # store
   mov %al, (%di)
@@ -224,31 +236,85 @@ split_raw:
   add $0x01, %di
   jmp .split_raw__write_lp
 
-.split_raw__skip_spaces:
+.split_raw__skip_space:
   # store null
   xor %al, %al
   mov %al, (%di)
   add $0x01, %di
 
+  # (si) = space
   # init
   add $0x01, %si
 
-.split_raw__skip_spaces_lp:
+.split_raw__skip_space_lp:
   # load
   mov (%si), %al
 
-  # cond: space != ? next
+  # cond: space != ? chk_opt
   cmp $0x20, %al
-  jne .split_raw__next
+  jne .split_raw__chk_opt
 
   # step
   add $0x01, %si
-  jmp .split_raw__skip_spaces_lp
+  jmp .split_raw__skip_space_lp
 
-.split_raw__next:
+.split_raw__chk_opt:
+  # (si) != space
+  # cond: hyphen ? norm_opt
+  cmp $0x2D, %al
+  je .split_raw__norm_opt
+  
+  # next
+  jmp .split_raw__write_lp
+
+.split_raw__norm_opt:
+  # (si),al = hyphen
+  # init
+  mov %al, %ah
+  add $0x01, %si
+  # (si) = opt_char !!! FIXME empty (SP,NULL) ? error
+  # !!! .split_raw__chk_valid_opt:
+
+.split_raw__norm_opt_lp:
+  # load opt_char
+  mov (%si), %al
+
+  # cond: space ? norm_opt_end
+  cmp $0x20, %al
+  je .split_raw__norm_opt_end
+
+  # cond: null ? norm_opt_end
+  test %al, %al
+  jz .split_raw__norm_opt_end
+
+  # store hyphen
+  mov %ah, (%di)
+  add $0x01, %di
+
+  # store opt_char
+  mov %al, (%di)
+  add $0x01, %di
+
+  # store null
+  xor %al, %al
+  mov %al, (%di)
+  add $0x01, %di
+
+  # step
+  add $0x01, %si
+  jmp .split_raw__norm_opt_lp
+
+.split_raw__norm_opt_end:
+  # (si) = space
+  add $0x01, %si
+
+  # next
   jmp .split_raw__write_lp
 
 .split_raw__zero:
+  # !!! TMP
+  jmp .split_raw__copy
+
   # init
   # mov %al, (%di)
   # add $0x01, %di
@@ -268,6 +334,44 @@ split_raw:
   # step
   add $0x01, %di
   jmp .split_raw__zero_lp
+
+.split_raw__copy:
+
+  # init
+  mov $tmp_buf, %si
+  mov $raw_buf, %di
+
+.split_raw__copy_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? chk_copy
+  test %al, %al
+  jz .split_raw__chk_copy
+
+  # store
+  mov %al, (%di)
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  jmp .split_raw__copy_lp
+
+.split_raw__chk_copy:
+  # store null
+  mov %al, (%di)
+  add $0x01, %di
+
+  # load
+  add $0x01, %si
+  mov (%si), %al
+
+  # cond: null ? done
+  test %al, %al
+  jz .split_raw__done
+
+  # continue
+  jmp .split_raw__copy_lp
 
 .split_raw__done:
   # epil
@@ -350,27 +454,6 @@ build_args:
   pop %si
   ret
 
-# norm_args()
-norm_args:
-  # prol
-  push %si
-  push %di
-  push %ax
-  push %bx
-  push %cx
-  push %dx
-
-  # !!!!!!!!!!!!!!!!!!!!!!!!!
-
-  # epil
-  pop %dx
-  pop %cx
-  pop %bx
-  pop %ax
-  pop %di
-  pop %si
-  ret
-
 # clear_args()
 clear_args:
   # prol
@@ -409,14 +492,16 @@ clear_args:
   pop %si
   ret
 
-# clear_raw_buf()
-clear_raw_buf:
+# clear_buf() !!! TODO: rename local label
+clear_buf:
   # prol
+  push %bp
+  mov %sp, %bp
   push %si
   push %ax
 
   # init
-  mov $raw_buf, %si
+  mov 4(%bp), %si
 
 .clear_raw_buf__zero_lp:
   # load
@@ -450,6 +535,7 @@ clear_raw_buf:
   # epil
   pop %ax
   pop %si
+  pop %bp
   ret
 
 .section .data
@@ -458,5 +544,6 @@ clear_raw_buf:
 argc: .word 0x00
 argv: .zero 0x100
 
-# raw_buf
+# bufs
 raw_buf: .zero 0x400
+tmp_buf: .zero 0x400
