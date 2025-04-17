@@ -1,0 +1,7 @@
+Makefile linguist-generated
+*.ld linguist-generated
+*.sh linguist-generated
+
+LICENSE linguist-documentation
+NOTICE linguist-documentation
+AUTHORS linguist-documentation

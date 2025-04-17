@@ -3,5 +3,7 @@
 *.o
 *.bin
 *.img
+*.map
 
 !.gitignore
+!.gitattributes
