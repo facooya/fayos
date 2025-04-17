@@ -10,6 +10,9 @@
 .global trim_raw
 .global split_raw
 .global build_args
+.global norm_args
+
+.global clear_args
 .global clear_raw_buf
 
 .global argc
@@ -283,7 +286,7 @@ build_args:
   push %cx
 
   # init
-  call .clear_args
+  call clear_args
   mov $raw_buf, %si
 
   # init argv
@@ -347,8 +350,12 @@ build_args:
   pop %si
   ret
 
-# .clear_args()
-.clear_args:
+# norm_args()
+norm_args:
+  ret
+
+# clear_args()
+clear_args:
   # prol
   push %si
   push %di

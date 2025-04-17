@@ -76,10 +76,9 @@ cmd_echo:
   jc .cmd_echo__main_opt_e
 
   # default
-  # push $cli_buf_arg !!! FIXME
-  # !!! TEST
+  # arg !!! TEST
   mov $argv, %di
-  add $0x02, %di # start str
+  add $0x02, %di
   mov (%di), %cx
   mov $raw_buf, %si
   add %cx, %si

@@ -33,9 +33,17 @@ cmd_cd:
   push %ax
   push %cx
 
-  # cond: period ? back
-  # mov $cli_buf_arg, %di !!! FIXME
+  # arg
+  mov $argv, %di
+  add $0x02, %di
+  mov (%di), %cx
+  mov $raw_buf, %di
+  add %cx, %di
+
+  # load
   mov (%di), %ax
+
+  # cond: period ? back
   cmp $0x2E2E, %ax # period
   jz .cmd_cd__back
 
@@ -81,7 +89,13 @@ cmd_cd:
 
   # setup
   push %si # main mem ptr !!! danger
-  # mov $cli_buf_arg, %si !!! FIXME
+
+  # arg
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
 
 .cmd_cd__cmp_name_lp:
   # cond: 0 ? main
@@ -89,7 +103,7 @@ cmd_cd:
   jz .cmd_cd__main
 
   # cond: char != ? cmp_name_end
-  mov (%si), %al # cli_buf_arg
+  mov (%si), %al # arg
   cmp (%di), %al # name ptr
   jne .cmd_cd__cmp_name_end
 

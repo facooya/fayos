@@ -79,7 +79,13 @@ cmd_mkdir:
 
   # setup
   push %si # main mem ptr !!! danger
-  # mov $cli_buf_arg, %si !!! FIXME
+
+  # arg
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
 
 .cmd_mkdir__cmp_name_lp:
   # cond: 0 ? err_exist
@@ -87,7 +93,7 @@ cmd_mkdir:
   jz .cmd_mkdir__err_exist
 
   # cond: char != ? cmp_name_end
-  mov (%si), %al # cli_buf_arg
+  mov (%si), %al # arg
   cmp (%di), %al # name ptr
   jne .cmd_mkdir__cmp_name_end
 
@@ -116,12 +122,18 @@ cmd_mkdir:
 #   jmp .cmd_mkdir__find_free_lp
 
 .cmd_mkdir__write_name:
-  # mov $cli_buf_arg, %di !!! FIXME
+  # arg
+  mov $argv, %di
+  add $0x02, %di
+  mov (%di), %cx
+  mov $raw_buf, %di
+  add %cx, %di
+
   xor %cx, %cx
 
 .cmd_mkdir__write_name_lp:
   # cond: null ? write_name_end
-  mov (%di), %al # cli_buf_arg
+  mov (%di), %al # arg
   test %al, %al
   jz .cmd_mkdir__write_name_end
 

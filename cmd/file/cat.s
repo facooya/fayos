@@ -88,7 +88,13 @@ cmd_cat:
 
   # setup
   push %si # main mem ptr
-  # mov $cli_buf_arg, %si !!! FIXME
+
+  # arg
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
 
 .cmd_cat__cmp_name_lp:
   # cond: 0 ? main
@@ -96,7 +102,7 @@ cmd_cat:
   jz .cmd_cat__main
 
   # cond: char != ? skip_dentry
-  mov (%si), %al # cli_buf_arg
+  mov (%si), %al # arg
   cmp (%di), %al # name ptr
   jne .cmd_cat__skip_dentry
 

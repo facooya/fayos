@@ -5,6 +5,9 @@
 - feat
 - fix
 - wip
+
+type(scope): message
+type: message
 WIP is temporary commit. Don't push. Use "commit -amend".
 
 **Docs rule**
