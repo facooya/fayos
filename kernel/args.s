@@ -352,6 +352,23 @@ build_args:
 
 # norm_args()
 norm_args:
+  # prol
+  push %si
+  push %di
+  push %ax
+  push %bx
+  push %cx
+  push %dx
+
+  # !!!!!!!!!!!!!!!!!!!!!!!!!
+
+  # epil
+  pop %dx
+  pop %cx
+  pop %bx
+  pop %ax
+  pop %di
+  pop %si
   ret
 
 # clear_args()
