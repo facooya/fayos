@@ -16,114 +16,145 @@
 # [n_opt_flag]
 #   0: e (escape)
 #   1: n (no-newline)
+#
+# why set_flag
+#   add $0x02, %si
+#   raw_buf = cmd[0]-a[0]-b[0]
 
 .code16
 .section .text
 
 .global cmd_echo
 
-.extern hdl_cli_opt_err
-.extern print_newline
-.extern cli_buf_stdout
-
+# ENTRY
 # cmd_echo()
 cmd_echo:
   # prol
   push %si
   push %ax
   push %bx
+  push %cx
 
-  # set opt !!!!!!!!!!!!!!!!!!!!!!!!
-  # mov $cli_buf_opt, %si !!! FIXME
-  mov $.opt_flag, %si # !!! TMP
-  mov $.opt_flag, %bx
+  # src {init}
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
 
-.cmd_echo__chk_opt_lp:
-  # cond: null ? main
-  mov (%si), %al # cli_buf_opt
+  # opt count * 2 {init}
+  xor %cx, %cx
+  
+  # opt flag {init}
+  xor %bx, %bx
+  # bx = opt_flag [n_opt_flag]
+
+.cmd_echo__chk_opt:
+  # load
+  mov (%si), %al
+
+  # cond: hyphen ? parse_opt
+  cmp $0x2D, %al
+  je .cmd_echo__parse_opt
+
+  # cond: null ? done !!! TODO err no argu
   test %al, %al
-  jz .cmd_echo__main
+  jz .cmd_echo__done
 
-  # cond: e ? set_opt_flag_e
-  cmp $0x65, %al # e
-  jz .cmd_echo__set_opt_e
+  # skip option
+  jmp .cmd_echo__parse_arg
 
-  # cond: n ? set_opt_n
-  cmp $0x6E, %al # n
-  jz .cmd_echo__set_opt_n
+# OPT_FLAG
+.cmd_echo__parse_opt:
+  # pre: (si) = hyphen
+  # load
+  add $0x01, %si
+  mov (%si), %al
+
+  # cond: e ? set_flag_e
+  cmp $0x65, %al
+  jz .cmd_echo__set_flag_e
+
+  # cond: n ? set_flag_n
+  cmp $0x6E, %al
+  jz .cmd_echo__set_flag_n
 
   # opt err
   jmp .cmd_echo__hdl_opt_err
 
-.cmd_echo__set_opt_e:
-  btsw $0x00, (%bx) # opt_flag
-  add $0x01, %si
-  jmp .cmd_echo__chk_opt_lp
+.cmd_echo__set_flag_e:
+  # set
+  bts $0x00, %bx
 
-.cmd_echo__set_opt_n:
-  btsw $0x01, (%bx) # opt_flag
-  add $0x01, %si
-  jmp .cmd_echo__chk_opt_lp
+  # step
+  add $0x02, %si
+  add $0x02, %cx
+  jmp .cmd_echo__chk_opt
 
-.cmd_echo__main:
+.cmd_echo__set_flag_n:
+  # set
+  bts $0x01, %bx
+
+  # step
+  add $0x02, %si
+  add $0x02, %cx
+  jmp .cmd_echo__chk_opt
+
+# ARG
+.cmd_echo__parse_arg:
+  # init
+  mov $argv, %si
+  add $0x02, %si # skip cmd
+  add %cx, %si # skip opt
+  mov (%si), %cx # get offset
+  mov $raw_buf, %si
+  add %cx, %si # set offset
+
+# EXEC
+.cmd_echo__exec:
   call print_newline
 
-  # cond: e ? main_opt_e
-  btw $0x0, (%bx) # opt_flag
-  jc .cmd_echo__main_opt_e
+  # cond: e ? exec_opt_e
+  bt $0x00, %bx
+  jc .cmd_echo__exec_opt_e
 
   # default
-  # arg !!! TEST
-  mov $argv, %di
-  add $0x02, %di
-  mov (%di), %cx
-  mov $raw_buf, %si
-  add %cx, %si
-
-  # !!! DEBUG
-  # mov $0x0E, %ah
-  # mov %cl, %al
-  # add $0x30, %al
-  # int $0x10
-
   push %si
   call print_str
   add $0x02, %sp
 
   # skip opt e
-  jmp .cmd_echo__main_opt_e_end
+  jmp .cmd_echo__exec_opt_e_end
 
-.cmd_echo__main_opt_e:
-  # push $cli_buf_arg !!! FIXME
+.cmd_echo__exec_opt_e:
+  push %si
   call print_esc
   add $0x02, %sp
 
-.cmd_echo__main_opt_e_end:
-  # cond: n ? main_opt_n
-  btw $0x1, (%bx) # opt_flag
-  jc .cmd_echo__main_opt_n
+.cmd_echo__exec_opt_e_end:
+  # cond: n ? exec_opt_n
+  bt $0x1, %bx
+  jc .cmd_echo__exec_opt_n
 
   # default
   call print_newline
 
   # skip opt n
-  jmp .cmd_echo__main_opt_n_end
+  jmp .cmd_echo__exec_opt_n_end
 
-.cmd_echo__main_opt_n:
+.cmd_echo__exec_opt_n:
   nop
 
-.cmd_echo__main_opt_n_end:
+.cmd_echo__exec_opt_n_end:
   nop
   # next opt cond
   # default
   # skip opt
 
+# DONE
 .cmd_echo__done:
-  # init opt flag
-  xor %ax, %ax
-  mov %ax, (%bx)
-
   # epil
+  pop %cx
   pop %bx
   pop %ax
   pop %si
@@ -147,9 +178,3 @@ cmd_echo:
   call hdl_opt_err
 
   jmp .cmd_echo__done
-
-# DATA
-.section .data
-
-# .opt_flag [n_opt_flag]
-.opt_flag: .word 0x00

@@ -1,37 +1,40 @@
-## Handle error
+## Handle error  
 no dir (rmdir)  
 no file, not file (cat, rm)  
 
-## Feature history
+## Feature history  
 up down - raw history
 
-## Feature tab
+## Feature tab  
 tab autocomplete file or dir
 
-## Feature pwd
+## Feature pwd  
 PWD: Print Working Directory  
 fayos:[PWD]#  
 
-## Feature ls
+## Feature ls  
 colorful file dir
 
-## Feature multiple arguments
+## Feature multiple arguments  
 echo O: hello world
 
-## Feature one argument in quote
+## Feature one argument in quote  
 O: "hello world", O: 'hello world'
 
-## Fix redir
+## Fix redir  
 redirection (>, >>)  
 cat arg > file  
 cmd arg redir redir_target  
 
-## Feature file cache
+## Feature file cache  
 file_cache file match return lba  
 
-## Kernel
+## Kernel  
 kernel time, color
 
-## File or dir name
+## File or dir name  
 allow ., _, - (front disallow)  
 disallow /, \, SP, all  
+
+## TODO  
+- err no argument
