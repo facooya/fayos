@@ -101,14 +101,14 @@ trim_raw:
   sub %cx, %si # si = left idx
   xor %cx, %cx
 
-  # TODO
+  # !!! TODO
   # push $raw_buf
   # call strlen
   # add $0x02, %sp
   # mov $raw_buf, %si
   # add %cx, %si
 
-.trim_raw__strlen_lp: # !!! tmp strlen
+.trim_raw__strlen_lp: # !!! TMP
   # !!! [ ][ ]echo[ ]facooya[ ][ ]{si,cx}[0] si,cx=16
   # cond: null ? right
   mov (%si), %al
@@ -196,6 +196,7 @@ trim_raw:
   pop %si
   ret
 
+# ENTRY
 # split_raw()
 #   si = raw_buf (src)
 #   di = tmp_buf (dst)
@@ -220,9 +221,9 @@ split_raw:
   # load
   mov (%si), %al
 
-  # cond: null ? zero
+  # cond: null ? copy
   test %al, %al
-  jz .split_raw__zero
+  jz .split_raw__copy
 
   # cond: space ? skip_space
   cmp $0x20, %al
@@ -236,6 +237,7 @@ split_raw:
   add $0x01, %di
   jmp .split_raw__write_lp
 
+# SKIP_SPACE
 .split_raw__skip_space:
   # store null
   xor %al, %al
@@ -267,13 +269,13 @@ split_raw:
   # next
   jmp .split_raw__write_lp
 
+# NORM_OPT
 .split_raw__norm_opt:
   # (si),al = hyphen
   # init
   mov %al, %ah
   add $0x01, %si
-  # (si) = opt_char !!! FIXME empty (SP,NULL) ? error
-  # !!! .split_raw__chk_valid_opt:
+  # (si) = opt_char
 
 .split_raw__norm_opt_lp:
   # load opt_char
@@ -311,32 +313,8 @@ split_raw:
   # next
   jmp .split_raw__write_lp
 
-.split_raw__zero:
-  # !!! TMP
-  jmp .split_raw__copy
-
-  # init
-  # mov %al, (%di)
-  # add $0x01, %di
-
-.split_raw__zero_lp:
-  # load
-  mov (%di), %al
-
-  # cond: null ? done
-  test %al, %al
-  jz .split_raw__done
-
-  # zero
-  xor %al, %al
-  mov %al, (%di)
-
-  # step
-  add $0x01, %di
-  jmp .split_raw__zero_lp
-
+# COPY
 .split_raw__copy:
-
   # init
   mov $tmp_buf, %si
   mov $raw_buf, %di
@@ -437,15 +415,6 @@ build_args:
   mov $argc, %si
   mov %cx, (%si)
 
-  # !!! DEBUG
-  # mov $0x0E, %ah
-  # mov (%si), %al
-  # add $0x30, %al
-  # int $0x10
-  # push $raw_buf
-  # call print_str
-  # add $0x02, %sp
-
   # epil
   pop %cx
   pop %bx
@@ -492,7 +461,7 @@ clear_args:
   pop %si
   ret
 
-# clear_buf() !!! TODO: rename local label
+# clear_buf()
 clear_buf:
   # prol
   push %bp
@@ -503,13 +472,13 @@ clear_buf:
   # init
   mov 4(%bp), %si
 
-.clear_raw_buf__zero_lp:
+.clear_buf__zero_lp:
   # load
   mov (%si), %al
 
   # cond: null ? chk_zero
   test %al, %al
-  jz .clear_raw_buf__chk_zero
+  jz .clear_buf__chk_zero
 
   # store zero
   xor %al, %al
@@ -517,21 +486,21 @@ clear_buf:
 
   # loop
   add $0x01, %si
-  jmp .clear_raw_buf__zero_lp
+  jmp .clear_buf__zero_lp
 
-.clear_raw_buf__chk_zero:
+.clear_buf__chk_zero:
   # next load
   add $0x01, %si
   mov (%si), %al
 
   # cond: null ? done
   test %al, %al
-  jz .clear_raw_buf__done
+  jz .clear_buf__done
 
   # loop
-  jmp .clear_raw_buf__zero_lp
+  jmp .clear_buf__zero_lp
 
-.clear_raw_buf__done:
+.clear_buf__done:
   # epil
   pop %ax
   pop %si
