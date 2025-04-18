@@ -6,9 +6,6 @@
 
 # INDEX
 # cmd_echo()
-# 
-# .cmd_echo__opt_err
-# .cmd_echo__opt_flag
 
 # DEPS
 # cmd_echo()
@@ -16,7 +13,7 @@
 #   hdl_cli_opt_err
 
 # NOTE
-# [n_cmd_echo__opt_flag]
+# [n_opt_flag]
 #   0: e (escape)
 #   1: n (no-newline)
 
@@ -38,8 +35,8 @@ cmd_echo:
 
   # set opt !!!!!!!!!!!!!!!!!!!!!!!!
   # mov $cli_buf_opt, %si !!! FIXME
-  mov $.cmd_echo__opt_flag, %si # !!! TMP
-  mov $.cmd_echo__opt_flag, %bx
+  mov $.opt_flag, %si # !!! TMP
+  mov $.opt_flag, %bx
 
 .cmd_echo__chk_opt_lp:
   # cond: null ? main
@@ -56,7 +53,7 @@ cmd_echo:
   jz .cmd_echo__set_opt_n
 
   # opt err
-  jmp .cmd_echo__opt_err
+  jmp .cmd_echo__hdl_opt_err
 
 .cmd_echo__set_opt_e:
   btsw $0x00, (%bx) # opt_flag
@@ -132,8 +129,9 @@ cmd_echo:
   pop %si
   ret
 
-# .cmd_echo__opt_err
-.cmd_echo__opt_err:
+# ERROR
+# .cmd_echo__hdl_opt_err
+.cmd_echo__hdl_opt_err:
   call print_newline
 
   # print opt err char
@@ -145,20 +143,13 @@ cmd_echo:
   mov $0x20, %al # space
   int $0x10
 
-  # init opt flag
-  xor %ax, %ax
-  mov %ax, (%bx)
+  # print err msg
+  call hdl_opt_err
 
-  # epil
-  pop %bx
-  pop %ax
-  pop %si
+  jmp .cmd_echo__done
 
-  # print common err msg
-  # jmp hdl_cli_opt_err !!! FIXME
-  jmp .cmd_echo__done # !!! TMP
-
+# DATA
 .section .data
 
-# .cmd_echo__opt_flag [n_cmd_echo__opt_flag]
-.cmd_echo__opt_flag: .word 0x00
+# .opt_flag [n_opt_flag]
+.opt_flag: .word 0x00

@@ -16,9 +16,12 @@ fayos:[PWD]#
 colorful file dir
 
 ## Feature multiple arguments
-echo O: hello world, O: "hello world"
+echo O: hello world
 
-## Feature redir
+## Feature one argument in quote
+O: "hello world", O: 'hello world'
+
+## Fix redir
 redirection (>, >>)  
 cat arg > file  
 cmd arg redir redir_target  

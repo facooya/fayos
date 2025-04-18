@@ -275,11 +275,10 @@ hdl_kbd:
   mov (cur), %al
   mov %al, (cur+1)
 
-  # init raw buf
+  # init {raw_buf}
   push $raw_buf
   call clear_buf
   add $0x02, %sp
-  # call clear_raw_buf !!! LEGACY
   mov $raw_buf, %si
 
   jmp .hdl_kbd__done
