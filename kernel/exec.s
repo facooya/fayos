@@ -14,6 +14,7 @@
 .extern argv
 .extern argc
 
+# ENTRY
 # exec_cmd()
 exec_cmd:
   # prol
@@ -28,18 +29,19 @@ exec_cmd:
   call split_raw
   call build_args
 
+  # load argc
+  mov $argc, %di
+  mov (%di), %cx
+
+  # cond: cx == 0 ? pre_done
+  test %cx, %cx
+  jz .exec_cmd__pre_done
+
   # init
   mov $raw_buf, %si
   mov $cmd_map, %di
 
-  # !!! TODO: ignore empty input
-  # mov $argc, %di
-  # mov (%di), %cx
-
-  # cond: argc == 0 ? done
-  # test %cx, %cx
-  # jz .exec_cmd__done
-
+# CHK
 .exec_cmd__chk_addr_lp:
   # load
   mov (%di), %bx
@@ -55,14 +57,6 @@ exec_cmd:
   # load
   mov (%di), %al
 
-  # !!! DEBUG
-  # mov $0x0E, %ah
-  # int $0x10
-  # push %ax
-  # mov (%si), %al
-  # int $0x10
-  # pop %ax
-
   # cond: al != si ? skip_char_lp
   cmp (%si), %al
   jne .exec_cmd__skip_char_lp
@@ -71,16 +65,12 @@ exec_cmd:
   test %al, %al
   jz .exec_cmd__call
 
-  # !!! DEBUG
-  # mov $0x0E, %ah
-  # mov $'A', %al
-  # int $0x10
-
   # step
   add $0x01, %si
   add $0x01, %di
   jmp .exec_cmd__chk_char_lp
 
+# SKIP_CHAR
 .exec_cmd__skip_char_lp:
   # load
   mov (%di), %al
@@ -99,9 +89,15 @@ exec_cmd:
   add $0x01, %di
   jmp .exec_cmd__chk_addr_lp
 
+# CALL
 .exec_cmd__call:
   # bx = cmd_addr
   call *%bx
+  jmp .exec_cmd__done
+
+# DONE
+.exec_cmd__pre_done:
+  call print_newline
 
 .exec_cmd__done:
   # epil
@@ -112,6 +108,7 @@ exec_cmd:
   pop %si
   ret
 
+# ERROR
 .exec_cmd__err:
   call print_newline
 
@@ -123,6 +120,7 @@ exec_cmd:
 
   jmp .exec_cmd__done
 
+# DATA
 .section .data
 
 # cmd_map

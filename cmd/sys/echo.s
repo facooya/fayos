@@ -36,7 +36,7 @@ cmd_echo:
   push %ax
   push %bx
 
-  # set opt
+  # set opt !!!!!!!!!!!!!!!!!!!!!!!!
   # mov $cli_buf_opt, %si !!! FIXME
   mov $.cmd_echo__opt_flag, %si # !!! TMP
   mov $.cmd_echo__opt_flag, %bx

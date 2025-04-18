@@ -349,18 +349,25 @@ build_args:
   push %bx
   push %cx
 
-  # init
-  call clear_args
+  # init {pre-done}
   mov $raw_buf, %si
+  xor %cx, %cx # argc
+
+  # load {pre-done}
+  mov (%si), %al
+
+  # cond: null ? done {pre-done}
+  test %al, %al
+  jz .build_args__done
+
+  # clear
+  call clear_args
 
   # init argv
   mov $argv, %di
-  xor %bx, %bx # off
+  xor %bx, %bx # offset
   mov %bx, (%di)
   add $0x02, %di
-
-  # init argc
-  xor %cx, %cx # argc
 
 # ARGV
 .build_args__argv_lp:

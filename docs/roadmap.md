@@ -26,9 +26,6 @@ cmd arg redir redir_target
 ## Feature file cache
 file_cache file match return lba  
 
-## HMI
-Ignore error enter, SPSPSP
-
 ## Kernel
 kernel time, color
 
