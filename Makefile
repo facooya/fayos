@@ -14,6 +14,7 @@ io/kbd.s \
 io/block.s \
 lib/trim.s \
 lib/split.s \
+lib/strlen.s \
 fs/fayfs/super.s \
 fs/fayfs/dir.s \
 fs/fayfs/meta.s \

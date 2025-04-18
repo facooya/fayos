@@ -74,9 +74,8 @@ trim_raw:
 
   # init
   mov $raw_buf, %si
-  xor %cx, %cx
 
-.trim_raw__left_lp: # !!! {si}[ ][ ]echo[ ]facooya[ ][ ][0]
+.trim_raw__left_lp:
   # cond: null ? done
   mov (%si), %al
   test %al, %al
@@ -88,47 +87,28 @@ trim_raw:
 
   # loop
   add $0x01, %si
-  add $0x01, %cx
   jmp .trim_raw__left_lp
 
 .trim_raw__left_end:
-  # !!! si,cx=2
-  # !!! [ ][ ]{si}echo[ ]facooya[ ][ ][0]
-  mov %si, %di # di = left valid idx
-  # !!! di=2
+  # copy
+  mov %si, %di
+  # si,di = left_valid_idx
 
-  # !!! for push $raw_buf => push %si
-  sub %cx, %si # si = left idx
-  xor %cx, %cx
+  # init {strlen}
+  mov $raw_buf, %si
 
-  # !!! TODO
-  # push $raw_buf
-  # call strlen
-  # add $0x02, %sp
-  # mov $raw_buf, %si
-  # add %cx, %si
+  # call {strlen}
+  push %si
+  call strlen
+  add $0x02, %sp
 
-.trim_raw__strlen_lp: # !!! TMP
-  # !!! [ ][ ]echo[ ]facooya[ ][ ]{si,cx}[0] si,cx=16
-  # cond: null ? right
-  mov (%si), %al
-  test %al, %al
-  jz .trim_raw__right
-
-  # loop
-  add $0x01, %si
-  add $0x01, %cx
-  jmp .trim_raw__strlen_lp
-
-.trim_raw__right:
-  sub $0x01, %si
-  mov %si, %bx # bx = right idx
-  # !!! si,bx=15, cx=16
-  # !!! [ ][ ]echo[ ]facooya[ ]{si,bx}[ ][0]
+  # post {strlen}
+  sub $0x01, %cx # get last idx
+  add %cx, %si
+  mov %si, %bx
+  # si,bx = last_idx
 
 .trim_raw__right_lp:
-  # !!! si,bx=15 - 2 = 13
-  # !!! [ ][ ]echo[ ]facooy{si,bx}a[ ][ ][0]
   # load
   mov (%si), %al
 
@@ -142,15 +122,12 @@ trim_raw:
   jmp .trim_raw__right_lp
 
 .trim_raw__compact:
-  # di = left valid idx !!! 2
-  # bx = right valid idx !!! 13
-  # cx = str len !!! 16
-
   # init
   mov $raw_buf, %si # dst
+  # di = left_valid_idx
+  # bx = right_valid_idx
 
 .trim_raw__compact_lp:
-  # !!! {si}[ ][ ]{di}echo[ ]facooy{bx}a[ ][ ]{cx}[0]
   # copy
   mov (%di), %al
   mov %al, (%si)
@@ -165,9 +142,6 @@ trim_raw:
   jmp .trim_raw__compact_lp
 
 .trim_raw__zero:
-  # !!! di,bx = right valid idx
-  # !!! cx = str len
-
   # init
   add $0x01, %si
 
