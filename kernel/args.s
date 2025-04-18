@@ -19,8 +19,9 @@
 .global argv
 .global raw_buf
 
-.global dout # !!! DEBUG
-# !!! dout() TMP
+.global dout # !!! DEBUG REMOVE TMP
+
+# dout() !!! DEBUG REMOVE TMP
 dout:
   push %bp
   mov %sp, %bp
@@ -44,7 +45,7 @@ dout:
   jmp .dout_lp
 
 .dout_chk:
-  mov $'0', %al
+  mov $0x30, %al
   int $0x10
 
   add $0x01, %si
@@ -63,6 +64,7 @@ dout:
   pop %bp
   ret
 
+# ENTRY
 # trim_raw()
 trim_raw:
   # prol
@@ -75,6 +77,7 @@ trim_raw:
   # init
   mov $raw_buf, %si
 
+# LEFT
 .trim_raw__left_lp:
   # cond: null ? done
   mov (%si), %al
@@ -108,6 +111,7 @@ trim_raw:
   mov %si, %bx
   # si,bx = last_idx
 
+# RIGHT
 .trim_raw__right_lp:
   # load
   mov (%si), %al
@@ -127,6 +131,7 @@ trim_raw:
   # di = left_valid_idx
   # bx = right_valid_idx
 
+# COMPACT
 .trim_raw__compact_lp:
   # copy
   mov (%di), %al
@@ -141,6 +146,7 @@ trim_raw:
   add $0x01, %di
   jmp .trim_raw__compact_lp
 
+# ZERO
 .trim_raw__zero:
   # init
   add $0x01, %si
@@ -161,6 +167,7 @@ trim_raw:
   add $0x01, %si
   jmp .trim_raw__zero_lp
 
+# DONE
 .trim_raw__done:
   # epil
   pop %cx
@@ -172,8 +179,6 @@ trim_raw:
 
 # ENTRY
 # split_raw()
-#   si = raw_buf (src)
-#   di = tmp_buf (dst)
 split_raw:
   # prol
   push %si
@@ -189,6 +194,7 @@ split_raw:
   mov $raw_buf, %si
   mov $tmp_buf, %di
 
+# WRITE
 .split_raw__write_lp:
   # pre: si = next_char
   # pre: di = write
@@ -325,6 +331,7 @@ split_raw:
   # continue
   jmp .split_raw__copy_lp
 
+# DONE
 .split_raw__done:
   # epil
   pop %ax
@@ -332,6 +339,7 @@ split_raw:
   pop %si
   ret
 
+# ENTRY
 # build_args()
 build_args:
   # prol
@@ -354,6 +362,7 @@ build_args:
   # init argc
   xor %cx, %cx # argc
 
+# ARGV
 .build_args__argv_lp:
   mov (%si), %al # load (raw_buf)
 
@@ -366,6 +375,7 @@ build_args:
   add $0x01, %bx # offset
   jmp .build_args__argv_lp
 
+# ARGC
 .build_args__argc:
   add $0x01, %cx # argc
 
@@ -384,6 +394,7 @@ build_args:
   # loop
   jmp .build_args__argv_lp
 
+# DONE
 .build_args__done:
   # write argc
   mov $argc, %si
@@ -397,6 +408,7 @@ build_args:
   pop %si
   ret
 
+# ENTRY
 # clear_args()
 clear_args:
   # prol
@@ -435,6 +447,7 @@ clear_args:
   pop %si
   ret
 
+# ENTRY
 # clear_buf()
 clear_buf:
   # prol
@@ -481,6 +494,7 @@ clear_buf:
   pop %bp
   ret
 
+# DATA
 .section .data
 
 # args
