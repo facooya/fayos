@@ -35,6 +35,3 @@ kernel time, color
 ## File or dir name  
 allow ., _, - (front disallow)  
 disallow /, \, SP, all  
-
-## TODO  
-- err no argument

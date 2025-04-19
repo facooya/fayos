@@ -57,9 +57,9 @@ cmd_echo:
   cmp $0x2D, %al
   je .cmd_echo__parse_opt
 
-  # cond: null ? done !!! TODO err no argu
+  # cond: null ? hdl_arg_err
   test %al, %al
-  jz .cmd_echo__done
+  jz .cmd_echo__hdl_arg_err
 
   # skip option
   jmp .cmd_echo__parse_arg
@@ -102,11 +102,17 @@ cmd_echo:
 
 # ARG
 .cmd_echo__parse_arg:
-  # init
+  # get {init}
   mov $argv, %si
   add $0x02, %si # skip cmd
   add %cx, %si # skip opt
   mov (%si), %cx # get offset
+
+  # cond: cx == 0 ? hdl_arg_err
+  test %cx, %cx
+  jz .cmd_echo__hdl_arg_err
+
+  # set {init}
   mov $raw_buf, %si
   add %cx, %si # set offset
 
@@ -123,33 +129,22 @@ cmd_echo:
   call print_str
   add $0x02, %sp
 
-  # skip opt e
-  jmp .cmd_echo__exec_opt_e_end
+  jmp .cmd_echo__skip_opt_e
 
 .cmd_echo__exec_opt_e:
   push %si
   call print_esc
   add $0x02, %sp
 
-.cmd_echo__exec_opt_e_end:
+.cmd_echo__skip_opt_e:
   # cond: n ? exec_opt_n
   bt $0x1, %bx
-  jc .cmd_echo__exec_opt_n
+  jc .cmd_echo__done
 
   # default
   call print_newline
 
-  # skip opt n
-  jmp .cmd_echo__exec_opt_n_end
-
-.cmd_echo__exec_opt_n:
-  nop
-
-.cmd_echo__exec_opt_n_end:
-  nop
-  # next opt cond
-  # default
-  # skip opt
+  jmp .cmd_echo__done
 
 # DONE
 .cmd_echo__done:
@@ -161,7 +156,6 @@ cmd_echo:
   ret
 
 # ERROR
-# .cmd_echo__hdl_opt_err
 .cmd_echo__hdl_opt_err:
   call print_newline
 
@@ -177,4 +171,9 @@ cmd_echo:
   # print err msg
   call hdl_opt_err
 
+  jmp .cmd_echo__done
+
+.cmd_echo__hdl_arg_err:
+  call print_newline
+  call hdl_arg_err
   jmp .cmd_echo__done
