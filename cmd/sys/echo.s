@@ -205,6 +205,17 @@ cmd_echo:
   jmp .cmd_echo__next_arg
 
 .cmd_echo__exec_opt_n:
+  # get offset {init}
+  mov $argv, %si
+  add $0x02, %si # skip cmd
+  add %cx, %si # skip opt+arg
+  add $0x02, %si # skip this arg
+  mov (%si), %ax # get offset
+
+  # cond: ax == 0 ? done {pre-done}
+  test %ax, %ax
+  jz .cmd_echo__done
+
   # print sperate
   mov $0x0E, %ah
   mov $0x20, %al # sp
