@@ -18,28 +18,87 @@
 
 # print_str(str_addr)
 print_str:
+  # prol
   push %bp
   mov %sp, %bp
   push %si
   push %ax
 
+  # init
   mov 4(%bp), %si
   mov $0x0E, %ah
 
-.print_str__out_lp:
-  # cond: null ? done
+  # load
   mov (%si), %al
+
+  # cond: dquote ? ignore_dquote
+  cmp $0x22, %al
+  je .print_str__ignore_dquote
+
+.print_str__out_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? done
   test %al, %al
   jz .print_str__done
+
+  # cond: backslash ? chk_esc
+  cmp $0x5C, %al
+  je .print_str__chk_esc
+
+  # cond: dquote ? ignore_dquote
+  cmp $0x22, %al
+  je .print_str__ignore_dquote
 
   # out
   int $0x10
 
-  # loop
+  # step
+  add $0x01, %si
+  jmp .print_str__out_lp
+
+.print_str__chk_esc:
+  # pre: si = backslash
+
+  # load
+  mov 1(%si), %al
+
+  # cond: dquote ? out_dquote
+  cmp $0x22, %al
+  je .print_str__out_dquote
+
+  # load backslash
+  mov (%si), %al
+
+  # out
+  int $0x10
+
+  # step
+  add $0x01, %si
+  jmp .print_str__out_lp
+
+
+.print_str__ignore_dquote:
+  # pre: si = dquote
+
+  # step
+  add $0x01, %si
+  jmp .print_str__out_lp
+
+.print_str__out_dquote:
+  # pre: ah = out
+  # pre: al = dquote
+
+  # out
+  int $0x10
+
+  # continue
   add $0x01, %si
   jmp .print_str__out_lp
 
 .print_str__done:
+  # epil
   pop %ax
   pop %si
   pop %bp

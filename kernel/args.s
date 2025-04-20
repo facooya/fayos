@@ -250,6 +250,7 @@ split_raw:
 
 .split_raw__single_arg_chk_esc:
   # pre: al = dquote
+
   # load
   mov -1(%di), %ah
   
@@ -258,7 +259,8 @@ split_raw:
   jne .split_raw__single_arg_end
 
   # store dquote
-  mov %al, -1(%di)
+  mov %al, (%di)
+  add $0x01, %di
 
   # skip
   add $0x01, %si
@@ -266,6 +268,7 @@ split_raw:
 
 .split_raw__single_arg_end:
   # pre: al = dquote
+
   # store dquote
   mov %al, (%di)
   add $0x01, %di
@@ -408,7 +411,7 @@ split_raw:
 # ERR
 .split_raw__hdl_dquote_err:
   call print_newline
-  
+
   call hdl_dquote_err
 
   # err flag
