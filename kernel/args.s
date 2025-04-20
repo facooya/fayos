@@ -386,17 +386,18 @@ build_args:
 .build_args__argc:
   add $0x01, %cx # argc
 
-  # write argv
-  add $0x01, %bx # skip null
-  mov %bx, (%di) # store (argv)
-  add $0x02, %di # argv
-
+  # chk load (raw)
   add $0x01, %si
-  mov (%si), %al # load (raw)
+  mov (%si), %al
 
   # cond: null ? done
   test %al, %al
   jz .build_args__done
+
+  # write argv
+  add $0x01, %bx # skip null
+  mov %bx, (%di) # store (argv)
+  add $0x02, %di # argv
 
   # loop
   jmp .build_args__argv_lp

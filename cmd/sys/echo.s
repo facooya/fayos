@@ -106,20 +106,76 @@ cmd_echo:
   mov $argv, %si
   add $0x02, %si # skip cmd
   add %cx, %si # skip opt
-  mov (%si), %cx # get offset
+  mov (%si), %ax # get offset
 
-  # cond: cx == 0 ? hdl_arg_err
-  test %cx, %cx
+  # cond: ax == 0 ? hdl_arg_err
+  test %ax, %ax
   jz .cmd_echo__hdl_arg_err
 
-  # set {init}
+  # set offset {init}
   mov $raw_buf, %si
-  add %cx, %si # set offset
+  add %ax, %si # set offset
+
+  # !!! DEBUG
+  # push $raw_buf
+  # call dout
+  # add $0x02, %sp
+
+  # !!! DEBUG
+  # push %ax
+  # push %si
+  # mov $argv, %si
+  # add $0x06, %si
+  # mov (%si), %al
+  # add $0x30, %al
+  # mov $0x0E, %ah
+  # int $0x10
+  # pop %si
+  # pop %ax
+
+  # exec
+  call print_newline
+  jmp .cmd_echo__exec
+
+.cmd_echo__next_arg:
+  # step
+  add $0x02, %cx
+
+  # get offset {init}
+  mov $argv, %si
+  add $0x02, %si # skip cmd
+  add %cx, %si # skip opt+arg
+  mov (%si), %ax # get offset
+
+  # cond: ax == 0 ? done {escape}
+  test %ax, %ax
+  jz .cmd_echo__done
+
+  # !!! DEBUG
+  # push %ax
+  # mov (%si), %al
+  # add $0x30, %al
+  # mov $0x0E, %ah
+  # int $0x10
+  # pop %ax
+
+  # set offset {init}
+  mov $raw_buf, %si
+  add %ax, %si # set offset
+
+  # load
+  mov (%si), %al
+
+  # cond: al == gt ? done {escape}
+  cmp $0x3E, %al
+  je .cmd_echo__done
+
+  # cond: al == lt ? done {escape}
+  cmp $0x3C, %al
+  je .cmd_echo__done
 
 # EXEC
 .cmd_echo__exec:
-  call print_newline
-
   # cond: e ? exec_opt_e
   bt $0x00, %bx
   jc .cmd_echo__exec_opt_e
@@ -129,6 +185,7 @@ cmd_echo:
   call print_str
   add $0x02, %sp
 
+  # jmp
   jmp .cmd_echo__skip_opt_e
 
 .cmd_echo__exec_opt_e:
@@ -139,12 +196,28 @@ cmd_echo:
 .cmd_echo__skip_opt_e:
   # cond: n ? exec_opt_n
   bt $0x1, %bx
-  jc .cmd_echo__done
+  jc .cmd_echo__exec_opt_n
 
   # default
   call print_newline
 
-  jmp .cmd_echo__done
+  # jmp
+  jmp .cmd_echo__next_arg
+
+.cmd_echo__exec_opt_n:
+  # print sperate
+  mov $0x0E, %ah
+  mov $0x20, %al # sp
+  int $0x10
+
+  # !!! DEBUG
+  # push %ax
+  # mov (%si), %al
+  # mov $0x0E, %ah
+  # int $0x10
+  # pop %ax
+
+  jmp .cmd_echo__next_arg
 
 # DONE
 .cmd_echo__done:

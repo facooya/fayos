@@ -15,11 +15,8 @@ fayos:[PWD]#
 ## Feature ls  
 colorful file dir
 
-## Feature multiple arguments  
-echo O: hello world
-
 ## Feature one argument in quote  
-O: "hello world", O: 'hello world'
+O: "hello world", O: 'hello world'  
 
 ## Fix redir  
 redirection (>, >>)  
