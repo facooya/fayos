@@ -116,23 +116,6 @@ cmd_echo:
   mov $raw_buf, %si
   add %ax, %si # set offset
 
-  # !!! DEBUG
-  # push $raw_buf
-  # call dout
-  # add $0x02, %sp
-
-  # !!! DEBUG
-  # push %ax
-  # push %si
-  # mov $argv, %si
-  # add $0x06, %si
-  # mov (%si), %al
-  # add $0x30, %al
-  # mov $0x0E, %ah
-  # int $0x10
-  # pop %si
-  # pop %ax
-
   # exec
   call print_newline
   jmp .cmd_echo__exec
@@ -150,14 +133,6 @@ cmd_echo:
   # cond: ax == 0 ? done {escape}
   test %ax, %ax
   jz .cmd_echo__done
-
-  # !!! DEBUG
-  # push %ax
-  # mov (%si), %al
-  # add $0x30, %al
-  # mov $0x0E, %ah
-  # int $0x10
-  # pop %ax
 
   # set offset {init}
   mov $raw_buf, %si
@@ -220,13 +195,6 @@ cmd_echo:
   mov $0x0E, %ah
   mov $0x20, %al # sp
   int $0x10
-
-  # !!! DEBUG
-  # push %ax
-  # mov (%si), %al
-  # mov $0x0E, %ah
-  # int $0x10
-  # pop %ax
 
   jmp .cmd_echo__next_arg
 
