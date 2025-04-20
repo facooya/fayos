@@ -15,9 +15,6 @@ fayos:[PWD]#
 ## Feature ls  
 colorful file dir
 
-## Feature one argument in quote  
-O: "hello world", O: 'hello world'  
-
 ## Fix redir  
 redirection (>, >>)  
 cat arg > file  

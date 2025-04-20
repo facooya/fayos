@@ -183,7 +183,7 @@ split_raw:
   # prol
   push %si
   push %di
-  push %ax
+  # push %ax
 
   # clear tmp_buf
   push $tmp_buf
@@ -209,12 +209,74 @@ split_raw:
   cmp $0x20, %al
   je .split_raw__skip_space
 
+  # cond: dquote ? single_arg
+  cmp $0x22, %al
+  je .split_raw__single_arg
+
   # store
   mov %al, (%di)
 
   # step
   add $0x01, %si
   add $0x01, %di
+  jmp .split_raw__write_lp
+
+# SINGLE_ARG
+.split_raw__single_arg:
+  # init
+  mov %al, (%di)
+  add $0x01, %si
+  add $0x01, %di
+
+.split_raw__single_arg_lp:
+  # load
+  mov (%si), %al
+
+  # cond: null ? hdl_dquote_err
+  test %al, %al
+  jz .split_raw__hdl_dquote_err
+
+  # cond: dquote ? single_arg_chk_esc
+  cmp $0x22, %al
+  je .split_raw__single_arg_chk_esc
+
+  # store
+  mov %al, (%di)
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  jmp .split_raw__single_arg_lp
+
+.split_raw__single_arg_chk_esc:
+  # pre: al = dquote
+  # load
+  mov -1(%di), %ah
+  
+  # cond: backslash != ? single_arg_end
+  cmp $0x5C, %ah
+  jne .split_raw__single_arg_end
+
+  # store dquote
+  mov %al, -1(%di)
+
+  # skip
+  add $0x01, %si
+  jmp .split_raw__single_arg_lp
+
+.split_raw__single_arg_end:
+  # pre: al = dquote
+  # store dquote
+  mov %al, (%di)
+  add $0x01, %di
+
+  # store null
+  xor %al, %al
+  mov %al, (%di)
+  add $0x01, %di
+
+  # init
+  add $0x01, %si
   jmp .split_raw__write_lp
 
 # SKIP_SPACE
@@ -334,10 +396,26 @@ split_raw:
 # DONE
 .split_raw__done:
   # epil
-  pop %ax
+  xor %ax, %ax
+
+.split_raw__exit:
+  # epil
+  # pop %ax
   pop %di
   pop %si
   ret
+
+# ERR
+.split_raw__hdl_dquote_err:
+  call print_newline
+  
+  call hdl_dquote_err
+
+  # err flag
+  xor %ax, %ax
+  mov $0x01, %ax
+
+  jmp .split_raw__exit
 
 # ENTRY
 # build_args()

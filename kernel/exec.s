@@ -27,6 +27,11 @@ exec_cmd:
   # tok
   call trim_raw
   call split_raw
+
+  # cond: ax == 1 ? done
+  cmp $0x01, %ax
+  je .exec_cmd__done
+
   call build_args
 
   # load argc
