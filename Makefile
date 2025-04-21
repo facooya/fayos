@@ -12,6 +12,9 @@ kernel/exec.s \
 io/print.s \
 io/kbd.s \
 io/block.s \
+io/disk.s \
+io/cursor.s \
+io/tty.s \
 lib/trim.s \
 lib/split.s \
 lib/strlen.s \

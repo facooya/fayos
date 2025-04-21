@@ -15,7 +15,7 @@ build/ - linker.ld, make (*.o, *.bin, *.img)
 cmd/ - commands  
 docs/ - documentation  
 fs/fayfs/ - file system  
-io/ - keyboard, disk  
+io/ - hardware I/O  
 lib/ - library  
 kernel/ - main  
 templates/ - copy and paste  
