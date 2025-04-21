@@ -9,12 +9,6 @@
 
 .global hdl_kbd
 
-.extern cur
-.extern kernel_prompt
-# .extern exec_cli_cmd
-.extern exec_cmd
-.extern print_str
-
 # hdl_kbd() - main keyborad handler
 hdl_kbd:
   # prol
@@ -48,8 +42,7 @@ hdl_kbd:
   mov %bx, %ax # pop
 
   # default
-  mov $0x0E, %ah
-  int $0x10
+  call out_chr
 
   # si = raw_buf + offset
   # write
@@ -89,10 +82,7 @@ hdl_kbd:
 
   mov 4(%bp), %di # set origin
 
-  # get {cur}
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
 .hdl_ins__tail_lp:
   # cond: null ? rsh
@@ -131,9 +121,7 @@ hdl_kbd:
 
   # set {cur}
   add $0x01, %dl
-  mov $0x02, %ah
-  mov $0x00, %bh
-  int $0x10
+  call set_cursor
 
   # set max {cur}
   mov (cur+1), %al
@@ -152,10 +140,7 @@ hdl_kbd:
 
 # .hdl_bs
 .hdl_bs:
-  # get {cur}
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
   # cond: min ? done {cur}
   cmp (cur), %dl # dl: cur pos x
@@ -173,18 +158,15 @@ hdl_kbd:
 
   # default {nsh} [d_nsh]
   # back {cur,nsh} [d_nsh.1]
-  mov $0x02, %ah
   sub $0x01, %dl
-  int $0x10
+  call set_cursor
 
   # overwrite {cur,nsh} [d_nsh.2]
-  mov $0x0E, %ah
   mov $0x20, %al # space
-  int $0x10
+  call out_chr
 
   # back {cur,nsh} [d_nsh.3]
-  mov $0x02, %ah
-  int $0x10
+  call set_cursor
 
   # ptr, buf {nsh} [d_nsh.4]
   sub $0x01, %si
@@ -212,10 +194,7 @@ hdl_kbd:
 
   mov 4(%bp), %di # buf_raw ptr
 
-  # get cursor
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
 .hdl_bs_lsh__lp: # [d_lsh.1]
   # left shift
@@ -234,9 +213,7 @@ hdl_kbd:
 .hdl_bs_lsh__end:
   # back {cur} [d_lsh.2]
   sub $0x01, %dl
-  mov $0x02, %ah
-  mov $0x00, %bh
-  int $0x10
+  call set_cursor
 
   # write [d_lsh.3]
   sub $0x01, %si
@@ -245,14 +222,11 @@ hdl_kbd:
   add $0x02, %sp
 
   # overwrite [d_lsh.4]
-  mov $0x0E, %ah
   mov $0x20, %al # space
-  int $0x10
+  call out_chr
 
   # back {cur} [d_lsh.5]
-  mov $0x02, %ah
-  mov $0x00, %bh
-  int $0x10
+  call set_cursor
 
   # epil
   pop %dx
@@ -285,10 +259,7 @@ hdl_kbd:
 
 # .hdl_left
 .hdl_left:
-  # get cursor
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
   # cond: min ? done
   cmp (cur), %dl
@@ -296,8 +267,7 @@ hdl_kbd:
 
   # left cursor
   sub $0x01, %dl
-  mov $0x02, %ah
-  int $0x10 # x--
+  call set_cursor
 
   sub $0x01, %si # buf_raw
 
@@ -305,10 +275,7 @@ hdl_kbd:
 
 # .hdl_right
 .hdl_right:
-  # get cursor
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
   # cond: max ? done
   cmp (cur+1), %dl
@@ -316,24 +283,21 @@ hdl_kbd:
 
   # right cursor
   add $0x01, %dl
-  mov $0x02, %ah
-  int $0x10 # x++
+  call set_cursor
 
   add $0x01, %si # buf_raw
   jmp .hdl_kbd__done
 
 # .hdl_up
 .hdl_up:
-  mov $0x0E, %ah
-  mov $'U', %al
-  int $0x10
+  mov $'U', %al # !!! TMP
+  call out_chr
 
   jmp .hdl_kbd__done
 
 # .hdl_down
 .hdl_down:
-  mov $0x0E, %ah
-  mov $'D', %al
-  int $0x10
+  mov $'D', %al # !!! TMP
+  call out_chr
 
   jmp .hdl_kbd__done

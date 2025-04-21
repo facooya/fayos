@@ -15,6 +15,7 @@ build/ - linker.ld, make (*.o, *.bin, *.img)
 cmd/ - commands  
 docs/ - documentation  
 fs/fayfs/ - file system  
+include/ - constants only (.equ)  
 io/ - hardware I/O  
 lib/ - library  
 kernel/ - main  

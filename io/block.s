@@ -72,16 +72,20 @@ reset_dap_target:
 
 # read_block()
 read_block:
-  push $0x42
-  call .rw_block
-  add $0x02, %sp
+  # push $0x42
+  # call .rw_block
+  # add $0x02, %sp
+  call read_disk
+  jc .rw_block__err
   ret
 
-# write_block()
+# write_block() !!! TMP
 write_block:
-  push $0x43
-  call .rw_block
-  add $0x02, %sp
+  # push $0x43
+  # call .rw_block
+  # add $0x02, %sp
+  call write_disk
+  jc .rw_block__err
   ret
 
 # .rw_block(mode) [n_rw_block]
@@ -94,12 +98,12 @@ write_block:
   push %si
 
   # try
-  clc
-  mov 4(%bp), %ah
-  mov $dap, %si
-  mov $0x80, %dl
-  int $0x13
-  jc .rw_block__err
+  # clc
+  # mov 4(%bp), %ah
+  # mov $dap, %si
+  # mov $0x80, %dl
+  # int $0x13
+  # jc .rw_block__err
 
 .rw_block__done:
   # epil

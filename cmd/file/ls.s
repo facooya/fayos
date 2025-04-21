@@ -107,7 +107,7 @@ cmd_ls:
   jz .cmd_ls__read_name_end
 
   # out
-  int $0x10
+  call out_chr
 
   # loop
   add $0x01, %di
@@ -119,8 +119,8 @@ cmd_ls:
  
   # division
   mov $0x20, %al # space
-  int $0x10
-  int $0x10
+  call out_chr
+  call out_chr
   
   # loop
   jmp .cmd_ls__find_magic_lp

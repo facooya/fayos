@@ -27,42 +27,15 @@
 
 # cmd_clear() [n_cmd_clear]
 cmd_clear:
-  # prol
-  push %ax
-  push %bx
-  push %cx
-  push %dx
+  call get_cursor
 
-  # get cursor
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
-
-  # get video mode
-  mov $0x0F, %ah
-  int $0x10
+  call get_mode
 
   # set endX
   mov %ah, %dl
 
-  # scroll up
-  mov $0x06, %ah
-  mov $0x00, %al
-  mov $0x07, %bh # 0x00 (black), 0x07 (light gray)
-  mov $0x00, %ch 
-  mov $0x00, %cl
-  int $0x10
+  call scroll_up
 
-  # set cursor
-  mov $0x02, %ah
-  mov $0x00, %bh
-  mov $0x00, %dh
-  mov $0x00, %dl
-  int $0x10
-
-  # epil
-  pop %dx
-  pop %cx
-  pop %bx
-  pop %ax
+  xor %dx, %dx
+  call set_cursor
   ret

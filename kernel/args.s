@@ -38,7 +38,7 @@ dout:
   test %al, %al
   jz .dout_chk
 
-  int $0x10 # out
+  call out_chr
 
   # loop
   add $0x01, %si
@@ -46,7 +46,7 @@ dout:
 
 .dout_chk:
   mov $0x30, %al
-  int $0x10
+  call out_chr
 
   add $0x01, %si
   mov (%si), %al # load

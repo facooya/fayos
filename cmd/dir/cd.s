@@ -145,10 +145,6 @@ cmd_cd:
   ret
 
 .cmd_cd__back:
-  mov $0x0E, %ah
-  mov $'A', %al
-  int $0x10
-
   # !!! meta_data
   # set meta lba
   mov (cwd_lba), %ax

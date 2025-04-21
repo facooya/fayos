@@ -51,7 +51,7 @@ $(BUILD)/kernel.bin: $(OBJS)
 
 $(BUILD)/%.o: %.s
 	mkdir -p $(dir $@)
-	$(AS) $< -o $@
+	$(AS) -Iinclude $< -o $@
 
 clean:
 	find $(BUILD) -name "*.o" -delete

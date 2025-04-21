@@ -152,7 +152,7 @@ cmd_cat:
   jz .cmd_cat__done
 
   # out
-  int $0x10
+  call out_chr
 
   # loop
   add $0x01, %si

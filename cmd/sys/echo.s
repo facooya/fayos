@@ -21,6 +21,8 @@
 #   add $0x02, %si
 #   raw_buf = cmd[0]-a[0]-b[0]
 
+# !!! FIXME echo hi hello => hi\nhello\n => hi hello\n
+
 .code16
 .section .text
 
@@ -192,9 +194,8 @@ cmd_echo:
   jz .cmd_echo__done
 
   # print sperate
-  mov $0x0E, %ah
-  mov $0x20, %al # sp
-  int $0x10
+  mov $0x20, %al
+  call out_chr
 
   jmp .cmd_echo__next_arg
 
@@ -212,13 +213,12 @@ cmd_echo:
   call print_newline
 
   # print opt err char
-  mov $0x0E, %ah
   mov (%si), %al # opt err char
-  int $0x10
+  call out_chr
   mov $0x3A, %al # colon
-  int $0x10
+  call out_chr
   mov $0x20, %al # space
-  int $0x10
+  call out_chr
 
   # print err msg
   call hdl_opt_err

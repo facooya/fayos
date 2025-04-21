@@ -11,14 +11,6 @@
 .global kernel_prompt
 .global cur
 
-.extern print_str
-.extern print_newline
-.extern hdl_kbd
-.extern raw_buf
-.extern init_super_block
-.extern init_root_meta
-.extern init_free_lba
-
 # _start()
 _start:
   call init_super_block
@@ -44,9 +36,7 @@ _start:
 
 # .kernel_lp() - main loop
 .kernel_lp:
-  # read
-  mov $0x00, %ah
-  int $0x16
+  call read_key
 
   call hdl_kbd
 
@@ -55,25 +45,16 @@ _start:
 # .init_cur() - init cursor
 .init_cur:
   # prol
-  push %ax
   push %bx
-  push %cx
-  push %dx
 
-  # get {cur}
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
+  call get_cursor
 
   # init {cur}
   mov %dl, (cur) # min
   mov %dl, (cur+1) # max
 
   # epil
-  pop %dx
-  pop %cx
   pop %bx
-  pop %ax
   ret
 
 .section .data

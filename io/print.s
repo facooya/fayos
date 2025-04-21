@@ -26,7 +26,6 @@ print_str:
 
   # init
   mov 4(%bp), %si
-  mov $0x0E, %ah
 
   # load
   mov (%si), %al
@@ -51,8 +50,7 @@ print_str:
   cmp $0x22, %al
   je .print_str__ignore_dquote
 
-  # out
-  int $0x10
+  call out_chr
 
   # step
   add $0x01, %si
@@ -71,8 +69,7 @@ print_str:
   # load backslash
   mov (%si), %al
 
-  # out
-  int $0x10
+  call out_chr
 
   # step
   add $0x01, %si
@@ -90,8 +87,7 @@ print_str:
   # pre: ah = out
   # pre: al = dquote
 
-  # out
-  int $0x10
+  call out_chr
 
   # continue
   add $0x01, %si
@@ -112,7 +108,6 @@ print_esc:
   push %ax
 
   mov 4(%bp), %si
-  mov $0x0E, %ah
 
 .print_esc__out_lp:
   # cond: null ? done
@@ -124,8 +119,7 @@ print_esc:
   cmp $0x5C, %al # backslash
   jz .print_esc__hdl_esc
 
-  # out
-  int $0x10
+  call out_chr
 
   # loop
   add $0x01, %si
@@ -141,7 +135,7 @@ print_esc:
 
   # out
   mov $0x5C, %al # backslash
-  int $0x10
+  call out_chr
 
   # loop
   jmp .print_esc__out_lp
@@ -167,11 +161,8 @@ print_esc:
 
 # print_newline()
 print_newline:
-  push %ax
-  mov $0x0E, %ah
   mov $0x0D, %al # CR
-  int $0x10
+  call out_chr
   mov $0x0A, %al # LF
-  int $0x10
-  pop %ax
+  call out_chr
   ret

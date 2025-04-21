@@ -47,8 +47,7 @@ cmd_help:
   test %al, %al
   jz .cmd_help__out_char_end
 
-  # out
-  int $0x10
+  call out_chr
 
   # loop
   add $0x01, %si
