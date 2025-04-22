@@ -110,3 +110,10 @@ X: movw (%si), %ax
 O: mov (%si), %ax  
 X: movb (%si), %al  
 O: mov (%si), %al  
+
+**Code**  
+recommend: .global  
+avoid: .globl  
+
+**IO**  
+IO layer don't save reg.

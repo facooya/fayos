@@ -4,6 +4,8 @@
 #
 # get/set cursor
 
+.include "io.s"
+
 .code16
 .section .text
 
@@ -14,30 +16,18 @@ get_cursor:
   # ret: dh = y
   # ret: dl = x
 
-  # prol
-  push %bx
-
   # get cursor
-  mov $0x03, %ah
-  mov $0x00, %bh
-  int $0x10
-
-  # epil
-  pop %bx
+  mov $VID_GET_CURSOR, %ah
+  xor %bh, %bh # VID_CURSOR_PAGE_NUM
+  int $INT_VID
   ret
 
 set_cursor:
   # pre: dh = y
   # pre: dl = x
 
-  # prol
-  push %bx
-
   # set cursor
-  mov $0x02, %ah
-  mov $0x00, %bh
-  int $0x10
-
-  # epil
-  pop %bx
+  mov $VID_SET_CURSOR, %ah
+  xor %bh, %bh # VID_CURSOR_PAGE_NUM
+  int $INT_VID
   ret

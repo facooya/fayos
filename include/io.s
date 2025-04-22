@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# I/O constants
+
+# INT
+.equ INT_VID, 0x10
+.equ INT_DISK, 0x13
+.equ INT_KBD, 0x16
+
+# VID
+.equ VID_SET_CURSOR, 0x02
+.equ VID_GET_CURSOR, 0x03
+.equ VID_SCROLL_UP, 0x06
+.equ VID_TTY_OUT, 0x0E
+.equ VID_GET_MODE, 0x0F
+
+# VID_CURSOR
+.equ VID_CURSOR_PAGE_NUM, 0x00
+
+# VID_SCROLL
+.equ VID_SCROLL_COLOR_ATTR, 0x07
+.equ VID_SCROLL_FULL, 0x00
+.equ VID_SCROLL_START_Y, 0x00
+.equ VID_SCROLL_START_X, 0x00
+
+# DISK
+.equ DISK_READ_MODE, 0x42
+.equ DISK_WRITE_MODE, 0x43
+.equ DISK_PRIMARY_DRV, 0x80
+
+# KBD
+.equ KBD_READ_KEY, 0x00

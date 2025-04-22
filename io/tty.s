@@ -4,7 +4,7 @@
 #
 # Teletype
 
-# !!! .include "io.s"
+.include "io.s"
 
 .code16
 .section .text
@@ -20,8 +20,8 @@ out_chr:
   # pre: al = chr
 
   # out chr
-  mov $0x0E, %ah
-  int $0x10
+  mov $VID_TTY_OUT, %ah
+  int $INT_VID
   ret
 
 # ENTRY
@@ -31,8 +31,8 @@ read_key:
   # ret: al = ascii code
 
   # read key
-  mov $0x00, %ah
-  int $0x16
+  xor %ah, %ah # KBD_READ_KEY
+  int $INT_KBD
   ret
 
 # ENTRY
@@ -40,33 +40,21 @@ read_key:
 get_mode:
   # ret: ah = number of column
 
-  # prol
-  push %bx
-
   # get mode
-  mov $0x0F, %ah
-  int $0x10
-
-  # epil
-  pop %bx
+  mov $VID_GET_MODE, %ah
+  int $INT_VID
   ret
 
 # ENTRY
 # scroll_up()
 scroll_up:
-  # pre: dh = endY
-  # pre: dl = endX
-
-  # prol
-  push %bx
+  # pre: dh = end_y
+  # pre: dl = end_x
 
   # scroll up
-  mov $0x06, %ah
-  xor %al, %al
-  mov $0x07, %bh
-  xor %cx, %cx
-  int $0x10
-
-  # epil
-  pop %bx
+  mov $VID_SCROLL_UP, %ah
+  xor %al, %al # VID_SCROLL_FULL
+  mov $VID_SCROLL_COLOR_ATTR, %bh
+  xor %cx, %cx # VID_SCROLL_START_Y, VID_SCROLL_START_X
+  int $INT_VID
   ret

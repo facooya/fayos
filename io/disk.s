@@ -4,6 +4,8 @@
 #
 # read/write disk
 
+.include "io.s"
+
 .code16
 .section .text
 
@@ -11,11 +13,11 @@
 .global write_disk
 
 read_disk:
-  mov $0x42, %ah
+  mov $DISK_READ_MODE, %ah
   jmp .rw_disk
 
 write_disk:
-  mov $0x43, %ah
+  mov $DISK_WRITE_MODE, %ah
   jmp .rw_disk
 
 .rw_disk:
@@ -23,15 +25,12 @@ write_disk:
   # ret: cf
   # ret: ah = err_code
 
-  # prol
-  push %si
-
+  push %si # !!! REMOVE
   # read/write disk
   clc
   mov $dap, %si
-  mov $0x80, %dl
-  int $0x13
+  mov $DISK_PRIMARY_DRV, %dl
+  int $INT_DISK
 
-  # epil
-  pop %si
+  pop %si # !!! REMOVE
   ret
