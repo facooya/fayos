@@ -6,35 +6,30 @@
 
 .include "io.s"
 
-# _RW_DISK
-.macro _RW_DISK
-  # pre: ah = mode
-  # ret: cf
-  # ret: ah = err_code
-
-  push %si # !!! REMOVE
-
-  # read/write disk
-  clc
-  mov $dap, %si
-  mov $DISK_PRIMARY_DRV, %dl
-  int $INT_DISK
-
-  pop %si # !!! REMOVE
-.endm
-
 .code16
 .section .text
 
-.global read_disk
-.global write_disk
+.global sys_read_disk
+.global sys_write_disk
 
-read_disk:
+# ENTRY
+# sys_read_disk()
+sys_read_disk:
+  # read disk
+  clc
+  mov $dap, %si
   mov $DISK_READ_MODE, %ah
-  _RW_DISK
+  mov $DISK_PRIMARY_DRV, %dl
+  int $INT_DISK
   ret
 
-write_disk:
+# ENTRY
+# sys_write_disk()
+sys_write_disk:
+  # write disk
+  clc
+  mov $dap, %si
   mov $DISK_WRITE_MODE, %ah
-  _RW_DISK
+  mov $DISK_PRIMARY_DRV, %dl
+  int $INT_DISK
   ret

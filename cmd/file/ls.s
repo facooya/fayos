@@ -106,8 +106,8 @@ cmd_ls:
   test %al, %al
   jz .cmd_ls__read_name_end
 
-  # out
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
 
   # loop
   add $0x01, %di
@@ -119,8 +119,10 @@ cmd_ls:
  
   # division
   mov $0x20, %al # space
-  call out_chr
-  call out_chr
+  
+  # out !!! HACK: sys violation
+  call sys_out_chr
+  call sys_out_chr
   
   # loop
   jmp .cmd_ls__find_magic_lp

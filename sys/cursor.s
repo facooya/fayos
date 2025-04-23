@@ -9,10 +9,12 @@
 .code16
 .section .text
 
-.global get_cursor
-.global set_cursor
+.global sys_get_cursor
+.global sys_set_cursor
 
-get_cursor:
+# ENTRY
+# sys_get_cursor()
+sys_get_cursor:
   # ret: dh = y
   # ret: dl = x
 
@@ -22,7 +24,9 @@ get_cursor:
   int $INT_VID
   ret
 
-set_cursor:
+# ENTRY
+# sys_set_cursor()
+sys_set_cursor:
   # pre: dh = y
   # pre: dl = x
 

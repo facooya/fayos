@@ -195,7 +195,9 @@ cmd_echo:
 
   # print sperate
   mov $0x20, %al
-  call out_chr
+
+  # out !!! HACK: sys violation
+  call sys_out_chr
 
   jmp .cmd_echo__next_arg
 
@@ -214,11 +216,14 @@ cmd_echo:
 
   # print opt err char
   mov (%si), %al # opt err char
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
   mov $0x3A, %al # colon
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
   mov $0x20, %al # space
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
 
   # print err msg
   call hdl_opt_err

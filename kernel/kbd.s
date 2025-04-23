@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Keyboard handler for kernel (docs/io/kbd.txt)
+# Keyboard handler for kernel (docs/kernel/kbd.txt)
 
 .code16
 .section .text
@@ -42,7 +42,7 @@ hdl_kbd:
   mov %bx, %ax # pop
 
   # default
-  call out_chr
+  call sys_out_chr
 
   # si = raw_buf + offset
   # write
@@ -82,7 +82,7 @@ hdl_kbd:
 
   mov 4(%bp), %di # set origin
 
-  call get_cursor
+  call sys_get_cursor
 
 .hdl_ins__tail_lp:
   # cond: null ? rsh
@@ -121,7 +121,7 @@ hdl_kbd:
 
   # set {cur}
   add $0x01, %dl
-  call set_cursor
+  call sys_set_cursor
 
   # set max {cur}
   mov (cur+1), %al
@@ -140,7 +140,7 @@ hdl_kbd:
 
 # .hdl_bs
 .hdl_bs:
-  call get_cursor
+  call sys_get_cursor
 
   # cond: min ? done {cur}
   cmp (cur), %dl # dl: cur pos x
@@ -159,14 +159,14 @@ hdl_kbd:
   # default {nsh} [d_nsh]
   # back {cur,nsh} [d_nsh.1]
   sub $0x01, %dl
-  call set_cursor
+  call sys_set_cursor
 
   # overwrite {cur,nsh} [d_nsh.2]
   mov $0x20, %al # space
-  call out_chr
+  call sys_out_chr
 
   # back {cur,nsh} [d_nsh.3]
-  call set_cursor
+  call sys_set_cursor
 
   # ptr, buf {nsh} [d_nsh.4]
   sub $0x01, %si
@@ -194,7 +194,7 @@ hdl_kbd:
 
   mov 4(%bp), %di # buf_raw ptr
 
-  call get_cursor
+  call sys_get_cursor
 
 .hdl_bs_lsh__lp: # [d_lsh.1]
   # left shift
@@ -213,7 +213,7 @@ hdl_kbd:
 .hdl_bs_lsh__end:
   # back {cur} [d_lsh.2]
   sub $0x01, %dl
-  call set_cursor
+  call sys_set_cursor
 
   # write [d_lsh.3]
   sub $0x01, %si
@@ -223,10 +223,10 @@ hdl_kbd:
 
   # overwrite [d_lsh.4]
   mov $0x20, %al # space
-  call out_chr
+  call sys_out_chr
 
   # back {cur} [d_lsh.5]
-  call set_cursor
+  call sys_set_cursor
 
   # epil
   pop %dx
@@ -259,7 +259,7 @@ hdl_kbd:
 
 # .hdl_left
 .hdl_left:
-  call get_cursor
+  call sys_get_cursor
 
   # cond: min ? done
   cmp (cur), %dl
@@ -267,7 +267,7 @@ hdl_kbd:
 
   # left cursor
   sub $0x01, %dl
-  call set_cursor
+  call sys_set_cursor
 
   sub $0x01, %si # buf_raw
 
@@ -275,7 +275,7 @@ hdl_kbd:
 
 # .hdl_right
 .hdl_right:
-  call get_cursor
+  call sys_get_cursor
 
   # cond: max ? done
   cmp (cur+1), %dl
@@ -283,7 +283,7 @@ hdl_kbd:
 
   # right cursor
   add $0x01, %dl
-  call set_cursor
+  call sys_set_cursor
 
   add $0x01, %si # buf_raw
   jmp .hdl_kbd__done
@@ -291,13 +291,13 @@ hdl_kbd:
 # .hdl_up
 .hdl_up:
   mov $'U', %al # !!! TMP
-  call out_chr
+  call sys_out_chr
 
   jmp .hdl_kbd__done
 
 # .hdl_down
 .hdl_down:
   mov $'D', %al # !!! TMP
-  call out_chr
+  call sys_out_chr
 
   jmp .hdl_kbd__done

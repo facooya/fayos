@@ -47,7 +47,8 @@ cmd_help:
   test %al, %al
   jz .cmd_help__out_char_end
 
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
 
   # loop
   add $0x01, %si

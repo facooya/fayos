@@ -9,14 +9,14 @@
 .code16
 .section .text
 
-.global out_chr
-.global read_key
-.global get_mode
-.global scroll_up
+.global sys_out_chr
+.global sys_read_key
+.global sys_get_mode
+.global sys_scroll_up
 
 # ENTRY
-# out_chr
-out_chr:
+# sys_out_chr()
+sys_out_chr:
   # pre: al = chr
 
   # out chr
@@ -25,8 +25,8 @@ out_chr:
   ret
 
 # ENTRY
-# read_key()
-read_key:
+# sys_read_key()
+sys_read_key:
   # ret: ah = scan code
   # ret: al = ascii code
 
@@ -36,8 +36,8 @@ read_key:
   ret
 
 # ENTRY
-# get_mode()
-get_mode:
+# sys_get_mode()
+sys_get_mode:
   # ret: ah = number of column
 
   # get mode
@@ -46,8 +46,8 @@ get_mode:
   ret
 
 # ENTRY
-# scroll_up()
-scroll_up:
+# sys_scroll_up()
+sys_scroll_up:
   # pre: dh = end_y
   # pre: dl = end_x
 

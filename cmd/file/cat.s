@@ -125,7 +125,7 @@ cmd_cat:
   pop %si # main mem ptr
 
   # cond: 1 != ? done
-  # !!! temp, only entry level 1
+  # !!! TMP only entry level 1
   mov 8(%si), %al # entry level
   cmp $0x01, %al
   jnz .cmd_cat__done
@@ -143,16 +143,14 @@ cmd_cat:
   # set data mem ptr
   mov $0x8006, %si
 
-  mov $0x0E, %ah
-
 .cmd_cat__out_data:
   # cond: null ? done
   movb (%si), %al
   test %al, %al
   jz .cmd_cat__done
 
-  # out
-  call out_chr
+  # out !!! HACK: sys violation
+  call sys_out_chr
 
   # loop
   add $0x01, %si

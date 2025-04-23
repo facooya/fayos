@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Block read/write and DAP setup (docs/io/block.txt)
+# Block read/write and DAP setup (docs/lib/block.txt)
 
 .code16
 .section .text
@@ -72,47 +72,28 @@ reset_dap_target:
 
 # read_block()
 read_block:
-  # push $0x42
-  # call .rw_block
-  # add $0x02, %sp
-  call read_disk
+  push %si
+
+  call sys_read_disk
   jc .rw_block__err
-  ret
+
+  jmp .rw_block__done
 
 # write_block() !!! TMP
 write_block:
-  # push $0x43
-  # call .rw_block
-  # add $0x02, %sp
-  call write_disk
-  jc .rw_block__err
-  ret
-
-# .rw_block(mode) [n_rw_block]
-.rw_block:
-  # prol
-  push %bp
-  mov %sp, %bp
-  push %ax
-  push %dx
   push %si
 
-  # try
-  # clc
-  # mov 4(%bp), %ah
-  # mov $dap, %si
-  # mov $0x80, %dl
-  # int $0x13
-  # jc .rw_block__err
+  call sys_write_disk
+  jc .rw_block__err
 
+  jmp .rw_block__done
+
+# DONE
 .rw_block__done:
-  # epil
   pop %si
-  pop %dx
-  pop %ax
-  pop %bp
   ret
 
+# ERR
 .rw_block__err:
   call print_newline
 
@@ -124,6 +105,7 @@ write_block:
 
   jmp .rw_block__done
 
+# DATA
 .section .data
 
 # dap [n_dap]

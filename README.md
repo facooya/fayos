@@ -16,7 +16,7 @@ cmd/ - commands
 docs/ - documentation  
 fs/fayfs/ - file system  
 include/ - constants only (.equ)  
-io/ - hardware I/O  
-lib/ - library  
 kernel/ - main  
+lib/ - library  
+sys/ - hardware interrupt interface  
 templates/ - copy and paste  

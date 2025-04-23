@@ -36,7 +36,7 @@ _start:
 
 # .kernel_lp() - main loop
 .kernel_lp:
-  call read_key
+  call sys_read_key
 
   call hdl_kbd
 
@@ -47,7 +47,7 @@ _start:
   # prol
   push %bx
 
-  call get_cursor
+  call sys_get_cursor
 
   # init {cur}
   mov %dl, (cur) # min

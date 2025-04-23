@@ -32,7 +32,3 @@ disallow /, \, SP, all
 
 ## include define .equ  
 .equ include/...  
-
-## seperate  
-avoid direct interrupt  
-interrupt only io/  
