@@ -114,6 +114,3 @@ O: mov (%si), %al
 **Code**  
 recommend: .global  
 avoid: .globl  
-
-**IO**  
-IO layer don't save reg.
