@@ -42,7 +42,7 @@ hdl_kbd:
   mov %bx, %ax # pop
 
   # default
-  call sys_out_chr
+  call sys_tty_out
 
   # si = raw_buf + offset
   # write
@@ -163,7 +163,7 @@ hdl_kbd:
 
   # overwrite {cur,nsh} [d_nsh.2]
   mov $0x20, %al # space
-  call sys_out_chr
+  call sys_tty_out
 
   # back {cur,nsh} [d_nsh.3]
   call sys_set_cursor
@@ -223,7 +223,7 @@ hdl_kbd:
 
   # overwrite [d_lsh.4]
   mov $0x20, %al # space
-  call sys_out_chr
+  call sys_tty_out
 
   # back {cur} [d_lsh.5]
   call sys_set_cursor
@@ -291,13 +291,13 @@ hdl_kbd:
 # .hdl_up
 .hdl_up:
   mov $'U', %al # !!! TMP
-  call sys_out_chr
+  call sys_tty_out
 
   jmp .hdl_kbd__done
 
 # .hdl_down
 .hdl_down:
   mov $'D', %al # !!! TMP
-  call sys_out_chr
+  call sys_tty_out
 
   jmp .hdl_kbd__done

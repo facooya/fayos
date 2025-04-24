@@ -12,8 +12,8 @@ kernel/exec.s \
 kernel/kbd.s \
 \
 sys/disk.s \
-sys/cursor.s \
-sys/tty.s \
+sys/kbd.s \
+sys/vid.s \
 \
 lib/block.s \
 lib/cursor.s \

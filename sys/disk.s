@@ -2,9 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# read/write disk
+# Disk services
 
-.include "io.s"
+.include "sys.s"
 
 .code16
 .section .text
@@ -14,8 +14,8 @@
 
 # ENTRY
 # sys_read_disk()
+# ret: cf
 sys_read_disk:
-  # read disk
   clc
   mov $dap, %si
   mov $DISK_READ_MODE, %ah
@@ -25,8 +25,8 @@ sys_read_disk:
 
 # ENTRY
 # sys_write_disk()
+# ret: cf
 sys_write_disk:
-  # write disk
   clc
   mov $dap, %si
   mov $DISK_WRITE_MODE, %ah

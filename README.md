@@ -19,6 +19,6 @@ fs/fayfs/ - file system
 include/ - constants only  
 kernel/ - main  
 lib/ - library  
-sys/ - hardware interrupt interface  
+sys/ - BIOS interrupt interface  
 templates/ - copy and paste  
 tools/ - misc  

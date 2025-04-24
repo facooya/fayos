@@ -50,7 +50,7 @@ print_str:
   cmp $0x22, %al
   je .print_str__ignore_dquote
 
-  call sys_out_chr
+  call sys_tty_out
 
   # step
   add $0x01, %si
@@ -69,7 +69,7 @@ print_str:
   # load backslash
   mov (%si), %al
 
-  call sys_out_chr
+  call sys_tty_out
 
   # step
   add $0x01, %si
@@ -87,7 +87,7 @@ print_str:
   # pre: ah = out
   # pre: al = dquote
 
-  call sys_out_chr
+  call sys_tty_out
 
   # continue
   add $0x01, %si
@@ -119,7 +119,7 @@ print_esc:
   cmp $0x5C, %al # backslash
   jz .print_esc__hdl_esc
 
-  call sys_out_chr
+  call sys_tty_out
 
   # loop
   add $0x01, %si
@@ -135,7 +135,7 @@ print_esc:
 
   # out
   mov $0x5C, %al # backslash
-  call sys_out_chr
+  call sys_tty_out
 
   # loop
   jmp .print_esc__out_lp
@@ -162,7 +162,7 @@ print_esc:
 # print_newline()
 print_newline:
   mov $0x0D, %al # CR
-  call sys_out_chr
+  call sys_tty_out
   mov $0x0A, %al # LF
-  call sys_out_chr
+  call sys_tty_out
   ret

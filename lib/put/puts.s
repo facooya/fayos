@@ -30,7 +30,7 @@ puts:
   jz .puts__done
 
   # body
-  call sys_out_chr
+  call sys_tty_out
 
   # step
   add $0x01, %si
@@ -64,7 +64,7 @@ putsc:
   jz .putsc__done
 
   # body
-  call sys_out_chr
+  call sys_tty_out
 
   # step
   add $0x01, %si
