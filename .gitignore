@@ -1,8 +1,9 @@
 .*
 
-*.o
-*.bin
+build/
 *.img
+*.bin
+*.o
 *.map
 
 !.gitignore

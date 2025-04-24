@@ -50,9 +50,9 @@ hdl_kbd:
   add $0x01, %si
 
   # max cursor
-  mov (cur+1), %al
+  mov (cursor+2), %al
   add $0x01, %al
-  mov %al, (cur+1)
+  mov %al, (cursor+2)
 
 .hdl_kbd__done:
   pop %bx
@@ -124,9 +124,9 @@ hdl_kbd:
   call sys_set_cursor
 
   # set max {cur}
-  mov (cur+1), %al
+  mov (cursor+2), %al
   add $0x01, %al
-  mov %al, (cur+1)
+  mov %al, (cursor+2)
 
   # epil
   pop %dx
@@ -143,13 +143,13 @@ hdl_kbd:
   call sys_get_cursor
 
   # cond: min ? done {cur}
-  cmp (cur), %dl # dl: cur pos x
+  cmp (cursor), %dl # dl: cur pos x
   je .hdl_kbd__done
 
   # dec max {cur}
-  mov (cur+1), %al # max
+  mov (cursor+2), %al # max
   sub $0x01, %al
-  mov %al, (cur+1)
+  mov %al, (cursor+2)
 
   # cond: null != ? call_lsh {lsh}
   mov (%si), %al # si: buf_raw ptr
@@ -246,8 +246,8 @@ hdl_kbd:
   add $0x02, %sp
 
   # init max cursor
-  mov (cur), %al
-  mov %al, (cur+1)
+  mov (cursor), %al
+  mov %al, (cursor+2)
 
   # init {raw_buf}
   push $raw_buf
@@ -262,7 +262,7 @@ hdl_kbd:
   call sys_get_cursor
 
   # cond: min ? done
-  cmp (cur), %dl
+  cmp (cursor), %dl
   je .hdl_kbd__done
 
   # left cursor
@@ -278,7 +278,7 @@ hdl_kbd:
   call sys_get_cursor
 
   # cond: max ? done
-  cmp (cur+1), %dl
+  cmp (cursor+2), %dl
   je .hdl_kbd__done
 
   # right cursor

@@ -31,8 +31,8 @@ _start:
   call puts
   add $0x02, %sp
 
+  call init_cursor
   mov $raw_buf, %si
-  call .init_cur
 
 # .kernel_lp() - main loop
 .kernel_lp:
@@ -42,29 +42,8 @@ _start:
 
   jmp .kernel_lp
 
-# .init_cur() - init cursor
-.init_cur:
-  # prol
-  push %bx
-
-  call sys_get_cursor
-
-  # init {cur}
-  mov %dl, (cur) # min
-  mov %dl, (cur+1) # max
-
-  # epil
-  pop %bx
-  ret
-
 .section .data
 
 kernel_prompt: .asciz "fayos:/# "
-
-# cur [s_cur]
-cur:
-  .byte 0x00
-  .byte 0x00
-
 .kernel_ok_msg: .asciz "\nKernel ok\r\n"
 .kernel_welcome_msg: .asciz "Welcome to Fayos kernel\r\n"
