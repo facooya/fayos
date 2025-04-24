@@ -50,9 +50,9 @@ hdl_kbd:
   add $0x01, %si
 
   # max cursor
-  mov (cursor+2), %al
+  mov (cursor+1), %al
   add $0x01, %al
-  mov %al, (cursor+2)
+  mov %al, (cursor+1)
 
 .hdl_kbd__done:
   pop %bx
@@ -124,9 +124,9 @@ hdl_kbd:
   call sys_set_cursor
 
   # set max {cur}
-  mov (cursor+2), %al
+  mov (cursor+1), %al
   add $0x01, %al
-  mov %al, (cursor+2)
+  mov %al, (cursor+1)
 
   # epil
   pop %dx
@@ -147,9 +147,9 @@ hdl_kbd:
   je .hdl_kbd__done
 
   # dec max {cur}
-  mov (cursor+2), %al # max
+  mov (cursor+1), %al # max
   sub $0x01, %al
-  mov %al, (cursor+2)
+  mov %al, (cursor+1)
 
   # cond: null != ? call_lsh {lsh}
   mov (%si), %al # si: buf_raw ptr
@@ -247,7 +247,7 @@ hdl_kbd:
 
   # init max cursor
   mov (cursor), %al
-  mov %al, (cursor+2)
+  mov %al, (cursor+1)
 
   # init {raw_buf}
   push $raw_buf
@@ -278,7 +278,7 @@ hdl_kbd:
   call sys_get_cursor
 
   # cond: max ? done
-  cmp (cursor+2), %dl
+  cmp (cursor+1), %dl
   je .hdl_kbd__done
 
   # right cursor

@@ -27,19 +27,14 @@
 
 # cmd_clear() [n_cmd_clear]
 cmd_clear:
-  # !!! HACK: sys violation
-  call sys_get_cursor
+  call get_cursor
+  call get_mode
 
-  # !!! HACK: sys violation
-  call sys_get_mode
-
-  # set end_x
+  # copy end_x
   mov %ah, %dl
 
-  # !!! HACK: sys violation
-  call sys_scroll_up
+  call scroll_up
 
   xor %dx, %dx
-  # !!! HACK: sys violation
-  call sys_set_cursor
+  call set_cursor
   ret

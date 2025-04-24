@@ -9,7 +9,6 @@
 
 .global _start
 .global kernel_prompt
-.global cur
 
 # _start()
 _start:

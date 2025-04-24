@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Etc video library
+# Misc video library
 
 .code16
 .section .text
@@ -19,5 +19,7 @@ get_mode:
 # ENTRY
 # scroll_up()
 scroll_up:
+  push %bx
   call sys_scroll_up
+  pop %bx
   ret
