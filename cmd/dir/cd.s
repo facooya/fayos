@@ -19,12 +19,6 @@
 
 .global cmd_cd
 
-.extern print_newline
-.extern set_dap_lba
-.extern read_block
-.extern dap
-.extern cwd_lba
-
 # cmd_cd()
 cmd_cd:
   # prol
@@ -135,7 +129,7 @@ cmd_cd:
   mov %ax, (cwd_lba+2)
 
 .cmd_cd__done:
-  call print_newline
+  call outnl
 
   # epil
   pop %cx
@@ -168,19 +162,19 @@ cmd_cd:
   jmp .cmd_cd__done
 
 .cmd_cd__err_no_dir:
-  call print_newline
+  call outnl
 
   push $.cd_err_no_dir_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
   jmp .cmd_cd__done
 
 .cmd_cd__err_not_dir:
-  call print_newline
+  call outnl
 
   push $.cd_err_not_dir_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
   jmp .cmd_cd__done

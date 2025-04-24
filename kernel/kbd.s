@@ -116,7 +116,7 @@ hdl_kbd:
   mov %al, (%si)
 
   push %si # origin
-  call print_str
+  call puts
   add $0x02, %sp
 
   # set {cur}
@@ -218,7 +218,7 @@ hdl_kbd:
   # write [d_lsh.3]
   sub $0x01, %si
   push %si
-  call print_str
+  call puts
   add $0x02, %sp
 
   # overwrite [d_lsh.4]
@@ -242,7 +242,7 @@ hdl_kbd:
   call exec_cmd
 
   push $kernel_prompt
-  call print_str
+  call puts
   add $0x02, %sp
 
   # init max cursor

@@ -18,17 +18,17 @@ _start:
   call init_free_lba
 
   push $.kernel_ok_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
   push $.kernel_welcome_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
 
   push $kernel_prompt
-  call print_str
+  call puts
   add $0x02, %sp
 
   mov $raw_buf, %si

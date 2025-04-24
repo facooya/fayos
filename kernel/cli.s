@@ -10,10 +10,10 @@
 # hdl_cli_opt_err
 hdl_cli_opt_err:
   push $.cli_opt_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
 
   # done
   call .init_cli_buf_all

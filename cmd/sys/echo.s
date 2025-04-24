@@ -9,7 +9,7 @@
 
 # DEPS
 # cmd_echo()
-#   print_newline
+#   outnl
 #   hdl_cli_opt_err
 
 # NOTE
@@ -119,7 +119,7 @@ cmd_echo:
   add %ax, %si # set offset
 
   # exec
-  call print_newline
+  call outnl
   jmp .cmd_echo__exec
 
 .cmd_echo__next_arg:
@@ -159,7 +159,7 @@ cmd_echo:
 
   # default
   push %si
-  call print_str
+  call puts
   add $0x02, %sp
 
   # jmp
@@ -176,7 +176,7 @@ cmd_echo:
   jc .cmd_echo__exec_opt_n
 
   # default
-  call print_newline
+  call outnl
 
   # jmp
   jmp .cmd_echo__next_arg
@@ -193,11 +193,7 @@ cmd_echo:
   test %ax, %ax
   jz .cmd_echo__done
 
-  # print sperate
-  mov $0x20, %al
-
-  # out !!! HACK: sys violation
-  call sys_out_chr
+  call outsp
 
   jmp .cmd_echo__next_arg
 
@@ -212,18 +208,13 @@ cmd_echo:
 
 # ERROR
 .cmd_echo__hdl_opt_err:
-  call print_newline
+  call outnl
 
-  # print opt err char
+  # print opt err
   mov (%si), %al # opt err char
-  # out !!! HACK: sys violation
-  call sys_out_chr
-  mov $0x3A, %al # colon
-  # out !!! HACK: sys violation
-  call sys_out_chr
-  mov $0x20, %al # space
-  # out !!! HACK: sys violation
-  call sys_out_chr
+  call outc
+  call outcol
+  call outsp
 
   # print err msg
   call hdl_opt_err
@@ -231,6 +222,6 @@ cmd_echo:
   jmp .cmd_echo__done
 
 .cmd_echo__hdl_arg_err:
-  call print_newline
+  call outnl
   call hdl_arg_err
   jmp .cmd_echo__done

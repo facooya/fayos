@@ -9,7 +9,7 @@
 
 # DEPS
 # cmd_cat()
-#   print_newline
+#   outnl
 #   read_block
 #   write_block !!! redir
 #   set_dap_lba
@@ -28,11 +28,6 @@
 .section .text
 
 .global cmd_cat
-
-.extern print_newline
-.extern read_block
-.extern write_block
-.extern set_dap_lba
 
 # cmd_cat()
 cmd_cat:
@@ -54,7 +49,7 @@ cmd_cat:
 
   call read_block
 
-  call print_newline
+  call outnl
 
   # set mem ptr
   mov $0x8000, %si
@@ -143,21 +138,12 @@ cmd_cat:
   # set data mem ptr
   mov $0x8006, %si
 
-.cmd_cat__out_data:
-  # cond: null ? done
-  movb (%si), %al
-  test %al, %al
-  jz .cmd_cat__done
-
-  # out !!! HACK: sys violation
-  call sys_out_chr
-
-  # loop
-  add $0x01, %si
-  jmp .cmd_cat__out_data
+  push %si
+  call puts
+  add $0x02, %sp
 
 .cmd_cat__done:
-  call print_newline
+  call outnl
 
   # epil
   pop %cx

@@ -12,7 +12,7 @@
 #   read_block
 #   write_block
 #   write_dentry
-#   print_newline
+#   outnl
 #   cwd_lba
 #   write_meta
 #   free_lba
@@ -21,14 +21,6 @@
 .section .text
 
 .global cmd_touch
-
-.extern read_block
-.extern write_block
-.extern write_dentry
-.extern print_newline
-.extern cwd_lba
-.extern write_meta
-.extern free_lba
 
 # cmd_touch()
 cmd_touch:
@@ -163,7 +155,7 @@ cmd_touch:
   mov %ax, (free_lba)
 
 .cmd_touch__done:
-  call print_newline
+  call outnl
 
   # epil
   pop %cx
@@ -175,10 +167,10 @@ cmd_touch:
 .cmd_touch__err_exist:
   pop %si
   
-  call print_newline
+  call outnl
 
   push $.cmd_touch__err_exist_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
   jmp .cmd_touch__done

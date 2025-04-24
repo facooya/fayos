@@ -410,7 +410,7 @@ split_raw:
 
 # ERR
 .split_raw__hdl_dquote_err:
-  call print_newline
+  call outnl
 
   call hdl_dquote_err
 

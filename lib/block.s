@@ -14,9 +14,6 @@
 .global write_block
 .global dap
 
-.extern print_newline
-.extern print_str
-
 # set_dap_lba(lba_high, lba_low) [n_set_dap]
 set_dap_lba:
   # prol
@@ -95,13 +92,13 @@ write_block:
 
 # ERR
 .rw_block__err:
-  call print_newline
+  call outnl
 
   push $.block_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
 
   jmp .rw_block__done
 

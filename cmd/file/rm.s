@@ -9,7 +9,7 @@
 
 # DEPS
 # cmd_rm()
-#   print_newline
+#   outnl
 #   read_block
 #   write_block
 #   dap
@@ -18,11 +18,6 @@
 .section .text
 
 .global cmd_rm
-
-.extern print_newline
-.extern read_block
-.extern write_block
-.extern dap
 
 # cmd_rm()
 cmd_rm:
@@ -114,7 +109,7 @@ cmd_rm:
   call write_block
 
 .cmd_rm__done:
-  call print_newline
+  call outnl
 
   # epil
   pop %ax

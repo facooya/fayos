@@ -9,7 +9,7 @@
 
 # DEPS
 # cmd_help()
-#   print_newline
+#   outnl
 #   cmd_map
 
 .code16
@@ -17,42 +17,31 @@
 
 .global cmd_help
 
-.extern print_newline
-.extern cmd_map
-
 # cmd_help()
 cmd_help:
   # prol
   push %si
-  push %ax
-  push %bx
 
   # set
   mov $cmd_map, %si
-  mov $0x0E, %ah
 
 .cmd_help__chk_addr_lp:
+  # load cmd_addr
+  mov (%si), %ax
+
   # cond: null ? done
-  mov (%si), %bx
-  test %bx, %bx
+  test %ax, %ax
   jz .cmd_help__done
 
-  call print_newline
+  call outnl
 
   add $0x02, %si # cmd_map (cmd_str)
 
-.cmd_help__out_char_lp:
-  # cond: null ? out_char_end
-  mov (%si), %al
-  test %al, %al
-  jz .cmd_help__out_char_end
-
-  # out !!! HACK: sys violation
-  call sys_out_chr
-
-  # loop
-  add $0x01, %si
-  jmp .cmd_help__out_char_lp
+  # print cmd_str
+  push %si
+  call putsc
+  add $0x02, %sp
+  add %cx, %si
 
 .cmd_help__out_char_end:
   # loop
@@ -61,7 +50,5 @@ cmd_help:
 
 .cmd_help__done:
   # epil
-  pop %bx
-  pop %ax
   pop %si
   ret

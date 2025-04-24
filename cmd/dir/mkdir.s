@@ -19,17 +19,6 @@
 
 .global cmd_mkdir
 
-.extern print_newline
-.extern set_dap_lba
-.extern read_block
-.extern write_block
-.extern dap
-.extern wirte_meta
-.extern write_dentry
-.extern write_dentry__type
-.extern cwd_lba
-.extern free_lba
-
 # cmd_mkdir()
 cmd_mkdir:
   # prol
@@ -177,7 +166,7 @@ cmd_mkdir:
   mov %ax, (free_lba)
 
 .cmd_mkdir__done:
-  call print_newline
+  call outnl
 
   # epil
   pop %cx
@@ -189,10 +178,10 @@ cmd_mkdir:
 .cmd_mkdir__err_exist:
   pop %si
   
-  call print_newline
+  call outnl
 
   push $.cmd_mkdir__err_exist_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
   jmp .cmd_mkdir__done

@@ -11,7 +11,7 @@
 # cmd_ls()
 #   set_dap_lba
 #   read_block
-#   print_newline
+#   outnl
 #   cwd_lba
 
 # NOTE
@@ -28,10 +28,6 @@
 .section .text
 
 .global cmd_ls
-
-.extern read_block
-.extern print_newline
-.extern cwd_lba
 
 # cmd_ls() !!! current dir
 cmd_ls:
@@ -51,7 +47,7 @@ cmd_ls:
 
   call read_block
 
-  call print_newline
+  call outnl
 
   # set mem ptr
   mov $0x8000, %si
@@ -98,37 +94,23 @@ cmd_ls:
   # set name ptr
   sub %cx, %di
 
-  mov $0x0E, %ah
-
-.cmd_ls__read_name_lp:
-  # cond: null ? read_name_end
-  mov (%di), %al
-  test %al, %al
-  jz .cmd_ls__read_name_end
-
-  # out !!! HACK: sys violation
-  call sys_out_chr
-
-  # loop
-  add $0x01, %di
-  jmp .cmd_ls__read_name_lp
+  # print file name
+  push %di
+  call puts
+  add $0x02, %sp
 
 .cmd_ls__read_name_end:
   # skip dentry [n_skip_dentry]
   add $0x0A, %si
  
-  # division
-  mov $0x20, %al # space
-  
-  # out !!! HACK: sys violation
-  call sys_out_chr
-  call sys_out_chr
+  call outsp
+  call outsp
   
   # loop
   jmp .cmd_ls__find_magic_lp
 
 .cmd_ls__done:
-  call print_newline
+  call outnl
   
   # epil
   pop %cx

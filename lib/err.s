@@ -15,30 +15,30 @@
 # hdl_opt_err()
 hdl_opt_err:
   push $.opt_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
   ret
 
 # ENTRY
 # hdl_arg_err()
 hdl_arg_err:
   push $.arg_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
   ret
 
 # ENTRY
 # hdl_dquote_err()
 hdl_dquote_err:
   push $.dquote_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
   ret
 
 # DATA

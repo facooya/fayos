@@ -102,7 +102,7 @@ exec_cmd:
 
 # DONE
 .exec_cmd__pre_done:
-  call print_newline
+  call outnl
 
 .exec_cmd__done:
   # epil
@@ -115,13 +115,13 @@ exec_cmd:
 
 # ERROR
 .exec_cmd__err:
-  call print_newline
+  call outnl
 
   push $.cmd_err_msg
-  call print_str
+  call puts
   add $0x02, %sp
 
-  call print_newline
+  call outnl
 
   jmp .exec_cmd__done
 

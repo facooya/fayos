@@ -14,11 +14,13 @@ sys/disk.s \
 sys/cursor.s \
 sys/tty.s \
 lib/block.s \
+lib/err.s \
 lib/print.s \
-lib/trim.s \
 lib/split.s \
 lib/strlen.s \
-lib/err.s \
+lib/trim.s \
+lib/put/out.s \
+lib/put/puts.s \
 fs/fayfs/super.s \
 fs/fayfs/dir.s \
 fs/fayfs/meta.s \
