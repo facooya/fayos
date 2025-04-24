@@ -10,9 +10,11 @@ kernel/cache.s \
 kernel/args.s \
 kernel/exec.s \
 kernel/kbd.s \
+\
 sys/disk.s \
 sys/cursor.s \
 sys/tty.s \
+\
 lib/block.s \
 lib/cursor.s \
 lib/err.s \
@@ -21,24 +23,30 @@ lib/split.s \
 lib/strlen.s \
 lib/trim.s \
 lib/vid.s \
+\
 lib/put/out.s \
 lib/put/puts.s \
+\
 fs/fayfs/super.s \
 fs/fayfs/dir.s \
 fs/fayfs/meta.s \
 fs/fayfs/alloc.s \
+\
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \
+\
 cmd/file/cat.s \
 cmd/file/ls.s \
 cmd/file/touch.s \
 cmd/file/rm.s \
+\
 cmd/dir/mkdir.s \
 cmd/dir/cd.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 
+# ALL
 all: $(BUILD)/fayos.img
 
 $(BUILD)/fayos.img: $(BUILD)/boot.bin $(BUILD)/kernel.bin | $(BUILD)
@@ -60,8 +68,12 @@ $(BUILD)/%.o: %.s | $(BUILD)
 $(BUILD):
 	mkdir -p $@
 
+# CLEAN
 clean:
-	find $(BUILD) -name "*.img" -delete
 	find $(BUILD) -name "*.bin" -delete
 	find $(BUILD) -name "*.o" -delete
+	find $(BUILD) -type d -empty -delete
+
+clean_all: clean
+	find $(BUILD) -name "*.img" -delete
 	find $(BUILD) -type d -empty -delete
