@@ -138,12 +138,12 @@ cmd_mkdir:
 
   # write dentry
   push %cx
-  call write_dentry2 # !!! TMP
+  call write_dentry
   add $0x02, %sp
 
   # write dentry type
   push $0x0D # directory
-  call write_dentry__type2 # !!! TMP
+  call write_dentry__type
   add $0x02, %sp
 
   # write dentry data lba

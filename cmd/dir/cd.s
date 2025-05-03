@@ -24,8 +24,7 @@ cmd_cd:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # arg
   mov $argv, %di
@@ -52,44 +51,42 @@ cmd_cd:
   call read_block
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .cmd_cd__find_magic_lp:
   # cond: magic ? cmp_name
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_cd__cmp_name
 
   # cond: null ? done
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .cmd_cd__err_no_dir
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__cmp_name:
   # copy ptr (magic)
-  mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl # name size
+  add 3(%bx), %cl # padding size
 
   # set ptr (name)
   sub %cx, %di
 
-  # setup
-  push %si # main mem ptr !!! danger
-
   # arg
+  xor %dx, %dx
   mov $argv, %si
   add $0x02, %si
-  mov (%si), %cx
+  mov (%si), %dx
   mov $raw_buf, %si
-  add %cx, %si
+  add %dx, %si
 
 .cmd_cd__cmp_name_lp:
   # cond: 0 ? main
@@ -108,32 +105,27 @@ cmd_cd:
   jmp .cmd_cd__cmp_name_lp
 
 .cmd_cd__cmp_name_end:
-  pop %si # main mem ptr
-
   # loop
-  add $0x0A, %si # cat.s [n_skip_dentry]
+  add $0x0A, %bx # cat.s [n_skip_dentry]
   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__main:
-  pop %si # main mem ptr
-
   # cond: dir_type != ? err_not_dir
-  movb 9(%si), %al
+  movb 9(%bx), %al
   cmp $0x0D, %al
   jne .cmd_cd__err_not_dir
 
   # get data lba (dentry), set lba (cwd_lba)
-  mov 4(%si), %ax # low
+  mov 4(%bx), %ax # low
   mov %ax, (cwd_lba)
-  mov 6(%si), %ax # high
+  mov 6(%bx), %ax # high
   mov %ax, (cwd_lba+2)
 
 .cmd_cd__done:
   call outnl
 
   # epil
-  pop %cx
-  pop %ax
+  pop %bx
   pop %di
   pop %si
   ret
@@ -151,12 +143,12 @@ cmd_cd:
   call read_block
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
   # get parent lba (dentry !!! mata_data), set lba (cwd_lba)
-  mov (%si), %ax # low
+  mov (%bx), %ax # low
   mov %ax, (cwd_lba)
-  mov 2(%si), %ax # high
+  mov 2(%bx), %ax # high
   mov %ax, (cwd_lba+2)
 
   jmp .cmd_cd__done

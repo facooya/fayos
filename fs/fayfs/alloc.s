@@ -14,11 +14,10 @@
 
 init_free_lba:
   # prol
-  push %si
-  push %ax
+  push %bx
 
   # mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .init_free_lba__lp:
   # set dap lba
@@ -32,9 +31,9 @@ init_free_lba:
   call read_block
 
   # cond: null ? done
-  mov (%si), %ax
+  mov (%bx), %ax
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .init_free_lba__done
 
   # loop
@@ -45,6 +44,5 @@ init_free_lba:
 
 .init_free_lba__done:
   # epil
-  pop %ax
-  pop %si
+  pop %bx
   ret

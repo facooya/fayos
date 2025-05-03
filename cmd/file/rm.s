@@ -24,11 +24,10 @@ cmd_rm:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # set lba
-  push $0x80 # !!! root dir
+  push $0x80 # !!! TMP root dir
   push $0x00
   call set_dap_lba
   add $0x04, %sp
@@ -36,44 +35,42 @@ cmd_rm:
   call read_block
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .cmd_rm__find_magic_lp:
   # cond: magic ? cmp_name
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_rm__cmp_name
 
   # cond: null ? done
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .cmd_rm__done
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_rm__find_magic_lp
 
 .cmd_rm__cmp_name:
   # copy ptr (magic)
-  mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl # name size
+  add 3(%bx), %cl # padding size
 
   # set ptr (name)
   sub %cx, %di
 
-  # setup
-  push %si # main mem ptr
-
   # arg
+  xor %dx, %dx
   mov $argv, %si
   add $0x02, %si
-  mov (%si), %cx
+  mov (%si), %dx
   mov $raw_buf, %si
-  add %cx, %si
+  add %dx, %si
 
 .cmd_rm__cmp_name_lp:
   # cond: 0 ? main
@@ -92,19 +89,15 @@ cmd_rm:
   jmp .cmd_rm__cmp_name_lp
 
 .cmd_rm__skip_dentry:
-  pop %si # main mem ptr
-
   # loop
-  add $0x0A, %si # cat.s [n_skip_dentry]
+  add $0x0A, %bx # cat.s [n_skip_dentry]
   jmp .cmd_rm__find_magic_lp
 
 .cmd_rm__main:
-  pop %si # main mem ptr
-
   # bit test set
   xor %ax, %ax
   bts $0x07, %ax # msb
-  mov %al, 9(%si) # file type
+  mov %al, 9(%bx) # file type
 
   call write_block
 
@@ -112,11 +105,7 @@ cmd_rm:
   call outnl
 
   # epil
-  pop %ax
-  pop %cx
+  pop %bx
   pop %di
   pop %si
   ret
-
-# -----========== < Command (rm) ==========-----
-# === < CODE

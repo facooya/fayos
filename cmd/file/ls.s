@@ -34,8 +34,7 @@ cmd_ls:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # set lba
   mov (cwd_lba), %ax # low
@@ -50,27 +49,27 @@ cmd_ls:
   call outnl
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .cmd_ls__find_magic_lp:
   # cond: magic ? chk_del
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_ls__chk_del
 
   # cond: null ? done
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .cmd_ls__done
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_ls__find_magic_lp
 
 .cmd_ls__chk_del:
   # cond: bit test ? chk_del_end
   xor %ax, %ax
-  mov 9(%si), %al # file type
+  mov 9(%bx), %al # file type
   bt $0x07, %ax # msb
   jc .cmd_ls__chk_del_end
 
@@ -79,17 +78,17 @@ cmd_ls:
 
 .cmd_ls__chk_del_end:
   # loop
-  add $0x0A, %si # [n_skip_dentry]
+  add $0x0A, %bx # [n_skip_dentry]
   jmp .cmd_ls__find_magic_lp
 
 .cmd_ls__read_name:
   # copy mem ptr
-  mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl # name size
+  add 3(%bx), %cl # padding size
 
   # set name ptr
   sub %cx, %di
@@ -101,7 +100,7 @@ cmd_ls:
 
 .cmd_ls__read_name_end:
   # skip dentry [n_skip_dentry]
-  add $0x0A, %si
+  add $0x0A, %bx
  
   call outsp
   call outsp
@@ -113,8 +112,7 @@ cmd_ls:
   call outnl
   
   # epil
-  pop %cx
-  pop %ax
+  pop %bx
   pop %di
   pop %si
   ret

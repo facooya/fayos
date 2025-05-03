@@ -19,7 +19,7 @@
 # init_root_meta()
 init_root_meta:
   # prol
-  push %si
+  push %bx
 
   # set root lba
   push $0x80 # root dir
@@ -28,28 +28,27 @@ init_root_meta:
   add $0x04, %sp
 
   call read_block
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
-  cmp $0xFADA, 4(%si)
+  cmp $0xFADA, 4(%bx)
   jz .init_root_meta__done
 
   # write root metadata
-  movw $0x80, (%si) # low
-  movw $0x00, 2(%si) # high
-  movw $0xFADA, 4(%si) # magic
+  movw $0x80, (%bx) # low
+  movw $0x00, 2(%bx) # high
+  movw $0xFADA, 4(%bx) # magic
 
   call write_block
 
 .init_root_meta__done:
   # epil
-  pop %si
+  pop %bx
   ret
 
 # write_meta()
 write_meta:
   # prol
-  push %si
-  push %ax
+  push %bx
 
   # set lba
   mov (free_lba), %ax # low
@@ -60,18 +59,17 @@ write_meta:
   add $0x04, %sp
 
   call read_block
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
   # write metadata
   mov (cwd_lba), %ax # low
-  mov %ax, (%si)
+  mov %ax, (%bx)
   mov (cwd_lba+2), %ax # high
-  mov %ax, 2(%si)
-  mov $0xFADA, 4(%si) # magic
+  mov %ax, 2(%bx)
+  mov $0xFADA, 4(%bx) # magic
 
   call write_block
 
   #epil
-  pop %ax
-  pop %si
+  pop %bx
   ret

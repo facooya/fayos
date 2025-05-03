@@ -34,8 +34,7 @@ cmd_cat:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # set lba
   # push $0x80 # !!! root dir
@@ -52,44 +51,42 @@ cmd_cat:
   call outnl
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .cmd_cat__find_magic_lp:
   # cond: magic ? cmp_name
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_cat__cmp_name
 
   # cond: null ? done
-  mov (%si), %ax
-  or 2(%si), %ax
+  mov (%bx), %ax
+  or 2(%bx), %ax
   jz .cmd_cat__done
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_cat__find_magic_lp
 
 .cmd_cat__cmp_name:
   # copy ptr (magic)
-  mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl # name size
+  add 3(%bx), %cl # padding size
 
   # set ptr (name)
   sub %cx, %di
 
-  # setup
-  push %si # main mem ptr
-
   # arg
+  xor %dx, %dx
   mov $argv, %si
   add $0x02, %si
-  mov (%si), %cx
+  mov (%si), %dx
   mov $raw_buf, %si
-  add %cx, %si
+  add %dx, %si
 
 .cmd_cat__cmp_name_lp:
   # cond: 0 ? main
@@ -108,37 +105,34 @@ cmd_cat:
   jmp .cmd_cat__cmp_name_lp
 
 .cmd_cat__skip_dentry:
-  pop %si # main mem ptr
-
   # skip dentry [n_skip_dentry]
-  add $0x0A, %si
+  add $0x0A, %bx
 
   # loop
   jmp .cmd_cat__find_magic_lp
 
 .cmd_cat__main:
-  pop %si # main mem ptr
-
   # cond: 1 != ? done
   # !!! TMP only entry level 1
-  mov 8(%si), %al # entry level
+  mov 8(%bx), %al # entry level
   cmp $0x01, %al
   jnz .cmd_cat__done
 
   # set lba
-  mov 4(%si), %ax # low
+  mov 4(%bx), %ax # low
   push %ax
-  mov 6(%si), %ax # high
+  mov 6(%bx), %ax # high
   push %ax
   call set_dap_lba
   add $0x04, %sp
   
   call read_block
 
-  # set data mem ptr
-  mov $0x8006, %si
+  # set data mem ptr # !!! TMP
+  # mov $0x8006, %si
+  mov $0x8006, %bx
 
-  push %si
+  push %bx
   call puts
   add $0x02, %sp
 
@@ -146,8 +140,7 @@ cmd_cat:
   call outnl
 
   # epil
-  pop %cx
-  pop %ax
+  pop %bx
   pop %di
   pop %si
   ret

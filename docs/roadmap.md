@@ -15,11 +15,6 @@ fayos:[PWD]#
 ## Feature ls  
 colorful file dir
 
-## Fix redir  
-redirection (>, >>)  
-cat arg > file  
-cmd arg redir redir_target  
-
 ## Feature file cache  
 file_cache file match return lba  
 
@@ -32,3 +27,6 @@ disallow /, \, SP, all
 
 ## include define .equ  
 .equ include/...  
+
+## Read argument logic  
+read_arg(argv_offset)  

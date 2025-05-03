@@ -7,16 +7,6 @@
 # INDEX
 # cmd_touch()
 
-# DEPS
-# cmd_touch()
-#   read_block
-#   write_block
-#   write_dentry
-#   outnl
-#   cwd_lba
-#   write_meta
-#   free_lba
-
 .code16
 .section .text
 
@@ -130,7 +120,7 @@ cmd_touch:
 
   # write dentry
   push %cx
-  call write_dentry2
+  call write_dentry
   add $0x02, %sp
 
   # set data lba (dentry)
