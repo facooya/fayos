@@ -24,8 +24,7 @@ cmd_mkdir:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # set lba
   mov (cwd_lba), %ax
@@ -37,44 +36,43 @@ cmd_mkdir:
 
   call read_block
 
-  mov $0x8000, %si # mem ptr
+  mov $0x8000, %bx # mem ptr
 
 .cmd_mkdir__find_magic_lp:
   # cond: magic ? cmp_name
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_mkdir__cmp_name
 
   # cond: null ? write_name
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .cmd_mkdir__write_name
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_mkdir__find_magic_lp
 
 .cmd_mkdir__cmp_name:
   # copy ptr (magic)
-  mov %si, %di
+  #mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl
+  add 3(%bx), %cl
 
   # set ptr (name)
   sub %cx, %di
 
-  # setup
-  push %si # main mem ptr !!! danger
-
   # arg
+  xor %dx, %dx
   mov $argv, %si
   add $0x02, %si
-  mov (%si), %cx
+  mov (%si), %dx
   mov $raw_buf, %si
-  add %cx, %si
+  add %dx, %si
 
 .cmd_mkdir__cmp_name_lp:
   # cond: 0 ? err_exist
@@ -93,10 +91,8 @@ cmd_mkdir:
   jmp .cmd_mkdir__cmp_name_lp
 
 .cmd_mkdir__cmp_name_end:
-  pop %si # main mem ptr
-
   # loop
-  add $0x0A, %si
+  add $0x0A, %bx
   jmp .cmd_mkdir__find_magic_lp
 
 # .cmd_mkdir__find_free_lp:
@@ -112,12 +108,12 @@ cmd_mkdir:
 
 .cmd_mkdir__write_name:
   # arg
+  xor %cx, %cx
   mov $argv, %di
   add $0x02, %di
   mov (%di), %cx
   mov $raw_buf, %di
   add %cx, %di
-
   xor %cx, %cx
 
 .cmd_mkdir__write_name_lp:
@@ -127,34 +123,34 @@ cmd_mkdir:
   jz .cmd_mkdir__write_name_end
 
   # write mem
-  mov %al, (%si)
+  mov %al, (%bx)
 
   # loop
-  add $0x01, %si
+  add $0x01, %bx
   add $0x01, %di
   add $0x01, %cx
   jmp .cmd_mkdir__write_name_lp
 
 .cmd_mkdir__write_name_end:
   # add null char
-  add $0x01, %si # mem ptr
+  add $0x01, %bx
   add $0x01, %cx # name size
 
   # write dentry
   push %cx
-  call write_dentry
+  call write_dentry2 # !!! TMP
   add $0x02, %sp
 
   # write dentry type
   push $0x0D # directory
-  call write_dentry__type
+  call write_dentry__type2 # !!! TMP
   add $0x02, %sp
 
   # write dentry data lba
   mov (free_lba), %ax
-  mov %ax, 4(%si)
+  mov %ax, 4(%bx)
   mov (free_lba+2), %ax
-  mov %ax, 6(%si)
+  mov %ax, 6(%bx)
 
   call write_block
 
@@ -169,15 +165,12 @@ cmd_mkdir:
   call outnl
 
   # epil
-  pop %cx
-  pop %ax
+  pop %bx
   pop %di
   pop %si
   ret
 
 .cmd_mkdir__err_exist:
-  pop %si
-  
   call outnl
 
   push $.cmd_mkdir__err_exist_msg
