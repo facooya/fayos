@@ -7,18 +7,12 @@
 # INDEX
 # cmd_rm()
 
-# DEPS
-# cmd_rm()
-#   outnl
-#   read_block
-#   write_block
-#   dap
-
 .code16
 .section .text
 
 .global cmd_rm
 
+# ENTRY
 # cmd_rm()
 cmd_rm:
   # prol
@@ -27,8 +21,10 @@ cmd_rm:
   push %bx
 
   # set lba
-  push $0x80 # !!! TMP root dir
-  push $0x00
+  mov (cwd_lba), %ax # low
+  push %ax
+  mov (cwd_lba+2), %ax # high
+  push %ax
   call set_dap_lba
   add $0x04, %sp
 
