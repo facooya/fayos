@@ -29,7 +29,7 @@
 
 .global cmd_ls
 
-# cmd_ls() !!! current dir
+# cmd_ls()
 cmd_ls:
   # prol
   push %si

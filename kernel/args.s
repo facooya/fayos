@@ -190,6 +190,11 @@ split_raw:
   call clear_buf
   add $0x02, %sp
 
+  # clear redir_buf
+  push $redir_buf
+  call clear_buf
+  add $0x02, %sp
+
   # init
   mov $raw_buf, %si
   mov $tmp_buf, %di
@@ -212,6 +217,10 @@ split_raw:
   # cond: dquote ? single_arg
   cmp $0x22, %al
   je .split_raw__single_arg
+
+  # cond: gt ? chk_redir
+  cmp $0x3E, %al
+  je .split_raw__chk_redir
 
   # store
   mov %al, (%di)
@@ -358,6 +367,91 @@ split_raw:
   # next
   jmp .split_raw__write_lp
 
+# REDIR
+.split_raw__chk_redir:
+  # pre: si,al = gt
+
+  # init
+  mov $redir_buf, %di
+
+  # store
+  mov %al, (%di)
+  add $0x01, %di
+
+  # load
+  add $0x01, %si
+  mov (%si), %al
+
+  # cond: space ? out_redir
+  cmp $0x20, %al
+  je .split_raw__out_redir
+
+  # syntax err
+  jmp .split_raw__hdl_redir_err
+
+.split_raw__out_redir:
+  # pre: si,al = space
+
+  # store
+  mov %al, (%di)
+  add $0x01, %di
+
+  # load
+  add $0x01, %si
+  mov (%si), %al
+
+  # cond: space ? skip_space_redir
+  cmp $0x20, %al
+  je .split_raw__skip_space_redir
+
+  # step
+  jmp .split_raw__save_redir
+
+.split_raw__skip_space_redir:
+  # load
+  mov (%si), %al
+
+  # cond: null ? hdl_redir_err
+  test %al, %al
+  jz .split_raw__hdl_redir_err
+
+  # cond: space != ? save_redir
+  cmp $0x20, %al
+  jne .split_raw__save_redir
+
+  # step
+  add $0x01, %si
+  jmp .split_raw__skip_space_redir
+
+.split_raw__save_redir:
+  # load
+  mov (%si), %al
+
+  # cond: null ? save_redir_end
+  test %al, %al
+  jz .split_raw__save_redir_end
+
+  # cond: space ? hdl_redir_err
+  cmp $0x20, %al
+  je .split_raw__hdl_redir_err
+
+  # store
+  mov %al, (%di)
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  jmp .split_raw__save_redir
+
+.split_raw__save_redir_end:
+  # clear raw_buf
+  push $raw_buf
+  call clear_buf
+  add $0x02, %sp
+
+  # continue
+  jmp .split_raw__copy
+
 # COPY
 .split_raw__copy:
   # init
@@ -413,6 +507,17 @@ split_raw:
   call outnl
 
   call hdl_dquote_err
+
+  # err flag
+  xor %ax, %ax
+  mov $0x01, %ax
+
+  jmp .split_raw__exit
+
+.split_raw__hdl_redir_err:
+  call outnl
+
+  call hdl_redir_err
 
   # err flag
   xor %ax, %ax
@@ -593,3 +698,4 @@ argv: .zero 0x100
 # bufs
 raw_buf: .zero 0x400
 tmp_buf: .zero 0x400
+redir_buf: .zero 0x200

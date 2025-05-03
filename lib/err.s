@@ -10,6 +10,7 @@
 .global hdl_opt_err
 .global hdl_arg_err
 .global hdl_dquote_err
+.global hdl_redir_err
 
 # ENTRY
 # hdl_opt_err()
@@ -41,9 +42,20 @@ hdl_dquote_err:
   call outnl
   ret
 
+# ENTRY
+# hdl_redir_err()
+hdl_redir_err:
+  push $.redir_err_msg
+  call puts
+  add $0x02, %sp
+
+  call outnl
+  ret
+
 # DATA
 .section .data
 
 .opt_err_msg: .asciz "Invalid option."
 .arg_err_msg: .asciz "Missing argument."
 .dquote_err_msg: .asciz "Missing double quote."
+.redir_err_msg: .asciz "Redirection syntax error."
