@@ -18,6 +18,7 @@
 .global argc
 .global argv
 .global raw_buf
+.global redir_buf
 
 .global dout # !!! DEBUG REMOVE TMP
 

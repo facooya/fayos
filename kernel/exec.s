@@ -96,8 +96,151 @@ exec_cmd:
 
 # CALL
 .exec_cmd__call:
-  # bx = cmd_addr
+  # pre: bx = cmd_addr
+
   call *%bx
+
+  # init and load
+  mov $redir_buf, %si
+  mov (%si), %al
+
+  # cond: null != ? chk_redir_type
+  test %al, %al
+  jne .exec_cmd__chk_redir_type
+
+  # done
+  jmp .exec_cmd__done
+
+# REDIR
+.exec_cmd__chk_redir_type:
+  # pre: al != null
+
+  # cond: gt ? out_redir
+  cmp $0x3E, %al
+  je .exec_cmd__out_redir
+
+  # done
+  jmp .exec_cmd__done
+
+.exec_cmd__out_redir:
+  # pre: al = gt
+
+  # init
+  add $0x02, %si
+  mov %si, %di # redir file name
+
+  # set lba
+  mov (cwd_lba), %ax
+  push %ax
+  mov (cwd_lba+2), %ax
+  push %ax
+  call set_dap_lba
+  add $0x04, %sp
+
+  # read
+  call read_block
+  mov $0x8006, %bx
+
+.exec_cmd__redir_find_magic:
+  # load
+  mov (%bx), %ax
+
+  # cond: magic ? cmp_name
+  cmp $0xFADE, %ax
+  je .exec_cmd__redir_cmp_name
+
+  # cond: null ? done !!! err
+  mov (%bx), %ax
+  or 2(%bx), %ax
+  jz .exec_cmd__done
+
+  # step
+  add $0x02, %bx
+  jmp .exec_cmd__redir_find_magic
+
+.exec_cmd__redir_cmp_name:
+  # copy ptr (magic)
+  mov %bx, %di
+
+  # get name size
+  xor %cx, %cx
+  mov 2(%bx), %cl # name
+  add 3(%bx), %cl # padding
+
+  # name ptr
+  sub %cx, %di
+
+  # init
+  xor %dx, %dx
+
+.exec_cmd__redir_cmp_name_lp:
+  # cond: 0 ? main
+  test %cx, %cx
+  jz .exec_cmd__out_redir_main
+
+  # load
+  mov (%si), %al
+
+  # cond: char != ? skip_dentry
+  cmp (%di), %al
+  jne .exec_cmd__redir_skip_dentry
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  add $0x01, %dx
+  sub $0x01, %cx
+  jmp .exec_cmd__redir_cmp_name_lp
+
+.exec_cmd__redir_skip_dentry:
+  # init
+  sub %dx, %si
+  xor %dx, %dx
+
+  # skip dentry
+  add $0x0A, %bx
+
+  # step
+  jmp .exec_cmd__redir_find_magic
+
+.exec_cmd__out_redir_main:
+  # set lba
+  mov 4(%bx), %ax
+  push %ax
+  mov 6(%bx), %ax
+  push %ax
+  call set_dap_lba
+  add $0x04, %sp
+
+  # read block
+  call read_block
+  mov $0x8006, %bx # !!! TMP
+
+  # arg
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
+  
+.exec_cmd__out_redir_write:
+  # load
+  mov (%si), %al
+
+  # cond: null ? done
+  test %al, %al
+  jz .exec_cmd__out_redir_write_end
+
+  # store
+  mov %al, (%bx)
+
+  # step
+  add $0x01, %si
+  add $0x01, %bx
+  jmp .exec_cmd__out_redir_write
+
+.exec_cmd__out_redir_write_end:
+  call write_block
   jmp .exec_cmd__done
 
 # DONE
