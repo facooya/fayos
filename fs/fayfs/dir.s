@@ -48,8 +48,8 @@ write_dentry:
 
 # ENTRY
 # write_dentry2(name_size) [n_write_dentry]
-#   pre: bx
-#   ret: bx
+#   pre: bx = mem ptr
+#   ret: bx += align
 write_dentry2:
   # prol
   push %bp
@@ -95,7 +95,7 @@ write_dentry__type:
 
 # ENTRY
 # write_dentry__type2(type)
-#   pre: bx
+#   pre: bx = mem ptr
 write_dentry__type2:
   push %bp
   mov %sp, %bp

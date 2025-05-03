@@ -27,8 +27,7 @@ cmd_touch:
   # prol
   push %si
   push %di
-  push %ax
-  push %cx
+  push %bx
 
   # set lba
   movw (cwd_lba), %ax
@@ -41,44 +40,42 @@ cmd_touch:
   call read_block
 
   # set mem ptr
-  mov $0x8000, %si
+  mov $0x8000, %bx
 
 .cmd_touch__find_magic_lp:
   # cond: magic ? cmp_name
-  mov (%si), %ax
+  mov (%bx), %ax
   cmp $0xFADE, %ax
   je .cmd_touch__cmp_name
 
   # cond: null ? write_name
   test %ax, %ax
-  or 2(%si), %ax
+  or 2(%bx), %ax
   jz .cmd_touch__write_name
 
   # loop
-  add $0x02, %si
+  add $0x02, %bx
   jmp .cmd_touch__find_magic_lp
 
 .cmd_touch__cmp_name:
   # copy ptr (magic)
-  mov %si, %di
+  mov %bx, %di
 
   # get name total size
   xor %cx, %cx
-  mov 2(%si), %cl # name size
-  add 3(%si), %cl # padding size
+  mov 2(%bx), %cl # name size
+  add 3(%bx), %cl # padding size
 
   # set ptr (name)
   sub %cx, %di
 
-  # setup
-  push %si # main mem ptr !!! danger
-
   # arg
+  xor %dx, %dx
   mov $argv, %si
   add $0x02, %si
-  mov (%si), %cx
+  mov (%si), %dx
   mov $raw_buf, %si
-  add %cx, %si
+  add %dx, %si
 
 .cmd_touch__cmp_name_lp:
   # cond: 0 ? err_exist
@@ -97,59 +94,57 @@ cmd_touch:
   jmp .cmd_touch__cmp_name_lp
 
 .cmd_touch__cmp_name_end:
-  pop %si # main mem ptr
-
   # loop
-  add $0x0A, %si
+  add $0x0A, %bx
   jmp .cmd_touch__find_magic_lp
 
 .cmd_touch__write_name:
   # arg
-  mov $argv, %di
-  add $0x02, %di
-  mov (%di), %cx
-  mov $raw_buf, %di
-  add %cx, %di
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
 
   xor %cx, %cx
 
 .cmd_touch__write_name_lp:
   # cond: null ? write_name_end
-  mov (%di), %al # arg
+  mov (%si), %al # arg
   test %al, %al
   jz .cmd_touch__write_name_end
 
   # write mem
-  mov %al, (%si)
+  mov %al, (%bx)
 
   # loop
+  add $0x01, %bx
   add $0x01, %si
-  add $0x01, %di
   add $0x01, %cx
   jmp .cmd_touch__write_name_lp
 
 .cmd_touch__write_name_end:
   # add null char
-  add $0x01, %si # mem ptr
+  add $0x01, %bx # mem ptr
   add $0x01, %cx # name size
 
   # write dentry
   push %cx
-  call write_dentry
+  call write_dentry2
   add $0x02, %sp
 
   # set data lba (dentry)
   mov (free_lba), %ax
-  mov %ax, 4(%si)
+  mov %ax, 4(%bx)
   mov (free_lba+2), %ax
-  mov %ax, 6(%si)
+  mov %ax, 6(%bx)
 
   call write_block
 
-  # write meta !!! test
+  # write meta !!! TMP test
   call write_meta
 
-  # allocate free lba, !!! low only, seq: write_meta
+  # allocate free lba, !!! TMP low only, seq: write_meta
   mov (free_lba), %ax
   add $0x08, %ax
   mov %ax, (free_lba)
@@ -158,15 +153,12 @@ cmd_touch:
   call outnl
 
   # epil
-  pop %cx
-  pop %ax
+  pop %bx
   pop %di
   pop %si
   ret
 
 .cmd_touch__err_exist:
-  pop %si
-  
   call outnl
 
   push $.cmd_touch__err_exist_msg

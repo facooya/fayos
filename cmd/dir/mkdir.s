@@ -109,16 +109,16 @@ cmd_mkdir:
 .cmd_mkdir__write_name:
   # arg
   xor %cx, %cx
-  mov $argv, %di
-  add $0x02, %di
-  mov (%di), %cx
-  mov $raw_buf, %di
-  add %cx, %di
+  mov $argv, %si
+  add $0x02, %si
+  mov (%si), %cx
+  mov $raw_buf, %si
+  add %cx, %si
   xor %cx, %cx
 
 .cmd_mkdir__write_name_lp:
   # cond: null ? write_name_end
-  mov (%di), %al # arg
+  mov (%si), %al # arg
   test %al, %al
   jz .cmd_mkdir__write_name_end
 
@@ -127,7 +127,7 @@ cmd_mkdir:
 
   # loop
   add $0x01, %bx
-  add $0x01, %di
+  add $0x01, %si
   add $0x01, %cx
   jmp .cmd_mkdir__write_name_lp
 
