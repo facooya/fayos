@@ -104,6 +104,7 @@ trim_raw:
   push %si
   call strlen
   add $0x02, %sp
+  mov %ax, %cx # len
 
   # post {strlen}
   sub $0x01, %cx # get last idx

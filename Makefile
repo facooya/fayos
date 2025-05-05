@@ -22,7 +22,7 @@ lib/err.s \
 lib/vid.s \
 lib/str/print.s \
 lib/str/split.s \
-lib/str/strlen.s \
+lib/str/str.s \
 lib/str/trim.s \
 \
 lib/put/out.s \

@@ -77,32 +77,22 @@ cmd_cd:
   mov 2(%bx), %cl # name size
   add 3(%bx), %cl # padding size
 
-  # set ptr (name)
+  # init {strcmp}
   sub %cx, %di
+  mov (arg_ptr), %si
+  # di = name ptr
+  # si = arg ptr
 
-  # arg
-  xor %dx, %dx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %dx
-  mov $raw_buf, %si
-  add %dx, %si
-
-.cmd_cd__cmp_name_lp:
-  # cond: 0 ? main
-  test %cx, %cx
+  # call {strcmp}
+  push %di
+  push %si
+  call strcmp
+  add $0x04, %sp
+  # ax = ret
+  
+  # chk {strcmp}
+  test %ax, %ax
   jz .cmd_cd__main
-
-  # cond: char != ? cmp_name_end
-  mov (%si), %al # arg
-  cmp (%di), %al # name ptr
-  jne .cmd_cd__cmp_name_end
-
-  # loop
-  add $0x01, %si
-  add $0x01, %di
-  sub $0x01, %cx
-  jmp .cmd_cd__cmp_name_lp
 
 .cmd_cd__cmp_name_end:
   # loop

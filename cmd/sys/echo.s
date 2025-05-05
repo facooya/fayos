@@ -38,11 +38,6 @@ cmd_echo:
   push %cx
 
   # src {init}
-  # mov $argv, %si
-  # add $0x02, %si
-  # mov (%si), %cx
-  # mov $raw_buf, %si
-  # add %cx, %si
   mov (arg_ptr), %si
 
   # opt count * 2 {init}
