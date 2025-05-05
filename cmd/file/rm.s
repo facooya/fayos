@@ -2,13 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# rm
+# Remove File
 
 # INDEX
 # cmd_rm()
+# DATA
+.section .data
 
-.code16
+.no_dir_err_msg: .asciz "No found directory."
+
+# TEXT
 .section .text
+.code16
 
 .global cmd_rm
 
@@ -34,10 +39,10 @@ cmd_rm:
   mov $0x8000, %bx
 
 .cmd_rm__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? strcmp
   mov (%bx), %ax
   cmp $0xFADE, %ax
-  je .cmd_rm__cmp_name
+  je .cmd_rm__strcmp
 
   # cond: null ? done
   test %ax, %ax
@@ -48,43 +53,32 @@ cmd_rm:
   add $0x02, %bx
   jmp .cmd_rm__find_magic_lp
 
-.cmd_rm__cmp_name:
+.cmd_rm__strcmp:
   # copy ptr (magic)
-  mov %bx, %di
+  mov %bx, %si
 
   # get name total size
   xor %cx, %cx
   mov 2(%bx), %cl # name size
   add 3(%bx), %cl # padding size
 
-  # set ptr (name)
-  sub %cx, %di
+  # init {strcmp}
+  sub %cx, %si
+  mov (arg_ptr), %di
+  
+  # call {strcmp}
+  push %di
+  push %si
+  call strcmp
+  add $0x04, %sp
+  # ax = ret code
+  # cx = count
 
-  # arg
-  xor %dx, %dx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %dx
-  mov $raw_buf, %si
-  add %dx, %si
-
-.cmd_rm__cmp_name_lp:
-  # cond: 0 ? main
-  test %cx, %cx
+  # chk {strcmp}
+  # cond: equal ? main
+  test %ax, %ax
   jz .cmd_rm__main
 
-  # cond: char != ? skip_dentry
-  mov (%si), %al # arg
-  cmp (%di), %al # name ptr
-  jne .cmd_rm__skip_dentry
-
-  # loop
-  add $0x01, %si
-  add $0x01, %di
-  sub $0x01, %cx
-  jmp .cmd_rm__cmp_name_lp
-
-.cmd_rm__skip_dentry:
   # loop
   add $0x0A, %bx # cat.s [n_skip_dentry]
   jmp .cmd_rm__find_magic_lp
@@ -105,3 +99,12 @@ cmd_rm:
   pop %di
   pop %si
   ret
+
+.hdl_not_file_err:
+  call outnl
+
+  push $.no_dir_err_msg
+  call puts
+  add $0x02, %sp
+
+  jmp .cmd_rm__done

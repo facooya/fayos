@@ -7,13 +7,6 @@
 # INDEX
 # cmd_cat()
 
-# DEPS
-# cmd_cat()
-#   outnl
-#   read_block
-#   write_block !!! redir
-#   set_dap_lba
-
 # NOTE
 # [n_skip_dentry]
 #   2 (magic num)
@@ -24,8 +17,8 @@
 #   + 1 (file type)
 #   = 10 = 0x0A
 
-.code16
 .section .text
+.code16
 
 .global cmd_cat
 
@@ -37,8 +30,6 @@ cmd_cat:
   push %bx
 
   # set lba
-  # push $0x80 # !!! root dir
-  # push $0x00
   mov (cwd_lba), %ax
   push %ax
   mov (cwd_lba+2), %ax
@@ -46,69 +37,55 @@ cmd_cat:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
+  mov $0x8000, %bx
 
   call outnl
 
-  # set mem ptr
-  mov $0x8000, %bx
-
 .cmd_cat__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? strcmp
   mov (%bx), %ax
   cmp $0xFADE, %ax
-  je .cmd_cat__cmp_name
+  je .cmd_cat__strcmp
 
   # cond: null ? done
   mov (%bx), %ax
   or 2(%bx), %ax
   jz .cmd_cat__done
 
-  # loop
+  # step
   add $0x02, %bx
   jmp .cmd_cat__find_magic_lp
 
-.cmd_cat__cmp_name:
+.cmd_cat__strcmp:
   # copy ptr (magic)
-  mov %bx, %di
+  mov %bx, %si
 
   # get name total size
   xor %cx, %cx
   mov 2(%bx), %cl # name size
   add 3(%bx), %cl # padding size
 
-  # set ptr (name)
-  sub %cx, %di
+  # init {strcmp}
+  sub %cx, %si
+  mov (arg_ptr), %di
 
-  # arg
-  xor %dx, %dx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %dx
-  mov $raw_buf, %si
-  add %dx, %si
+  # call {strcmp}
+  push %di
+  push %si
+  call strcmp
+  add $0x04, %sp
+  # ax = ret code
+  # cx = count
 
-.cmd_cat__cmp_name_lp:
-  # cond: 0 ? main
-  test %cx, %cx
+  # chk {strcmp}
+  # cond: equal ? main
+  test %ax, %ax
   jz .cmd_cat__main
 
-  # cond: char != ? skip_dentry
-  mov (%si), %al # arg
-  cmp (%di), %al # name ptr
-  jne .cmd_cat__skip_dentry
-
   # loop
-  add $0x01, %si
-  add $0x01, %di
-  sub $0x01, %cx
-  jmp .cmd_cat__cmp_name_lp
-
-.cmd_cat__skip_dentry:
-  # skip dentry [n_skip_dentry]
-  add $0x0A, %bx
-
-  # loop
+  add $0x0A, %bx # [n_skip_dentry]
   jmp .cmd_cat__find_magic_lp
 
 .cmd_cat__main:
@@ -129,7 +106,6 @@ cmd_cat:
   call read_block
 
   # set data mem ptr # !!! TMP
-  # mov $0x8006, %si
   mov $0x8006, %bx
 
   push %bx

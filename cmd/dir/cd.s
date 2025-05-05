@@ -85,16 +85,14 @@ cmd_cd:
   push %si
   call strcmp
   add $0x04, %sp
-  # ret: ax, cx
+  # ax = ret code
+  # cx = count
   
-  # ax = 0: e, 1: ne
   # chk {strcmp}
   test %ax, %ax
   jz .cmd_cd__main
 
-  # cx = count
-  # step {magic}
-  add %cx, %bx
+  # loop
   add $0x0A, %bx # cat.s [n_skip_dentry]
   jmp .cmd_cd__find_magic_lp
 

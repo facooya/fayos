@@ -2,13 +2,19 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# touch
+# Touch
 
 # INDEX
 # cmd_touch()
 
-.code16
+# DATA
+.section .data
+
+.exist_err_msg: .asciz "Already exists."
+
+# TEXT
 .section .text
+.code16
 
 .global cmd_touch
 
@@ -27,75 +33,58 @@ cmd_touch:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
-
-  # set mem ptr
   mov $0x8000, %bx
 
 .cmd_touch__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? strcmp
   mov (%bx), %ax
   cmp $0xFADE, %ax
-  je .cmd_touch__cmp_name
+  je .cmd_touch__strcmp
 
   # cond: null ? write_name
   test %ax, %ax
   or 2(%bx), %ax
   jz .cmd_touch__write_name
 
-  # loop
+  # step
   add $0x02, %bx
   jmp .cmd_touch__find_magic_lp
 
-.cmd_touch__cmp_name:
+.cmd_touch__strcmp:
   # copy ptr (magic)
-  mov %bx, %di
+  mov %bx, %si
 
   # get name total size
   xor %cx, %cx
   mov 2(%bx), %cl # name size
   add 3(%bx), %cl # padding size
 
-  # set ptr (name)
-  sub %cx, %di
+  # init {strcmp}
+  sub %cx, %si
+  mov (arg_ptr), %di
 
-  # arg
-  xor %dx, %dx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %dx
-  mov $raw_buf, %si
-  add %dx, %si
+  # call {strcmp}
+  push %di
+  push %si
+  call strcmp
+  add $0x04, %sp
+  # ax = ret code
+  # cx = count
 
-.cmd_touch__cmp_name_lp:
-  # cond: 0 ? err_exist
-  test %cx, %cx
-  jz .cmd_touch__err_exist
+  # chk {strcmp}
+  # cond: equal ? hdl_exist_err
+  test %ax, %ax
+  jz .hdl_exist_err
 
-  # cond: char != ? cmp_name_end
-  mov (%si), %al # arg
-  cmp (%di), %al # name ptr
-  jne .cmd_touch__cmp_name_end
-
-  # loop
-  add $0x01, %si
-  add $0x01, %di
-  sub $0x01, %cx
-  jmp .cmd_touch__cmp_name_lp
-
-.cmd_touch__cmp_name_end:
   # loop
   add $0x0A, %bx
   jmp .cmd_touch__find_magic_lp
 
 .cmd_touch__write_name:
-  # arg
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %cx
-  mov $raw_buf, %si
-  add %cx, %si
-
+  # init
+  mov (arg_ptr), %si
   xor %cx, %cx
 
 .cmd_touch__write_name_lp:
@@ -148,15 +137,12 @@ cmd_touch:
   pop %si
   ret
 
-.cmd_touch__err_exist:
+# ERR
+.hdl_exist_err:
   call outnl
 
-  push $.cmd_touch__err_exist_msg
+  push $.exist_err_msg
   call puts
   add $0x02, %sp
 
   jmp .cmd_touch__done
-
-.section .data
-
-.cmd_touch__err_exist_msg: .asciz "Already exists."

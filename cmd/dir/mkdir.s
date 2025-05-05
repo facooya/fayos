@@ -72,16 +72,14 @@ cmd_mkdir:
   push %si
   call strcmp
   add $0x04, %sp
-  # ret: ax,cx
-
   # ax = ret code
+  # cx = count
+
   # chk {strcmp}
   test %ax, %ax
   jz .hdl_exist_err
 
-  # cx = count
-  # step
-  add %cx, %bx
+  # loop
   add $0x0A, %bx
   jmp .cmd_mkdir__find_magic_lp
 

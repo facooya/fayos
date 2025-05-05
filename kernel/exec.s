@@ -123,6 +123,7 @@ exec_cmd:
   jmp .exec_cmd__done
 
 .exec_cmd__out_redir:
+  # !!! TODO: call redir
   # pre: al = gt
 
   # init
@@ -197,10 +198,8 @@ exec_cmd:
   sub %dx, %si
   xor %dx, %dx
 
-  # skip dentry
+  # loop
   add $0x0A, %bx
-
-  # step
   jmp .exec_cmd__redir_find_magic
 
 .exec_cmd__out_redir_main:
@@ -217,11 +216,7 @@ exec_cmd:
   mov $0x8006, %bx # !!! TMP
 
   # arg
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %cx
-  mov $raw_buf, %si
-  add %cx, %si
+  mov (arg_ptr), %si
   
 .exec_cmd__out_redir_write:
   # load

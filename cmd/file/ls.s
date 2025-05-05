@@ -2,17 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# ls
+# List
 
 # INDEX
 # cmd_ls()
-
-# DEPS
-# cmd_ls()
-#   set_dap_lba
-#   read_block
-#   outnl
-#   cwd_lba
 
 # NOTE
 # [n_skip_dentry]
@@ -24,8 +17,8 @@
 #   + 1 (file type)
 #   = 10 = 0x0A
 
-.code16
 .section .text
+.code16
 
 .global cmd_ls
 
@@ -44,12 +37,11 @@ cmd_ls:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
+  mov $0x8000, %bx
 
   call outnl
-
-  # set mem ptr
-  mov $0x8000, %bx
 
 .cmd_ls__find_magic_lp:
   # cond: magic ? chk_del
@@ -83,7 +75,7 @@ cmd_ls:
 
 .cmd_ls__read_name:
   # copy mem ptr
-  mov %bx, %di
+  mov %bx, %si
 
   # get name total size
   xor %cx, %cx
@@ -91,10 +83,10 @@ cmd_ls:
   add 3(%bx), %cl # padding size
 
   # set name ptr
-  sub %cx, %di
+  sub %cx, %si
 
   # print file name
-  push %di
+  push %si
   call puts
   add $0x02, %sp
 

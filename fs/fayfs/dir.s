@@ -4,8 +4,8 @@
 #
 # Directory entry (docs/fs/fayfs/dir.txt)
 
-.code16
 .section .text
+.code16
 
 .global write_dentry
 .global write_dentry__type
