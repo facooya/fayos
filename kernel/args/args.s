@@ -12,7 +12,6 @@
 .global build_args
 .global norm_args
 
-.global clear_args
 .global clear_buf
 
 .global argc
@@ -595,48 +594,11 @@ build_args:
   mov $argc, %si
   mov %cx, (%si)
 
+  call set_arg
+
   # epil
   pop %cx
   pop %bx
-  pop %ax
-  pop %di
-  pop %si
-  ret
-
-# ENTRY
-# clear_args()
-clear_args:
-  # prol
-  push %si
-  push %di
-  push %ax
-  push %cx
-
-  # init
-  mov $argv, %si
-  mov $argc, %di
-  mov (%di), %cx
-
-.clear_args__zero_lp:
-  # cond: cx == 0 ? done
-  test %cx, %cx
-  jz .clear_args__done
-
-  # zero
-  mov (%si), %ax # load (argv)
-  xor %ax, %ax
-  mov %ax, (%si) # store (argv)
-
-  # loop
-  add $0x02, %si
-  sub $0x01, %cx
-  jmp .clear_args__zero_lp
-
-.clear_args__done:
-  mov %cx, (%di) # store (argc)
-
-  # epil
-  pop %cx
   pop %ax
   pop %di
   pop %si

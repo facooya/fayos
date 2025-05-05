@@ -149,7 +149,7 @@ exec_cmd:
   cmp $0xFADE, %ax
   je .exec_cmd__redir_cmp_name
 
-  # cond: null ? done !!! err
+  # cond: null ? done !!! FIXME not found err
   mov (%bx), %ax
   or 2(%bx), %ax
   jz .exec_cmd__done

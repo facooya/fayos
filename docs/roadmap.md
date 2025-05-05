@@ -28,5 +28,9 @@ disallow /, \, SP, all
 ## include define .equ  
 .equ include/...  
 
-## Read argument logic  
+## Logics  
 read_arg(argv_offset)  
+cmp_name(src, dst): ret: file_lba_cache = lba, ax = 0: success, 1: no match  
+
+- Seperate split function
+- Seperate exec redir logic

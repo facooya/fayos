@@ -7,9 +7,10 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 SRCS = \
 kernel/kernel.s \
 kernel/cache.s \
-kernel/args.s \
 kernel/exec.s \
 kernel/kbd.s \
+kernel/args/args.s \
+kernel/args/utils.s \
 \
 sys/disk.s \
 sys/kbd.s \
@@ -18,11 +19,11 @@ sys/vid.s \
 lib/block.s \
 lib/cursor.s \
 lib/err.s \
-lib/print.s \
-lib/split.s \
-lib/strlen.s \
-lib/trim.s \
 lib/vid.s \
+lib/str/print.s \
+lib/str/split.s \
+lib/str/strlen.s \
+lib/str/trim.s \
 \
 lib/put/out.s \
 lib/put/puts.s \

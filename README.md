@@ -1,5 +1,5 @@
-# FAYOS - FAcooYa Operating System
-FAYOS targets 16-bit x86 (real mode), uses BIOS interrupts, and is written in GNU Assembler.   
+# Fayos
+Fayos targets 16-bit x86 (real mode), uses BIOS interrupts, and is written in GNU Assembler.  
 
 ## Build Instructions
 - `make` : Creates `fayos.img` inside the `build/` directory. The `build/` directory is created automatically.
@@ -11,7 +11,7 @@ FAYOS targets 16-bit x86 (real mode), uses BIOS interrupts, and is written in GN
 # Quick test for Linux x86-64 using qemu
 - `./tools/qemu.sh`
 
-## Directory note
+## Directory Structure
 boot/ - boot  
 cmd/ - commands  
 docs/ - documentation  
@@ -22,3 +22,7 @@ lib/ - library
 sys/ - BIOS interrupt interface  
 templates/ - copy and paste  
 tools/ - misc  
+
+---
+
+>FAYOS - FAcooYa Operating System
