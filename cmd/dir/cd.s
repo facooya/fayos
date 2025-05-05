@@ -7,18 +7,19 @@
 # INDEX
 # cmd_cd()
 
-# DEPS
-# cmd_cd()
-#   set_dap_lba
-#   read_block
-#   dap
-#   cwd_lba
+# DATA
+.section .data
 
-.code16
+.cd_err_no_dir_msg: .asciz "No found directory."
+.cd_err_not_dir_msg: .asciz "Not a directory."
+
+# TEXT
 .section .text
+.code16
 
 .global cmd_cd
 
+# ENTRY
 # cmd_cd()
 cmd_cd:
   # prol
@@ -27,14 +28,10 @@ cmd_cd:
   push %bx
 
   # arg
-  mov $argv, %di
-  add $0x02, %di
-  mov (%di), %cx
-  mov $raw_buf, %di
-  add %cx, %di
+  mov (arg_ptr), %si
 
   # load
-  mov (%di), %ax
+  mov (%si), %ax
 
   # cond: period ? back
   cmp $0x2E2E, %ax # period
@@ -48,60 +45,62 @@ cmd_cd:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
-
-  # set mem ptr
   mov $0x8000, %bx
 
 .cmd_cd__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? strcmp
   mov (%bx), %ax
   cmp $0xFADE, %ax
-  je .cmd_cd__cmp_name
+  je .cmd_cd__strcmp
 
   # cond: null ? done
   test %ax, %ax
   or 2(%bx), %ax
   jz .cmd_cd__err_no_dir
 
-  # loop
+  # step
   add $0x02, %bx
   jmp .cmd_cd__find_magic_lp
 
-.cmd_cd__cmp_name:
+.cmd_cd__strcmp:
   # copy ptr (magic)
-  mov %bx, %di
+  mov %bx, %si
 
-  # get name total size
+  # get total name size
   xor %cx, %cx
   mov 2(%bx), %cl # name size
   add 3(%bx), %cl # padding size
+  # cx = total name size
 
   # init {strcmp}
-  sub %cx, %di
-  mov (arg_ptr), %si
-  # di = name ptr
-  # si = arg ptr
+  sub %cx, %si
+  mov (arg_ptr), %di
+  # si = file name ptr
+  # di = arg ptr
 
   # call {strcmp}
   push %di
   push %si
   call strcmp
   add $0x04, %sp
-  # ax = ret
+  # ret: ax, cx
   
+  # ax = 0: e, 1: ne
   # chk {strcmp}
   test %ax, %ax
   jz .cmd_cd__main
 
-.cmd_cd__cmp_name_end:
-  # loop
+  # cx = count
+  # step {magic}
+  add %cx, %bx
   add $0x0A, %bx # cat.s [n_skip_dentry]
   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__main:
   # cond: dir_type != ? err_not_dir
-  movb 9(%bx), %al
+  mov 9(%bx), %al
   cmp $0x0D, %al
   jne .cmd_cd__err_not_dir
 
@@ -120,6 +119,7 @@ cmd_cd:
   pop %si
   ret
 
+# BACK
 .cmd_cd__back:
   # !!! meta_data
   # set meta lba
@@ -130,9 +130,8 @@ cmd_cd:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
-
-  # set mem ptr
   mov $0x8000, %bx
 
   # get parent lba (dentry !!! mata_data), set lba (cwd_lba)
@@ -143,6 +142,7 @@ cmd_cd:
 
   jmp .cmd_cd__done
 
+# ERR
 .cmd_cd__err_no_dir:
   call outnl
 
@@ -160,8 +160,3 @@ cmd_cd:
   add $0x02, %sp
 
   jmp .cmd_cd__done
-
-.section .data
-
-.cd_err_no_dir_msg: .asciz "No found directory."
-.cd_err_not_dir_msg: .asciz "Not a directory."

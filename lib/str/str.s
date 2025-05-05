@@ -48,6 +48,7 @@ strlen:
 # ENTRY
 # strcmp(src, dst)
 #   ret: ax = 0: true, 1: false
+#   ret: cx = count
 strcmp:
   # prol
   push %bp
@@ -55,18 +56,24 @@ strcmp:
   push %si
   push %di
 
+  # init
   mov 4(%bp), %si
   mov 6(%bp), %di
+  xor %cx, %cx
 
 .strcmp__lp:
   # load
   mov (%si), %al
   mov (%di), %dl
 
-  # cond: null ? chk
+  # cond: null == al ? chk
   test %al, %al
   jz .strcmp__chk
 
+  # cond: null == dl ? ne
+  test %dl, %dl
+  jz .strcmp__ne
+  
   # cond: != ? ne
   cmp %al, %dl
   jne .strcmp__ne
@@ -74,6 +81,7 @@ strcmp:
   # step
   add $0x01, %si
   add $0x01, %di
+  add $0x01, %cx
   jmp .strcmp__lp
 
 .strcmp__chk:
