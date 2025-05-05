@@ -4,8 +4,17 @@
 #
 # Error common
 
-.code16
+# DATA
+.section .data
+
+.opt_err_msg: .asciz "Invalid option."
+.arg_err_msg: .asciz "Missing argument."
+.dquote_err_msg: .asciz "Missing double quote."
+.redir_err_msg: .asciz "Redirection syntax error."
+
+# TEXT
 .section .text
+.code16
 
 .global hdl_opt_err
 .global hdl_arg_err
@@ -51,11 +60,3 @@ hdl_redir_err:
 
   call outnl
   ret
-
-# DATA
-.section .data
-
-.opt_err_msg: .asciz "Invalid option."
-.arg_err_msg: .asciz "Missing argument."
-.dquote_err_msg: .asciz "Missing double quote."
-.redir_err_msg: .asciz "Redirection syntax error."

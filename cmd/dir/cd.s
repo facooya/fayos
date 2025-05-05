@@ -10,8 +10,8 @@
 # DATA
 .section .data
 
-.cd_err_no_dir_msg: .asciz "No found directory."
-.cd_err_not_dir_msg: .asciz "Not a directory."
+.no_dir_err_msg: .asciz "No found directory."
+.not_dir_err_msg: .asciz "Not a directory."
 
 # TEXT
 .section .text
@@ -55,10 +55,10 @@ cmd_cd:
   cmp $0xFADE, %ax
   je .cmd_cd__strcmp
 
-  # cond: null ? done
+  # cond: null ? hdl_no_dir_err
   test %ax, %ax
   or 2(%bx), %ax
-  jz .cmd_cd__err_no_dir
+  jz .hdl_no_dir_err
 
   # step
   add $0x02, %bx
@@ -99,10 +99,10 @@ cmd_cd:
   jmp .cmd_cd__find_magic_lp
 
 .cmd_cd__main:
-  # cond: dir_type != ? err_not_dir
+  # cond: dir_type != ? hdl_not_dir_err
   mov 9(%bx), %al
   cmp $0x0D, %al
-  jne .cmd_cd__err_not_dir
+  jne .hdl_not_dir_err
 
   # get data lba (dentry), set lba (cwd_lba)
   mov 4(%bx), %ax # low
@@ -143,19 +143,19 @@ cmd_cd:
   jmp .cmd_cd__done
 
 # ERR
-.cmd_cd__err_no_dir:
+.hdl_no_dir_err:
   call outnl
 
-  push $.cd_err_no_dir_msg
+  push $.no_dir_err_msg
   call puts
   add $0x02, %sp
 
   jmp .cmd_cd__done
 
-.cmd_cd__err_not_dir:
+.hdl_not_dir_err:
   call outnl
 
-  push $.cd_err_not_dir_msg
+  push $.not_dir_err_msg
   call puts
   add $0x02, %sp
 

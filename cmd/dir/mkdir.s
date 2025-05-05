@@ -7,15 +7,14 @@
 # INDEX
 # cmd_mkdir()
 
-# DEPS
-# cmd_mkdir()
-#   set_dap_lba
-#   read_block
-#   write_block
-#   dap
+# DATA
+.section .data
 
-.code16
+.exist_err_msg: .asciz "Already exists."
+
+# TEXT
 .section .text
+.code16
 
 .global cmd_mkdir
 
@@ -34,15 +33,15 @@ cmd_mkdir:
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
-
-  mov $0x8000, %bx # mem ptr
+  mov $0x8000, %bx
 
 .cmd_mkdir__find_magic_lp:
-  # cond: magic ? cmp_name
+  # cond: magic ? strcmp
   mov (%bx), %ax
   cmp $0xFADE, %ax
-  je .cmd_mkdir__cmp_name
+  je .cmd_mkdir__strcmp
 
   # cond: null ? write_name
   test %ax, %ax
@@ -53,67 +52,42 @@ cmd_mkdir:
   add $0x02, %bx
   jmp .cmd_mkdir__find_magic_lp
 
-.cmd_mkdir__cmp_name:
+.cmd_mkdir__strcmp:
   # copy ptr (magic)
-  #mov %si, %di
-  mov %bx, %di
+  mov %bx, %si
 
   # get name total size
   xor %cx, %cx
   mov 2(%bx), %cl
   add 3(%bx), %cl
 
-  # set ptr (name)
-  sub %cx, %di
+  # init {strcmp}
+  sub %cx, %si
+  mov (arg_ptr), %di
+  # si = file name ptr
+  # di = arg ptr
 
-  # arg
-  xor %dx, %dx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %dx
-  mov $raw_buf, %si
-  add %dx, %si
+  # call {strcmp}
+  push %di
+  push %si
+  call strcmp
+  add $0x04, %sp
+  # ret: ax,cx
 
-.cmd_mkdir__cmp_name_lp:
-  # cond: 0 ? err_exist
-  test %cx, %cx
-  jz .cmd_mkdir__err_exist
+  # ax = ret code
+  # chk {strcmp}
+  test %ax, %ax
+  jz .hdl_exist_err
 
-  # cond: char != ? cmp_name_end
-  mov (%si), %al # arg
-  cmp (%di), %al # name ptr
-  jne .cmd_mkdir__cmp_name_end
-
-  # loop
-  add $0x01, %si
-  add $0x01, %di
-  sub $0x01, %cx
-  jmp .cmd_mkdir__cmp_name_lp
-
-.cmd_mkdir__cmp_name_end:
-  # loop
+  # cx = count
+  # step
+  add %cx, %bx
   add $0x0A, %bx
   jmp .cmd_mkdir__find_magic_lp
 
-# .cmd_mkdir__find_free_lp:
-#   # cond: null ? write_name
-#   mov (%si), %ax
-#   test %ax, %ax
-#   or 2(%si), %ax
-#   jz .cmd_mkdir__write_name
-
-#   # loop
-#   add $0x02, %si
-#   jmp .cmd_mkdir__find_free_lp
-
 .cmd_mkdir__write_name:
-  # arg
-  xor %cx, %cx
-  mov $argv, %si
-  add $0x02, %si
-  mov (%si), %cx
-  mov $raw_buf, %si
-  add %cx, %si
+  # init
+  mov (arg_ptr), %si
   xor %cx, %cx
 
 .cmd_mkdir__write_name_lp:
@@ -170,15 +144,12 @@ cmd_mkdir:
   pop %si
   ret
 
-.cmd_mkdir__err_exist:
+# ERR
+.hdl_exist_err:
   call outnl
 
-  push $.cmd_mkdir__err_exist_msg
+  push $.exist_err_msg
   call puts
   add $0x02, %sp
 
   jmp .cmd_mkdir__done
-
-.section .data
-
-.cmd_mkdir__err_exist_msg: .asciz "Already exists."
