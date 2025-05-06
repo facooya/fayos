@@ -2,15 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# echo
+# Echo
 
 # INDEX
 # cmd_echo()
-
-# DEPS
-# cmd_echo()
-#   outnl
-#   hdl_cli_opt_err
 
 # NOTE
 # [n_opt_flag]
@@ -21,10 +16,8 @@
 #   add $0x02, %si
 #   raw_buf = cmd[0]-a[0]-b[0]
 
-# !!! FIXME echo hi hello => hi\nhello\n => hi hello\n
-
-.code16
 .section .text
+.code16
 
 .global cmd_echo
 
@@ -33,9 +26,7 @@
 cmd_echo:
   # prol
   push %si
-  push %ax
   push %bx
-  push %cx
 
   # src {init}
   mov (arg_ptr), %si
@@ -57,7 +48,7 @@ cmd_echo:
 
   # cond: null ? hdl_arg_err
   test %al, %al
-  jz .cmd_echo__hdl_arg_err
+  jz .hdl_arg_err
 
   # skip option
   jmp .cmd_echo__parse_arg
@@ -78,7 +69,7 @@ cmd_echo:
   jz .cmd_echo__set_flag_n
 
   # opt err
-  jmp .cmd_echo__hdl_opt_err
+  jmp .hdl_opt_err
 
 .cmd_echo__set_flag_e:
   # set
@@ -108,7 +99,7 @@ cmd_echo:
 
   # cond: ax == 0 ? hdl_arg_err
   test %ax, %ax
-  jz .cmd_echo__hdl_arg_err
+  jz .hdl_arg_err
 
   # set offset {init}
   mov $raw_buf, %si
@@ -130,7 +121,7 @@ cmd_echo:
 
   # cond: ax == 0 ? done {escape}
   test %ax, %ax
-  jz .cmd_echo__done
+  jz .cmd_echo__nl_done
 
   # set offset {init}
   mov $raw_buf, %si
@@ -138,14 +129,6 @@ cmd_echo:
 
   # load
   mov (%si), %al
-
-  # cond: al == gt ? done {escape}
-  cmp $0x3E, %al
-  je .cmd_echo__done
-
-  # cond: al == lt ? done {escape}
-  cmp $0x3C, %al
-  je .cmd_echo__done
 
 # EXEC
 .cmd_echo__exec:
@@ -155,7 +138,7 @@ cmd_echo:
 
   # default
   push %si
-  call puts
+  call print_str
   add $0x02, %sp
 
   # jmp
@@ -172,7 +155,7 @@ cmd_echo:
   jc .cmd_echo__exec_opt_n
 
   # default
-  call outnl
+  call outsp
 
   # jmp
   jmp .cmd_echo__next_arg
@@ -194,16 +177,17 @@ cmd_echo:
   jmp .cmd_echo__next_arg
 
 # DONE
+.cmd_echo__nl_done:
+  call outnl
+
 .cmd_echo__done:
   # epil
-  pop %cx
   pop %bx
-  pop %ax
   pop %si
   ret
 
-# ERROR
-.cmd_echo__hdl_opt_err:
+# ERR
+.hdl_opt_err:
   call outnl
 
   # print opt err
@@ -217,7 +201,7 @@ cmd_echo:
 
   jmp .cmd_echo__done
 
-.cmd_echo__hdl_arg_err:
+.hdl_arg_err:
   call outnl
   call hdl_arg_err
   jmp .cmd_echo__done

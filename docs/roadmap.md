@@ -15,7 +15,7 @@ fayos:[PWD]#
 ## Feature ls  
 colorful file dir
 
-## Feature file cache  
+## Feature file cache  !!!
 file_cache file match return lba  
 
 ## Kernel  
@@ -29,8 +29,5 @@ disallow /, \, SP, all
 .equ include/...  
 
 ## Logics  
-read_arg(argv_offset)  
-cmp_name(src, dst): ret: file_lba_cache = lba, ax = 0: success, 1: no match  
-
 - Seperate split function
 - Seperate exec redir logic

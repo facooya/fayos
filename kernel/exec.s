@@ -2,17 +2,42 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Execute command
+# Execute command and redirect
 
-.code16
+# DATA
+.section .data
+
+# cmd_map
+cmd_map:
+  .word cmd_clear
+  .asciz "clear"
+  .word cmd_echo
+  .asciz "echo"
+  .word cmd_touch
+  .asciz "touch"
+  .word cmd_rm
+  .asciz "rm"
+  .word cmd_ls
+  .asciz "ls"
+  .word cmd_cat
+  .asciz "cat"
+  .word cmd_help
+  .asciz "help"
+  .word cmd_mkdir
+  .asciz "mkdir"
+  .word cmd_cd
+  .asciz "cd"
+  .word 0x00
+  .asciz ""
+
+.no_cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
+
+# TEXT
 .section .text
+.code16
 
 .global exec_cmd
 .global cmd_map
-
-.extern raw_buf
-.extern argv
-.extern argc
 
 # ENTRY
 # exec_cmd()
@@ -51,9 +76,9 @@ exec_cmd:
   # load
   mov (%di), %bx
 
-  # cond: null ? err
+  # cond: null ? hdl_no_cmd_err
   test %bx, %bx
-  jz .exec_cmd__err
+  jz .hdl_no_cmd_err
 
   # char
   add $0x02, %di
@@ -161,7 +186,7 @@ exec_cmd:
 
 .exec_cmd__redir_cmp_name:
   # copy ptr (magic)
-  mov %bx, %di
+  mov %bx, %si
 
   # get name size
   xor %cx, %cx
@@ -169,7 +194,7 @@ exec_cmd:
   add 3(%bx), %cl # padding
 
   # name ptr
-  sub %cx, %di
+  sub %cx, %si
 
   # init
   xor %dx, %dx
@@ -252,41 +277,13 @@ exec_cmd:
   ret
 
 # ERROR
-.exec_cmd__err:
+.hdl_no_cmd_err:
   call outnl
 
-  push $.cmd_err_msg
+  push $.no_cmd_err_msg
   call puts
   add $0x02, %sp
 
   call outnl
 
   jmp .exec_cmd__done
-
-# DATA
-.section .data
-
-# cmd_map
-cmd_map:
-  .word cmd_clear
-  .asciz "clear"
-  .word cmd_echo
-  .asciz "echo"
-  .word cmd_touch
-  .asciz "touch"
-  .word cmd_rm
-  .asciz "rm"
-  .word cmd_ls
-  .asciz "ls"
-  .word cmd_cat
-  .asciz "cat"
-  .word cmd_help
-  .asciz "help"
-  .word cmd_mkdir
-  .asciz "mkdir"
-  .word cmd_cd
-  .asciz "cd"
-  .word 0x00
-  .asciz ""
-
-.cmd_err_msg: .asciz "Command not found. Try \"help\" for a list of commands."
