@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Error common
+# Error Handler
 
 # DATA
 .section .data
@@ -11,6 +11,7 @@
 .arg_err_msg: .asciz "Missing argument."
 .dquote_err_msg: .asciz "Missing double quote."
 .redir_err_msg: .asciz "Redirection syntax error."
+.disk_err_msg: .asciz "Disk error."
 
 # TEXT
 .section .text
@@ -20,6 +21,7 @@
 .global hdl_arg_err
 .global hdl_dquote_err
 .global hdl_redir_err
+.global hdl_disk_err
 
 # ENTRY
 # hdl_opt_err()
@@ -55,6 +57,16 @@ hdl_dquote_err:
 # hdl_redir_err()
 hdl_redir_err:
   push $.redir_err_msg
+  call puts
+  add $0x02, %sp
+
+  call outnl
+  ret
+
+# ENTRY
+# hdl_disk_err()
+hdl_disk_err:
+  push $.disk_err_msg
   call puts
   add $0x02, %sp
 

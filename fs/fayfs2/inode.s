@@ -4,4 +4,18 @@
 #
 # Index node
 
+# TEXT
+.section .text
+.code16
 
+# ENTRY
+# get_inode()
+get_inode:
+
+  ret
+
+# ENTRY
+# set_inode()
+set_inode:
+
+  ret

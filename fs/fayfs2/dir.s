@@ -6,6 +6,7 @@
 
 .include "fs.s"
 
+# TEXT
 .section .text
 .code16
 

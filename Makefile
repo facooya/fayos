@@ -16,10 +16,11 @@ sys/disk.s \
 sys/kbd.s \
 sys/vid.s \
 \
-lib/block.s \
 lib/cursor.s \
 lib/err.s \
 lib/vid.s \
+lib/disk/block.s \
+lib/disk/dap.s \
 lib/str/print.s \
 lib/str/split.s \
 lib/str/str.s \

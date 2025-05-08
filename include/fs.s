@@ -4,7 +4,7 @@
 #
 # Dentry constants, []: Byte
 
-# INDEX NODE OFFSET [64]
+# INDEX NODE OFFSET [32]
 .equ IN_BN, 0x00 # [24] Block Number (Max: 6)
 .equ IN_FS, 0x18 # [4] File Size
 .equ IN_FT, 0x1C # [1] File Type
@@ -21,21 +21,25 @@
 # .equ SB_TOTAL_IN, 0x00 # [4] Inode Count
 # .equ SB_TOTAL_BLK, 0x04 # [4] Block Count
 
+# Magic Number: 0xFAC0 0xC0DE
+.equ SB_MAGIC_LO, 0x00
+.equ SB_MAGIC_HI, 0x02
+
 # First Inode: 0x02
-.equ SB_IN_LO, 0x00 # [2] Inode Low
-.equ SB_IN_HI, 0x02 # [2] Inode High
+.equ SB_IN_LO, 0x04 # [2] Inode Low
+.equ SB_IN_HI, 0x06 # [2] Inode High
 
 # First Block: 0x01
-.equ SB_BLK_LO, 0x04 # [2] Block Low
-.equ SB_BLK_HI, 0x06 # [2] Block High
+.equ SB_BLK_LO, 0x08 # [2] Block Low
+.equ SB_BLK_HI, 0x0A # [2] Block High
 
 # First LBA: 0x80
-.equ SB_LBA_LO, 0x08 # [2] LBA Low
-.equ SB_LBA_HI, 0x0A # [2] LBA High
+.equ SB_LBA_LO, 0x0C # [2] LBA Low
+.equ SB_LBA_HI, 0x0E # [2] LBA High
 
 # Inode Table LBA: 0x10
-.equ SB_IT_LBA_LO, 0x0C # [2] Table LBA Low
-.equ SB_IT_LBA_HI, 0x0E # [2] Table LBA High
+.equ SB_IT_LBA_LO, 0x10 # [2] Table LBA Low
+.equ SB_IT_LBA_HI, 0x12 # [2] Table LBA High
 
-.equ SB_IN_SIZE, 0x10 # [1] Inode Size: 0x40
-.equ SB_R, 0x11 # [3] Reserved for align
+.equ SB_IN_SIZE, 0x14 # [1] Inode Size: 0x40
+.equ SB_R, 0x15 # [3] Reserved for align

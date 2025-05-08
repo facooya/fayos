@@ -6,19 +6,22 @@
 
 .include "fs.s"
 
-.section .data
+.equ MAGIC_NUM_LO, 0xFAC0
+.equ MAGIC_NUM_HI, 0xC0DE
 
-.global superblock
+.equ FIRST_INODE_LO, 0x02
+.equ FIRST_INODE_HI, 0x00
 
-superblock:
-  .long 0x02 # First Inode
-  .long 0x01 # First Block
-  .long 0x80 # First LBA
-  .long 0x10 # Inode Table LBA
-  .byte 0x40 # Size Inode
-  .zero 0x03 # Padding
-  # FST_LBA + (BLOCK * 8) = LBA
-  # IN_SIZE + INODE_TABLE
+.equ FIRST_BLOCK_LO, 0x01
+.equ FIRST_BLOCK_HI, 0x00
+
+.equ FIRST_LBA_LO, 0x80
+.equ FIRST_LBA_HI, 0x00
+
+.equ INODE_TABLE_LBA_LO, 0x10
+.equ INODE_TABLE_LBA_HI, 0x00
+
+.equ INODE_SIZE, 0x20
 
 .section .text
 .code16
@@ -26,6 +29,7 @@ superblock:
 .global init_superblock
 
 init_superblock:
+  # prol
   push %si
   push %bx
 
@@ -36,49 +40,59 @@ init_superblock:
   call set_dap_target
   add $0x06, %sp
 
+  # set dap lba
   push $0x02
   push $0x00
   call set_dap_lba
   add $0x04, %sp
 
+  # read block
   call read_block
 
   # init
   mov $0x8000, %bx
-  mov $superblock, %si
 
   # body
-  mov SB_IN_LO(%si), %ax
+  mov $MAGIC_NUM_LO, %ax
+  mov %ax, SB_MAGIC_LO(%bx)
+  mov $MAGIC_NUM_HI, %ax
+  mov %ax, SB_MAGIC_HI(%bx)
+
+  mov $FIRST_INODE_LO, %ax
   mov %ax, SB_IN_LO(%bx)
-  mov SB_IN_HI(%si), %ax
+  mov $FIRST_INODE_HI, %ax
   mov %ax, SB_IN_HI(%bx)
 
-  mov SB_BLK_LO(%si), %ax
+  mov $FIRST_BLOCK_LO, %ax
   mov %ax, SB_BLK_LO(%bx)
-  mov SB_BLK_HI(%si), %ax
+  mov $FIRST_BLOCK_HI, %ax
   mov %ax, SB_BLK_HI(%bx)
 
-  mov SB_LBA_LO(%si), %ax
+  mov $FIRST_LBA_LO, %ax
   mov %ax, SB_LBA_LO(%bx)
-  mov SB_LBA_HI(%si), %ax
+  mov $FIRST_LBA_HI, %ax
   mov %ax, SB_LBA_HI(%bx)
 
-  mov SB_IT_LBA_LO(%si), %ax
+  mov $INODE_TABLE_LBA_LO, %ax
   mov %ax, SB_IT_LBA_LO(%bx)
-  mov SB_IT_LBA_HI(%si), %ax
+  mov $INODE_TABLE_LBA_LO, %ax
   mov %ax, SB_IT_LBA_HI(%bx)
 
-  mov SB_IN_SIZE(%si), %al
+  mov $INODE_SIZE, %al
   mov %al, SB_IN_SIZE(%bx)
 
-  # done
+  # write block
   call write_block
-  call reset_dap_target
+
+  # reset
   push $0x80
   push $0x00
   call set_dap_lba
   add $0x04, %sp
 
+  call reset_dap_target
+
+  # epil
   pop %bx
   pop %si
   ret
