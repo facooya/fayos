@@ -33,6 +33,12 @@ fs/fayfs/dir.s \
 fs/fayfs/meta.s \
 fs/fayfs/alloc.s \
 \
+fs/fayfs2/alloc.s \
+fs/fayfs2/dir.s \
+fs/fayfs2/fayfs.s \
+fs/fayfs2/inode.s \
+fs/fayfs2/super.s \
+\
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \

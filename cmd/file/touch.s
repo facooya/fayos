@@ -18,6 +18,7 @@
 
 .global cmd_touch
 
+# ENTRY
 # cmd_touch()
 cmd_touch:
   # prol

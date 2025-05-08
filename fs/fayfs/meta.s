@@ -4,17 +4,11 @@
 #
 # Metadata (docs/fs/fayfs/meta.txt)
 
-.code16
 .section .text
+.code16
 
 .global init_root_meta
 .global write_meta
-
-.extern set_dap_lba
-.extern read_block
-.extern write_block
-.extern cwd_lba
-.extern free_lba
 
 # init_root_meta()
 init_root_meta:

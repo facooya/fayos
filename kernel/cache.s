@@ -15,8 +15,8 @@
 # [n_free_lba]
 #   value: set by kernel
 
-.code16
 .section .data
+.code16
 
 .global cwd_lba
 .global free_lba
