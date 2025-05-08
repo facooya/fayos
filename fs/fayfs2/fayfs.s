@@ -6,8 +6,8 @@
 
 .section .data
 
-.global in_n
+.global inode
 .global lba
 
-in_n: .long 0x02
+inode: .long 0x02
 lba: .long 0x80

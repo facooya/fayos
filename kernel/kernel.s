@@ -12,7 +12,9 @@
 
 # _start()
 _start:
-  call init_super_block
+  # call init_super_block
+  call init_superblock # !!! TMP
+  
   call init_root_meta
   call init_free_lba
 
