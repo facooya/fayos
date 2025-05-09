@@ -47,6 +47,7 @@ cmd/sys/clear.s \
 cmd/file/cat.s \
 cmd/file/ls.s \
 cmd/file/touch.s \
+cmd/file/touch2.s \
 cmd/file/rm.s \
 \
 cmd/dir/mkdir.s \

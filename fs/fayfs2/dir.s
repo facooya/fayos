@@ -13,20 +13,30 @@
 .equ DEO_FILE_TYPE, 0x07
 .equ DEO_NAME, 0x08
 
+.equ FIRST_LBA, 0x80
+
 # TEXT
 .section .text
 .code16
 
-.global find_free_dentry
 .global add_dentry
+.global find_free_dentry
+.global set_dentry
 
 # !!! TMP
 # inode num -> block num -> block lba calc -> set lba -> find free?
 
 # ENTRY
+# add_dentry()
+add_dentry:
+  call find_free_dentry
+  call set_dentry
+  ret
+
+# ENTRY
 # find_free_dentry()
-#   pre: bx = mem ptr
 find_free_dentry:
+  # prol
   push %bx
 
   # set lba
@@ -41,6 +51,25 @@ find_free_dentry:
   call read_block
   mov $0x8000, %bx
 
+.find_free_dentry__lp:
+  # load
+  mov DEO_I_NUM_LO(%bx), %ax
+
+  # cond: null ? end
+  test %ax, %ax
+  or DEO_I_NUM_HI(%bx), %ax
+  jz .find_free_dentry__end
+
+  # step
+  mov DEO_REC_LEN(%bx), %cx
+  add %cx, %bx
+  jmp .find_free_dentry__lp
+
+.find_free_dentry__end:
+  # ret
+  mov %bx, (free_dentry)
+
+  # epil
   pop %bx
   ret
 
@@ -49,6 +78,9 @@ find_free_dentry:
 set_dentry:
   # prol
   push %bx
+
+  # init
+  mov (free_dentry), %bx
 
   # body
   mov (fi_num), %ax
@@ -61,18 +93,24 @@ set_dentry:
 
   # init
   mov (arg_ptr), %si
+  mov %bx, %di
+  add $DEO_NAME, %di
   xor %cx, %cx
 
 .set_dentry__set_name:
-  mov $0x00, %al
-  mov %al, DEO_NAME(%bx)
+  # load
+  mov (%si), %al
 
   # cond: null ? set_name_end
   test %al, %al
   jz .set_dentry__set_name_end
 
+  # store
+  mov %al, (%di)
+
   # step
   add $0x01, %si
+  add $0x01, %di
   add $0x01, %cx
   jmp .set_dentry__set_name
 
@@ -83,50 +121,36 @@ set_dentry:
   # rec len calc
   add $0x08, %cx # add fix size
   mov %cx, %ax
+  xor %dx, %dx
 
-  mov $0x04, %dx
-  div %dx
+  mov $0x04, %si
+  div %si
 
   add %dx, %cx # align
 
   # set rec len
   mov %cx, DEO_REC_LEN(%bx)
 
+  # write block
+  call write_block
+
   # epil
   pop %bx
   ret
 
 # ENTRY
-# add_dentry(mem_ptr)
-add_dentry:
-  # prol
-  push %bp
-  mov %sp, %bp
-  push %bx
-
+# set_blk_lba() # !!! TMP low high
+set_blk_lba:
   # init
-  mov 4(%bp), %bx
-  
-  # body
-  mov $0x00, %ax
-  mov %ax, DEO_I_NUM_LO(%bx)
-  mov $0x00, %ax
-  mov %ax, DEO_I_NUM_HI(%bx)
+  mov (b_num), %ax
+  mov $0x08, %cx
 
-  mov $0x00, %ax
-  mov %ax, DEO_REC_LEN(%bx)
+  # calc
+  mul %cx
 
-  mov $0x00, %al
-  mov %al, DEO_NAME_LEN(%bx)
+  mov $FIRST_LBA, %cx
+  add %cx, %ax
 
-  mov $0x00, %al
-  mov %al, DEO_FILE_TYPE(%bx)
-
-  # loop init
-  mov $0x00, %al
-  mov %al, DEO_NAME(%bx)
-
-  # epil
-  pop %bx
-  pop %bp
+  # ret
+  mov %ax, (blk_lba)
   ret

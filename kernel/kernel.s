@@ -17,8 +17,8 @@ _start:
   
   call set_inode
 
-  call init_root_meta
-  call init_free_lba
+  #call init_root_meta
+  #call init_free_lba
 
   push $.kernel_ok_msg
   call puts
