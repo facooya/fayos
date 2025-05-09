@@ -24,11 +24,7 @@ read_inode:
   # prol
   push %bx
 
-  # set dap lba
-  # push $I_LBA_LO
-  # push $I_LBA_HI
-  # call set_dap_lba
-  # add $0x04, %sp
+  # set lba
   call set_i_lba
 
   # read block
@@ -55,18 +51,14 @@ write_inode:
   # prol
   push %bx
 
-  # set dap lba
-  # push $I_LBA_LO
-  # push $I_LBA_HI
-  # call set_dap_lba
-  # add $0x04, %sp
+  # set lba
   call set_i_lba
 
   # read block
   call read_block
   mov $0x8000, %bx
 
-  # calc tbl ptr
+  # calc tbl ptr !!! FIXME cwd_i
   mov (f_i_num), %cx
   mov $I_SIZE, %ax
   mul %cx
@@ -78,7 +70,7 @@ write_inode:
   add $0x01, %cx
   mov %cx, (f_i_num)
 
-  # block num
+  # block num # !!! FIXME i_blk
   mov (f_blk_num), %ax
   mov %ax, 0(%bx)
 
@@ -107,7 +99,7 @@ init_inode:
 # ENTRY
 # set_i_lba()
 set_i_lba:
-  # set dap lba
+  # set lba
   push $I_LBA_LO
   push $I_LBA_HI
   call set_dap_lba

@@ -6,7 +6,7 @@
 
 .section .data
 
-.global free_dentry
+.global dentry_ptr
 
 .global f_i_num
 .global f_blk_num
@@ -14,7 +14,7 @@
 .global cwd_i
 .global i_blk
 
-free_dentry: .word 0x00
+dentry_ptr: .word 0x00
 
 f_i_num: .long 0x02
 f_blk_num: .long 0x01

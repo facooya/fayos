@@ -23,35 +23,61 @@
 
 .equ INODE_SIZE, 0x20
 
+# OFF
+.equ SB_MAGIC_LO_OFF, 0x00
+.equ SB_MAGIC_HI_OFF, 0x02
+
+# VALUE
+.equ SB_LBA_LO, 0x02
+.equ SB_LBA_HI, 0x00
+
 # TEXT
 .section .text
 .code16
 
-.global init_superblock
+.global chk_sb_magic
+# .global init_sb
 
-init_superblock:
+# ENTRY
+# chk_sb_magic()
+chk_sb_magic:
+  push %bx
+  call set_sb_lba
+
+  call read_block
+  mov $0x8000, %bx
+
+  mov SB_MAGIC_LO_OFF(%bx), %ax
+  cmp $0xFAC0, %ax
+  jne .chk_sb_magic__ne
+
+  mov SB_MAGIC_HI_OFF(%bx), %ax
+  cmp $0xC0DE, %ax
+  jne .chk_sb_magic__ne
+
+.chk_sb_magic__ne:
+  call init_write_sb
+  call write_block
+  
+.chk_sb_magic__done:
+  call reset_dap_target
+  pop %bx
+  ret
+
+# ENTRY
+# init_write_sb()
+init_write_sb:
   # prol
-  push %si
   push %bx
 
-  # set dap target
-  push $0x8000
-  push $0x00
-  push $0x02
-  call set_dap_target
-  add $0x06, %sp
+  # # set lba
+  # call set_sb_lba
 
-  # set dap lba
-  push $0x02
-  push $0x00
-  call set_dap_lba
-  add $0x04, %sp
+  # # read block
+  # call read_block
 
-  # read block
-  call read_block
-
-  # init
-  mov $0x8000, %bx
+  # # init
+  # mov $0x8000, %bx
 
   # body
   mov $MAGIC_NUM_LO, %ax
@@ -83,17 +109,27 @@ init_superblock:
   mov %al, SB_IN_SIZE(%bx)
 
   # write block
-  call write_block
+  # call write_block
 
-  # reset
-  push $0x80
-  push $0x00
-  call set_dap_lba
-  add $0x04, %sp
-
-  call reset_dap_target
+  # call reset_dap_target
 
   # epil
   pop %bx
-  pop %si
+  ret
+
+# ENTRY
+# set_sb_lba()
+set_sb_lba:
+  # set target
+  push $0x8000
+  push $0x00
+  push $0x02
+  call set_dap_target
+  add $0x06, %sp
+
+  # set lba
+  push $SB_LBA_LO
+  push $SB_LBA_HI
+  call set_dap_lba
+  add $0x04, %sp
   ret

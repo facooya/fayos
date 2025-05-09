@@ -12,8 +12,19 @@
 # ENTRY
 # cmd_touch2()
 cmd_touch2:
+  push %bx
+
   call outnl
 
   call write_inode
-  call add_dentry
+
+  call set_blk_lba
+  call read_block
+  mov $0x8000, %bx
+
+  call alloc_dentry
+  call write_dentry2 # !!! TMP
+  call write_block
+
+  pop %bx
   ret

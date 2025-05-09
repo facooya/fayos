@@ -20,12 +20,6 @@ cmd_ls2:
   call read_inode # update i_blk
   call set_blk_lba
 
-  # cwd_i => Inode Table => i_blk[0] => lba !!! TMP
-  # push $0x88
-  # push $0x00
-  # call set_dap_lba
-  # add $0x04, %sp
-
   # read block
   call read_block
   mov $0x8000, %bx

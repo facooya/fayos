@@ -19,64 +19,12 @@
 .section .text
 .code16
 
-.global add_dentry
-.global find_free_dentry
 .global write_dentry2
 .global set_blk_lba
 
-# !!! TMP
-# inode num -> block num -> block lba calc -> set lba -> find free?
-
-# ENTRY
-# add_dentry() !!! FIXME blk overflow
-add_dentry:
-  call set_blk_lba
-  call find_free_dentry
-  call write_dentry2
-  ret
-
-# ENTRY
-# find_free_dentry()
-find_free_dentry:
-  # prol
-  push %bx
-
-  # set lba
-  # mov (blk_lba), %ax
-  # push %ax
-  # mov (blk_lba+2), %ax
-  # push %ax
-  # call set_dap_lba
-  # add $0x04, %sp
-
-  # read block
-  call read_block
-  mov $0x8000, %bx
-
-.find_free_dentry__lp:
-  # load
-  mov DEO_I_NUM_LO(%bx), %ax
-
-  # cond: null ? end
-  test %ax, %ax
-  or DEO_I_NUM_HI(%bx), %ax
-  jz .find_free_dentry__end
-
-  # step
-  mov DEO_REC_LEN(%bx), %cx
-  add %cx, %bx
-  jmp .find_free_dentry__lp
-
-.find_free_dentry__end:
-  # ret
-  mov %bx, (free_dentry)
-
-  # epil
-  pop %bx
-  ret
-
 # ENTRY
 # write_dentry2()
+#   pre: bx = main mem ptr
 write_dentry2:
   # prol
   push %si
@@ -84,7 +32,7 @@ write_dentry2:
   push %bx
 
   # init
-  mov (free_dentry), %bx
+  mov (dentry_ptr), %bx
 
   # body
   mov (f_i_num), %ax
@@ -135,9 +83,6 @@ write_dentry2:
   # set rec len
   mov %cx, DEO_REC_LEN(%bx)
 
-  # write block
-  call write_block
-
   # epil
   pop %bx
   pop %di
@@ -145,7 +90,8 @@ write_dentry2:
   ret
 
 # ENTRY
-# set_blk_lba() # !!! TMP low high
+# set_blk_lba() !!! FIXME blk overflow
+#   pre: i_blk
 set_blk_lba:
   # init
   mov (i_blk), %ax
@@ -157,7 +103,7 @@ set_blk_lba:
   mov $FIRST_LBA, %cx
   add %cx, %ax
 
-  # set dap lba
+  # set dap lba # !!! TMP low high
   push %ax # low
   xor %ax, %ax
   push %ax # high

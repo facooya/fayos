@@ -13,7 +13,7 @@
 # _start()
 _start:
   # call init_super_block
-  call init_superblock # !!! TMP
+  call chk_sb_magic
   
   call init_inode
 
