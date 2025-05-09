@@ -23,6 +23,7 @@
 
 .equ INODE_SIZE, 0x20
 
+# TEXT
 .section .text
 .code16
 

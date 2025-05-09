@@ -6,8 +6,14 @@
 
 .section .data
 
-.global inode
+.global i_num
+.global b_num
+.global fb_num
+.global fi_num
 .global lba
 
-inode: .long 0x02
+i_num: .long 0x02
+b_num: .long 0x01
+fb_num: .long 0x02
+fi_num: .long 0x03
 lba: .long 0x80
