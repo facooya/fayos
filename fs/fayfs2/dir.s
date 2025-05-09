@@ -21,16 +21,18 @@
 
 .global add_dentry
 .global find_free_dentry
-.global set_dentry
+.global write_dentry2
+.global set_blk_lba
 
 # !!! TMP
 # inode num -> block num -> block lba calc -> set lba -> find free?
 
 # ENTRY
-# add_dentry()
+# add_dentry() !!! FIXME blk overflow
 add_dentry:
+  call set_blk_lba
   call find_free_dentry
-  call set_dentry
+  call write_dentry2
   ret
 
 # ENTRY
@@ -40,12 +42,12 @@ find_free_dentry:
   push %bx
 
   # set lba
-  mov (cwd_lba), %ax
-  push %ax
-  mov (cwd_lba+2), %ax
-  push %ax
-  call set_dap_lba
-  add $0x04, %sp
+  # mov (blk_lba), %ax
+  # push %ax
+  # mov (blk_lba+2), %ax
+  # push %ax
+  # call set_dap_lba
+  # add $0x04, %sp
 
   # read block
   call read_block
@@ -74,18 +76,20 @@ find_free_dentry:
   ret
 
 # ENTRY
-# set_dentry() !!! TMP Name argv (touch, mkdir)
-set_dentry:
+# write_dentry2()
+write_dentry2:
   # prol
+  push %si
+  push %di
   push %bx
 
   # init
   mov (free_dentry), %bx
 
   # body
-  mov (fi_num), %ax
+  mov (f_i_num), %ax
   mov %ax, DEO_I_NUM_LO(%bx)
-  mov (fi_num+2), %ax
+  mov (f_i_num+2), %ax
   mov %ax, DEO_I_NUM_HI(%bx)
 
   mov $0x80, %al # !!! TMP file 0x80, dir 0x40
@@ -97,13 +101,13 @@ set_dentry:
   add $DEO_NAME, %di
   xor %cx, %cx
 
-.set_dentry__set_name:
+.write_dentry__set_name:
   # load
   mov (%si), %al
 
   # cond: null ? set_name_end
   test %al, %al
-  jz .set_dentry__set_name_end
+  jz .write_dentry__set_name_end
 
   # store
   mov %al, (%di)
@@ -112,9 +116,9 @@ set_dentry:
   add $0x01, %si
   add $0x01, %di
   add $0x01, %cx
-  jmp .set_dentry__set_name
+  jmp .write_dentry__set_name
 
-.set_dentry__set_name_end:
+.write_dentry__set_name_end:
   # set name len
   mov %cl, DEO_NAME_LEN(%bx)
 
@@ -136,13 +140,15 @@ set_dentry:
 
   # epil
   pop %bx
+  pop %di
+  pop %si
   ret
 
 # ENTRY
 # set_blk_lba() # !!! TMP low high
 set_blk_lba:
   # init
-  mov (b_num), %ax
+  mov (i_blk), %ax
   mov $0x08, %cx
 
   # calc
@@ -151,6 +157,12 @@ set_blk_lba:
   mov $FIRST_LBA, %cx
   add %cx, %ax
 
+  # set dap lba
+  push %ax # low
+  xor %ax, %ax
+  push %ax # high
+  call set_dap_lba
+  add $0x04, %sp
+
   # ret
-  mov %ax, (blk_lba)
   ret

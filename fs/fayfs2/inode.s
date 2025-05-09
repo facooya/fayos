@@ -4,79 +4,87 @@
 #
 # Index node
 
-.equ INODE_SIZE, 0x20
+# CONST
+.equ I_LBA_LO, 0x10
+.equ I_LBA_HI, 0x00
+.equ I_SIZE, 0x20
 
 # TEXT
 .section .text
 .code16
 
-.global get_inode
-.global set_inode
+.global read_inode
+.global write_inode
+.global init_inode
+.global set_i_lba
 
 # ENTRY
-# get_inode(i_num) !!! TMP low high
-get_inode:
+# read_inode()
+read_inode:
   # prol
-  push %bp
-  mov %sp, %bp
   push %bx
 
-  # get block
   # set dap lba
-  push $0x10
-  push $0x00
-  call set_dap_lba
-  add $0x04, %sp
+  # push $I_LBA_LO
+  # push $I_LBA_HI
+  # call set_dap_lba
+  # add $0x04, %sp
+  call set_i_lba
 
   # read block
   call read_block
   mov $0x8000, %bx
 
-  # i_num calc
-  mov 4(%bp), %cx
-  mov $INODE_SIZE, %ax
+  # calc cwd_i
+  mov (cwd_i), %cx
+  mov $I_SIZE, %ax
   mul %cx
   add %ax, %bx
 
-  # ret: b_num
+  # set i_blk
   mov (%bx), %ax
-  mov %ax, (b_num)
+  mov %ax, (i_blk)
 
   # epil
   pop %bx
-  pop %bp
   ret
 
 # ENTRY
-# set_inode() !!! TMP low high
-set_inode:
+# write_inode() !!! TMP low high
+write_inode:
   # prol
   push %bx
 
   # set dap lba
-  push $0x10
-  push $0x00
-  call set_dap_lba
-  add $0x04, %sp
+  # push $I_LBA_LO
+  # push $I_LBA_HI
+  # call set_dap_lba
+  # add $0x04, %sp
+  call set_i_lba
 
   # read block
   call read_block
   mov $0x8000, %bx
 
-  # calc
-  mov (fi_num), %cx
-  xor %ax, %ax
-  mov $INODE_SIZE, %ax
+  # calc tbl ptr
+  mov (f_i_num), %cx
+  mov $I_SIZE, %ax
   mul %cx
 
-  # calc 2
+  # add tbl ptr
   add %ax, %bx
 
+  # set next i_num
+  add $0x01, %cx
+  mov %cx, (f_i_num)
+
   # block num
-  mov (fb_num), %ax
+  mov (f_blk_num), %ax
   mov %ax, 0(%bx)
+
+  # set next blk_num
   add $0x01, %ax
-  mov %ax, (fb_num)
+  mov %ax, (f_blk_num)
 
   # file type
   mov $0x80, %al
@@ -85,9 +93,23 @@ set_inode:
   # write block
   call write_block
 
-  add $0x01, %cx
-  mov %cx, (fi_num)
-
   # epil
   pop %bx
+  ret
+
+# ENTRY
+# init_inode()
+init_inode:
+  # root dir
+  call write_inode
+  ret
+
+# ENTRY
+# set_i_lba()
+set_i_lba:
+  # set dap lba
+  push $I_LBA_LO
+  push $I_LBA_HI
+  call set_dap_lba
+  add $0x04, %sp
   ret

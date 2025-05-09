@@ -6,18 +6,18 @@
 
 .section .data
 
-.global i_num
-.global b_num
-.global fb_num
-.global fi_num
-.global lba
-.global blk_lba
 .global free_dentry
 
-i_num: .long 0x02
-b_num: .long 0x01
-fb_num: .long 0x02
-fi_num: .long 0x03
-lba: .long 0x80
-blk_lba: .long 0x80
+.global f_i_num
+.global f_blk_num
+
+.global cwd_i
+.global i_blk
+
 free_dentry: .word 0x00
+
+f_i_num: .long 0x02
+f_blk_num: .long 0x01
+
+cwd_i: .long 0x02 # 0x02: root inode
+i_blk: .long 0x01 # 0x01: root dir blk

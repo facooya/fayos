@@ -50,6 +50,7 @@ cmd/file/touch.s \
 cmd/file/touch2.s \
 cmd/file/rm.s \
 \
+cmd/dir/ls2.s \
 cmd/dir/mkdir.s \
 cmd/dir/cd.s
 

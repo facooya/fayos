@@ -13,5 +13,7 @@
 # cmd_touch2()
 cmd_touch2:
   call outnl
+
+  call write_inode
   call add_dentry
   ret

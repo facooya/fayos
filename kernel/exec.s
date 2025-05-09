@@ -17,6 +17,8 @@ cmd_map:
   .asciz "touch"
   .word cmd_touch2
   .asciz "touch2"
+  .word cmd_ls2
+  .asciz "ls2"
   .word cmd_rm
   .asciz "rm"
   .word cmd_ls
