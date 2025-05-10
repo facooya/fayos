@@ -2,26 +2,23 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Touch 2 for fayfs 2, Temporary command
+# Make directory 2 for fayfs 2, Temporary command
 
 .section .text
 .code16
 
-.global cmd_touch2
+.global cmd_mkdir2
 
 # ENTRY
-# cmd_touch2()
-cmd_touch2:
-  push %bx
-
+# cmd_mkdir2()
+cmd_mkdir2:
   call outnl
-
+  
   call write_inode
 
-  mov $0x80, %ax
+  mov $0x40, %ax
   push %ax
-  call write_dentry2 # !!! TMP
+  call write_dentry2
   add $0x02, %sp
 
-  pop %bx
   ret

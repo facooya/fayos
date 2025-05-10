@@ -29,8 +29,12 @@ cmd_map:
   .asciz "help"
   .word cmd_mkdir
   .asciz "mkdir"
+  .word cmd_mkdir2
+  .asciz "mkdir2"
   .word cmd_cd
   .asciz "cd"
+  .word cmd_cd2
+  .asciz "cd2"
   .word 0x00
   .asciz ""
 

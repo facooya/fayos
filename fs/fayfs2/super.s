@@ -4,7 +4,7 @@
 #
 # Super block, LBA [2-3]
 
-.include "fs.s"
+.include "sb.s"
 
 .equ MAGIC_NUM_LO, 0xFAC0
 .equ MAGIC_NUM_HI, 0xC0DE
@@ -23,37 +23,45 @@
 
 .equ INODE_SIZE, 0x20
 
-# OFF
-.equ SB_MAGIC_LO_OFF, 0x00
-.equ SB_MAGIC_HI_OFF, 0x02
-
-# VALUE
-.equ SB_LBA_LO, 0x02
-.equ SB_LBA_HI, 0x00
-
 # TEXT
 .section .text
 .code16
 
 .global chk_sb_magic
-# .global init_sb
+
+# ENTRY
+read_sb:
+  ret
+
+# ENTRY
+write_sb:
+  ret
 
 # ENTRY
 # chk_sb_magic()
 chk_sb_magic:
+  # prol
   push %bx
+
+  # set lba
   call set_sb_lba
 
+  # read
   call read_block
   mov $0x8000, %bx
 
-  mov SB_MAGIC_LO_OFF(%bx), %ax
-  cmp $0xFAC0, %ax
+  # cond: != ? ne
+  mov SB_MAG_LO_OFF(%bx), %ax
+  cmp $SB_MAG_LO, %ax
   jne .chk_sb_magic__ne
 
-  mov SB_MAGIC_HI_OFF(%bx), %ax
-  cmp $0xC0DE, %ax
+  # cond: != ? ne
+  mov SB_MAG_HI_OFF(%bx), %ax
+  cmp $SB_MAG_HI, %ax
   jne .chk_sb_magic__ne
+
+  # jump
+  jmp .chk_sb_magic__done
 
 .chk_sb_magic__ne:
   call init_write_sb
@@ -61,60 +69,71 @@ chk_sb_magic:
   
 .chk_sb_magic__done:
   call reset_dap_target
+
+  # epil
   pop %bx
   ret
 
 # ENTRY
 # init_write_sb()
 init_write_sb:
-  # prol
-  push %bx
+  # magic
+  mov $SB_MAG_LO, %ax
+  mov %ax, SB_MAG_LO_OFF(%bx)
+  mov $SB_MAG_HI, %ax
+  mov %ax, SB_MAG_HI_OFF(%bx)
 
-  # # set lba
-  # call set_sb_lba
+  # sb lba
+  mov $SB_LBA_LO, %ax
+  mov %ax, SB_LBA_LO_OFF(%bx)
+  mov $SB_LBA_HI, %ax
+  mov %ax, SB_LBA_HI_OFF(%bx)
 
-  # # read block
-  # call read_block
+  # i lba
+  mov $SB_I_LBA_LO, %ax
+  mov %ax, SB_I_LBA_LO_OFF(%bx)
+  mov $SB_I_LBA_HI, %ax
+  mov %ax, SB_I_LBA_HI_OFF(%bx)
 
-  # # init
-  # mov $0x8000, %bx
+  # root i num
+  mov $SB_ROOT_I_NUM_LO, %ax
+  mov %ax, SB_ROOT_I_NUM_LO_OFF(%bx)
+  mov $SB_ROOT_I_NUM_HI, %ax
+  mov %ax, SB_ROOT_I_NUM_HI_OFF(%bx)
 
-  # body
-  mov $MAGIC_NUM_LO, %ax
-  mov %ax, SB_MAGIC_LO(%bx)
-  mov $MAGIC_NUM_HI, %ax
-  mov %ax, SB_MAGIC_HI(%bx)
+  # fst lba
+  mov $SB_FST_LBA_LO, %ax
+  mov %ax, SB_FST_LBA_LO_OFF(%bx)
+  mov $SB_FST_LBA_HI, %ax
+  mov %ax, SB_FST_LBA_HI_OFF(%bx)
 
-  mov $FIRST_INODE_LO, %ax
-  mov %ax, SB_IN_LO(%bx)
-  mov $FIRST_INODE_HI, %ax
-  mov %ax, SB_IN_HI(%bx)
+  # fst i num
+  mov $SB_FST_I_NUM_LO, %ax
+  mov %ax, SB_FST_I_NUM_LO_OFF(%bx)
+  mov $SB_FST_I_NUM_HI, %ax
+  mov %ax, SB_FST_I_NUM_HI_OFF(%bx)
 
-  mov $FIRST_BLOCK_LO, %ax
-  mov %ax, SB_BLK_LO(%bx)
-  mov $FIRST_BLOCK_HI, %ax
-  mov %ax, SB_BLK_HI(%bx)
+  # fst i blk
+  mov $SB_FST_I_BLK_LO, %ax
+  mov %ax, SB_FST_I_BLK_LO_OFF(%bx)
+  mov $SB_FST_I_BLK_HI, %ax
+  mov %ax, SB_FST_I_BLK_HI_OFF(%bx)
 
-  mov $FIRST_LBA_LO, %ax
-  mov %ax, SB_LBA_LO(%bx)
-  mov $FIRST_LBA_HI, %ax
-  mov %ax, SB_LBA_HI(%bx)
+  # i size
+  mov $SB_I_SIZE, %ax
+  mov %ax, SB_I_SIZE_OFF(%bx)
 
-  mov $INODE_TABLE_LBA_LO, %ax
-  mov %ax, SB_IT_LBA_LO(%bx)
-  mov $INODE_TABLE_LBA_LO, %ax
-  mov %ax, SB_IT_LBA_HI(%bx)
+  # next i num
+  mov $SB_NEXT_I_NUM_LO, %ax
+  mov %ax, SB_NEXT_I_NUM_LO_OFF(%bx)
+  mov $SB_NEXT_I_NUM_HI, %ax
+  mov %ax, SB_NEXT_I_NUM_HI_OFF(%bx)
 
-  mov $INODE_SIZE, %al
-  mov %al, SB_IN_SIZE(%bx)
-
-  # write block
-  # call write_block
-
-  # call reset_dap_target
-
-  # epil
-  pop %bx
+  # next blk num
+  mov $SB_NEXT_I_BLK_LO, %ax
+  mov %ax, SB_NEXT_I_BLK_LO_OFF(%bx)
+  mov $SB_NEXT_I_BLK_HI, %ax
+  mov %ax, SB_NEXT_I_BLK_HI_OFF(%bx)
   ret
 
 # ENTRY

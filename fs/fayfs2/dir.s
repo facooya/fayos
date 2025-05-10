@@ -4,8 +4,6 @@
 #
 # Directory entry
 
-.include "fs.s"
-
 .equ DEO_I_NUM_LO, 0x00
 .equ DEO_I_NUM_HI, 0x02
 .equ DEO_REC_LEN, 0x04
@@ -23,13 +21,22 @@
 .global set_blk_lba
 
 # ENTRY
-# write_dentry2()
-#   pre: bx = main mem ptr
+# write_dentry2(file_type)
 write_dentry2:
   # prol
+  push %bp
+  mov %sp, %bp
   push %si
   push %di
   push %bx
+
+  # read block
+  call set_blk_lba
+  call read_block
+  mov $0x8000, %bx
+
+  # get dentry_ptr
+  call alloc_dentry
 
   # init
   mov (dentry_ptr), %bx
@@ -40,7 +47,8 @@ write_dentry2:
   mov (f_i_num+2), %ax
   mov %ax, DEO_I_NUM_HI(%bx)
 
-  mov $0x80, %al # !!! TMP file 0x80, dir 0x40
+  # get file type
+  mov 4(%bp), %ax
   mov %al, DEO_FILE_TYPE(%bx)
 
   # init
@@ -83,10 +91,14 @@ write_dentry2:
   # set rec len
   mov %cx, DEO_REC_LEN(%bx)
 
+  # write block
+  call write_block
+
   # epil
   pop %bx
   pop %di
   pop %si
+  pop %bp
   ret
 
 # ENTRY
