@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Superblock
+# Superblock constants
 
 # Magic number
 .equ SB_MAG_LO_OFF, 0x00

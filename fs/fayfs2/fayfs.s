@@ -11,13 +11,19 @@
 .global f_i_num
 .global f_blk_num
 
-.global cwd_i
+.global i_num
 .global i_blk
+
+.global next_i_num
+.global next_i_blk
 
 dentry_ptr: .word 0x00
 
 f_i_num: .long 0x02
 f_blk_num: .long 0x01
 
-cwd_i: .long 0x02 # 0x02: root inode
-i_blk: .long 0x01 # 0x01: root dir blk
+i_num: .long 0x00 # 0x02: root inode
+i_blk: .long 0x00 # 0x01: root dir blk
+
+next_i_num: .long 0x00
+next_i_blk: .long 0x00

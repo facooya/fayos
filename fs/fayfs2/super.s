@@ -6,77 +6,95 @@
 
 .include "sb.s"
 
-.equ MAGIC_NUM_LO, 0xFAC0
-.equ MAGIC_NUM_HI, 0xC0DE
-
-.equ FIRST_INODE_LO, 0x02
-.equ FIRST_INODE_HI, 0x00
-
-.equ FIRST_BLOCK_LO, 0x01
-.equ FIRST_BLOCK_HI, 0x00
-
-.equ FIRST_LBA_LO, 0x80
-.equ FIRST_LBA_HI, 0x00
-
-.equ INODE_TABLE_LBA_LO, 0x10
-.equ INODE_TABLE_LBA_HI, 0x00
-
-.equ INODE_SIZE, 0x20
-
 # TEXT
 .section .text
 .code16
 
-.global chk_sb_magic
+.global read_sb
+.global write_sb
+.global init_sb
 
 # ENTRY
+# read_sb()
 read_sb:
-  ret
-
-# ENTRY
-write_sb:
-  ret
-
-# ENTRY
-# chk_sb_magic()
-chk_sb_magic:
   # prol
   push %bx
 
-  # set lba
-  call set_sb_lba
-
-  # read
+  # read sb
+  call .set_sb_lba
   call read_block
   mov $0x8000, %bx
 
-  # cond: != ? ne
-  mov SB_MAG_LO_OFF(%bx), %ax
-  cmp $SB_MAG_LO, %ax
-  jne .chk_sb_magic__ne
+  # i_num
+  mov SB_ROOT_I_NUM_LO_OFF(%bx), %ax
+  mov %ax, (i_num)
+  mov SB_ROOT_I_NUM_HI_OFF(%bx), %ax
+  mov %ax, (i_num+0x02)
 
-  # cond: != ? ne
-  mov SB_MAG_HI_OFF(%bx), %ax
-  cmp $SB_MAG_HI, %ax
-  jne .chk_sb_magic__ne
+  # next_i_num
+  mov SB_NEXT_I_NUM_LO_OFF(%bx), %ax
+  mov %ax, (next_i_num)
+  mov SB_NEXT_I_NUM_HI_OFF(%bx), %ax
+  mov %ax, (next_i_num+0x02)
 
-  # jump
-  jmp .chk_sb_magic__done
-
-.chk_sb_magic__ne:
-  call init_write_sb
-  call write_block
-  
-.chk_sb_magic__done:
-  call reset_dap_target
+  # next_i_blk
+  mov SB_NEXT_I_BLK_LO_OFF(%bx), %ax
+  mov %ax, (next_i_blk)
+  mov SB_NEXT_I_BLK_HI_OFF(%bx), %ax
+  mov %ax, (next_i_blk+0x02)
 
   # epil
   pop %bx
   ret
 
 # ENTRY
-# init_write_sb()
-init_write_sb:
+# write_sb()
+write_sb:
+  ret
+
+# ENTRY
+# init_sb()
+init_sb:
+  # prol
+  push %bx
+
+  # read sb
+  call .set_sb_lba
+  call read_block
+  mov $0x8000, %bx
+
+  # cond: != ? ne
+  mov SB_MAG_LO_OFF(%bx), %ax
+  cmp $SB_MAG_LO, %ax
+  jne .init_sb__mag_ne
+
+  # cond: != ? ne
+  mov SB_MAG_HI_OFF(%bx), %ax
+  cmp $SB_MAG_HI, %ax
+  jne .init_sb__mag_ne
+
+  # done
+  call reset_dap_target
+  jmp .init_sb__done
+
+.init_sb__mag_ne:
+  # set sb
+  call .init_sb__set
+
+  call write_block
+  call reset_dap_target
+
+.init_sb__done:
+  # read sb
+  call read_sb
+
+  # epil
+  pop %bx
+  ret
+
+# .ENTRY
+# .init_sb__set()
+.init_sb__set:
   # magic
   mov $SB_MAG_LO, %ax
   mov %ax, SB_MAG_LO_OFF(%bx)
@@ -136,9 +154,9 @@ init_write_sb:
   mov %ax, SB_NEXT_I_BLK_HI_OFF(%bx)
   ret
 
-# ENTRY
-# set_sb_lba()
-set_sb_lba:
+# .ENTRY
+# .set_sb_lba()
+.set_sb_lba:
   # set target
   push $0x8000
   push $0x00

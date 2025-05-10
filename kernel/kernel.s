@@ -12,13 +12,7 @@
 
 # _start()
 _start:
-  # call init_super_block
-  call chk_sb_magic
-  
-  call init_inode
-
-  #call init_root_meta
-  #call init_free_lba
+  call init_sb
 
   push $.kernel_ok_msg
   call puts

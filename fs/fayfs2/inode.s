@@ -31,8 +31,8 @@ read_inode:
   call read_block
   mov $0x8000, %bx
 
-  # calc cwd_i
-  mov (cwd_i), %cx
+  # calc i_num
+  mov (i_num), %cx
   mov $I_SIZE, %ax
   mul %cx
   add %ax, %bx
@@ -58,7 +58,7 @@ write_inode:
   call read_block
   mov $0x8000, %bx
 
-  # calc tbl ptr !!! FIXME cwd_i
+  # calc tbl ptr !!! FIXME i_num
   mov (f_i_num), %cx
   mov $I_SIZE, %ax
   mul %cx
