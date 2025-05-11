@@ -4,6 +4,8 @@
 #
 # List 2 for fayfs 2, Temporary command
 
+.include "fayfs/de.s"
+
 .section .text
 .code16
 
@@ -27,12 +29,13 @@ cmd_ls2:
 .cmd_ls2__out_name:
   # set name ptr
   mov %bx, %si
-  add $0x08, %si
+  add $DE_NAME_OFF, %si
 
-  # name len
+  # get name len
   xor %cx, %cx
-  mov 6(%bx), %cl
+  mov DE_NAME_LEN_OFF(%bx), %cl
 
+  # TMP !!!
   mov $0x0E, %ah
 
 .cmd_ls2__out_str:
@@ -42,7 +45,7 @@ cmd_ls2:
 
   # out
   mov (%si), %al
-  int $0x10
+  int $0x10 # TMP !!!
 
   # step
   add $0x01, %si
@@ -51,7 +54,7 @@ cmd_ls2:
 
 .cmd_ls2__out_str_end:
   # add rec_len
-  mov 4(%bx), %ax
+  mov DE_REC_LEN_OFF(%bx), %ax
   add %ax, %bx
 
   # cond: null ? end

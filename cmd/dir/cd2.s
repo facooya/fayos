@@ -6,13 +6,15 @@
 
 .include "fayfs/de.s"
 
+# DATA
+.section .data
+
+.no_found_err_msg: .asciz "Not found directory."
+
 .section .text
 .code16
 
 .global cmd_cd2
-
-# !!! TMP read_inode => read_block => cmp_dentry => 
-#   cmp_file_type => update_inode_number
 
 # ENTRY
 # cmd_cd2()
@@ -20,8 +22,6 @@ cmd_cd2:
   push %si
   push %di
   push %bx
-
-  call outnl
 
   call read_inode
 
@@ -41,12 +41,13 @@ cmd_cd2:
   add $0x02, %sp
   # ax = len
 
+  # set name len
   xor %cx, %cx
   mov DE_NAME_LEN_OFF(%bx), %cl
 
-  # cond: 0 ? done
+  # cond: 0 ? hdl_no_found_err
   test %cx, %cx
-  jz .cmd_cd2__done
+  jz .hdl_no_found_err
 
   # cond: != ? cmp_name_ne
   cmp %cx, %ax
@@ -68,19 +69,25 @@ cmd_cd2:
   test %ax, %ax
   jz .cmd_cd2__cmp_name_e
 
+  # ne
   jmp .cmd_cd2__cmp_name_ne
 
 .cmd_cd2__cmp_name_e:
-  # get inode num and blk num
-  mov $0x41, %al
-  call sys_tty_out # !!! DEBUG
+  # !!! FIXME chk file type
+  
+  # get dst inode num
+  mov DE_I_NUM_LO_OFF(%bx), %ax
+  mov %ax, (i_num)
+  mov DE_I_NUM_HI_OFF(%bx), %ax
+  mov %ax, (i_num+0x02)
 
+  # set i blk
+  call read_inode
+
+  # done
   jmp .cmd_cd2__done
 
 .cmd_cd2__cmp_name_ne:
-  mov $0x42, %al
-  call sys_tty_out # !!! DEBUG
-
   # add rec len
   mov DE_REC_LEN_OFF(%bx), %cx
   add %cx, %bx
@@ -89,8 +96,20 @@ cmd_cd2:
   jmp .cmd_cd2__cmp_name_len
 
 .cmd_cd2__done:
+  call outnl
+
   # epil
   pop %si
   pop %di
   pop %bx
   ret
+
+# ERR
+.hdl_no_found_err:
+  call outnl
+
+  push $.no_found_err_msg
+  call puts
+  add $0x02, %sp
+
+  jmp .cmd_cd2__done

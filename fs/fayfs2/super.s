@@ -25,23 +25,30 @@ read_sb:
   call read_block
   mov $0x8000, %bx
 
-  # i_num
-  mov ROOT_I_NUM_LO_OFF(%bx), %ax
-  mov %ax, (i_num)
-  mov ROOT_I_NUM_HI_OFF(%bx), %ax
-  mov %ax, (i_num+0x02)
+  # i_num !!! FIXME
+  # mov ROOT_I_NUM_LO_OFF(%bx), %ax
+  # mov %ax, (i_num)
+  # mov ROOT_I_NUM_HI_OFF(%bx), %ax
+  # mov %ax, (i_num+0x02)
 
-  # next_i_num
+  # next_i_num and i_num
   mov NEXT_I_NUM_LO_OFF(%bx), %ax
   mov %ax, (next_i_num)
+  mov %ax, (i_num)
   mov NEXT_I_NUM_HI_OFF(%bx), %ax
   mov %ax, (next_i_num+0x02)
+  mov %ax, (i_num+0x02)
 
-  # next_i_blk
+  # next_i_blk and i_blk
   mov NEXT_I_BLK_LO_OFF(%bx), %ax
   mov %ax, (next_i_blk)
+  mov %ax, (i_blk)
   mov NEXT_I_BLK_HI_OFF(%bx), %ax
   mov %ax, (next_i_blk+0x02)
+  mov %ax, (i_blk+0x02)
+
+  # reset
+  call reset_dap_target
 
   # epil
   pop %bx
@@ -87,6 +94,8 @@ init_sb:
 .init_sb__done:
   # read sb
   call read_sb
+
+  # !!! FIXME add root dir
 
   # epil
   pop %bx

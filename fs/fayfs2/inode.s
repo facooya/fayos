@@ -40,7 +40,7 @@ read_inode:
   add %ax, %bx
 
   # set i_blk
-  mov (%bx), %ax
+  mov I_BLK_LO_OFF(%bx), %ax
   mov %ax, (i_blk)
 
   # epil
@@ -74,7 +74,7 @@ write_inode:
   add $0x01, %cx
   mov %cx, (next_i_num)
 
-  # block num # !!! FIXME i_blk
+  # block num
   mov (next_i_blk), %ax
   mov %ax, I_BLK_LO_OFF(%bx)
 
@@ -85,7 +85,7 @@ write_inode:
   # file type !!! FIXME 4(%bp)
   mov $0x80, %al
   mov %al, I_FILE_TYPE_OFF(%bx)
-  
+
   # write block
   call write_block
 
