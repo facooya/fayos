@@ -44,7 +44,7 @@ puts:
 
 # ENTRY
 # putsc(addr) - put string return count
-# ret: cx = char count
+#   ret: cx = char count
 putsc:
   # prol
   push %bp

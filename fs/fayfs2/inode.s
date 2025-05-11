@@ -5,6 +5,7 @@
 # Index node
 
 .include "fayfs/sb.s"
+.include "fayfs/i.s"
 
 # TEXT
 .section .text
@@ -75,15 +76,15 @@ write_inode:
 
   # block num # !!! FIXME i_blk
   mov (next_i_blk), %ax
-  mov %ax, 0(%bx)
+  mov %ax, I_BLK_LO_OFF(%bx)
 
   # set next blk_num
   add $0x01, %ax
   mov %ax, (next_i_blk)
 
-  # file type
+  # file type !!! FIXME 4(%bp)
   mov $0x80, %al
-  mov %al, 0x1C(%bx)
+  mov %al, I_FILE_TYPE_OFF(%bx)
   
   # write block
   call write_block

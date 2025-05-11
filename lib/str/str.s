@@ -9,6 +9,7 @@
 
 .global strlen
 .global strcmp
+.global strncmp
 
 # ENTRY
 # strlen(str)
@@ -101,6 +102,55 @@ strcmp:
   jmp .strcmp__done
 
 .strcmp__done:
+  # epil
+  pop %di
+  pop %si
+  pop %bp
+  ret
+
+# ENTRY
+# strncmp(src, dst, n)
+#   ret: ax = 0: true, 1: false
+strncmp:
+  # prol
+  push %bp
+  mov %sp, %bp
+  push %si
+  push %di
+
+  # init
+  mov 4(%bp), %si
+  mov 6(%bp), %di
+  mov 8(%bp), %cx
+
+.strncmp__lp:
+  # load
+  mov (%si), %al
+  mov (%di), %dl
+
+  # cond: 0 ? e
+  test %cx, %cx
+  jz .strncmp__e
+  
+  # cond: != ? ne
+  cmp %al, %dl
+  jne .strncmp__ne
+
+  # step
+  add $0x01, %si
+  add $0x01, %di
+  sub $0x01, %cx
+  jmp .strncmp__lp
+
+.strncmp__e:
+  xor %ax, %ax
+  jmp .strncmp__done
+
+.strncmp__ne:
+  mov $0x01, %ax
+  jmp .strncmp__done
+
+.strncmp__done:
   # epil
   pop %di
   pop %si
