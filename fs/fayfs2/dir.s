@@ -4,14 +4,8 @@
 #
 # Directory entry
 
-.equ DEO_I_NUM_LO, 0x00
-.equ DEO_I_NUM_HI, 0x02
-.equ DEO_REC_LEN, 0x04
-.equ DEO_NAME_LEN, 0x06
-.equ DEO_FILE_TYPE, 0x07
-.equ DEO_NAME, 0x08
-
-.equ FIRST_LBA, 0x80
+.include "fayfs/sb.s"
+.include "fayfs/de.s"
 
 # TEXT
 .section .text
@@ -42,19 +36,19 @@ write_dentry2:
   mov (dentry_ptr), %bx
 
   # body
-  mov (f_i_num), %ax
-  mov %ax, DEO_I_NUM_LO(%bx)
-  mov (f_i_num+2), %ax
-  mov %ax, DEO_I_NUM_HI(%bx)
+  mov (next_i_num), %ax
+  mov %ax, DE_I_NUM_LO_OFF(%bx)
+  mov (next_i_num+2), %ax
+  mov %ax, DE_I_NUM_HI_OFF(%bx)
 
   # get file type
   mov 4(%bp), %ax
-  mov %al, DEO_FILE_TYPE(%bx)
+  mov %al, DE_FILE_TYPE_OFF(%bx)
 
   # init
   mov (arg_ptr), %si
   mov %bx, %di
-  add $DEO_NAME, %di
+  add $DE_NAME_OFF, %di
   xor %cx, %cx
 
 .write_dentry__set_name:
@@ -76,20 +70,15 @@ write_dentry2:
 
 .write_dentry__set_name_end:
   # set name len
-  mov %cl, DEO_NAME_LEN(%bx)
+  mov %cl, DE_NAME_LEN_OFF(%bx)
 
   # rec len calc
-  add $0x08, %cx # add fix size
-  mov %cx, %ax
   xor %dx, %dx
-
-  mov $0x04, %si
-  div %si
-
-  add %dx, %cx # align
+  add $0x0B, %cx # add fix size (8), align 4 (3)
+  and $0xFFFC, %cx # align 4 mask: 1100
 
   # set rec len
-  mov %cx, DEO_REC_LEN(%bx)
+  mov %cx, DE_REC_LEN_OFF(%bx)
 
   # write block
   call write_block
@@ -112,7 +101,7 @@ set_blk_lba:
   # calc
   mul %cx
 
-  mov $FIRST_LBA, %cx
+  mov $FST_LBA_LO, %cx
   add %cx, %ax
 
   # set dap lba # !!! TMP low high

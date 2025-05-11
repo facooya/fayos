@@ -4,7 +4,7 @@
 #
 # Super block, LBA [2-3]
 
-.include "sb.s"
+.include "fayfs/sb.s"
 
 # TEXT
 .section .text
@@ -26,21 +26,21 @@ read_sb:
   mov $0x8000, %bx
 
   # i_num
-  mov SB_ROOT_I_NUM_LO_OFF(%bx), %ax
+  mov ROOT_I_NUM_LO_OFF(%bx), %ax
   mov %ax, (i_num)
-  mov SB_ROOT_I_NUM_HI_OFF(%bx), %ax
+  mov ROOT_I_NUM_HI_OFF(%bx), %ax
   mov %ax, (i_num+0x02)
 
   # next_i_num
-  mov SB_NEXT_I_NUM_LO_OFF(%bx), %ax
+  mov NEXT_I_NUM_LO_OFF(%bx), %ax
   mov %ax, (next_i_num)
-  mov SB_NEXT_I_NUM_HI_OFF(%bx), %ax
+  mov NEXT_I_NUM_HI_OFF(%bx), %ax
   mov %ax, (next_i_num+0x02)
 
   # next_i_blk
-  mov SB_NEXT_I_BLK_LO_OFF(%bx), %ax
+  mov NEXT_I_BLK_LO_OFF(%bx), %ax
   mov %ax, (next_i_blk)
-  mov SB_NEXT_I_BLK_HI_OFF(%bx), %ax
+  mov NEXT_I_BLK_HI_OFF(%bx), %ax
   mov %ax, (next_i_blk+0x02)
 
   # epil
@@ -107,51 +107,51 @@ init_sb:
   mov $SB_LBA_HI, %ax
   mov %ax, SB_LBA_HI_OFF(%bx)
 
-  # i lba
-  mov $SB_I_LBA_LO, %ax
-  mov %ax, SB_I_LBA_LO_OFF(%bx)
-  mov $SB_I_LBA_HI, %ax
-  mov %ax, SB_I_LBA_HI_OFF(%bx)
+  # i tbl lba
+  mov $I_LBA_LO, %ax
+  mov %ax, I_LBA_LO_OFF(%bx)
+  mov $I_LBA_HI, %ax
+  mov %ax, I_LBA_HI_OFF(%bx)
 
   # root i num
-  mov $SB_ROOT_I_NUM_LO, %ax
-  mov %ax, SB_ROOT_I_NUM_LO_OFF(%bx)
-  mov $SB_ROOT_I_NUM_HI, %ax
-  mov %ax, SB_ROOT_I_NUM_HI_OFF(%bx)
+  mov $ROOT_I_NUM_LO, %ax
+  mov %ax, ROOT_I_NUM_LO_OFF(%bx)
+  mov $ROOT_I_NUM_HI, %ax
+  mov %ax, ROOT_I_NUM_HI_OFF(%bx)
 
   # fst lba
-  mov $SB_FST_LBA_LO, %ax
-  mov %ax, SB_FST_LBA_LO_OFF(%bx)
-  mov $SB_FST_LBA_HI, %ax
-  mov %ax, SB_FST_LBA_HI_OFF(%bx)
+  mov $FST_LBA_LO, %ax
+  mov %ax, FST_LBA_LO_OFF(%bx)
+  mov $FST_LBA_HI, %ax
+  mov %ax, FST_LBA_HI_OFF(%bx)
 
   # fst i num
-  mov $SB_FST_I_NUM_LO, %ax
-  mov %ax, SB_FST_I_NUM_LO_OFF(%bx)
-  mov $SB_FST_I_NUM_HI, %ax
-  mov %ax, SB_FST_I_NUM_HI_OFF(%bx)
+  mov $FST_I_NUM_LO, %ax
+  mov %ax, FST_I_NUM_LO_OFF(%bx)
+  mov $FST_I_NUM_HI, %ax
+  mov %ax, FST_I_NUM_HI_OFF(%bx)
 
   # fst i blk
-  mov $SB_FST_I_BLK_LO, %ax
-  mov %ax, SB_FST_I_BLK_LO_OFF(%bx)
-  mov $SB_FST_I_BLK_HI, %ax
-  mov %ax, SB_FST_I_BLK_HI_OFF(%bx)
+  mov $FST_I_BLK_LO, %ax
+  mov %ax, FST_I_BLK_LO_OFF(%bx)
+  mov $FST_I_BLK_HI, %ax
+  mov %ax, FST_I_BLK_HI_OFF(%bx)
 
   # i size
-  mov $SB_I_SIZE, %ax
-  mov %ax, SB_I_SIZE_OFF(%bx)
+  mov $I_SIZE, %ax
+  mov %ax, I_SIZE_OFF(%bx)
 
   # next i num
-  mov $SB_NEXT_I_NUM_LO, %ax
-  mov %ax, SB_NEXT_I_NUM_LO_OFF(%bx)
-  mov $SB_NEXT_I_NUM_HI, %ax
-  mov %ax, SB_NEXT_I_NUM_HI_OFF(%bx)
+  mov $NEXT_I_NUM_LO, %ax
+  mov %ax, NEXT_I_NUM_LO_OFF(%bx)
+  mov $NEXT_I_NUM_HI, %ax
+  mov %ax, NEXT_I_NUM_HI_OFF(%bx)
 
   # next blk num
-  mov $SB_NEXT_I_BLK_LO, %ax
-  mov %ax, SB_NEXT_I_BLK_LO_OFF(%bx)
-  mov $SB_NEXT_I_BLK_HI, %ax
-  mov %ax, SB_NEXT_I_BLK_HI_OFF(%bx)
+  mov $NEXT_I_BLK_LO, %ax
+  mov %ax, NEXT_I_BLK_LO_OFF(%bx)
+  mov $NEXT_I_BLK_HI, %ax
+  mov %ax, NEXT_I_BLK_HI_OFF(%bx)
   ret
 
 # .ENTRY

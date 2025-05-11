@@ -4,10 +4,7 @@
 #
 # Index node
 
-# CONST
-.equ I_LBA_LO, 0x10
-.equ I_LBA_HI, 0x00
-.equ I_SIZE, 0x20
+.include "fayfs/sb.s"
 
 # TEXT
 .section .text
@@ -32,9 +29,13 @@ read_inode:
   mov $0x8000, %bx
 
   # calc i_num
+  xor %dx, %dx
   mov (i_num), %cx
   mov $I_SIZE, %ax
   mul %cx
+  # ax *= cx
+
+  # set mem
   add %ax, %bx
 
   # set i_blk
@@ -59,24 +60,26 @@ write_inode:
   mov $0x8000, %bx
 
   # calc tbl ptr !!! FIXME i_num
-  mov (f_i_num), %cx
+  xor %dx, %dx
+  mov (next_i_num), %cx
   mov $I_SIZE, %ax
   mul %cx
+  # ax *= cx
 
   # add tbl ptr
   add %ax, %bx
 
   # set next i_num
   add $0x01, %cx
-  mov %cx, (f_i_num)
+  mov %cx, (next_i_num)
 
   # block num # !!! FIXME i_blk
-  mov (f_blk_num), %ax
+  mov (next_i_blk), %ax
   mov %ax, 0(%bx)
 
   # set next blk_num
   add $0x01, %ax
-  mov %ax, (f_blk_num)
+  mov %ax, (next_i_blk)
 
   # file type
   mov $0x80, %al
