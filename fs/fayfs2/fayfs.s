@@ -16,6 +16,8 @@
 
 dentry_ptr: .word 0x00
 
+cwd_i_num: .long 0x00
+
 i_num: .long 0x00 # 0x02: root inode
 i_blk: .long 0x00 # 0x01: root dir blk
 

@@ -4,6 +4,8 @@
 #
 # Index node
 
+# NOTE
+
 .include "fayfs/sb.s"
 .include "fayfs/i.s"
 
@@ -14,7 +16,53 @@
 .global read_inode
 .global write_inode
 .global init_inode
+
 .global set_i_lba
+.global get_i_blk
+.global add_inode
+
+# ENTRY
+# [n_add_inode]
+# add_inode(
+#   src_i_num_hi, src_i_num_lo
+#   dst_i_num_hi, dst_i_num_lo
+#   info (hi=file_type, lo=blk_len),
+#   blk_arr
+# )
+
+# ENTRY
+# get_i_blk(i_num_hi, i_num_lo)
+get_i_blk:
+  # prol
+  push %bp
+  mov %sp, %bp
+  push %bx
+
+  # read inode
+  call set_i_lba
+  call read_block
+  mov $0x8000, %bx
+
+  # calc i_num
+  xor %dx, %dx
+  mov 0x04(%bp), %cx
+  mov $I_SIZE, %ax
+  mul %cx
+  # ax *= cx
+
+  # set mem
+  add %ax, %bx
+
+  # set i_blk
+  mov I_BLK_LO_OFF(%bx), %ax
+  mov %ax, (i_blk) # TMP
+  mov I_BLK_HI_OFF(%bx), %dx
+  mov %dx, (i_blk+0x02) # TMP
+
+  # epil
+  pop %bx
+  pop %bp
+  ret
 
 # ENTRY
 # read_inode()
