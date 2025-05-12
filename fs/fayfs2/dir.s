@@ -12,7 +12,9 @@
 #   info,
 #   name
 # )
-# [2-byte] *_i_num_*
+# [4-byte] *_i_num
+#   [2-byte] _hi
+#   [2-byte] _lo
 # [2-byte] info: hi=file_type, lo=name_len
 #   [1-byte] file_type
 #   [1-byte] name_len

@@ -24,14 +24,60 @@
 # ENTRY
 # [n_add_inode]
 # add_inode(
-#   src_i_num_hi, src_i_num_lo
-#   dst_i_num_hi, dst_i_num_lo
+#   i_num_hi, i_num_lo
+#   i_blk_num_hi, i_blk_num_lo
 #   info (hi=file_type, lo=blk_len),
-#   blk_arr
+#   # !!! FIXME blk_arr, blk_len
 # )
+add_inode:
+  # prol
+  push %bp
+  mov %sp, %bp
+  push %bx
+
+  # read i tbl
+  call set_i_lba
+  call read_block
+  mov $0x8000, %bx
+
+  # calc inode !!! FIXME hi,lo
+  xor %dx, %dx
+  mov 0x06(%bp), %cx
+  mov $I_SIZE, %ax
+  mul %cx
+  # ax *= cx
+
+  # set mem
+  add %ax, %bx
+
+  # write i_blk !!! FIXME hi,lo
+  mov 0x0A(%bp), %ax
+  mov %ax, I_BLK_LO_OFF(%bx)
+
+  # write info
+  mov 0x0C(%bp), %ax
+  mov %ah, I_FILE_TYPE_OFF(%bx)
+  mov %al, I_BLK_LEN_OFF(%bx)
+
+  # add next !!! TMP
+  mov (next_i_num), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_num)
+  mov (next_i_blk), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_blk)
+
+  # write
+  call write_block
+
+  # epil
+  pop %bx
+  pop %bp
+  ret
 
 # ENTRY
 # get_i_blk(i_num_hi, i_num_lo)
+#   ret: i_blk
 get_i_blk:
   # prol
   push %bp
