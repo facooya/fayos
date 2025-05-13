@@ -4,16 +4,15 @@
 #
 # Change directory
 
-# INDEX
-# cmd_cd()
+# FIXME no dir
+
+.include "fayfs/de.s"
 
 # DATA
 .section .data
 
-.no_dir_err_msg: .asciz "No found directory."
-.not_dir_err_msg: .asciz "Not a directory."
+.no_found_err_msg: .asciz "Not found directory."
 
-# TEXT
 .section .text
 .code16
 
@@ -27,133 +26,103 @@ cmd_cd:
   push %di
   push %bx
 
-  # arg
-  mov (arg_ptr), %si
-
-  # load
-  mov (%si), %ax
-
-  # cond: period ? back
-  cmp $0x2E2E, %ax # period
-  jz .cmd_cd__back
-
-  # set lba
-  mov (cwd_lba), %ax
+  # get i blk
+  mov (i_num), %ax
   push %ax
-  mov (cwd_lba+2), %ax
+  mov (i_num+0x02), %ax
   push %ax
-  call set_dap_lba
+  call get_i_blk
   add $0x04, %sp
+
+  call set_blk_lba
 
   # read block
   call read_block
   mov $0x8000, %bx
 
-.cmd_cd__find_magic_lp:
-  # cond: magic ? strcmp
-  mov (%bx), %ax
-  cmp $0xFADE, %ax
-  je .cmd_cd__strcmp
+.cmd_cd__cmp_name_len:
+  # init
+  mov (arg_ptr), %si
 
-  # cond: null ? hdl_no_dir_err
-  test %ax, %ax
-  or 2(%bx), %ax
-  jz .hdl_no_dir_err
+  # get len
+  push %si
+  call strlen
+  add $0x02, %sp
+  # ax = len
 
-  # step
-  add $0x02, %bx
-  jmp .cmd_cd__find_magic_lp
-
-.cmd_cd__strcmp:
-  # copy ptr (magic)
-  mov %bx, %si
-
-  # get total name size
+  # set name len
   xor %cx, %cx
-  mov 2(%bx), %cl # name size
-  add 3(%bx), %cl # padding size
-  # cx = total name size
+  mov DE_NAME_LEN_OFF(%bx), %cl
 
-  # init {strcmp}
-  sub %cx, %si
-  mov (arg_ptr), %di
-  # si = file name ptr
-  # di = arg ptr
+  # cond: 0 ? hdl_no_found_err
+  test %cx, %cx
+  jz .hdl_no_found_err
 
-  # call {strcmp}
+  # cond: != ? cmp_name_ne
+  cmp %cx, %ax
+  jne .cmd_cd__cmp_name_ne
+
+  # set name ptr
+  mov %bx, %di
+  add $DE_NAME_OFF, %di
+
+  # cmp
+  push %cx
   push %di
   push %si
-  call strcmp
-  add $0x04, %sp
-  # ax = ret code
-  # cx = count
-  
-  # chk {strcmp}
+  call strncmp
+  add $0x06, %sp
+  # ax = 0: true, 1: false
+
+  # cond: true ? cmp_name_e
   test %ax, %ax
-  jz .cmd_cd__main
+  jz .cmd_cd__cmp_name_e
 
-  # loop
-  add $0x0A, %bx # cat.s [n_skip_dentry]
-  jmp .cmd_cd__find_magic_lp
+  # ne
+  jmp .cmd_cd__cmp_name_ne
 
-.cmd_cd__main:
-  # cond: dir_type != ? hdl_not_dir_err
-  mov 9(%bx), %al
-  cmp $0x0D, %al
-  jne .hdl_not_dir_err
+.cmd_cd__cmp_name_e:
+  # !!! FIXME chk file type
 
-  # get data lba (dentry), set lba (cwd_lba)
-  mov 4(%bx), %ax # low
-  mov %ax, (cwd_lba)
-  mov 6(%bx), %ax # high
-  mov %ax, (cwd_lba+2)
+  # get dst inode num
+  mov DE_I_NUM_LO_OFF(%bx), %ax
+  mov %ax, (i_num)
+  mov DE_I_NUM_HI_OFF(%bx), %ax
+  mov %ax, (i_num+0x02)
+
+  # get i blk
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call get_i_blk
+  add $0x04, %sp
+
+  # done
+  jmp .cmd_cd__done
+
+.cmd_cd__cmp_name_ne:
+  # add rec len
+  mov DE_REC_LEN_OFF(%bx), %cx
+  add %cx, %bx
+
+  # next name
+  jmp .cmd_cd__cmp_name_len
 
 .cmd_cd__done:
   call outnl
 
   # epil
-  pop %bx
-  pop %di
   pop %si
+  pop %di
+  pop %bx
   ret
 
-# BACK
-.cmd_cd__back:
-  # !!! meta_data
-  # set meta lba
-  mov (cwd_lba), %ax
-  push %ax
-  mov (cwd_lba+2), %ax
-  push %ax
-  call set_dap_lba
-  add $0x04, %sp
-
-  # read block
-  call read_block
-  mov $0x8000, %bx
-
-  # get parent lba (dentry !!! mata_data), set lba (cwd_lba)
-  mov (%bx), %ax # low
-  mov %ax, (cwd_lba)
-  mov 2(%bx), %ax # high
-  mov %ax, (cwd_lba+2)
-
-  jmp .cmd_cd__done
-
 # ERR
-.hdl_no_dir_err:
+.hdl_no_found_err:
   call outnl
 
-  push $.no_dir_err_msg
-  call puts
-  add $0x02, %sp
-
-  jmp .cmd_cd__done
-
-.hdl_not_dir_err:
-  call outnl
-
-  push $.not_dir_err_msg
+  push $.no_found_err_msg
   call puts
   add $0x02, %sp
 

@@ -15,11 +15,11 @@
 .section .text
 .code16
 
-.global cmd_rm
+.global cmd_rm_old
 
 # ENTRY
 # cmd_rm()
-cmd_rm:
+cmd_rm_old:
   # prol
   push %si
   push %di

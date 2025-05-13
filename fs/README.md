@@ -1,6 +1,7 @@
 FAYFS - FAcooYa File System
 
-alloc.s - allocate free lba  
+alloc.s - allocate  
 dir.s - directory entry  
-meta.s - write metadata  
-super.s - super block  
+fayfs.s - cache  
+inode.s - index node  
+super.s - superblock  

@@ -29,32 +29,21 @@ lib/str/trim.s \
 lib/put/out.s \
 lib/put/puts.s \
 \
-fs/fayfs/super.s \
-fs/fayfs/dir.s \
-fs/fayfs/meta.s \
 fs/fayfs/alloc.s \
-\
-fs/fayfs2/alloc.s \
-fs/fayfs2/dir.s \
-fs/fayfs2/fayfs.s \
-fs/fayfs2/inode.s \
-fs/fayfs2/super.s \
+fs/fayfs/dir.s \
+fs/fayfs/fayfs.s \
+fs/fayfs/inode.s \
+fs/fayfs/super.s \
 \
 cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \
 \
-cmd/file/cat.s \
-cmd/file/ls.s \
 cmd/file/touch.s \
-cmd/file/touch2.s \
-cmd/file/rm.s \
 \
-cmd/dir/ls2.s \
-cmd/dir/mkdir2.s \
-cmd/dir/cd2.s \
-cmd/dir/mkdir.s \
-cmd/dir/cd.s
+cmd/dir/cd.s \
+cmd/dir/ls.s \
+cmd/dir/mkdir.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 

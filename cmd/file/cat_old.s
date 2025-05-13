@@ -20,10 +20,10 @@
 .section .text
 .code16
 
-.global cmd_cat
+.global cmd_cat_old
 
 # cmd_cat()
-cmd_cat:
+cmd_cat_old:
   # prol
   push %si
   push %di

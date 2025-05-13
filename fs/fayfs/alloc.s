@@ -2,47 +2,40 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Allocate LBA (docs/fs/fayfs/alloc.txt)
+# Allocate
 
-.code16
+.include "fayfs/de.s"
+
 .section .text
+.code16
 
-.global init_free_lba
+.global alloc_dentry
 
-.extern free_lba
-.extern read_block
-
-init_free_lba:
+# ENTRY
+# alloc_dentry()
+#   pre: bx = main mem ptr
+alloc_dentry:
   # prol
   push %bx
 
-  # mem ptr
-  mov $0x8000, %bx
+.alloc_dentry__lp:
+  # load
+  mov DE_I_NUM_LO_OFF(%bx), %ax
 
-.init_free_lba__lp:
-  # set dap lba
-  mov (free_lba), %ax
-  push %ax
-  mov (free_lba+2), %ax
-  push %ax
-  call set_dap_lba
-  add $0x04, %sp
-
-  call read_block
-
-  # cond: null ? done
-  mov (%bx), %ax
+  # cond: null ? end
   test %ax, %ax
-  or 2(%bx), %ax
-  jz .init_free_lba__done
+  or DE_I_NUM_HI_OFF(%bx), %ax
+  jz .alloc_dentry__end
 
-  # loop
-  mov (free_lba), %ax
-  add $0x08, %ax
-  mov %ax, (free_lba)
-  jmp .init_free_lba__lp
+  # step
+  mov DE_REC_LEN_OFF(%bx), %cx
+  add %cx, %bx
+  jmp .alloc_dentry__lp
 
-.init_free_lba__done:
+.alloc_dentry__end:
+  # set
+  mov %bx, (dentry_ptr)
+
   # epil
   pop %bx
   ret

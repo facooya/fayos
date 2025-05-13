@@ -2,18 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# List 2 for fayfs 2, Temporary command
+# Show list
 
 .include "fayfs/de.s"
 
 .section .text
 .code16
 
-.global cmd_ls2
+.global cmd_ls
 
 # ENTRY
-# cmd_ls2()
-cmd_ls2:
+# cmd_ls()
+cmd_ls:
   push %si
   push %bx
 
@@ -34,7 +34,7 @@ cmd_ls2:
   call read_block
   mov $0x8000, %bx
 
-.cmd_ls2__out_name:
+.cmd_ls__out_name:
   # set name ptr
   mov %bx, %si
   add $DE_NAME_OFF, %si
@@ -43,10 +43,10 @@ cmd_ls2:
   xor %cx, %cx
   mov DE_NAME_LEN_OFF(%bx), %cl
 
-.cmd_ls2__out_str:
+.cmd_ls__out_str:
   # cond: 0 ? out_str_end
   test %cx, %cx
-  jz .cmd_ls2__out_str_end
+  jz .cmd_ls__out_str_end
 
   # out
   mov (%si), %al
@@ -55,23 +55,23 @@ cmd_ls2:
   # step
   add $0x01, %si
   sub $0x01, %cx
-  jmp .cmd_ls2__out_str
+  jmp .cmd_ls__out_str
 
-.cmd_ls2__out_str_end:
+.cmd_ls__out_str_end:
   # add rec_len
   mov DE_REC_LEN_OFF(%bx), %ax
   add %ax, %bx
 
   # cond: null ? end
   test %ax, %ax
-  jz .cmd_ls2__end
+  jz .cmd_ls__end
 
   # loop
   call outsp
   call outsp
-  jmp .cmd_ls2__out_name
+  jmp .cmd_ls__out_name
 
-.cmd_ls2__end:
+.cmd_ls__end:
   call outnl
 
   # epil

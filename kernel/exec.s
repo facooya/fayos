@@ -15,26 +15,18 @@ cmd_map:
   .asciz "echo"
   .word cmd_touch
   .asciz "touch"
-  .word cmd_touch2
-  .asciz "touch2"
-  .word cmd_ls2
-  .asciz "ls2"
-  .word cmd_rm
-  .asciz "rm"
+  # .word cmd_rm_old
+  # .asciz "rm"
   .word cmd_ls
   .asciz "ls"
-  .word cmd_cat
-  .asciz "cat"
+  # .word cmd_cat_old
+  # .asciz "cat"
   .word cmd_help
   .asciz "help"
   .word cmd_mkdir
   .asciz "mkdir"
-  .word cmd_mkdir2
-  .asciz "mkdir2"
   .word cmd_cd
   .asciz "cd"
-  .word cmd_cd2
-  .asciz "cd2"
   .word 0x00
   .asciz ""
 

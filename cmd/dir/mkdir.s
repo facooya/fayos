@@ -4,150 +4,106 @@
 #
 # Make directory
 
-# INDEX
-# cmd_mkdir()
+# FIXME not dir, already exist
 
 # DATA
 .section .data
 
-.exist_err_msg: .asciz "Already exists."
+.name_dot: .ascii "."
+.name_dotdot: .ascii ".."
 
-# TEXT
 .section .text
 .code16
 
 .global cmd_mkdir
 
+# ENTRY
 # cmd_mkdir()
 cmd_mkdir:
   # prol
   push %si
-  push %di
-  push %bx
 
-  # set lba
-  mov (cwd_lba), %ax
-  push %ax
-  mov (cwd_lba+2), %ax
-  push %ax
-  call set_dap_lba
-  add $0x04, %sp
-
-  # read block
-  call read_block
-  mov $0x8000, %bx
-
-.cmd_mkdir__find_magic_lp:
-  # cond: magic ? strcmp
-  mov (%bx), %ax
-  cmp $0xFADE, %ax
-  je .cmd_mkdir__strcmp
-
-  # cond: null ? write_name
-  test %ax, %ax
-  or 2(%bx), %ax
-  jz .cmd_mkdir__write_name
-
-  # loop
-  add $0x02, %bx
-  jmp .cmd_mkdir__find_magic_lp
-
-.cmd_mkdir__strcmp:
-  # copy ptr (magic)
-  mov %bx, %si
-
-  # get name total size
-  xor %cx, %cx
-  mov 2(%bx), %cl
-  add 3(%bx), %cl
-
-  # init {strcmp}
-  sub %cx, %si
-  mov (arg_ptr), %di
-  # si = file name ptr
-  # di = arg ptr
-
-  # call {strcmp}
-  push %di
-  push %si
-  call strcmp
-  add $0x04, %sp
-  # ax = ret code
-  # cx = count
-
-  # chk {strcmp}
-  test %ax, %ax
-  jz .hdl_exist_err
-
-  # loop
-  add $0x0A, %bx
-  jmp .cmd_mkdir__find_magic_lp
-
-.cmd_mkdir__write_name:
-  # init
-  mov (arg_ptr), %si
-  xor %cx, %cx
-
-.cmd_mkdir__write_name_lp:
-  # cond: null ? write_name_end
-  mov (%si), %al # arg
-  test %al, %al
-  jz .cmd_mkdir__write_name_end
-
-  # write mem
-  mov %al, (%bx)
-
-  # loop
-  add $0x01, %bx
-  add $0x01, %si
-  add $0x01, %cx
-  jmp .cmd_mkdir__write_name_lp
-
-.cmd_mkdir__write_name_end:
-  # add null char
-  add $0x01, %bx
-  add $0x01, %cx # name size
-
-  # write dentry
-  push %cx
-  call write_dentry
-  add $0x02, %sp
-
-  # write dentry type
-  push $0x0D # directory
-  call write_dentry__type
-  add $0x02, %sp
-
-  # write dentry data lba
-  mov (free_lba), %ax
-  mov %ax, 4(%bx)
-  mov (free_lba+2), %ax
-  mov %ax, 6(%bx)
-
-  call write_block
-
-  call write_meta
-
-  # allocate
-  mov (free_lba), %ax
-  add $0x08, %ax
-  mov %ax, (free_lba)
-
-.cmd_mkdir__done:
   call outnl
+
+  # add inode
+  mov $0x40, %ch
+  mov $0x01, %cl
+  push %cx
+  mov (next_i_blk), %ax
+  push %ax
+  mov (next_i_blk+0x02), %ax
+  push %ax
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  call add_inode
+  add $0x0A, %sp
+
+  # add dentry
+  mov (arg_ptr), %si
+  push %si
+  call strlen
+  add $0x02, %sp
+  # ax = len
+  mov %al, %cl
+  mov $0x40, %ch
+  push %si
+  push %cx
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call add_dentry
+  add $0x0C, %sp
+
+  # add dentry dot
+  mov $.name_dot, %si
+  mov $0x01, %cl # name len
+  mov $0x40, %ch
+  push %si
+  push %cx
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  call add_dentry
+  add $0x0C, %sp
+
+  # add dentry dotdot
+  mov $.name_dotdot, %si
+  mov $0x02, %cl # name len
+  mov $0x40, %ch
+  push %si
+  push %cx
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  call add_dentry
+  add $0x0C, %sp
+
+  # update sb
+  mov (next_i_num), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_num)
+  mov (next_i_blk), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_blk)
+  call write_sb
 
   # epil
-  pop %bx
-  pop %di
   pop %si
   ret
-
-# ERR
-.hdl_exist_err:
-  call outnl
-
-  push $.exist_err_msg
-  call puts
-  add $0x02, %sp
-
-  jmp .cmd_mkdir__done
