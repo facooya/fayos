@@ -13,10 +13,6 @@
 .section .text
 .code16
 
-.global read_inode
-.global write_inode
-.global init_inode
-
 .global set_i_lba
 .global get_i_blk
 .global add_inode
@@ -59,14 +55,6 @@ add_inode:
   mov %ah, I_FILE_TYPE_OFF(%bx)
   mov %al, I_BLK_LEN_OFF(%bx)
 
-  # add next !!! TMP
-  mov (next_i_num), %ax
-  add $0x01, %ax
-  mov %ax, (next_i_num)
-  mov (next_i_blk), %ax
-  add $0x01, %ax
-  mov %ax, (next_i_blk)
-
   # write
   call write_block
 
@@ -91,7 +79,7 @@ get_i_blk:
 
   # calc i_num
   xor %dx, %dx
-  mov 0x04(%bp), %cx
+  mov 0x06(%bp), %cx
   mov $I_SIZE, %ax
   mul %cx
   # ax *= cx
@@ -108,90 +96,6 @@ get_i_blk:
   # epil
   pop %bx
   pop %bp
-  ret
-
-# ENTRY
-# read_inode()
-read_inode:
-  # prol
-  push %bx
-
-  # set lba
-  call set_i_lba
-
-  # read block
-  call read_block
-  mov $0x8000, %bx
-
-  # calc i_num
-  xor %dx, %dx
-  mov (i_num), %cx
-  mov $I_SIZE, %ax
-  mul %cx
-  # ax *= cx
-
-  # set mem
-  add %ax, %bx
-
-  # set i_blk
-  mov I_BLK_LO_OFF(%bx), %ax
-  mov %ax, (i_blk)
-
-  # epil
-  pop %bx
-  ret
-
-# ENTRY
-# write_inode() !!! TMP low high
-write_inode:
-  # prol
-  push %bx
-
-  # set lba
-  call set_i_lba
-
-  # read block
-  call read_block
-  mov $0x8000, %bx
-
-  # calc tbl ptr !!! FIXME i_num
-  xor %dx, %dx
-  mov (next_i_num), %cx
-  mov $I_SIZE, %ax
-  mul %cx
-  # ax *= cx
-
-  # add tbl ptr
-  add %ax, %bx
-
-  # set next i_num
-  add $0x01, %cx
-  mov %cx, (next_i_num)
-
-  # block num
-  mov (next_i_blk), %ax
-  mov %ax, I_BLK_LO_OFF(%bx)
-
-  # set next blk_num
-  add $0x01, %ax
-  mov %ax, (next_i_blk)
-
-  # file type !!! FIXME 4(%bp)
-  mov $0x80, %al
-  mov %al, I_FILE_TYPE_OFF(%bx)
-
-  # write block
-  call write_block
-
-  # epil
-  pop %bx
-  ret
-
-# ENTRY
-# init_inode()
-init_inode:
-  # root dir
-  call write_inode
   ret
 
 # ENTRY

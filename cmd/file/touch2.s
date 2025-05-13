@@ -14,16 +14,8 @@
 cmd_touch2:
   # prol
   push %si
-  push %bx
 
   call outnl
-
-  # call write_inode
-
-  # mov $0x80, %ax
-  # push %ax
-  # call write_dentry2 # !!! TMP
-  # add $0x02, %sp
 
   # add inode
   mov $0x80, %ch
@@ -61,7 +53,14 @@ cmd_touch2:
   call add_dentry
   add $0x0C, %sp
 
+  # update
+  mov (next_i_num), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_num)
+  mov (next_i_blk), %ax
+  add $0x01, %ax
+  mov %ax, (next_i_blk)
+
   # epil
-  pop %bx
   pop %si
   ret

@@ -19,11 +19,18 @@
 # ENTRY
 # cmd_cd2()
 cmd_cd2:
+  # prol
   push %si
   push %di
   push %bx
 
-  call read_inode
+  # get i blk
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call get_i_blk
+  add $0x04, %sp
 
   call set_blk_lba
 
@@ -74,15 +81,20 @@ cmd_cd2:
 
 .cmd_cd2__cmp_name_e:
   # !!! FIXME chk file type
-  
+
   # get dst inode num
   mov DE_I_NUM_LO_OFF(%bx), %ax
   mov %ax, (i_num)
   mov DE_I_NUM_HI_OFF(%bx), %ax
   mov %ax, (i_num+0x02)
 
-  # set i blk
-  call read_inode
+  # get i blk
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call get_i_blk
+  add $0x04, %sp
 
   # done
   jmp .cmd_cd2__done

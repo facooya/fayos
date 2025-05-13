@@ -19,7 +19,15 @@ cmd_ls2:
 
   call outnl
 
-  call read_inode # update i_blk
+  # get i blk
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call get_i_blk
+  add $0x04, %sp
+
+  # set blk lba
   call set_blk_lba
 
   # read block
@@ -35,9 +43,6 @@ cmd_ls2:
   xor %cx, %cx
   mov DE_NAME_LEN_OFF(%bx), %cl
 
-  # TMP !!!
-  mov $0x0E, %ah
-
 .cmd_ls2__out_str:
   # cond: 0 ? out_str_end
   test %cx, %cx
@@ -45,7 +50,7 @@ cmd_ls2:
 
   # out
   mov (%si), %al
-  int $0x10 # TMP !!!
+  call sys_tty_out # !!! TMP
 
   # step
   add $0x01, %si

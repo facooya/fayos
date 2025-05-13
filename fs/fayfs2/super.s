@@ -6,6 +6,15 @@
 
 .include "fayfs/sb.s"
 
+# DATA
+.section .data
+
+.name_dot: .asciz "."
+.name_dotdot: .asciz ".."
+.sb_try_msg: .asciz "\nSuperblock not found. Try creating ...\r\n"
+.sb_found_msg: .asciz "\nSuperblock found.\r\n"
+.sb_ok_msg: .asciz "Superblock ok\r\n"
+
 # TEXT
 .section .text
 .code16
@@ -25,11 +34,17 @@ read_sb:
   call read_block
   mov $0x8000, %bx
 
-  # i_num
+  # root i_num
   mov ROOT_I_NUM_LO_OFF(%bx), %ax
   mov %ax, (i_num)
   mov ROOT_I_NUM_HI_OFF(%bx), %ax
   mov %ax, (i_num+0x02)
+
+  # root i_blk
+  mov ROOT_I_BLK_LO_OFF(%bx), %ax
+  mov %ax, (i_blk)
+  mov ROOT_I_BLK_HI_OFF(%bx), %ax
+  mov %ax, (i_blk+0x02)
 
   # next_i_num
   mov NEXT_I_NUM_LO_OFF(%bx), %ax
@@ -76,11 +91,19 @@ init_sb:
   cmp $SB_MAG_HI, %ax
   jne .init_sb__mag_ne
 
+  push $.sb_found_msg
+  call puts
+  add $0x02, %sp
+
   # done
   call reset_dap_target
   jmp .init_sb__done
 
 .init_sb__mag_ne:
+  push $.sb_try_msg
+  call puts
+  add $0x02, %sp
+
   # set sb
   call .init_sb__set
 
@@ -90,23 +113,62 @@ init_sb:
   # read sb
   call read_sb
 
-  # set i_blk
-  call read_inode
+  # add inode root
+  mov $0x40, %ch
+  mov $0x01, %cl
+  push %cx
+  mov (i_blk), %ax
+  push %ax
+  mov (i_blk+0x02), %ax
+  push %ax
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call add_inode
+  add $0x0A, %sp
 
-  # !!! FIXME add root dir
-  # call write_inode
+  # add dentry dot
+  mov $.name_dot, %si
+  mov $0x01, %cl # name len
+  mov $0x40, %ch
+  push %si
+  push %cx
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call add_dentry
+  add $0x0C, %sp
 
-  # mov $0x40, %ax
-  # push %ax
-  # call write_dentry2
-  # add $0x02, %sp
+  # add dentry dotdot
+  mov $.name_dotdot, %si
+  mov $0x02, %cl # name len
+  mov $0x40, %ch
+  push %si
+  push %cx
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call add_dentry
+  add $0x0C, %sp
 
 .init_sb__done:
-  # read sb
+  # set
   call read_sb
 
-  # set i_blk
-  call read_inode
+  push $.sb_ok_msg
+  call puts
+  add $0x02, %sp
 
   # epil
   pop %bx
@@ -151,11 +213,11 @@ init_sb:
   mov $FST_I_NUM_HI, %ax
   mov %ax, FST_I_NUM_HI_OFF(%bx)
 
-  # fst i blk
-  mov $FST_I_BLK_LO, %ax
-  mov %ax, FST_I_BLK_LO_OFF(%bx)
-  mov $FST_I_BLK_HI, %ax
-  mov %ax, FST_I_BLK_HI_OFF(%bx)
+  # root i blk
+  mov $ROOT_I_BLK_LO, %ax
+  mov %ax, ROOT_I_BLK_LO_OFF(%bx)
+  mov $ROOT_I_BLK_HI, %ax
+  mov %ax, ROOT_I_BLK_HI_OFF(%bx)
 
   # i size
   mov $I_SIZE, %ax
