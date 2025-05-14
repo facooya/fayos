@@ -34,8 +34,9 @@ alloc_dentry:
 
 .alloc_dentry__end:
   # set
-  sub $0x8000, %bx
-  mov %bx, (dentry_ptr)
+  mov %bx, %ax
+  sub $0x8000, %ax
+  mov %ax, (dentry_ptr)
 
   # epil
   pop %bx

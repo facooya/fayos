@@ -78,7 +78,7 @@ update_i_file_size:
   call read_block
   mov $0x8000, %bx
 
-  # calc inode !!! FIXME hi,lo
+  # calc inode !!! HACK only low
   xor %dx, %dx
   mov 0x06(%bp), %cx
   mov $I_SIZE, %ax

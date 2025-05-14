@@ -22,6 +22,7 @@
 cmd_mkdir:
   # prol
   push %si
+  push %bx
 
   call outnl
 
@@ -95,8 +96,33 @@ cmd_mkdir:
   call add_dentry
   add $0x0C, %sp
 
-  # FIXME!!! file_size update err
-  # update i file_size
+  # update child i_file_size
+  mov (dentry_ptr), %ax # HACK!!! dentry_ptr
+  push %ax
+  mov (next_i_num), %ax
+  push %ax
+  mov (next_i_num+0x02), %ax
+  push %ax
+  call update_i_file_size
+  add $0x06, %sp
+
+  # read_inode(i_num_hi, i_num_lo)
+  #   ret: i_file_size
+  #   ret: i_blk
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call read_inode
+  add $0x04, %sp
+
+  # read
+  call set_blk_lba
+  call read_block
+  mov $0x8000, %bx
+  call alloc_dentry
+
+  # update i file_size # HACK!!! dentry_ptr
   mov (dentry_ptr), %ax
   push %ax
   mov (i_num), %ax
@@ -116,5 +142,6 @@ cmd_mkdir:
   call write_sb
 
   # epil
+  pop %bx
   pop %si
   ret
