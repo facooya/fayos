@@ -16,6 +16,7 @@
 .global set_i_lba
 .global get_i_blk
 .global add_inode
+.global update_i_file_size
 
 # ENTRY
 # [n_add_inode]
@@ -54,6 +55,41 @@ add_inode:
   mov 0x0C(%bp), %ax
   mov %ah, I_FILE_TYPE_OFF(%bx)
   mov %al, I_BLK_LEN_OFF(%bx)
+
+  # write
+  call write_block
+
+  # epil
+  pop %bx
+  pop %bp
+  ret
+
+# ENTRY
+# update_i_file_size(i_num_hi, i_num_lo, dentry_ptr)
+update_i_file_size:
+  # prol
+  push %bp
+  mov %sp, %bp
+  push %bx
+
+  # read i tbl
+  call set_i_lba
+  call read_block
+  mov $0x8000, %bx
+
+  # calc inode !!! FIXME hi,lo
+  xor %dx, %dx
+  mov 0x06(%bp), %cx
+  mov $I_SIZE, %ax
+  mul %cx
+  # ax *= cx
+
+  # set mem
+  add %ax, %bx
+
+  # update file_size
+  mov 0x08(%bp), %ax
+  mov %ax, I_FILE_SIZE_OFF(%bx)
 
   # write
   call write_block

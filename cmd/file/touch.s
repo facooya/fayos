@@ -55,6 +55,16 @@ cmd_touch:
   call add_dentry
   add $0x0C, %sp
 
+  # update i file_size
+  mov (dentry_ptr), %ax
+  push %ax
+  mov (i_num), %ax
+  push %ax
+  mov (i_num+0x02), %ax
+  push %ax
+  call update_i_file_size
+  add $0x06, %sp
+
   # update sb
   mov (next_i_num), %ax
   add $0x01, %ax
