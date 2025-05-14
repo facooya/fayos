@@ -15,8 +15,8 @@ cmd_map:
   .asciz "echo"
   .word cmd_touch
   .asciz "touch"
-  # .word cmd_rm_old
-  # .asciz "rm"
+  .word cmd_rm
+  .asciz "rm"
   .word cmd_ls
   .asciz "ls"
   # .word cmd_cat_old

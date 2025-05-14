@@ -14,17 +14,20 @@
 # ENTRY
 # cmd_ls()
 cmd_ls:
+  # prol
   push %si
   push %bx
 
   call outnl
 
-  # get i blk
+  # read_inode(i_num_hi, i_num_lo)
+  #   ret: i_file_size
+  #   ret: i_blk
   mov (i_num), %ax
   push %ax
   mov (i_num+0x02), %ax
   push %ax
-  call get_i_blk
+  call read_inode
   add $0x04, %sp
 
   # set blk lba
@@ -34,7 +37,17 @@ cmd_ls:
   call read_block
   mov $0x8000, %bx
 
+  # file_size count
+  xor %dx, %dx
+
 .cmd_ls__out_name:
+  # load i num # HACK only low
+  mov DE_I_NUM_LO_OFF(%bx), %ax
+
+  # cond: null ? out_skip {skip}
+  test %ax, %ax
+  jz .cmd_ls__out_skip
+
   # set name ptr
   mov %bx, %si
   add $DE_NAME_OFF, %si
@@ -50,7 +63,7 @@ cmd_ls:
 
   # out
   mov (%si), %al
-  call sys_tty_out # !!! TMP
+  call sys_tty_out # HACK!!!
 
   # step
   add $0x01, %si
@@ -61,14 +74,34 @@ cmd_ls:
   # add rec_len
   mov DE_REC_LEN_OFF(%bx), %ax
   add %ax, %bx
+  add %ax, %dx
 
-  # cond: null ? end
-  test %ax, %ax
-  jz .cmd_ls__end
+  # load file_size
+  mov (i_file_size), %ax
+
+  # cond: file_size <= count ? end
+  cmp %ax, %dx
+  jge .cmd_ls__end
 
   # loop
   call outsp
   call outsp
+  jmp .cmd_ls__out_name
+
+.cmd_ls__out_skip:
+  # add rec_len
+  mov DE_REC_LEN_OFF(%bx), %ax
+  add %ax, %bx
+  add %ax, %dx
+
+  # load file_size
+  mov (i_file_size), %ax
+
+  # cond: file_size <= count ? end
+  cmp %ax, %dx
+  jge .cmd_ls__end
+
+  # loop
   jmp .cmd_ls__out_name
 
 .cmd_ls__end:

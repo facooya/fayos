@@ -39,6 +39,7 @@ cmd/sys/echo.s \
 cmd/sys/help.s \
 cmd/sys/clear.s \
 \
+cmd/file/rm.s \
 cmd/file/touch.s \
 \
 cmd/dir/cd.s \

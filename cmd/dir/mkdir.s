@@ -95,6 +95,7 @@ cmd_mkdir:
   call add_dentry
   add $0x0C, %sp
 
+  # FIXME!!! file_size update err
   # update i file_size
   mov (dentry_ptr), %ax
   push %ax

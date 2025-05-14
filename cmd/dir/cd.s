@@ -4,11 +4,10 @@
 #
 # Change directory
 
-# FIXME no dir
+# TODO no dir
 
 .include "fayfs/de.s"
 
-# DATA
 .section .data
 
 .no_found_err_msg: .asciz "Not found directory."
@@ -31,7 +30,7 @@ cmd_cd:
   push %ax
   mov (i_num+0x02), %ax
   push %ax
-  call get_i_blk
+  call get_i_blk # read_inode
   add $0x04, %sp
 
   call set_blk_lba
@@ -82,7 +81,7 @@ cmd_cd:
   jmp .cmd_cd__cmp_name_ne
 
 .cmd_cd__cmp_name_e:
-  # !!! FIXME chk file type
+  # TODO chk file type
 
   # get dst inode num
   mov DE_I_NUM_LO_OFF(%bx), %ax
@@ -95,7 +94,7 @@ cmd_cd:
   push %ax
   mov (i_num+0x02), %ax
   push %ax
-  call get_i_blk
+  call get_i_blk # read_inode
   add $0x04, %sp
 
   # done
