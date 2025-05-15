@@ -124,7 +124,7 @@ add_dentry:
   ret
 
 # ENTRY
-# set_blk_lba() !!! FIXME blk overflow
+# set_blk_lba() # FIXME: blk overflow
 #   pre: i_blk
 set_blk_lba:
   # init
@@ -137,7 +137,7 @@ set_blk_lba:
   mov $FST_LBA_LO, %cx
   add %cx, %ax
 
-  # set dap lba # !!! TMP low high
+  # set dap lba # HACK: low high
   push %ax # low
   xor %ax, %ax
   push %ax # high

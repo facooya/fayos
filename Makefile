@@ -5,12 +5,13 @@ LD_BOOT = ld --oformat binary -m elf_i386 -Ttext 0x7C00
 LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 
 SRCS = \
-kernel/kernel.s \
 kernel/cache.s \
-kernel/exec.s \
 kernel/kbd.s \
+kernel/kernel.s \
 kernel/args/args.s \
 kernel/args/utils.s \
+kernel/exec/exec.s \
+kernel/exec/redir.s \
 \
 sys/disk.s \
 sys/kbd.s \

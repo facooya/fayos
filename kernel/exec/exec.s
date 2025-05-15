@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Execute command and redirect
+# Execute command
 
 # DATA
 .section .data
@@ -130,13 +130,24 @@ exec_cmd:
   mov (%si), %al
 
   # cond: null != ? chk_redir_type
+  # test %al, %al
+  # jne .exec_cmd__chk_redir_type
+
+  # cond: null != ? exec_redir
   test %al, %al
-  jne .exec_cmd__chk_redir_type
+  jne .exec_cmd__exec_redir
 
   # done
   jmp .exec_cmd__done
 
 # REDIR
+.exec_cmd__exec_redir:
+  # call # FIXME!!!
+  #call exec_redir
+
+  # done
+  jmp .exec_cmd__done
+
 .exec_cmd__chk_redir_type:
   # pre: al != null
 
