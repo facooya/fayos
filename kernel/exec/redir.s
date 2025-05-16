@@ -23,7 +23,7 @@ exec_redir:
   mov $redir_buf, %si
   mov (%si), %al
 
-  # al == gt ? type_write
+  # (chr == gt) ? type_write
   cmp $0x3E, %al
   je .exec_redir__type_write
 
@@ -37,7 +37,6 @@ exec_redir:
   
   # init
   add $0x02, %si
-  # mov %si, %di # redir file name
 
   # read_inode(i_num_hi, i_num_lo)
   #   ret: i_file_size
@@ -132,6 +131,14 @@ exec_redir:
   jmp .exec_redir__file_write
 
 .exec_redir__file_write_end:
+  # load
+  add $0x01, %si
+  mov (%si), %al
+
+  # (chr != 0) ? file_write
+  test %al, %al
+  jnz .exec_redir__file_write
+
   # write block
   call write_block
 
