@@ -30,4 +30,4 @@ disallow /, \, SP, all
 
 ## Logics  
 - Seperate split function
-- Seperate exec redir logic
+- redir append mode

@@ -14,126 +14,145 @@
 # ENTRY
 # cmd_cat()
 cmd_cat:
-  # prol
-  push %si
-  push %di
-  push %bx
+	# prol
+	push %si
+	push %di
+	push %bx
 
-  # read_inode(i_num_hi, i_num_lo)
-  #   ret: i_file_size
-  #   ret: i_blk
-  mov (i_num), %ax
-  push %ax
-  mov (i_num+0x02), %ax
-  push %ax
-  call read_inode
-  add $0x04, %sp
+	# read_inode(i_num_hi, i_num_lo)
+	# ret: i_file_size
+	# ret: i_blk
+	mov (i_num), %ax
+	push %ax
+	mov (i_num+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x04, %sp
 
-  # read block
-  call set_blk_lba
-  call read_block
-  mov $0x8000, %bx
+	# read block
+	call set_blk_lba
+	call read_block
+	mov $0x8000, %bx
 
 .cmd_cat__cmp_name:
-  # init
-  mov (arg_ptr), %si
+	# init
+	mov (arg_ptr), %si
 
-  # strlen(str)
-  #   ret: ax = len
-  push %si
-  call strlen
-  add $0x02, %sp
+	# strlen(str)
+	# ret: ax = len
+	push %si
+	call strlen
+	add $0x02, %sp
 
-  # set name len
-  xor %cx, %cx
-  mov DE_NAME_LEN_OFF(%bx), %cl
+	# set name len
+	xor %cx, %cx
+	mov DE_NAME_LEN_OFF(%bx), %cl
 
-  # (name_len == 0) ? done # HACK add hdl_err
-  test %cx, %cx
-  jz .cmd_cat__done
+	# (name_len == 0) ? not_found_err
+	test %cx, %cx
+	jz .call_hdl_not_found_err
 
-  # (arg_len != name_len) ? ne
-  cmp %cx, %ax
-  jne .cmd_cat__cmp_name_ne
+	# (arg_len != name_len) ? ne
+	cmp %cx, %ax
+	jne .cmd_cat__cmp_name_ne
 
-  # set name ptr
-  mov %bx, %di
-  add $DE_NAME_OFF, %di
+	# set name ptr
+	mov %bx, %di
+	add $DE_NAME_OFF, %di
 
-  # strncmp(src, dst, n)
-  #   ret: ax = true(0), false(1)
-  push %cx
-  push %di
-  push %si
-  call strncmp
-  add $0x06, %sp
+	# strncmp(src, dst, n)
+	# ret: ax = true(0), false(1)
+	push %cx
+	push %di
+	push %si
+	call strncmp
+	add $0x06, %sp
 
-  # (ret_code == true) ? e : ne
-  test %ax, %ax
-  jz .cmd_cat__cmp_name_e
-  jmp .cmd_cat__cmp_name_ne
+	# (ret_code == true) ? e : ne
+	test %ax, %ax
+	jz .cmd_cat__cmp_name_e
+	jmp .cmd_cat__cmp_name_ne
 
 .cmd_cat__cmp_name_e:
-  # TODO chk file_type
+	# get file_type
+	mov DE_FILE_TYPE_OFF(%bx), %al
 
-  call outnl
+	# (file_type != file) ? err
+	cmp $0x80, %al
+	jne .call_hdl_not_file_err
 
-  # save
-  mov (i_num), %ax
-  push %ax
-  mov (i_num+0x02), %ax
-  push %ax
-  push %bx
+	call outnl
 
-  # set
-  mov DE_I_NUM_LO_OFF(%bx), %ax
-  mov %ax, (i_num)
-  mov DE_I_NUM_HI_OFF(%bx), %ax
-  mov %ax, (i_num+0x02)
+	# save
+	mov (i_num), %ax
+	push %ax
+	mov (i_num+0x02), %ax
+	push %ax
+	push %bx
 
-  # read_inode(i_num_hi, i_num_lo)
-  #   ret: i_file_size
-  #   ret: i_blk
-  mov (i_num), %ax
-  push %ax
-  mov (i_num+0x02), %ax
-  push %ax
-  call read_inode
-  add $0x04, %sp
+	# set
+	mov DE_I_NUM_LO_OFF(%bx), %ax
+	mov %ax, (i_num)
+	mov DE_I_NUM_HI_OFF(%bx), %ax
+	mov %ax, (i_num+0x02)
 
-  # read block
-  call set_blk_lba
-  call read_block
-  mov $0x8000, %bx
+	# read_inode(i_num_hi, i_num_lo)
+	# ret: i_file_size
+	# ret: i_blk
+	mov (i_num), %ax
+	push %ax
+	mov (i_num+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x04, %sp
 
-  # puts
-  push %bx
-  call puts
-  add $0x02, %sp
+	# read block
+	call set_blk_lba
+	call read_block
+	mov $0x8000, %bx
 
-  # restore
-  pop %bx
-  pop %ax
-  mov %ax, (i_num+0x02)
-  pop %ax
-  mov %ax, (i_num)
+	# puts
+	push %bx
+	call puts
+	add $0x02, %sp
 
-  # done
-  jmp .cmd_cat__done
+	# restore
+	pop %bx
+	pop %ax
+	mov %ax, (i_num+0x02)
+	pop %ax
+	mov %ax, (i_num)
+
+	# done
+	call outnl
+	jmp .cmd_cat__done
 
 .cmd_cat__cmp_name_ne:
-  # add rec len
-  mov DE_REC_LEN_OFF(%bx), %cx
-  add %cx, %bx
+	# add rec len
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
 
-  # step
-  jmp .cmd_cat__cmp_name
+	# step
+	jmp .cmd_cat__cmp_name
 
 .cmd_cat__done:
-  call outnl
+	# epil
+	pop %bx
+	pop %di
+	pop %si
+	ret
 
-  # epil
-  pop %bx
-  pop %di
-  pop %si
-  ret
+# ERR
+.call_hdl_not_found_err:
+	call outnl
+	call hdl_not_found_err
+	call outnl
+
+	jmp .cmd_cat__done
+
+.call_hdl_not_file_err:
+	call outnl
+	call hdl_not_file_err
+	call outnl
+
+	jmp .cmd_cat__done
