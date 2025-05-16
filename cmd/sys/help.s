@@ -9,46 +9,45 @@
 
 # DEPS
 # cmd_help()
-#   outnl
-#   cmd_map
+# outnl
+# cmd_map
 
-.code16
 .section .text
-
+.code16
 .global cmd_help
 
 # cmd_help()
 cmd_help:
-  # prol
-  push %si
+	# prol
+	push %si
 
-  # set
-  mov $cmd_map, %si
+	# set
+	mov $cmd_map, %si
 
 .cmd_help__chk_addr_lp:
-  # load cmd_addr
-  mov (%si), %ax
+	# load cmd_addr
+	mov (%si), %ax
 
-  # cond: null ? done
-  test %ax, %ax
-  jz .cmd_help__done
+	# cond: null ? done
+	test %ax, %ax
+	jz .cmd_help__done
 
-  call outnl
+	call outnl
 
-  add $0x02, %si # cmd_map (cmd_str)
+	add $0x02, %si # cmd_map (cmd_str)
 
-  # print cmd_str
-  push %si
-  call putsc
-  add $0x02, %sp
-  add %cx, %si
+	# print cmd_str
+	push %si
+	call putsc
+	add $0x02, %sp
+	add %cx, %si
 
 .cmd_help__out_char_end:
-  # loop
-  add $0x01, %si # cmd_map (cmd_addr)
-  jmp .cmd_help__chk_addr_lp
+	# loop
+	add $0x01, %si # cmd_map (cmd_addr)
+	jmp .cmd_help__chk_addr_lp
 
 .cmd_help__done:
-  # epil
-  pop %si
-  ret
+	# epil
+	pop %si
+	ret

@@ -9,160 +9,159 @@
 # print_esc()
 # print_newline()
 
-.code16
 .section .text
-
+.code16
 .global print_str
 .global print_esc
 .global print_newline
 
 # print_str(str_addr)
 print_str:
-  # prol
-  push %bp
-  mov %sp, %bp
-  push %si
-  push %ax
+	# prol
+	push %bp
+	mov %sp, %bp
+	push %si
+	push %ax
 
-  # init
-  mov 4(%bp), %si
+	# init
+	mov 4(%bp), %si
 
-  # load
-  mov (%si), %al
+	# load
+	mov (%si), %al
 
-  # cond: dquote ? ignore_dquote
-  cmp $0x22, %al
-  je .print_str__ignore_dquote
+	# cond: dquote ? ignore_dquote
+	cmp $0x22, %al
+	je .print_str__ignore_dquote
 
 .print_str__out_lp:
-  # load
-  mov (%si), %al
+	# load
+	mov (%si), %al
 
-  # cond: null ? done
-  test %al, %al
-  jz .print_str__done
+	# cond: null ? done
+	test %al, %al
+	jz .print_str__done
 
-  # cond: backslash ? chk_esc
-  cmp $0x5C, %al
-  je .print_str__chk_esc
+	# cond: backslash ? chk_esc
+	cmp $0x5C, %al
+	je .print_str__chk_esc
 
-  # cond: dquote ? ignore_dquote
-  cmp $0x22, %al
-  je .print_str__ignore_dquote
+	# cond: dquote ? ignore_dquote
+	cmp $0x22, %al
+	je .print_str__ignore_dquote
 
-  call sys_tty_out
+	call sys_tty_out
 
-  # step
-  add $0x01, %si
-  jmp .print_str__out_lp
+	# step
+	add $0x01, %si
+	jmp .print_str__out_lp
 
 .print_str__chk_esc:
-  # pre: si = backslash
+	# pre: si = backslash
 
-  # load
-  mov 1(%si), %al
+	# load
+	mov 1(%si), %al
 
-  # cond: dquote ? out_dquote
-  cmp $0x22, %al
-  je .print_str__out_dquote
+	# cond: dquote ? out_dquote
+	cmp $0x22, %al
+	je .print_str__out_dquote
 
-  # load backslash
-  mov (%si), %al
+	# load backslash
+	mov (%si), %al
 
-  call sys_tty_out
+	call sys_tty_out
 
-  # step
-  add $0x01, %si
-  jmp .print_str__out_lp
+	# step
+	add $0x01, %si
+	jmp .print_str__out_lp
 
 
 .print_str__ignore_dquote:
-  # pre: si = dquote
+	# pre: si = dquote
 
-  # step
-  add $0x01, %si
-  jmp .print_str__out_lp
+	# step
+	add $0x01, %si
+	jmp .print_str__out_lp
 
 .print_str__out_dquote:
-  # pre: ah = out
-  # pre: al = dquote
+	# pre: ah = out
+	# pre: al = dquote
 
-  call sys_tty_out
+	call sys_tty_out
 
-  # continue
-  add $0x01, %si
-  jmp .print_str__out_lp
+	# continue
+	add $0x01, %si
+	jmp .print_str__out_lp
 
 .print_str__done:
-  # epil
-  pop %ax
-  pop %si
-  pop %bp
-  ret
+	# epil
+	pop %ax
+	pop %si
+	pop %bp
+	ret
 
 # print_esc(str_addr)
 print_esc:
-  push %bp
-  mov %sp, %bp
-  push %si
-  push %ax
+	push %bp
+	mov %sp, %bp
+	push %si
+	push %ax
 
-  mov 4(%bp), %si
+	mov 4(%bp), %si
 
 .print_esc__out_lp:
-  # cond: null ? done
-  mov (%si), %al
-  test %al, %al
-  jz .print_esc__done
+	# cond: null ? done
+	mov (%si), %al
+	test %al, %al
+	jz .print_esc__done
 
-  # cond: backslash ? hdl_esc
-  cmp $0x5C, %al # backslash
-  jz .print_esc__hdl_esc
+	# cond: backslash ? hdl_esc
+	cmp $0x5C, %al # backslash
+	jz .print_esc__hdl_esc
 
-  call sys_tty_out
+	call sys_tty_out
 
-  # loop
-  add $0x01, %si
-  jmp .print_esc__out_lp
+	# loop
+	add $0x01, %si
+	jmp .print_esc__out_lp
 
 .print_esc__hdl_esc:
-  add $0x01, %si
-  mov (%si), %al
+	add $0x01, %si
+	mov (%si), %al
 
-  # cond: n ? esc_n
-  cmp $0x6E, %al # n
-  jz .print_esc__hdl_esc_n
+	# cond: n ? esc_n
+	cmp $0x6E, %al # n
+	jz .print_esc__hdl_esc_n
 
-  # out
-  mov $0x5C, %al # backslash
-  call sys_tty_out
+	# out
+	mov $0x5C, %al # backslash
+	call sys_tty_out
 
-  # loop
-  jmp .print_esc__out_lp
+	# loop
+	jmp .print_esc__out_lp
 
 .print_esc__hdl_esc_n:
-  call print_newline
+	call print_newline
 
-  # end
-  jmp .print_esc__hdl_esc_end
+	# end
+	jmp .print_esc__hdl_esc_end
 
 # .print_esc__hdl_esc_*: # more escape char here
 
 .print_esc__hdl_esc_end:
-  # loop
-  add $0x01, %si
-  jmp .print_esc__out_lp
+	# loop
+	add $0x01, %si
+	jmp .print_esc__out_lp
 
 .print_esc__done:
-  pop %ax
-  pop %si
-  pop %bp
-  ret
+	pop %ax
+	pop %si
+	pop %bp
+	ret
 
 # print_newline()
 print_newline:
-  mov $0x0D, %al # CR
-  call sys_tty_out
-  mov $0x0A, %al # LF
-  call sys_tty_out
-  ret
+	mov $0x0D, %al # CR
+	call sys_tty_out
+	mov $0x0A, %al # LF
+	call sys_tty_out
+	ret

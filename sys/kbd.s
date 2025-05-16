@@ -6,9 +6,8 @@
 
 .include "sys.s"
 
-.code16
 .section .text
-
+.code16
 .global sys_read_key
 
 # ENTRY
@@ -16,6 +15,6 @@
 # ret: ah = scan code
 # ret: al = ascii code
 sys_read_key:
-  xor %ah, %ah # KBD_READ_KEY
-  int $INT_KBD
-  ret
+	xor %ah, %ah # KBD_READ_KEY
+	int $INT_KBD
+	ret

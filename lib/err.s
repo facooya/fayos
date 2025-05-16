@@ -4,7 +4,6 @@
 #
 # Error Handler
 
-# DATA
 .section .data
 
 .opt_err_msg: .asciz "Invalid option."
@@ -18,7 +17,6 @@
 
 .dup_err_msg: .asciz "Already exists."
 
-# TEXT
 .section .text
 .code16
 

@@ -9,15 +9,13 @@
 
 # NOTE
 # [n_lba]
-#   (*_lba): low
-#   (*_lba+2): high
+# (*_lba): low
+# (*_lba+2): high
 #
 # [n_free_lba]
-#   value: set by kernel
+# value: set by kernel
 
 .section .data
-.code16
-
 .global cwd_lba
 .global free_lba
 

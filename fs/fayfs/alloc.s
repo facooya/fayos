@@ -8,36 +8,35 @@
 
 .section .text
 .code16
-
 .global alloc_dentry
 
 # ENTRY
 # alloc_dentry()
-#   pre: bx = main mem ptr
+# pre: bx = main mem ptr
 alloc_dentry:
-  # prol
-  push %bx
+	# prol
+	push %bx
 
 .alloc_dentry__lp:
-  # load
-  mov DE_I_NUM_LO_OFF(%bx), %ax
+	# load
+	mov DE_I_NUM_LO_OFF(%bx), %ax
 
-  # cond: null ? end
-  test %ax, %ax
-  or DE_I_NUM_HI_OFF(%bx), %ax
-  jz .alloc_dentry__end
+	# cond: null ? end
+	test %ax, %ax
+	or DE_I_NUM_HI_OFF(%bx), %ax
+	jz .alloc_dentry__end
 
-  # step
-  mov DE_REC_LEN_OFF(%bx), %cx
-  add %cx, %bx
-  jmp .alloc_dentry__lp
+	# step
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
+	jmp .alloc_dentry__lp
 
 .alloc_dentry__end:
-  # set
-  mov %bx, %ax
-  sub $0x8000, %ax
-  mov %ax, (dentry_ptr)
+	# set
+	mov %bx, %ax
+	sub $0x8000, %ax
+	mov %ax, (dentry_ptr)
 
-  # epil
-  pop %bx
-  ret
+	# epil
+	pop %bx
+	ret

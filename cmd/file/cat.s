@@ -8,7 +8,6 @@
 
 .section .text
 .code16
-
 .global cmd_cat
 
 # ENTRY

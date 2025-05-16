@@ -4,40 +4,38 @@
 #
 # Block read/write (docs/lib/block.txt)
 
-# TEXT
 .section .text
 .code16
-
 .global read_block
 .global write_block
 
 # ENTRY
 # read_block()
 read_block:
-  push %si
+	push %si
 
-  call sys_read_disk
-  jc .hdl_disk_err
+	call sys_read_disk
+	jc .hdl_disk_err
 
-  jmp .rw_block__done
+	jmp .rw_block__done
 
 # ENTRY
 # write_block()
 write_block:
-  push %si
+	push %si
 
-  call sys_write_disk
-  jc .hdl_disk_err
+	call sys_write_disk
+	jc .hdl_disk_err
 
-  jmp .rw_block__done
+	jmp .rw_block__done
 
 # DONE
 .rw_block__done:
-  pop %si
-  ret
+	pop %si
+	ret
 
 # ERR
 .hdl_disk_err:
-  call outnl
-  call hdl_disk_err
-  jmp .rw_block__done
+	call outnl
+	call hdl_disk_err
+	jmp .rw_block__done
