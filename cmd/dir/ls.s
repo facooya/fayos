@@ -15,6 +15,7 @@
 cmd_ls:
 	# prol
 	push %si
+	push %di
 	push %bx
 
 	call outnl
@@ -40,11 +41,12 @@ cmd_ls:
 	xor %dx, %dx
 
 .cmd_ls__out_name:
-	# load i num # HACK only low
+	# load i_num_lo
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 
-	# cond: null ? out_skip {skip}
+	# (i_num == 0) ? out_skip {skip}
 	test %ax, %ax
+	or %ax, DE_I_NUM_HI_OFF(%bx)
 	jz .cmd_ls__out_skip
 
 	# set name ptr
@@ -60,9 +62,9 @@ cmd_ls:
 	test %cx, %cx
 	jz .cmd_ls__out_str_end
 
-	# out
+	# copy
 	mov (%si), %al
-	call sys_tty_out # HACK!!!
+	call outc # HACK
 
 	# step
 	add $0x01, %si
@@ -78,9 +80,9 @@ cmd_ls:
 	# load file_size
 	mov (i_file_size), %ax
 
-	# cond: file_size <= count ? end
+	# (file_size <= count) ? done
 	cmp %ax, %dx
-	jge .cmd_ls__end
+	jge .cmd_ls__done
 
 	# loop
 	call outsp
@@ -96,17 +98,18 @@ cmd_ls:
 	# load file_size
 	mov (i_file_size), %ax
 
-	# cond: file_size <= count ? end
+	# (file_size <= count) ? done
 	cmp %ax, %dx
-	jge .cmd_ls__end
+	jge .cmd_ls__done
 
 	# loop
 	jmp .cmd_ls__out_name
 
-.cmd_ls__end:
+.cmd_ls__done:
 	call outnl
 
 	# epil
 	pop %bx
+	pop %di
 	pop %si
 	ret

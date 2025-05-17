@@ -14,6 +14,7 @@
 
 .not_found_err_msg: .asciz "Not found."
 .not_file_err_msg: .asciz "Not a file."
+.not_dir_err_msg: .asciz "Not a dir."
 
 .dup_err_msg: .asciz "Already exists."
 
@@ -28,6 +29,8 @@
 
 .global hdl_not_found_err
 .global hdl_not_file_err
+.global hdl_not_dir_err
+.global hdl_dup_err
 
 # ENTRY
 # hdl_opt_err()
@@ -89,6 +92,12 @@ hdl_not_found_err:
 # hdl_not_file_err()
 hdl_not_file_err:
 	push $.not_file_err_msg
+	jmp .hdl_err
+
+# ENTRY
+# hdl_not_dir_err()
+hdl_not_dir_err:
+	push $.not_dir_err_msg
 	jmp .hdl_err
 
 # ENTRY

@@ -4,8 +4,6 @@
 #
 # Remove File
 
-# TODO no found err
-
 .include "fayfs/de.s"
 
 .section .text
@@ -49,9 +47,9 @@ cmd_rm:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# cond: 0 ? done # HACK add hdl_err
+	# cond: 0 ? done
 	test %cx, %cx
-	jz .cmd_rm__done
+	jz .call_hdl_not_found_err
 
 	# cond: != ? cmp_name_ne
 	cmp %cx, %ax
@@ -79,14 +77,23 @@ cmd_rm:
 .cmd_rm__cmp_name_e:
 	# TODO chk file_type
 
-	# rm i_num # HACK only low
+	# load file_type
+	mov DE_FILE_TYPE_OFF(%bx), %al
+	
+	# (file_type != file) ? err
+	cmp $0x80, %al
+	jne .call_hdl_not_file_err
+
+	# rm i_num
 	xor %ax, %ax
 	mov %ax, DE_I_NUM_LO_OFF(%bx)
+	mov %ax, DE_I_NUM_HI_OFF(%bx)
 
 	# write
 	call write_block
 
 	# done
+	call outnl
 	jmp .cmd_rm__done
 
 .cmd_rm__cmp_name_ne:
@@ -98,10 +105,22 @@ cmd_rm:
 	jmp .cmd_rm__cmp_name
 
 .cmd_rm__done:
-	call outnl
-
 	# epil
 	pop %bx
 	pop %di
 	pop %si
 	ret
+
+# ERR
+.call_hdl_not_found_err:
+	call outnl
+	call hdl_not_found_err
+	call outnl
+	jmp .cmd_rm__done
+
+.call_hdl_not_file_err:
+	call outnl
+	call hdl_not_file_err
+	call outnl
+	jmp .cmd_rm__done
+	

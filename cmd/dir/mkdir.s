@@ -4,7 +4,7 @@
 #
 # Make directory
 
-# FIXME not dir, already exist
+# FIXME already exist
 
 .section .data
 

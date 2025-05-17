@@ -5,6 +5,7 @@ build/
 *.bin
 *.o
 *.map
+*.vim
 
 !.gitignore
 !.gitattributes

@@ -134,7 +134,7 @@ set_blk_lba:
 	mov $FST_LBA_LO, %cx
 	add %cx, %ax
 
-	# set dap lba # HACK: low high
+	# set dap lba # HACK!!!: low high
 	push %ax # low
 	xor %ax, %ax
 	push %ax # high

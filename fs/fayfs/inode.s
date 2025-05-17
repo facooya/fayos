@@ -21,7 +21,7 @@
 # i_num_hi, i_num_lo
 # i_blk_num_hi, i_blk_num_lo
 # info (hi=file_type, lo=blk_len),
-# # !!! FIXME blk_arr, blk_len
+# # FIXME!!! blk_arr, blk_len
 # )
 add_inode:
 	# prol
@@ -34,7 +34,7 @@ add_inode:
 	call read_block
 	mov $0x8000, %bx
 
-	# calc inode !!! FIXME hi,lo
+	# calc inode # FIXME!!! hi,lo
 	xor %dx, %dx
 	mov 0x06(%bp), %cx
 	mov $I_SIZE, %ax
@@ -44,7 +44,7 @@ add_inode:
 	# set mem
 	add %ax, %bx
 
-	# write i_blk !!! FIXME hi,lo
+	# write i_blk # FIXME!!! hi,lo
 	mov 0x0A(%bp), %ax
 	mov %ax, I_BLK_LO_OFF(%bx)
 
@@ -74,7 +74,7 @@ update_i_file_size:
 	call read_block
 	mov $0x8000, %bx
 
-	# calc inode !!! HACK only low
+	# calc inode # HACK!!!: only low
 	xor %dx, %dx
 	mov 0x06(%bp), %cx
 	mov $I_SIZE, %ax

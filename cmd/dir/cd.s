@@ -4,13 +4,7 @@
 #
 # Change directory
 
-# TODO no dir
-
 .include "fayfs/de.s"
-
-.section .data
-
-.no_found_err_msg: .asciz "Not found directory."
 
 .section .text
 .code16
@@ -52,9 +46,9 @@ cmd_cd:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# cond: 0 ? hdl_no_found_err
+	# cond: 0 ? err
 	test %cx, %cx
-	jz .hdl_no_found_err
+	jz .call_hdl_not_found_err
 
 	# cond: != ? cmp_name_ne
 	cmp %cx, %ax
@@ -80,7 +74,12 @@ cmd_cd:
 	jmp .cmd_cd__cmp_name_ne
 
 .cmd_cd__cmp_name_e:
-	# TODO chk file type
+	# load file_type
+	mov DE_FILE_TYPE_OFF(%bx), %al
+
+	# (file_type != dir) ? err
+	cmp $0x40, %al
+	jne .call_hdl_not_dir_err
 
 	# get dst inode num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
@@ -97,6 +96,7 @@ cmd_cd:
 	add $0x04, %sp
 
 	# done
+	call outnl
 	jmp .cmd_cd__done
 
 .cmd_cd__cmp_name_ne:
@@ -108,8 +108,6 @@ cmd_cd:
 	jmp .cmd_cd__cmp_name_len
 
 .cmd_cd__done:
-	call outnl
-
 	# epil
 	pop %si
 	pop %di
@@ -117,11 +115,14 @@ cmd_cd:
 	ret
 
 # ERR
-.hdl_no_found_err:
+.call_hdl_not_found_err:
 	call outnl
+	call hdl_not_found_err
+	call outnl
+	jmp .cmd_cd__done
 
-	push $.no_found_err_msg
-	call puts
-	add $0x02, %sp
-
+.call_hdl_not_dir_err:
+	call outnl
+	call hdl_not_dir_err
+	call outnl
 	jmp .cmd_cd__done
