@@ -1,6 +1,5 @@
 ## Handle error  
-no dir (rmdir)  
-no file, not file (cat, rm)  
+alreay exists (mkdir, touch)
 
 ## Feature history  
 up down - raw history
@@ -16,7 +15,7 @@ fayos:[PWD]#
 colorful file dir
 
 ## Feature file cache  !!!
-file_cache file match return lba  
+file cache file match return lba  
 
 ## Kernel  
 kernel time, color  

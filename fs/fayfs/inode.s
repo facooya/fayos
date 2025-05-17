@@ -62,7 +62,7 @@ add_inode:
 	ret
 
 # ENTRY
-# update_i_file_size(i_num_hi, i_num_lo, dentry_ptr)
+# update_i_file_size(i_num_hi, i_num_lo, i_file_size)
 update_i_file_size:
 	# prol
 	push %bp

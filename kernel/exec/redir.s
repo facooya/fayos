@@ -26,8 +26,6 @@ exec_redir:
 	cmp $0x3E, %al
 	je .exec_redir__type_write
 
-	# TODO: add chk type
-
 	# done {escape}
 	jmp .exec_redir__done
 
@@ -67,7 +65,7 @@ exec_redir:
 	test %cx, %cx
 	jz .exec_redir__done
 
-	# (redir_name_len != de_name_len) ? ne : name_cmp
+	# (redir_name_len != de_name_len) ? ne
 	cmp %cx, %ax
 	jne .exec_redir__cmp_name_ne
 
@@ -89,7 +87,12 @@ exec_redir:
 	jmp .exec_redir__cmp_name_ne
 
 .exec_redir__cmp_name_e:
-	# TODO chk file type, only file
+	# load file_type
+	mov DE_FILE_TYPE_OFF(%bx), %al
+
+	# (file_type != file) ? err : file_write
+	cmp $0x80, %al
+	jnz .call_hdl_not_file_err
 
 	# get dst i num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
@@ -105,13 +108,20 @@ exec_redir:
 	call read_inode
 	add $0x04, %sp
 
-	# read block
-	call set_blk_lba
-	call read_block
+	# init mem
 	mov $0x8000, %bx
 
 	# init
 	mov (arg_ptr), %si
+	jmp .exec_redir__file_write
+
+.exec_redir__cmp_name_ne:
+	# add rec len
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
+
+	# step
+	jmp .exec_redir__cmp_name
 
 .exec_redir__file_write:
 	# load
@@ -130,6 +140,11 @@ exec_redir:
 	jmp .exec_redir__file_write
 
 .exec_redir__file_write_end:
+	# store tmp space
+	mov $0x20, %al
+	mov %al, (%bx)
+	add $0x01, %bx
+
 	# load
 	add $0x01, %si
 	mov (%si), %al
@@ -138,19 +153,19 @@ exec_redir:
 	test %al, %al
 	jnz .exec_redir__file_write
 
+	# remove tmp space
+	sub $0x01, %bx
+	xor %al, %al
+	mov %al, (%bx)
+
+	# TODO update i_file_size
+
 	# write block
+	call set_blk_lba
 	call write_block
 
 	# done
 	jmp .exec_redir__done
-
-.exec_redir__cmp_name_ne:
-	# add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-
-	# step
-	jmp .exec_redir__cmp_name
 
 .exec_redir__done:
 	# epil
@@ -158,3 +173,10 @@ exec_redir:
 	pop %di
 	pop %si
 	ret
+
+# ERR
+.call_hdl_not_file_err:
+	call outnl
+	call hdl_not_file_err
+	call outnl
+	jmp .exec_redir__done
