@@ -1,24 +1,10 @@
-## Handle error  
-alreay exists (mkdir, touch)
-
-## Feature history  
-up down - raw history
-
-## Feature tab  
-tab autocomplete file or dir
-
-## Feature pwd  
-PWD: Print Working Directory  
-fayos:[PWD]#  
-
-## Feature ls  
-colorful file dir
-
-## Feature file cache  !!!
-file cache file match return lba  
-
-## Kernel  
-kernel time, color  
+## Feature  
+- History: up down - raw history
+- Tab: autocomplete file or dir
+- Path: Directory path
+- ls: colorful file or dir
+- Time
+- Color
 
 ## File or dir name  
 allow ., _, - (front disallow)  

@@ -115,6 +115,26 @@ exec_redir:
 	mov (arg_ptr), %si
 	jmp .exec_redir__file_write
 
+.exec_redir__update_file_size:
+	# strlen(str)
+	# ret: ax = len
+	mov (arg_ptr), %si
+	push %si
+	call strlen
+	add $0x02, %sp
+
+	# update_i_file_size
+	push %ax
+	mov (i_num), %ax
+	push %ax
+	mov (i_num+0x02), %ax
+	push %ax
+	call update_i_file_size
+	add $0x06, %sp
+
+	# done
+	jmp .exec_redir__done
+
 .exec_redir__cmp_name_ne:
 	# add rec len
 	mov DE_REC_LEN_OFF(%bx), %cx
@@ -165,7 +185,7 @@ exec_redir:
 	call write_block
 
 	# done
-	jmp .exec_redir__done
+	jmp .exec_redir__update_file_size
 
 .exec_redir__done:
 	# epil

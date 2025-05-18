@@ -1,5 +1,6 @@
 ## Fixme rm  
-Fails to remove subdirectories  
+- Fails to remove subdirectories  
 
 ## Fix redir
-all clear and write
+- multi arg file size
+- dquote
