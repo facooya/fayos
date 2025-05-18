@@ -10,8 +10,6 @@
 .code16
 .global cmd_touch
 
-# FIXME already exist
-
 # ENTRY
 # cmd_touch()
 cmd_touch:
@@ -20,9 +18,7 @@ cmd_touch:
 	push %di
 	push %bx
 
-	call outnl
-
-	# chk exists
+	# read inode
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -82,6 +78,8 @@ cmd_touch:
 	jmp .cmd_touch__cmp_name
 
 .cmd_touch__main:
+	call outnl
+
 	# add inode
 	mov $0x80, %ch
 	mov $0x01, %cl

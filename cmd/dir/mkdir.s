@@ -4,7 +4,7 @@
 #
 # Make directory
 
-# FIXME already exist
+.include "fayfs/de.s"
 
 .section .data
 
@@ -20,8 +20,69 @@
 cmd_mkdir:
 	# prol
 	push %si
+	push %di
 	push %bx
 
+	# read inode
+	mov (i_num), %ax
+	push %ax
+	mov (i_num+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x04, %sp
+
+	# read block {dir}
+	call set_blk_lba
+	call read_block
+	mov $0x8000, %bx
+
+	# strlen(str)
+	# ret: ax = len
+	# cpy: dx = ax
+	mov (arg_ptr), %si
+	push %si
+	call strlen
+	add $0x02, %sp
+	mov %ax, %dx
+
+.cmd_mkdir__cmp_name:
+	# (mem >= i_file_size) ? main
+	mov %bx, %cx
+	sub $0x8000, %cx
+	mov (i_file_size), %ax
+	cmp %ax, %cx
+	jge .cmd_mkdir__main
+
+	# (arg_len != file_name_len) ? ne
+	xor %cx, %cx
+	mov DE_NAME_LEN_OFF(%bx), %cl
+	cmp %cx, %dx
+	jne .cmd_mkdir__ne
+
+	# strncmp(src, dst, n)
+	# ret: ax = true(0), false(1)
+	push %dx
+	push %cx # n
+	mov %bx, %di
+	add $DE_NAME_OFF, %di
+	push %di # dst
+	push %si # src
+	call strncmp
+	add $0x06, %sp
+	pop %dx
+	
+	# (ret_code == true) ? err : ne
+	test %ax, %ax
+	jz .call_hdl_dup_err
+	jmp .cmd_mkdir__ne
+
+.cmd_mkdir__ne:
+	# step
+	mov DE_REC_LEN_OFF(%bx), %ax
+	add %ax, %bx
+	jmp .cmd_mkdir__cmp_name
+
+.cmd_mkdir__main:
 	call outnl
 
 	# add inode
@@ -139,7 +200,15 @@ cmd_mkdir:
 	mov %ax, (next_i_blk)
 	call write_sb
 
+.cmd_mkdir__done:
 	# epil
 	pop %bx
+	pop %di
 	pop %si
 	ret
+
+.call_hdl_dup_err:
+	call outnl
+	call hdl_dup_err
+	call outnl
+	jmp .cmd_mkdir__done
