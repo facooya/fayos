@@ -49,7 +49,7 @@ add_dentry:
 	push %ax
 	mov 0x04(%bp), %ax # src_hi
 	push %ax
-	call get_i_blk # read_inode
+	call read_inode
 	add $0x04, %sp
 
 	# read blk

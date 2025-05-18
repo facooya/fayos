@@ -10,7 +10,6 @@
 .section .text
 .code16
 .global set_i_lba
-.global get_i_blk
 .global add_inode
 .global update_i_file_size
 .global read_inode
@@ -90,41 +89,6 @@ update_i_file_size:
 
 	# write
 	call write_block
-
-	# epil
-	pop %bx
-	pop %bp
-	ret
-
-# ENTRY
-# get_i_blk(i_num_hi, i_num_lo)
-# ret: i_blk
-get_i_blk:
-	# prol
-	push %bp
-	mov %sp, %bp
-	push %bx
-
-	# read inode
-	call set_i_lba
-	call read_block
-	mov $0x8000, %bx
-
-	# calc i_num
-	xor %dx, %dx
-	mov 0x06(%bp), %cx
-	mov $I_SIZE, %ax
-	mul %cx
-	# ax *= cx
-
-	# set mem
-	add %ax, %bx
-
-	# set i_blk
-	mov I_BLK_LO_OFF(%bx), %ax
-	mov %ax, (i_blk) # TMP
-	mov I_BLK_HI_OFF(%bx), %dx
-	mov %dx, (i_blk+0x02) # TMP
 
 	# epil
 	pop %bx

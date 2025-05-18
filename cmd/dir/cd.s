@@ -23,7 +23,7 @@ cmd_cd:
 	push %ax
 	mov (i_num+0x02), %ax
 	push %ax
-	call get_i_blk # read_inode
+	call read_inode
 	add $0x04, %sp
 
 	call set_blk_lba
@@ -92,7 +92,7 @@ cmd_cd:
 	push %ax
 	mov (i_num+0x02), %ax
 	push %ax
-	call get_i_blk # read_inode
+	call read_inode
 	add $0x04, %sp
 
 	# done
