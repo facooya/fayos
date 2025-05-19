@@ -20,9 +20,10 @@ exec_redir:
 
 	# init
 	mov $redir_buf, %si
+	add $0x02, %si
 	mov (%si), %al
 
-	# (chr == gt) ? type_write
+	# (redir_buf[off] == gt) ? type_write
 	cmp $0x3E, %al
 	je .exec_redir__type_write
 

@@ -122,12 +122,18 @@ exec_cmd:
 	call *%bx
 
 	# init and load
-	mov $redir_buf, %si
-	mov (%si), %al
+	# mov $redir_buf, %si
+	# mov (%si), %al
 
 	# (chr != 0) ? exec_redir
-	test %al, %al
-	jne .exec_cmd__exec_redir
+	# test %al, %al
+	# jne .exec_cmd__exec_redir
+
+	# (redir_buf_len != 0) ? exec_redir
+	mov $redir_buf, %si
+	mov (%si), %cx
+	test %cx, %cx
+	jnz .exec_cmd__exec_redir
 
 	# done
 	jmp .exec_cmd__done

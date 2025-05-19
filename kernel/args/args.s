@@ -190,8 +190,12 @@ split_raw:
 	add $0x02, %sp
 
 	# clear redir_buf
+	# push $redir_buf
+	# call clear_buf_old
+	# add $0x02, %sp
+	# TEST
 	push $redir_buf
-	call clear_buf_old
+	call clear_buf
 	add $0x02, %sp
 
 	# init
@@ -371,21 +375,22 @@ split_raw:
 	# pre: si,al = gt
 
 	# init
+	xor %cx, %cx
 	mov $redir_buf, %di
+	add $0x02, %di
 
 	# store
 	mov %al, (%di)
 	add $0x01, %di
+	add $0x01, %cx
 
 	# load
 	add $0x01, %si
 	mov (%si), %al
 
-	# cond: space ? out_redir
+	# (raw_buf[off] == space) ? out_redir : err
 	cmp $0x20, %al
 	je .split_raw__out_redir
-
-	# syntax err
 	jmp .split_raw__hdl_redir_err
 
 .split_raw__out_redir:
@@ -394,16 +399,15 @@ split_raw:
 	# store
 	mov %al, (%di)
 	add $0x01, %di
+	add $0x01, %cx
 
 	# load
 	add $0x01, %si
 	mov (%si), %al
 
-	# cond: space ? skip_space_redir
+	# (raw_buf[off] == space) ? skip_space_redir : save_redir
 	cmp $0x20, %al
 	je .split_raw__skip_space_redir
-
-	# step
 	jmp .split_raw__save_redir
 
 .split_raw__skip_space_redir:
@@ -414,7 +418,7 @@ split_raw:
 	test %al, %al
 	jz .split_raw__hdl_redir_err
 
-	# cond: space != ? save_redir
+	# (raw_buf[off] != space) ? save_redir : step
 	cmp $0x20, %al
 	jne .split_raw__save_redir
 
@@ -440,9 +444,13 @@ split_raw:
 	# step
 	add $0x01, %si
 	add $0x01, %di
+	add $0x01, %cx
 	jmp .split_raw__save_redir
 
 .split_raw__save_redir_end:
+	# save redir_buf_len
+	mov %cx, (redir_buf)
+
 	# clear raw_buf
 	push $raw_buf
 	call clear_buf_old
@@ -516,6 +524,11 @@ split_raw:
 	call outnl
 
 	call hdl_redir_err
+
+	# clear redir_buf
+	push $redir_buf
+	call clear_buf
+	add $0x02, %sp
 
 	# err flag
 	xor %ax, %ax
