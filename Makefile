@@ -7,6 +7,7 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 SRCS = \
 kernel/kernel.s \
 \
+kernel/buf.s \
 kernel/cache.s \
 kernel/kbd.s \
 kernel/args/args.s \

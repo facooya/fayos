@@ -7,17 +7,10 @@
 .section .data
 .global argc
 .global argv
-.global raw_buf
-.global redir_buf
 
 # args
 argc: .word 0x00
 argv: .zero 0x100
-
-# bufs
-raw_buf: .zero 0x400
-redir_buf: .zero 0x200
-.tmp_buf: .zero 0x400
 
 .section .text
 .code16
@@ -25,8 +18,7 @@ redir_buf: .zero 0x200
 .global split_raw
 .global build_args
 .global norm_args
-
-.global clear_buf
+.global clear_buf_old
 
 .global dout # DEBUG!!!
 
@@ -79,9 +71,7 @@ trim_raw:
 	# prol
 	push %si
 	push %di
-	push %ax
 	push %bx
-	push %cx
 
 	# init
 	mov $raw_buf, %si
@@ -140,6 +130,7 @@ trim_raw:
 	mov $raw_buf, %si # dst
 	# di = left_valid_idx
 	# bx = right_valid_idx
+	xor %cx, %cx # HACK
 
 # COMPACT
 .trim_raw__compact_lp:
@@ -154,10 +145,12 @@ trim_raw:
 	# step
 	add $0x01, %si
 	add $0x01, %di
+	add $0x01, %cx
 	jmp .trim_raw__compact_lp
 
 # ZERO
 .trim_raw__zero:
+	mov %cx, (raw_buf_len) # HACK
 	# init
 	add $0x01, %si
 
@@ -180,9 +173,7 @@ trim_raw:
 # DONE
 .trim_raw__done:
 	# epil
-	pop %cx
 	pop %bx
-	pop %ax
 	pop %di
 	pop %si
 	ret
@@ -193,21 +184,30 @@ split_raw:
 	# prol
 	push %si
 	push %di
-	# push %ax
 
-	# clear tmp_buf
-	push $.tmp_buf
-	call clear_buf
+	# ORIGIN
+	push $tmp_buf
+	call clear_buf_old
 	add $0x02, %sp
+	# clear tmp_buf # TEST
+	#push $tmp_buf_len
+	#push $tmp_buf
+	#call clear_buf
+	#add $0x04, %sp
 
-	# clear redir_buf
+	# ORIGIN
 	push $redir_buf
-	call clear_buf
+	call clear_buf_old
 	add $0x02, %sp
+	# clear redir_buf # TEST
+	#push $redir_buf_len
+	#push $redir_buf
+	#call clear_buf
+	#add $0x04, %sp
 
 	# init
 	mov $raw_buf, %si
-	mov $.tmp_buf, %di
+	mov $tmp_buf, %di
 
 # WRITE
 .split_raw__write_lp:
@@ -238,6 +238,10 @@ split_raw:
 	# step
 	add $0x01, %si
 	add $0x01, %di
+	# HACK
+	mov (tmp_buf_len), %ax
+	add $0x01, %ax
+	mov %ax, (tmp_buf_len)
 	jmp .split_raw__write_lp
 
 # SINGLE_ARG
@@ -455,9 +459,13 @@ split_raw:
 
 .split_raw__save_redir_end:
 	# clear raw_buf
-	push $raw_buf
-	call clear_buf
+	push $raw_buf # ORIGIN
+	call clear_buf_old
 	add $0x02, %sp
+	#push $raw_buf_len # TEST
+	#push $raw_buf
+	#call clear_buf
+	#add $0x04, %sp
 
 	# continue
 	jmp .split_raw__copy
@@ -465,7 +473,7 @@ split_raw:
 # COPY
 .split_raw__copy:
 	# init
-	mov $.tmp_buf, %si
+	mov $tmp_buf, %si
 	mov $raw_buf, %di
 
 .split_raw__copy_lp:
@@ -507,7 +515,6 @@ split_raw:
 
 .split_raw__exit:
 	# epil
-	# pop %ax
 	pop %di
 	pop %si
 	ret
@@ -615,8 +622,8 @@ build_args:
 	ret
 
 # ENTRY
-# clear_buf()
-clear_buf:
+# clear_buf_old()
+clear_buf_old:
 	# prol
 	push %bp
 	mov %sp, %bp

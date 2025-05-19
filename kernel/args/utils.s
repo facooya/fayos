@@ -11,7 +11,6 @@ arg_ptr: .word 0x00
 
 .section .text
 .code16
-
 .global clear_args
 .global set_arg
 
