@@ -150,7 +150,6 @@ trim_raw:
 
 # ZERO
 .trim_raw__zero:
-	mov %cx, (raw_buf_len) # HACK
 	# init
 	add $0x01, %si
 
@@ -185,25 +184,15 @@ split_raw:
 	push %si
 	push %di
 
-	# ORIGIN
+	# clear tmp_buf
 	push $tmp_buf
 	call clear_buf_old
 	add $0x02, %sp
-	# clear tmp_buf # TEST
-	#push $tmp_buf_len
-	#push $tmp_buf
-	#call clear_buf
-	#add $0x04, %sp
 
-	# ORIGIN
+	# clear redir_buf
 	push $redir_buf
 	call clear_buf_old
 	add $0x02, %sp
-	# clear redir_buf # TEST
-	#push $redir_buf_len
-	#push $redir_buf
-	#call clear_buf
-	#add $0x04, %sp
 
 	# init
 	mov $raw_buf, %si
@@ -238,10 +227,6 @@ split_raw:
 	# step
 	add $0x01, %si
 	add $0x01, %di
-	# HACK
-	mov (tmp_buf_len), %ax
-	add $0x01, %ax
-	mov %ax, (tmp_buf_len)
 	jmp .split_raw__write_lp
 
 # SINGLE_ARG
@@ -459,13 +444,9 @@ split_raw:
 
 .split_raw__save_redir_end:
 	# clear raw_buf
-	push $raw_buf # ORIGIN
+	push $raw_buf
 	call clear_buf_old
 	add $0x02, %sp
-	#push $raw_buf_len # TEST
-	#push $raw_buf
-	#call clear_buf
-	#add $0x04, %sp
 
 	# continue
 	jmp .split_raw__copy

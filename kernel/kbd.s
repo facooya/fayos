@@ -47,9 +47,6 @@ hdl_kbd:
 	# write
 	mov %al, (%si)
 	add $0x01, %si
-	mov (raw_buf_len), %ax # HACK
-	add $0x01, %ax
-	mov %ax, (raw_buf_len)
 
 	# max cursor
 	mov (cursor+1), %al
@@ -68,9 +65,6 @@ hdl_kbd:
 	add $0x04, %sp
 
 	add $0x01, %si # for next
-	mov (raw_buf_len), %ax # HACK
-	add $0x01, %ax
-	mov %ax, (raw_buf_len)
 	jmp .hdl_kbd__done
 
 # .hdl_ins() - insert text
@@ -177,9 +171,6 @@ hdl_kbd:
 	sub $0x01, %si
 	xor %al, %al
 	mov %al, (%si)
-	mov (raw_buf_len), %ax # HACK
-	sub $0x01, %ax
-	mov %ax, (raw_buf_len)
 
 	jmp .hdl_kbd__done
 
@@ -259,13 +250,9 @@ hdl_kbd:
 	mov %al, (cursor+1)
 
 	# init {raw_buf}
-	push $raw_buf # ORIGIN
+	push $raw_buf
 	call clear_buf_old
 	add $0x02, %sp
-	# push $raw_buf_len # TEST
-	# push $raw_buf
-	# call clear_buf
-	# add $0x04, %sp
 
 	mov $raw_buf, %si
 	jmp .hdl_kbd__done
