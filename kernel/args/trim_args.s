@@ -8,59 +8,6 @@
 .code16
 .global trim_args
 
-.global dout # DEBUG!!!
-
-# DEBUG!!!
-dout:
-	# prol
-	push %si
-	push %di
-	push %bx
-
-	call outnl
-
-	# init
-	mov $raw_buf, %si
-	mov (%si), %cx
-	add $0x02, %si
-
-.dout__lp:
-	cmp $0x00, %cx
-	jle .dout__done
-
-	mov (%si), %al
-
-	cmp $0x20, %al
-	je .dout__sp
-
-	test %al, %al
-	jz .dout__nul
-
-	call sys_tty_out
-	jmp .dout__step
-
-.dout__sp:
-	mov $'.', %al
-	call sys_tty_out
-	jmp .dout__step
-
-.dout__nul:
-	mov $'0', %al
-	call sys_tty_out
-	jmp .dout__step
-
-.dout__step:
-	add $0x01, %si
-	sub $0x01, %cx
-	jmp .dout__lp
-
-.dout__done:
-	# epil
-	pop %bx
-	pop %di
-	pop %si
-	ret
-
 # trim_args()
 trim_args:
 	# prol
@@ -129,7 +76,10 @@ trim_args:
 	jmp .trim_args__cpy
 
 .trim_args__cpy_end:
-	call dout # DEBUG!!!
+	# DEBUG
+	push $raw_buf
+	call d_buf
+	add $0x02, %sp
 
 .trim_args__done:
 	# epil
