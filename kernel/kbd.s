@@ -239,6 +239,14 @@ hdl_kbd:
 
 # .hdl_enter
 .hdl_enter:
+	# TEST
+	mov $raw_buf, %si
+	add $0x02, %si
+	push %si
+	call strlen
+	add $0x02, %sp
+	mov %ax, -2(%si)
+
 	call exec_cmd
 
 	push $kernel_prompt
@@ -255,6 +263,7 @@ hdl_kbd:
 	add $0x02, %sp
 
 	mov $raw_buf, %si
+	add $0x02, %si # TEST len
 	jmp .hdl_kbd__done
 
 # .hdl_left

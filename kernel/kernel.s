@@ -35,6 +35,7 @@ _start:
 
 	call init_cursor
 	mov $raw_buf, %si
+	add $0x02, %si # TEST len
 
 # .kernel_lp() - main loop
 .kernel_lp:

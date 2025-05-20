@@ -45,8 +45,13 @@ exec_cmd:
 	push %bx
 	push %cx
 
+	# TODO: vaild args
 	# tok
-	call trim_raw
+	# call trim_raw
+	# TEST
+	call trim_args
+	jmp .exec_cmd__pre_done
+
 	call split_raw
 
 	# cond: ax == 1 ? done

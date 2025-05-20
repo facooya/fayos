@@ -11,6 +11,7 @@ kernel/buf.s \
 kernel/cache.s \
 kernel/kbd.s \
 kernel/args/args.s \
+kernel/args/trim_args.s \
 kernel/args/utils.s \
 kernel/exec/exec.s \
 kernel/exec/redir.s \

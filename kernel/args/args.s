@@ -17,53 +17,7 @@ argv: .zero 0x100
 .global trim_raw
 .global split_raw
 .global build_args
-.global norm_args
 .global clear_buf_old
-
-.global dout # DEBUG!!!
-
-# dout() DEBUG!!!
-dout:
-	push %bp
-	mov %sp, %bp
-	push %si
-	push %ax
-
-	mov 4(%bp), %si
-	mov $0x0E, %ah
-
-.dout_lp:
-	mov (%si), %al # load
-
-	# cond: null ? chk
-	test %al, %al
-	jz .dout_chk
-
-	call sys_tty_out
-
-	# loop
-	add $0x01, %si
-	jmp .dout_lp
-
-.dout_chk:
-	mov $0x30, %al
-	call sys_tty_out
-
-	add $0x01, %si
-	mov (%si), %al # load
-
-	# cond: null ? done
-	test %al, %al
-	jz .dout_done
-
-	# loop
-	jmp .dout_lp
-
-.dout_done:
-	pop %ax
-	pop %si
-	pop %bp
-	ret
 
 # ENTRY
 # trim_raw()
@@ -185,15 +139,15 @@ split_raw:
 	push %di
 
 	# clear tmp_buf
-	push $tmp_buf
-	call clear_buf_old
-	add $0x02, %sp
-
-	# clear redir_buf
-	# push $redir_buf
+	# push $tmp_buf
 	# call clear_buf_old
 	# add $0x02, %sp
 	# TEST
+	push $tmp_buf
+	call clear_buf
+	add $0x02, %sp
+
+	# clear redir_buf
 	push $redir_buf
 	call clear_buf
 	add $0x02, %sp
@@ -201,6 +155,8 @@ split_raw:
 	# init
 	mov $raw_buf, %si
 	mov $tmp_buf, %di
+	add $0x02, %di
+	xor %cx, %cx
 
 # WRITE
 .split_raw__write_lp:
@@ -209,7 +165,8 @@ split_raw:
 	# load
 	mov (%si), %al
 
-	# cond: null ? copy
+	# TODO raw_buf len
+	# cond: null ? copy {escape}
 	test %al, %al
 	jz .split_raw__copy
 
@@ -221,7 +178,7 @@ split_raw:
 	cmp $0x22, %al
 	je .split_raw__single_arg
 
-	# cond: gt ? chk_redir
+	# cond: gt ? chk_redir {escape}
 	cmp $0x3E, %al
 	je .split_raw__chk_redir
 
@@ -231,6 +188,7 @@ split_raw:
 	# step
 	add $0x01, %si
 	add $0x01, %di
+	add $0x01, %cx
 	jmp .split_raw__write_lp
 
 # SINGLE_ARG
@@ -373,6 +331,9 @@ split_raw:
 # REDIR
 .split_raw__chk_redir:
 	# pre: si,al = gt
+	
+	# TEST
+	mov %cx, (tmp_buf)
 
 	# init
 	xor %cx, %cx
@@ -462,7 +423,11 @@ split_raw:
 # COPY
 .split_raw__copy:
 	# init
+	mov %cx, (tmp_buf)
 	mov $tmp_buf, %si
+	mov (%si), %cx
+	add $0x02, %si
+
 	mov $raw_buf, %di
 
 .split_raw__copy_lp:
@@ -472,13 +437,17 @@ split_raw:
 	# cond: null ? chk_copy
 	test %al, %al
 	jz .split_raw__chk_copy
+	# TEST
+	# test %cx, %cx
+	# jz .split_raw__done
 
-	# store
+	# cpy
 	mov %al, (%di)
 
 	# step
 	add $0x01, %si
 	add $0x01, %di
+	sub $0x01, %cx
 	jmp .split_raw__copy_lp
 
 .split_raw__chk_copy:
