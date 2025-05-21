@@ -4,13 +4,14 @@
 #
 # Debug buffer
 
+.include "chr.s"
+
 .section .text
 .code16
 .global d_buf
 
 # d_buf(buf)
 d_buf:
-	# prol
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -19,43 +20,41 @@ d_buf:
 
 	call outnl
 
-	# init
 	mov 0x04(%bp), %si
 	mov (%si), %cx
 	add $0x02, %si
 
-.d_buf__lp:
-	cmp $0x00, %cx
-	jle .d_buf__done
+.main:
+	test %cx, %cx
+	jz .done
 
 	mov (%si), %al
 
-	cmp $0x20, %al
-	je .d_buf__sp
+	cmp $CHR_SP, %al
+	je .sp
 
 	test %al, %al
-	jz .d_buf__nul
+	jz .nul
 
 	call sys_tty_out
-	jmp .d_buf__step
+	jmp .step
 
-.d_buf__sp:
-	mov $'.', %al
+.sp:
+	mov $CHR_PERIOD, %al
 	call sys_tty_out
-	jmp .d_buf__step
+	jmp .step
 
-.d_buf__nul:
-	mov $'0', %al
+.nul:
+	mov $CHR_ZERO, %al
 	call sys_tty_out
-	jmp .d_buf__step
+	jmp .step
 
-.d_buf__step:
+.step:
 	add $0x01, %si
 	sub $0x01, %cx
-	jmp .d_buf__lp
+	jmp .main
 
-.d_buf__done:
-	# epil
+.done:
 	pop %bx
 	pop %di
 	pop %si

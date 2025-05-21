@@ -50,6 +50,7 @@ exec_cmd:
 	# call trim_raw
 	# TEST
 	call trim_args
+	call split_args
 	jmp .exec_cmd__pre_done
 
 	call split_raw
