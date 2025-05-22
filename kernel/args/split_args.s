@@ -28,58 +28,68 @@ split_args:
 	xor %cx, %cx
 	add $0x02, %di
 
-.norm_cpy:
+.chk_tok:
 	test %bx, %bx
-	jz .norm_cpy_end
+	jz .tok_end
 	mov (%si), %al
 
-	cmp $CHR_SP, %al
-	je .space
-	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
+	# TODO add '
+	cmp $CHR_HYPHEN, %al
+	je .cpy_opt
+	cmp $CHR_QUOT, %al
+	je .cpy_quot_init
+	cmp $CHR_GT, %al
+	je .cpy_redir
+	jmp .cpy_chr
 
-	add $0x01, %si
-	sub $0x01, %bx
-	jmp .norm_cpy
-
-.space:
+.add_zero:
 	xor %al, %al
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
-1:
+.skip_sp:
 	test %bx, %bx
 	jz .exit
 	mov (%si), %al
 
-	# TODO add '
-	cmp $CHR_HYPHEN, %al
-	je .hyphen
-	cmp $CHR_QUOT, %al
-	je .quot
-	cmp $CHR_GT, %al
-	je .gt
 	cmp $CHR_SP, %al
-	jne .norm_cpy
+	jne .chk_tok
 
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp 1b
+	jmp .skip_sp
 
-.hyphen:
+.cpy_chr:
+	test %bx, %bx
+	jz .tok_end
+	mov (%si), %al
+
+	cmp $CHR_SP, %al
+	je .add_zero
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp .cpy_chr
+
+.cpy_opt:
 	mov %al, %ah
 	add $0x01, %si
 	sub $0x01, %bx
+	mov (%si), %al
+	cmp $CHR_SP, %al
+	je .exit
 
-1:
+.norm_opt:
 	test %bx, %bx
 	jz .exit
 	mov (%si), %al
 
 	cmp $CHR_SP, %al
-	je .space
+	je .skip_sp
 	mov %ah, (%di)
 	mov %al, 0x01(%di)
 	xor %al, %al
@@ -89,9 +99,9 @@ split_args:
 
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp 1b
+	jmp .norm_opt
 
-.quot:
+.cpy_quot_init:
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
@@ -99,32 +109,39 @@ split_args:
 	add $0x01, %si
 	sub $0x01, %bx
 
-1:
+.cpy_quot:
 	test %bx, %bx
 	jz .exit
 	mov (%si), %al
 
 	cmp $CHR_QUOT, %al
-	je 2f
+	je .cpy_quot_end
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp 1b
+	jmp .cpy_quot
 
-2:
+.cpy_quot_end:
 	# TODO except \"
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
+	# TODO: check detail
+	# TODO: add null
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .norm_cpy
+	test %bx, %bx
+	jz .tok_end
+	mov (%si), %al
+	cmp $CHR_SP, %al
+	je .add_zero
+	jmp .exit
 
-.gt:
+.cpy_redir:
 	mov $tmp_buf, %di
 	mov %cx, (%di)
 
@@ -166,12 +183,12 @@ split_args:
 3:
 	mov $redir_buf, %di
 	mov %cx, (%di)
-	jmp .gt_end
+	jmp .cpy_redir_end
 
-.gt_end:
+.cpy_redir_end:
 	jmp .exit
 
-.norm_cpy_end:
+.tok_end:
 	mov $tmp_buf, %di
 	mov %cx, (%di)
 
