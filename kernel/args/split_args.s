@@ -28,33 +28,22 @@ split_args:
 	xor %cx, %cx
 	add $0x02, %di
 
-.write:
+.norm_cpy:
 	test %bx, %bx
-	jz .write_end
+	jz .norm_cpy_end
 	mov (%si), %al
 
-	# TODO add '
 	cmp $CHR_SP, %al
-	je .sp
-	cmp $CHR_QUOT, %al
-	je .quot
-	cmp $CHR_GT, %al
-	je .gt
+	je .space
 	mov %al, (%di)
-
-	add $0x01, %si
 	add $0x01, %di
-	sub $0x01, %bx
 	add $0x01, %cx
-	jmp .write
 
-.sp:
 	add $0x01, %si
 	sub $0x01, %bx
-	mov -1(%di), %al
-	test %al, %al
-	jz 1f
+	jmp .norm_cpy
 
+.space:
 	xor %al, %al
 	mov %al, (%di)
 	add $0x01, %di
@@ -65,16 +54,21 @@ split_args:
 	jz .exit
 	mov (%si), %al
 
+	# TODO add '
 	cmp $CHR_HYPHEN, %al
-	je .sp_hyphen
+	je .hyphen
+	cmp $CHR_QUOT, %al
+	je .quot
+	cmp $CHR_GT, %al
+	je .gt
 	cmp $CHR_SP, %al
-	jne .write
+	jne .norm_cpy
 
 	add $0x01, %si
 	sub $0x01, %bx
 	jmp 1b
 
-.sp_hyphen:
+.hyphen:
 	mov %al, %ah
 	add $0x01, %si
 	sub $0x01, %bx
@@ -85,7 +79,7 @@ split_args:
 	mov (%si), %al
 
 	cmp $CHR_SP, %al
-	je .sp
+	je .space
 	mov %ah, (%di)
 	mov %al, 0x01(%di)
 	xor %al, %al
@@ -109,41 +103,90 @@ split_args:
 	test %bx, %bx
 	jz .exit
 	mov (%si), %al
-	add $0x01, %si
-	sub $0x01, %bx
 
 	cmp $CHR_QUOT, %al
 	je 2f
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
+
+	add $0x01, %si
+	sub $0x01, %bx
 	jmp 1b
 
 2:
 	# TODO except \"
 	mov %al, (%di)
-	xor %al, %al
-	mov %al, 0x01(%di)
-	add $0x02, %di
-	add $0x02, %cx
-	jmp .write
+	add $0x01, %di
+	add $0x01, %cx
+
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp .norm_cpy
 
 .gt:
-	
-.write_end:
-	xor %ax, %ax
-	jmp .done
-
-.exit:
-	# HACK
 	mov $tmp_buf, %di
 	mov %cx, (%di)
 
+	mov $redir_buf, %di
+	add $0x02, %di
+	xor %cx, %cx
+
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	add $0x01, %si
+	sub $0x01, %bx
+
+1:
+	test %bx, %bx
+	jz .exit
+	mov (%si), %al
+	cmp $CHR_SP, %al
+	jne 2f
+
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp 1b
+
+2:
+	test %bx, %bx
+	jz 3f
+	mov (%si), %al
+
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp 2b
+
+3:
+	mov $redir_buf, %di
+	mov %cx, (%di)
+	jmp .gt_end
+
+.gt_end:
+	jmp .exit
+
+.norm_cpy_end:
+	mov $tmp_buf, %di
+	mov %cx, (%di)
+
+	xor %ax, %ax
+	jmp .exit # DEBUG!!!
+
+.exit:
 	# DEBUG!!!
 	push $raw_buf
 	call d_buf
 	add $0x02, %sp
 	push $tmp_buf
+	call d_buf
+	add $0x02, %sp
+	push $redir_buf
 	call d_buf
 	add $0x02, %sp
 
