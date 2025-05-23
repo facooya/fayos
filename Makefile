@@ -11,6 +11,7 @@ kernel/buf.s \
 kernel/cache.s \
 kernel/kbd.s \
 kernel/args/args.s \
+kernel/args/tok_args.s \
 kernel/args/trim_args.s \
 kernel/args/split_args.s \
 kernel/args/utils.s \

@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Split arguments
+# Split for arguments
 
 .include "chr.s"
 
@@ -130,8 +130,6 @@ split_args:
 	add $0x01, %di
 	add $0x01, %cx
 
-	# TODO: check detail
-	# TODO: add null
 	add $0x01, %si
 	sub $0x01, %bx
 	test %bx, %bx
@@ -189,6 +187,7 @@ split_args:
 	jmp .exit
 
 .tok_end:
+	# TODO: add null?
 	mov $tmp_buf, %di
 	mov %cx, (%di)
 
