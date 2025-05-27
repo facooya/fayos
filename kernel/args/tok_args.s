@@ -39,17 +39,17 @@ tok_args:
 
 	# {body}
 	cmp $CHR_SP, %al
-	je .skip_sp_init
+	je .skip_sp
 	cmp $CHR_QUOT, %al
 	je .tok_quot
-	jmp .cpy_chr
+	jmp .tok_chr
 
-.skip_sp_init:
+.skip_sp:
 	# {init}
 	add $0x01, %si
 	sub $0x01, %bx
 
-.skip_sp:
+.skip_sp_lp:
 	# {end}
 	test %bx, %bx
 	jz .cpy_buf
@@ -62,7 +62,7 @@ tok_args:
 	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .skip_sp
+	jmp .skip_sp_lp
 
 .add_zero:
 	test %cx, %cx
@@ -75,7 +75,7 @@ tok_args:
 	add $0x01, %cx
 	jmp .chk_tok
 
-.cpy_chr:
+.tok_chr:
 	# {end}
 	test %bx, %bx
 	jz .cpy_buf
@@ -87,7 +87,7 @@ tok_args:
 
 	# {next}
 	cmp $CHR_SP, %al
-	je .skip_sp_init
+	je .skip_sp
 
 	# {body}
 	mov %al, (%di)
@@ -97,7 +97,7 @@ tok_args:
 	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .cpy_chr
+	jmp .tok_chr
 
 .tok_quot:
 	# {store} quot
@@ -109,7 +109,7 @@ tok_args:
 	add $0x01, %si
 	sub $0x01, %bx
 
-.tok_quot__cpy:
+.tok_quot_lp:
 	# {err}
 	test %bx, %bx
 	jz .call_hdl_quot_err
@@ -117,7 +117,7 @@ tok_args:
 
 	# {end}
 	cmp $CHR_QUOT, %al
-	je .tok_quot__end
+	je .tok_quot_end
 
 	# {body}
 	mov %al, (%di)
@@ -127,9 +127,9 @@ tok_args:
 	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .tok_quot__cpy
+	jmp .tok_quot_lp
 
-.tok_quot__end:
+.tok_quot_end:
 	# TODO: except \"
 	mov %al, (%di)
 	add $0x01, %di
@@ -149,7 +149,7 @@ tok_args:
 	jne .call_hdl_syn_err
 
 	# {step}
-	jmp .skip_sp_init
+	jmp .skip_sp
 
 .cpy_buf:
 	mov $tmp_buf, %di
@@ -182,9 +182,9 @@ tok_args:
 	jmp .done
 
 .exit:
-	mov $raw_buf, %si
-	xor %bx, %bx
-	mov %bx, (%si)
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
 
 .done:
 	# DEBUG!!!

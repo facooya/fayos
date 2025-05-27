@@ -41,9 +41,7 @@ exec_cmd:
 	# prol
 	push %si
 	push %di
-	push %ax
 	push %bx
-	push %cx
 
 	# TODO: vaild args
 	# tok
@@ -171,9 +169,7 @@ exec_cmd:
 
 .exec_cmd__done:
 	# epil
-	pop %cx
 	pop %bx
-	pop %ax
 	pop %di
 	pop %si
 	ret

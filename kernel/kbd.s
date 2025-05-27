@@ -32,12 +32,13 @@ hdl_kbd:
 	cmp $0x5000, %ax # down
 	je .hdl_down
 
+	# FIXME
 	# cond: null != ? .hdl_kbd__call_ins
-	mov %ax, %bx # push
-	mov (%si), %al
-	test %al, %al
-	jnz .hdl_kbd__call_ins
-	mov %bx, %ax # pop
+	# mov %ax, %bx # push
+	# mov (%si), %al
+	# test %al, %al
+	# jnz .hdl_kbd__call_ins
+	# mov %bx, %ax # pop
 
 	# default
 	call sys_tty_out
@@ -46,6 +47,11 @@ hdl_kbd:
 	# write
 	mov %al, (%si)
 	add $0x01, %si
+
+	# HACK: raw_buf len
+	mov (raw_buf), %ax
+	add $0x01, %ax
+	mov %ax, (raw_buf)
 
 	# max cursor
 	mov (cursor+1), %al
@@ -238,12 +244,12 @@ hdl_kbd:
 # .hdl_enter
 .hdl_enter:
 	# TEST
-	mov $raw_buf, %si
-	add $0x02, %si
-	push %si
-	call strlen
-	add $0x02, %sp
-	mov %ax, -2(%si)
+	# mov $raw_buf, %si
+	# add $0x02, %si
+	# push %si
+	# call strlen
+	# add $0x02, %sp
+	# mov %ax, -0x02(%si)
 
 	call exec_cmd
 
@@ -261,7 +267,7 @@ hdl_kbd:
 	add $0x02, %sp
 
 	mov $raw_buf, %si
-	add $0x02, %si # TEST len
+	add $0x02, %si
 	jmp .hdl_kbd__done
 
 # .hdl_left

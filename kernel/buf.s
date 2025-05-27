@@ -36,9 +36,9 @@ clear_buf:
 	add $0x02, %si
 
 .clear_buf__zero_buf:
-	# (len <= 0) ? done {escape}
-	cmp $0x00, %cx
-	jle .clear_buf__done
+	# {escape}
+	test %cx, %cx
+	jz .clear_buf__done
 
 	# zero
 	xor %al, %al
