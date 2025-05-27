@@ -5,7 +5,6 @@
 # Tokenize for arguments
 
 .include "chr.s"
-
 .section .text
 .code16
 .global tok_args
@@ -45,31 +44,36 @@ tok_args:
 	je .tok_quot
 	jmp .cpy_chr
 
-.skip_sp_zero:
-	xor %al, %al
-	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
-
 .skip_sp_init:
 	# {init}
 	add $0x01, %si
 	sub $0x01, %bx
 
 .skip_sp:
-	# {exit}
+	# {end}
 	test %bx, %bx
-	jz .exit
+	jz .cpy_buf
 	mov (%si), %al
 
 	# {body}
 	cmp $CHR_SP, %al
-	jne .chk_tok
+	jne .add_zero
 
 	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
 	jmp .skip_sp
+
+.add_zero:
+	test %cx, %cx
+	jz .chk_tok
+
+	# {body}
+	xor %al, %al
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+	jmp .chk_tok
 
 .cpy_chr:
 	# {end}
@@ -77,9 +81,13 @@ tok_args:
 	jz .cpy_buf
 	mov (%si), %al
 
+	# {err}
+	cmp $CHR_QUOT, %al
+	je .call_hdl_syn_err
+
 	# {next}
 	cmp $CHR_SP, %al
-	je .skip_sp_zero
+	je .skip_sp_init
 
 	# {body}
 	mov %al, (%di)
@@ -92,19 +100,22 @@ tok_args:
 	jmp .cpy_chr
 
 .tok_quot:
+	# {store} quot
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
+	# {next} chr
 	add $0x01, %si
 	sub $0x01, %bx
 
 .tok_quot__cpy:
-	# {exit}
+	# {err}
 	test %bx, %bx
-	jz .exit
+	jz .call_hdl_quot_err
 	mov (%si), %al
 
+	# {end}
 	cmp $CHR_QUOT, %al
 	je .tok_quot__end
 
@@ -124,22 +135,60 @@ tok_args:
 	add $0x01, %di
 	add $0x01, %cx
 
+	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
+
+	# {end}
 	test %bx, %bx
 	jz .cpy_buf
-	jmp .skip_sp_zero
+	mov (%si), %al
+
+	# {err}
+	cmp $CHR_SP, %al
+	jne .call_hdl_syn_err
+
+	# {step}
+	jmp .skip_sp_init
 
 .cpy_buf:
 	mov $tmp_buf, %di
 	mov %cx, (%di)
+	add $0x02, %di
+
+	mov $raw_buf, %si
+	xor %bx, %bx
+	add $0x02, %si
+
+.cpy_buf_lp:
+	# {end}
+	test %cx, %cx
+	jz .cpy_buf_end
+
+	# {cpy}
+	mov (%di), %al
+	mov %al, (%si)
+
+	# {step}
+	add $0x01, %si
+	add $0x01, %di
+	add $0x01, %bx
+	sub $0x01, %cx
+	jmp .cpy_buf_lp
+
+.cpy_buf_end:
+	mov $raw_buf, %si
+	mov %bx, (%si)
 	jmp .done
 
 .exit:
+	mov $raw_buf, %si
+	xor %bx, %bx
+	mov %bx, (%si)
 
 .done:
 	# DEBUG!!!
-	push $tmp_buf
+	push $raw_buf
 	call d_buf
 	add $0x02, %sp
 
@@ -147,3 +196,16 @@ tok_args:
 	pop %di
 	pop %si
 	ret
+
+# ERR
+.call_hdl_quot_err:
+	call outnl
+	call hdl_quot_err
+	call outnl
+	jmp .exit
+
+.call_hdl_syn_err:
+	call outnl
+	call hdl_syn_err
+	call outnl
+	jmp .exit

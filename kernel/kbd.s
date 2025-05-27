@@ -11,7 +11,6 @@
 # hdl_kbd() - main keyborad handler
 hdl_kbd:
 	# prol
-	push %ax
 	push %bx
 
 	# al = ascii code
@@ -55,7 +54,6 @@ hdl_kbd:
 
 .hdl_kbd__done:
 	pop %bx
-	pop %ax
 	ret
 
 .hdl_kbd__call_ins:
@@ -259,7 +257,7 @@ hdl_kbd:
 
 	# init {raw_buf}
 	push $raw_buf
-	call clear_buf_old
+	call clear_buf
 	add $0x02, %sp
 
 	mov $raw_buf, %si

@@ -8,7 +8,8 @@
 
 .opt_err_msg: .asciz "Invalid option."
 .arg_err_msg: .asciz "Missing argument."
-.dquote_err_msg: .asciz "Missing double quote."
+.quot_err_msg: .asciz "Missing double quote."
+.syn_err_msg: .asciz "Syntax Error."
 .redir_err_msg: .asciz "Redirection syntax error."
 .disk_err_msg: .asciz "Disk error."
 
@@ -23,7 +24,9 @@
 
 .global hdl_opt_err
 .global hdl_arg_err
-.global hdl_dquote_err
+.global hdl_dquote_err # HACK
+.global hdl_quot_err
+.global hdl_syn_err
 .global hdl_redir_err
 .global hdl_disk_err
 
@@ -53,14 +56,16 @@ hdl_arg_err:
 	ret
 
 # ENTRY
-# hdl_dquote_err()
+# hdl_quot_err()
 hdl_dquote_err:
-	push $.dquote_err_msg
-	call puts
-	add $0x02, %sp
+hdl_quot_err:
+	push $.quot_err_msg
+	jmp .hdl_err
 
-	call outnl
-	ret
+# hdl_syn_err()
+hdl_syn_err:
+	push $.syn_err_msg
+	jmp .hdl_err
 
 # ENTRY
 # hdl_redir_err()
