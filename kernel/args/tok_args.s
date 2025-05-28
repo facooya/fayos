@@ -27,7 +27,7 @@ tok_args:
 	add $0x02, %di
 	xor %cx, %cx
 
-	# {exit}
+	# {exit} TODO: null raw ignore
 	test %bx, %bx
 	jz .exit
 
@@ -53,6 +53,7 @@ tok_args:
 	# {end}
 	test %bx, %bx
 	jz .cpy_buf
+
 	mov (%si), %al
 
 	# {body}
@@ -65,10 +66,11 @@ tok_args:
 	jmp .skip_sp_lp
 
 .add_zero:
+	# {next}
 	test %cx, %cx
 	jz .chk_tok
 
-	# {body}
+	# {main}
 	xor %al, %al
 	mov %al, (%di)
 	add $0x01, %di
@@ -152,10 +154,16 @@ tok_args:
 	jmp .skip_sp
 
 .cpy_buf:
+	# {end}
+	test %cx, %cx
+	jz .skip
+
+	# {init}
 	mov $tmp_buf, %di
 	mov %cx, (%di)
 	add $0x02, %di
 
+	# {init}
 	mov $raw_buf, %si
 	xor %bx, %bx
 	add $0x02, %si
@@ -182,15 +190,17 @@ tok_args:
 	xor %ax, %ax
 	jmp .done
 
+.skip:
+	xor %bx, %bx
+	mov $raw_buf, %si
+	mov %bx, (%si)
+	mov $0x02, %ax
+	jmp .done
+
 .exit:
 	mov $0x01, %ax
 
 .done:
-	# DEBUG!!!
-	push $raw_buf
-	call d_buf
-	add $0x02, %sp
-
 	pop %bx
 	pop %di
 	pop %si

@@ -48,6 +48,8 @@ exec_cmd:
 	jnz .exec_cmd__pre_done
 
 	call build_args
+	call outnl
+	call d_args
 
 	call parse_args
 	test %ax, %ax

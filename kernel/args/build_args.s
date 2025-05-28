@@ -33,15 +33,15 @@ build_args:
 	add $0x01, %cx
 
 .build:
+	# {end}
+	test %bx, %bx
+	jz .build_end
+
 	mov (%si), %al
 
 	# {next}
 	test %al, %al
 	jz .build_next
-
-	# {end}
-	test %bx, %bx
-	jz .build_end
 
 	# {step}
 	add $0x01, %si
