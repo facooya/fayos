@@ -20,8 +20,6 @@ clear_args:
 	# prol
 	push %si
 	push %di
-	push %ax
-	push %cx
 
 	# init
 	mov $argv, %si
@@ -47,8 +45,6 @@ clear_args:
 	mov %cx, (%di) # store (argc)
 
 	# epil
-	pop %cx
-	pop %ax
 	pop %di
 	pop %si
 	ret

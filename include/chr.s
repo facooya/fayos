@@ -17,8 +17,10 @@
 .equ CHR_LT, 0x3C
 .equ CHR_GT, 0x3E
 
-.equ CHR_UPPER, 0x41
+.equ CHR_UC_A, 0x41
+.equ CHR_UC_Z, 0x5A 
 
 .equ CHR_BSLASH, 0x5C
 
-.equ CHR_LOWER, 0x61
+.equ CHR_LC_A, 0x61
+.equ CHR_LC_Z, 0x7A

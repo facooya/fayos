@@ -43,13 +43,15 @@ exec_cmd:
 	push %di
 	push %bx
 
-	# TODO: vaild args
-	# tok
-	# call trim_raw
-	# TEST
-	# call trim_args
-	# call split_args
 	call tok_args
+	test %ax, %ax
+	jnz .exec_cmd__pre_done
+
+	call build_args
+
+	call parse_args
+	test %ax, %ax
+	jnz .exec_cmd__pre_done
 	jmp .exec_cmd__pre_done
 
 	call split_raw

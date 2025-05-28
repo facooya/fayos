@@ -83,7 +83,7 @@ tok_args:
 
 	# {err}
 	cmp $CHR_QUOT, %al
-	je .call_hdl_syn_err
+	je .call_hdl_tok_syn_err
 
 	# {next}
 	cmp $CHR_SP, %al
@@ -146,7 +146,7 @@ tok_args:
 
 	# {err}
 	cmp $CHR_SP, %al
-	jne .call_hdl_syn_err
+	jne .call_hdl_tok_syn_err
 
 	# {step}
 	jmp .skip_sp
@@ -179,12 +179,11 @@ tok_args:
 .cpy_buf_end:
 	mov $raw_buf, %si
 	mov %bx, (%si)
+	xor %ax, %ax
 	jmp .done
 
 .exit:
-	push $raw_buf
-	call clear_buf
-	add $0x02, %sp
+	mov $0x01, %ax
 
 .done:
 	# DEBUG!!!
@@ -204,8 +203,8 @@ tok_args:
 	call outnl
 	jmp .exit
 
-.call_hdl_syn_err:
+.call_hdl_tok_syn_err:
 	call outnl
-	call hdl_syn_err
+	call hdl_tok_syn_err
 	call outnl
 	jmp .exit

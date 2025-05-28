@@ -11,10 +11,11 @@ kernel/buf.s \
 kernel/cache.s \
 kernel/kbd.s \
 kernel/args/args.s \
+kernel/args/build_args.s \
 kernel/args/tok_args.s \
-kernel/args/trim_args.s \
-kernel/args/split_args.s \
+kernel/args/parse_args.s \
 kernel/args/utils.s \
+kernel/debug/d_args.s \
 kernel/debug/d_buf.s \
 kernel/exec/exec.s \
 kernel/exec/redir.s \
@@ -25,6 +26,7 @@ sys/vid.s \
 \
 lib/cursor.s \
 lib/err.s \
+lib/re.s \
 lib/vid.s \
 lib/disk/block.s \
 lib/disk/dap.s \

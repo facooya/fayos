@@ -16,7 +16,7 @@ argv: .zero 0x100
 .code16
 .global trim_raw
 .global split_raw
-.global build_args
+# .global build_args
 .global clear_buf_old
 
 # ENTRY
