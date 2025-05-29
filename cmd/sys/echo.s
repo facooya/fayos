@@ -29,6 +29,13 @@ cmd_echo:
 
 	# src {init}
 	mov (arg_ptr), %si
+	# HACK
+	# mov $argv, %si
+	# add $0x02, %si
+	# mov (%si), %bx
+	# mov $raw_buf, %si
+	# add $0x02, %si
+	# add %bx, %si
 
 	# opt count * 2 {init}
 	xor %cx, %cx
@@ -102,6 +109,7 @@ cmd_echo:
 
 	# set offset {init}
 	mov $raw_buf, %si
+	add $0x02, %si
 	add %ax, %si # set offset
 
 	# exec
@@ -124,6 +132,7 @@ cmd_echo:
 
 	# set offset {init}
 	mov $raw_buf, %si
+	add $0x02, %si
 	add %ax, %si # set offset
 
 	# load

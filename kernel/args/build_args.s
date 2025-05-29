@@ -24,19 +24,17 @@ build_args:
 
 	call clear_args
 
-	# {init} argv, argc
+	# {init} argv
 	mov $argv, %di
 	xor %dx, %dx
 	mov %dx, (%di)
 	add $0x02, %di
+
+	# {init} argc
 	xor %cx, %cx
 	add $0x01, %cx
 
 .build:
-	# {end}
-	test %bx, %bx
-	jz .build_end
-
 	mov (%si), %al
 
 	# {next}
@@ -53,6 +51,10 @@ build_args:
 	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
+
+	# {end}
+	test %bx, %bx
+	jz .build_end
 
 	# {main} argv, argc
 	add $0x01, %dx

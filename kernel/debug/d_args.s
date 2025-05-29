@@ -19,7 +19,7 @@ d_args:
 	mov (%si), %bx
 	add $0x02, %si
 
-	# {main} argc
+	# {main} show argc
 	mov $argc, %di
 	mov (%di), %cx
 	mov %cx, %ax
@@ -35,38 +35,22 @@ d_args:
 	# {end}
 	test %cx, %cx
 	jz .done
-
-	mov (%di), %dx
+	call outnl
 
 	# {update}
 	mov $raw_buf, %si
-	mov (%si), %bx
 	add $0x02, %si
-	add %dx, %si
-	sub %dx, %bx
+	mov (%di), %ax
+	add %ax, %si
 
-	# {next}
-	call outnl
-	add $0x02, %di
-	sub $0x01, %cx
-
-.show_argv_chr:
-	# {done}
-	test %bx, %bx
-	jz .done
-
-	mov (%si), %al
-
-	# {next}
-	test %al, %al
-	jz .show_argv
-
-	call sys_tty_out
+	push %si
+	call puts
+	add $0x02, %sp
 
 	# {step}
-	add $0x01, %si
-	sub $0x01, %bx
-	jmp .show_argv_chr
+	add $0x02, %di
+	sub $0x01, %cx
+	jmp .show_argv
 
 .done:
 	pop %bx

@@ -48,32 +48,19 @@ exec_cmd:
 	jnz .exec_cmd__pre_done
 
 	call build_args
-	call outnl
-	call d_args
 
-	call parse_args
-	test %ax, %ax
-	jnz .exec_cmd__pre_done
-	jmp .exec_cmd__pre_done
-
-	call split_raw
-
-	# cond: ax == 1 ? done
-	cmp $0x01, %ax
-	je .exec_cmd__done
-
-	call build_args
+ 	call parse_args
+ 	test %ax, %ax
+ 	jnz .exec_cmd__pre_done
 
 	# load argc
 	mov $argc, %di
 	mov (%di), %cx
 
-	# cond: cx == 0 ? pre_done
-	test %cx, %cx
-	jz .exec_cmd__pre_done
-
 	# init
 	mov $raw_buf, %si
+	add $0x02, %si
+
 	mov $cmd_map, %di
 
 # CHK
@@ -121,6 +108,7 @@ exec_cmd:
 .exec_cmd__skip_char_end:
 	# step
 	mov $raw_buf, %si
+	add $0x02, %si
 	add $0x01, %di
 	jmp .exec_cmd__chk_addr_lp
 

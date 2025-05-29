@@ -158,6 +158,11 @@ tok_args:
 	test %cx, %cx
 	jz .skip
 
+	# {init} add last null
+	xor %ax, %ax
+	mov %al, (%di)
+	add $0x01, %cx
+
 	# {init}
 	mov $tmp_buf, %di
 	mov %cx, (%di)
