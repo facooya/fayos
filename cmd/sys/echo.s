@@ -36,6 +36,9 @@ cmd_echo:
 	# mov $raw_buf, %si
 	# add $0x02, %si
 	# add %bx, %si
+	mov $raw_buf, %si
+	add $0x02, %si
+	add (argv_1), %si
 
 	# opt count * 2 {init}
 	xor %cx, %cx

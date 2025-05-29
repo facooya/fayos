@@ -66,8 +66,15 @@ build_args:
 	jmp .build
 
 .build_end:
+	# update argc
 	mov $argc, %si
 	mov %cx, (%si)
+
+	# update argv_1
+	mov $argv, %si
+	add $0x02, %si
+	mov (%si), %ax
+	mov %ax, (argv_1)
 
 .done:
 	pop %bx

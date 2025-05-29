@@ -7,10 +7,12 @@
 .section .data
 .global argc
 .global argv
+.global argv_1
 
 # args
 argc: .word 0x00
 argv: .zero 0x100
+argv_1: .word 0x00
 
 .section .text
 .code16

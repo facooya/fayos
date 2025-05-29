@@ -5,6 +5,9 @@
 # Error Handler
 
 .section .data
+.global redir_type_err_msg
+.global redir_req_err_msg
+.global redir_extra_err_msg
 
 .opt_err_msg: .asciz "Invalid option."
 .arg_err_msg: .asciz "Missing argument."
@@ -18,6 +21,9 @@
 .arg_req_err_msg: .asciz "Argument required."
 
 .redir_err_msg: .asciz "Redirection syntax error."
+redir_type_err_msg: .asciz "Invalid redirection type."
+redir_req_err_msg: .asciz "Missing redirection target."
+redir_extra_err_msg: .asciz "Too many redirection target."
 
 .disk_err_msg: .asciz "Disk error."
 
