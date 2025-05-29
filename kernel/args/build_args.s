@@ -8,10 +8,12 @@
 .code16
 .global build_args
 
+# {ENTRY}
 # build_args()
-# bx,si = (raw_buf) len, chr
-# di,cx = argv, argc
-# dx = argv offset
+# <INFO>
+# si:bx = &raw_buf:len
+# di:dx = &argv:argv_off
+# cx = argc
 build_args:
 	push %si
 	push %di
@@ -22,15 +24,17 @@ build_args:
 	mov (%si), %bx
 	add $0x02, %si
 
-	call clear_args
-
-	# {init} argv
-	mov $argv, %di
+	# {init.1} argc
+	mov $argc, %di
 	xor %dx, %dx
+	mov %dx, (%di)
+
+	# {init.2} argv
+	mov $argv, %di
 	mov %dx, (%di)
 	add $0x02, %di
 
-	# {init} argc
+	# {init}
 	xor %cx, %cx
 	add $0x01, %cx
 

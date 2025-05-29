@@ -34,7 +34,10 @@ cmd_touch:
 	# strlen(str)
 	# ret: ax = len
 	# cpy: dx = ax
-	mov (arg_ptr), %si
+	# mov (arg_ptr), %si
+	mov $raw_buf, %si
+	add $0x02, %si
+	add (argv_1), %si
 	push %si
 	call strlen
 	add $0x02, %sp
@@ -96,7 +99,10 @@ cmd_touch:
 	add $0x0A, %sp
 
 	# add dentry
-	mov (arg_ptr), %si
+	# mov (arg_ptr), %si
+	mov $raw_buf, %si
+	add $0x02, %si
+	add (argv_1), %si
 	push %si
 	call strlen
 	add $0x02, %sp

@@ -35,7 +35,10 @@ cmd_cat:
 
 .cmd_cat__cmp_name:
 	# init
-	mov (arg_ptr), %si
+	# mov (arg_ptr), %si
+	mov $raw_buf, %si
+	add $0x02, %si
+	add (argv_1), %si
 
 	# strlen(str)
 	# ret: ax = len

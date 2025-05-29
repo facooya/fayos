@@ -11,8 +11,9 @@
 
 # {ENTRY}
 # parse_args()
-# si,bx = (raw_buf) len, chr
-# di,dx = argv, argv off
+# <INFO>
+# si = &raw_buf
+# di:dx = &argv:argv_off
 # cx = argc
 parse_args:
 	push %si
@@ -23,7 +24,6 @@ parse_args:
 	mov $argc, %si
 	mov (%si), %cx
 	mov $raw_buf, %si
-	mov (%si), %bx
 	add $0x02, %si
 
 	# re_alpha(&chr) [a-zA-Z]
@@ -34,81 +34,31 @@ parse_args:
 	add $0x02, %sp
 	pop %cx
 
-	# {end}
-	test %ax, %ax
-	jz .pass_cmd
-	jmp .call_hdl_cmd_syn_err
-
-# {MAIN} CMD
-.pass_cmd:
-	mov (%si), %al
-
-	# {end}
-	test %al, %al
-	jz .pass_cmd_end
-
-	# {loop}
-	add $0x01, %si
-	sub $0x01, %bx
-	jmp .pass_cmd
-
-.pass_cmd_end:
-	# {init}
-	add $0x01, %si
-	sub $0x01, %bx
-	sub $0x01, %cx
-
-	# {end}
-	test %cx, %cx
-	jz .done
-
-	mov (%si), %al
-
-	# {end}
-	cmp $CHR_HYPHEN, %al
-	je .parse_opt
-	jmp .parse_arg
-
-# {MAIN} OPT # FIXME: remove opt
-.parse_opt:
-	# {loop}
-	add $0x01, %si
-	sub $0x01, %bx
-
-	push %si
-	call re_alpha
-	add $0x02, %sp
-
 	# {err}
 	test %ax, %ax
-	jnz .call_hdl_opt_syn_err
+	jnz .call_hdl_cmd_syn_err
 
-	mov 0x01(%si), %al
+# {MAIN} CMD
+.parse_cmd:
+	mov (%si), %al
 
 	# {end}
 	test %al, %al
-	jz .parse_opt__end
+	jz .parse_cmd__end
 
 	# {loop}
-	jmp .parse_opt
+	add $0x01, %si
+	jmp .parse_cmd
 
-.parse_opt__end:
+.parse_cmd__end:
 	# {init}
 	add $0x01, %si
-	sub $0x01, %bx
 	sub $0x01, %cx
 
-	# {end}
+	# {done}
+	xor %ax, %ax
 	test %cx, %cx
 	jz .done
-
-	mov 0x01(%si), %al
-
-	# {loop}
-	cmp $CHR_HYPHEN, %al
-	je .parse_opt
-
-	# {end}
 	jmp .parse_arg
 
 # {MAIN} ARG
@@ -117,24 +67,24 @@ parse_args:
 .parse_arg:
 	# {loop}
 	add $0x01, %si
-	sub $0x01, %bx
 
 	mov (%si), %al
 
 	# {end}
 	test %al, %al
-	jz .parse_arg__next
+	jz .parse_arg__end
 
 	# {loop}
 	jmp .parse_arg
 
 # <PRE>
 # *si == 0
-.parse_arg__next:
+.parse_arg__end:
 	# {init}
 	sub $0x01, %cx
 
 	# {end}
+	xor %ax, %ax
 	test %cx, %cx
 	jz .done
 
@@ -163,7 +113,6 @@ parse_args:
 
 	# {init}
 	add $0x02, %si
-	sub $0x02, %bx
 	sub $0x01, %cx
 
 	mov (%si), %al
@@ -179,7 +128,7 @@ parse_args:
 	xor %dx, %dx
 
 # <PRE>
-# *si == fst chr
+# *si == fst_chr
 # di = &redir_buf
 # dx = len (redir_buf)
 .parse_redir__cpy:

@@ -28,7 +28,7 @@ cmd_echo:
 	push %bx
 
 	# src {init}
-	mov (arg_ptr), %si
+	# mov (arg_ptr), %si
 	# HACK
 	# mov $argv, %si
 	# add $0x02, %si

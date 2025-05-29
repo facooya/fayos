@@ -14,7 +14,6 @@ kernel/args/args.s \
 kernel/args/build_args.s \
 kernel/args/tok_args.s \
 kernel/args/parse_args.s \
-kernel/args/utils.s \
 kernel/debug/d_args.s \
 kernel/debug/d_buf.s \
 kernel/exec/exec.s \

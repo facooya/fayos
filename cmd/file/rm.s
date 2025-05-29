@@ -35,7 +35,10 @@ cmd_rm:
 
 .cmd_rm__cmp_name:
 	# set arg_ptr
-	mov (arg_ptr), %si
+	# mov (arg_ptr), %si
+	mov $raw_buf, %si
+	add $0x02, %si
+	add (argv_1), %si
 
 	# strlen(str)
 	# ret: ax = len
