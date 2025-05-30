@@ -4,55 +4,62 @@
 #
 # Echo
 
-# INDEX
-# cmd_echo()
-
 # NOTE
 # [n_opt_flag]
 # 0: e (escape)
 # 1: n (no-newline)
-#
-# why set_flag
-# add $0x02, %si
-# raw_buf = cmd[0]-a[0]-b[0]
 
+.include "chr.s"
 .section .text
 .code16
 .global cmd_echo
 
-# ENTRY
+# {ENTRY}
 # cmd_echo()
+# <INFO>
+# si = &raw_buf
+# di:dx = &argv:argc
 cmd_echo:
-	# prol
 	push %si
 	push %bx
 
-	# src {init}
-	# mov (arg_ptr), %si
-	# HACK
-	# mov $argv, %si
-	# add $0x02, %si
-	# mov (%si), %bx
-	# mov $raw_buf, %si
-	# add $0x02, %si
-	# add %bx, %si
+	# {init}
 	mov $raw_buf, %si
 	add $0x02, %si
-	add (argv_1), %si
+	add $0x05, %si # HACK
+	# add (argv_1), %si
 
-	# opt count * 2 {init}
-	xor %cx, %cx
-	
-	# opt flag {init}
+	# {init} args
+	# mov $argv, %di
+	# mov (argc), %dx
+	mov $args, %di
+	mov (%di), %dx
+	add $0x02, %di
+
+	# FIXME
+	# arg opt
+	# mov (argc_opt), %ax
+	# mov (argv_opt), %dx
+
+	# (argc_opt == 0)
+	# test %dx, %dx
+	# jnz .parse_opt
+
+	# (argc_arg == 0)
+	# test %dx, %dx
+	# jz .err
+
+	# {init} opt flag
 	xor %bx, %bx
 	# bx = opt_flag [n_opt_flag]
 
+# <PRE>
+# *si == fst_chr
 .cmd_echo__chk_opt:
-	# load
 	mov (%si), %al
 
-	# cond: hyphen ? parse_opt
-	cmp $0x2D, %al
+	# (chr == hyphen)
+	cmp $CHR_HYPHEN, %al
 	je .cmd_echo__parse_opt
 
 	# cond: null ? hdl_arg_err
@@ -101,10 +108,14 @@ cmd_echo:
 # ARG
 .cmd_echo__parse_arg:
 	# get {init}
-	mov $argv, %si
-	add $0x02, %si # skip cmd
-	add %cx, %si # skip opt
-	mov (%si), %ax # get offset
+	# mov $argv, %si
+	# add $0x02, %si # skip cmd
+	# add %cx, %si # skip opt
+	# mov (%si), %ax # get offset
+	# TEST!!!
+	mov $args, %si
+	add $0x04, %si # skip argc, cmd
+	mov (%si), %ax
 
 	# cond: ax == 0 ? hdl_arg_err
 	test %ax, %ax

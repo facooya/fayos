@@ -235,7 +235,7 @@ tok_args:
 	pop %si
 	ret
 
-# ERR
+# {ERR}
 .call_hdl_quot_err:
 	call outnl
 	call hdl_quot_err

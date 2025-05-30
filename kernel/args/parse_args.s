@@ -9,7 +9,6 @@
 .code16
 .global parse_args
 
-# {ENTRY}
 # parse_args()
 # <INFO>
 # si = &raw_buf
@@ -21,8 +20,10 @@ parse_args:
 	push %bx
 
 	# {init}
-	mov $argc, %si
-	mov (%si), %cx
+	# mov $argc, %si
+	mov $args, %di
+	mov (%di), %cx
+
 	mov $raw_buf, %si
 	add $0x02, %si
 
@@ -34,36 +35,85 @@ parse_args:
 	add $0x02, %sp
 	pop %cx
 
-	# {err}
+	# (re_alpha != true)
 	test %ax, %ax
 	jnz .call_hdl_cmd_syn_err
+	jmp .cmd
 
-# {MAIN} CMD
-.parse_cmd:
+.cmd:
+.cmd__lp:
 	mov (%si), %al
 
-	# {end}
+	# (chr == null)
 	test %al, %al
-	jz .parse_cmd__end
+	jz .cmd__end
 
 	# {loop}
 	add $0x01, %si
-	jmp .parse_cmd
+	jmp .cmd__lp
 
-.parse_cmd__end:
+.cmd__end:
 	# {init}
-	add $0x01, %si
-	sub $0x01, %cx
+	add $0x01, %si # buf_idx
+	sub $0x01, %cx # argc
 
 	# {done}
 	xor %ax, %ax
 	test %cx, %cx
 	jz .done
-	jmp .parse_arg
+	jmp .opt
+
+# <PRE>
+# *si == hyphen || [a-zA-Z]
+.opt:
+.opt__chk:
+	# {end} (chr != hyphen)
+	mov (%si), %al
+	cmp $CHR_HYPHEN, %al
+	jne .opt__end
+
+	# set opt_chr
+	add $0x01, %si
+
+	# {err} (opt_chr == null)
+	mov (%si), %al
+	test %al, %al
+	jz .call_hdl_opt_syn_err
+
+# <PRE>
+# *si == opt_chr
+.opt__chr_lp:
+	mov (%si), %al
+
+	# (chr == null)
+	test %al, %al
+	jz .opt__chr_end
+
+	# re_alpha(&chr)
+	push %cx # save argc
+	push %si # &chr
+	call re_alpha
+	add $0x02, %sp
+	pop %cx # restore argc
+
+	# (re_alpha != true)
+	test %ax, %ax
+	jnz .call_hdl_opt_syn_err
+
+	add $0x01, %si
+	jmp .opt__chr_lp
+
+.opt__chr_end:
+	add $0x01, %si
+	jmp .opt__chk
+
+.opt__end:
+	jmp .arg
 
 # {MAIN} ARG
 # <PRE>
 # *si == 0
+.arg:
 .parse_arg:
 	# {loop}
 	add $0x01, %si
