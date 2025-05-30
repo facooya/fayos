@@ -262,6 +262,7 @@ hdl_kbd:
 	mov %al, (cursor+1)
 
 	# init {raw_buf}
+	# HACK: update echo, kbd
 	push $raw_buf
 	call clear_buf
 	add $0x02, %sp

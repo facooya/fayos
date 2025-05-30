@@ -27,17 +27,18 @@ tok_args:
 	add $0x02, %di
 	xor %cx, %cx
 
-	# {exit} TODO: null raw ignore
+	# {done}
 	test %bx, %bx
 	jz .exit
 
 .chk_tok:
-	# {exit}
+	# {done}
 	test %bx, %bx
 	jz .exit
+
 	mov (%si), %al
 
-	# {body}
+	# {step}
 	cmp $CHR_SP, %al
 	je .skip_sp
 	cmp $CHR_QUOT, %al
@@ -56,47 +57,49 @@ tok_args:
 
 	mov (%si), %al
 
-	# {body}
+	# {end}
 	cmp $CHR_SP, %al
 	jne .add_zero
 
-	# {step}
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
 	jmp .skip_sp_lp
 
 .add_zero:
-	# {next}
+	# {end}
 	test %cx, %cx
 	jz .chk_tok
 
-	# {main}
 	xor %al, %al
 	mov %al, (%di)
+
+	# {loop}
 	add $0x01, %di
 	add $0x01, %cx
 	jmp .chk_tok
 
 .tok_chr:
-	# {end}
+	# (len == 0)
 	test %bx, %bx
 	jz .cpy_buf
+
 	mov (%si), %al
 
-	# {err}
+	# (chr == quot)
 	cmp $CHR_QUOT, %al
 	je .call_hdl_tok_syn_err
 
-	# {next}
+	# (chr == space)
 	cmp $CHR_SP, %al
 	je .skip_sp
 
-	# {body}
+	# store chr
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
-	# {step}
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
 	jmp .tok_chr
@@ -111,54 +114,69 @@ tok_args:
 	add $0x01, %si
 	sub $0x01, %bx
 
-.tok_quot_lp:
+.tok_quot__lp:
 	# {err}
 	test %bx, %bx
 	jz .call_hdl_quot_err
+
 	mov (%si), %al
 
 	# {end}
 	cmp $CHR_QUOT, %al
-	je .tok_quot_end
+	je .tok_quot__chk_bsl
 
-	# {body}
+	# store
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
-	# {step}
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .tok_quot_lp
+	jmp .tok_quot__lp
 
-.tok_quot_end:
-	# TODO: except \"
+.tok_quot__chk_bsl:
+	# store quot
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
-	# {step}
+	mov -0x01(%si), %al
+
+	# (chr != back_slash)
+	cmp $CHR_BSLASH, %al
+	jne .tok_quot__end
+
+	# {loop}
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp .tok_quot__lp
+
+.tok_quot__end:
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
 
-	# {end}
+	# (len == 0)
 	test %bx, %bx
 	jz .cpy_buf
+
 	mov (%si), %al
 
-	# {err}
+	# (chr != space)
 	cmp $CHR_SP, %al
 	jne .call_hdl_tok_syn_err
 
-	# {step}
+	# {loop}
 	jmp .skip_sp
 
+# {MAIN} CPY_BUF
 .cpy_buf:
-	# {end}
+	# (len == 0)
 	test %cx, %cx
 	jz .skip
 
-	# {init} add last null
+	# add last null
 	xor %ax, %ax
 	mov %al, (%di)
 	add $0x01, %cx
@@ -174,15 +192,15 @@ tok_args:
 	add $0x02, %si
 
 .cpy_buf_lp:
-	# {end}
+	# (len == 0)
 	test %cx, %cx
 	jz .cpy_buf_end
 
-	# {cpy}
+	# cpy
 	mov (%di), %al
 	mov %al, (%si)
 
-	# {step}
+	# {loop}
 	add $0x01, %si
 	add $0x01, %di
 	add $0x01, %bx
@@ -190,20 +208,26 @@ tok_args:
 	jmp .cpy_buf_lp
 
 .cpy_buf_end:
+	# save len
 	mov $raw_buf, %si
 	mov %bx, (%si)
+
 	xor %ax, %ax
 	jmp .done
 
+# {DONE}
 .skip:
+	# {init}
 	xor %bx, %bx
 	mov $raw_buf, %si
 	mov %bx, (%si)
+
 	mov $0x02, %ax
 	jmp .done
 
 .exit:
 	mov $0x01, %ax
+	jmp .done
 
 .done:
 	pop %bx

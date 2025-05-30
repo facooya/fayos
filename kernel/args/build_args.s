@@ -24,12 +24,12 @@ build_args:
 	mov (%si), %bx
 	add $0x02, %si
 
-	# {init.1} argc
+	# {init} argc
 	mov $argc, %di
 	xor %dx, %dx
 	mov %dx, (%di)
 
-	# {init.2} argv
+	# {init} argv
 	mov $argv, %di
 	mov %dx, (%di)
 	add $0x02, %di
@@ -38,35 +38,36 @@ build_args:
 	xor %cx, %cx
 	add $0x01, %cx
 
+# {MAIN} BUILD
 .build:
 	mov (%si), %al
 
-	# {next}
+	# (chr == 0)
 	test %al, %al
 	jz .build_next
 
-	# {step}
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
 	add $0x01, %dx
 	jmp .build
 
 .build_next:
-	# {step}
+	# {loop}
 	add $0x01, %si
 	sub $0x01, %bx
 
-	# {end}
+	# (len == 0)
 	test %bx, %bx
 	jz .build_end
 
-	# {main} argv, argc
+	# argv, argc
 	add $0x01, %dx
 	mov %dx, (%di)
 	add $0x02, %di
 	add $0x01, %cx
 
-	# {step}
+	# {loop}
 	jmp .build
 
 .build_end:
@@ -80,6 +81,7 @@ build_args:
 	mov (%si), %ax
 	mov %ax, (argv_1)
 
+# {DONE}
 .done:
 	pop %bx
 	pop %di
