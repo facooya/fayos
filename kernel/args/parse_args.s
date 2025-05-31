@@ -35,47 +35,53 @@ parse_args:
 	add $0x02, %sp
 	pop %cx
 
-	# (re_alpha != true)
+	# {end.err} (re_alpha != true)
 	test %ax, %ax
 	jnz .call_hdl_cmd_syn_err
+
+	# {task}
 	jmp .cmd
 
 .cmd:
 .cmd__lp:
+	# {end.step} (chr == null)
 	mov (%si), %al
-
-	# (chr == null)
 	test %al, %al
 	jz .cmd__end
 
-	# {loop}
+	# {step}
 	add $0x01, %si
 	jmp .cmd__lp
 
 .cmd__end:
-	# {init}
+	# {step.adv}
 	add $0x01, %si # buf_idx
 	sub $0x01, %cx # argc
 
-	# {done}
+	# {end.done}
 	xor %ax, %ax
 	test %cx, %cx
 	jz .done
+
+	# {task}
 	jmp .opt
 
 # <PRE>
 # *si == hyphen || [a-zA-Z]
 .opt:
+	xor %bx, %bx # opt_c
+
 .opt__chk:
 	# {end} (chr != hyphen)
 	mov (%si), %al
 	cmp $CHR_HYPHEN, %al
 	jne .opt__end
 
-	# set opt_chr
+	# {step.adv} opt_chr
 	add $0x01, %si
+	add $0x01, %bx # opt_c
 
-	# {err} (opt_chr == null)
+	# {end.err} (opt_chr == null)
 	mov (%si), %al
 	test %al, %al
 	jz .call_hdl_opt_syn_err
@@ -83,9 +89,8 @@ parse_args:
 # <PRE>
 # *si == opt_chr
 .opt__chr_lp:
+	# {end.step} (opt_chr == null)
 	mov (%si), %al
-
-	# (chr == null)
 	test %al, %al
 	jz .opt__chr_end
 
@@ -96,51 +101,61 @@ parse_args:
 	add $0x02, %sp
 	pop %cx # restore argc
 
-	# (re_alpha != true)
+	# {end.err} (re_alpha != true)
 	test %ax, %ax
 	jnz .call_hdl_opt_syn_err
 
+	# {step}
 	add $0x01, %si
 	jmp .opt__chr_lp
 
 .opt__chr_end:
+	# {step.adv}
 	add $0x01, %si
 	jmp .opt__chk
 
 .opt__end:
+	# get opt_idx
+	mov $args, %di
+	add $0x04, %di
+	mov (%di), %dx # opt_idx
+
+	# set args_info
+	mov $args_info, %di
+	mov %bx, (%di) # opt_c
+	mov %dx, 0x02(%di) # opt_idx
+
+	# {task}
 	jmp .arg
 
-# {MAIN} ARG
 # <PRE>
-# *si == 0
+# *si == [a-zA-Z]
 .arg:
-.parse_arg:
-	# {loop}
-	add $0x01, %si
+	xor %bx, %bx # arg_c
 
+.arg__lp:
+	# {end.step}
 	mov (%si), %al
-
-	# {end}
 	test %al, %al
-	jz .parse_arg__end
+	jz .arg__chk
 
-	# {loop}
-	jmp .parse_arg
+	# {step}
+	add $0x01, %si
+	jmp .arg__lp
 
 # <PRE>
 # *si == 0
-.parse_arg__end:
-	# {init}
-	sub $0x01, %cx
-
+.arg__chk:
 	# {end}
-	xor %ax, %ax
+	add $0x01, %bx
+	sub $0x01, %cx # argc
+	xor %ax, %ax # ret
 	test %cx, %cx
-	jz .done
+	jz .arg__end
 
+	# {task} # FIXME!!!
+	# ah = redir_type
 	mov 0x01(%si), %al
-
-	# {end}
 	mov $0x01, %ah
 	cmp $CHR_GT, %al
 	je .parse_redir
@@ -148,10 +163,32 @@ parse_args:
 	cmp $CHR_LT, %al
 	je .parse_redir
 
-	# {loop}
-	jmp .parse_arg
+	# {step}
+	jmp .arg__lp
 
-# {MAIN} REDIR
+.arg__end:
+	# get opt_c
+	push %cx
+	mov $args_info, %di
+	mov (%di), %ax # opt_c
+	mov $0x02, %cx
+	mul %cx
+	pop %cx
+
+	# calc arg_idx
+	mov $args, %di
+	add $0x04, %di # skip argc+cmd
+	add %ax, %di # skip opt_c
+	mov (%di), %dx # arg_idx
+
+	# set args_info
+	mov $args_info, %di
+	mov %bx, 0x04(%di) # arg_c
+	mov %dx, 0x06(%di) # arg_idx
+
+	# {end.done}
+	jmp .done
+
 # <PRE>
 # *si == 0
 # ah = redir_type
@@ -225,8 +262,10 @@ parse_args:
 # {DONE}
 .exit:
 	mov $0x01, %ax
+	jmp .done
 
 .done:
+	# TODO: opt_idx, arg_idx
 	pop %bx
 	pop %di
 	pop %si

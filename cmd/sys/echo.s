@@ -21,40 +21,32 @@
 # di:dx = &argv:argc
 cmd_echo:
 	push %si
+	push %di
 	push %bx
 
 	# {init}
 	mov $raw_buf, %si
-	add $0x02, %si
-	add $0x05, %si # HACK
-	# add (argv_1), %si
+	add $0x02, %si # skip len
 
-	# {init} args
-	# mov $argv, %di
-	# mov (argc), %dx
-	mov $args, %di
-	mov (%di), %dx
-	add $0x02, %di
+	# get
+	mov $args_info, %di
+	mov 0x04(%di), %ax # arg_c
 
-	# FIXME
-	# arg opt
-	# mov (argc_opt), %ax
-	# mov (argv_opt), %dx
+	# {end.err} (arg_c == 0)
+	test %ax, %ax
+	jz .hdl_arg_err
 
-	# (argc_opt == 0)
-	# test %dx, %dx
-	# jnz .parse_opt
+	mov (%di), %ax # opt_c
+	xor %bx, %bx # opt_flag
 
-	# (argc_arg == 0)
-	# test %dx, %dx
-	# jz .err
-
-	# {init} opt flag
-	xor %bx, %bx
-	# bx = opt_flag [n_opt_flag]
+	# {task} (opt_c == 0)
+	test %ax, %ax
+	jz .arg
+	jmp .opt
 
 # <PRE>
 # *si == fst_chr
+.opt:
 .cmd_echo__chk_opt:
 	mov (%si), %al
 
@@ -106,25 +98,15 @@ cmd_echo:
 	jmp .cmd_echo__chk_opt
 
 # ARG
+.arg:
 .cmd_echo__parse_arg:
-	# get {init}
-	# mov $argv, %si
-	# add $0x02, %si # skip cmd
-	# add %cx, %si # skip opt
-	# mov (%si), %ax # get offset
-	# TEST!!!
-	mov $args, %si
-	add $0x04, %si # skip argc, cmd
-	mov (%si), %ax
-
-	# cond: ax == 0 ? hdl_arg_err
-	test %ax, %ax
-	jz .hdl_arg_err
-
 	# set offset {init}
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si # set offset
+
+	mov $args_info, %di
+	mov 0x06(%di), %ax
+	add %ax, %si
 
 	# exec
 	call outnl
@@ -205,6 +187,7 @@ cmd_echo:
 .cmd_echo__done:
 	# epil
 	pop %bx
+	pop %di
 	pop %si
 	ret
 
