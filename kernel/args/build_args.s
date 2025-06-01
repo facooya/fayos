@@ -23,79 +23,65 @@ build_args:
 	mov (%si), %bx
 	add $0x02, %si
 
-	# {init} argc
-	# mov $argc, %di
-	# xor %dx, %dx
-	# mov %dx, (%di)
-
-	# {init} argc
+	# {init} args
 	mov $args, %di
 	xor %dx, %dx
-	mov %dx, (%di)
-	add $0x02, %di
+	mov %dx, (%di) # argc = 0
+	add $0x04, %di # skip argc+optc
+	mov %dx, (%di) # argv[0] (cmd_idx) = 0
+	add $0x02, %di # skip argv[0]
 
-	# {init} argv_0
-	mov %dx, (%di)
-	add $0x02, %di
-
-	# {init} argv
-	# mov $argv, %di
-	# mov %dx, (%di)
-	# add $0x02, %di
-
-	# {init}
+	# set argc
 	xor %cx, %cx
-	add $0x01, %cx
+	add $0x01, %cx # add argv[0]
 
-	jmp .build
+	# {task}
+	jmp .argv
 
+.argv:
 # <PRE>
-# *si != null
-# <RET>
-# dx += idx
-.build:
+# (*si != null)
+.argv__lp:
 	mov (%si), %al
 
-	# (chr == 0)
+	# {chk} (chr == 0)
 	test %al, %al
-	jz .build__next
+	jz .argv__chk
 
+	# {lp}
 	add $0x01, %si # buf_idx
 	sub $0x01, %bx # len
-	add $0x01, %dx # idx
-	jmp .build
+	add $0x01, %dx # v_idx
+	jmp .argv__lp
 
 # <PRE>
-# *si == null
-.build__next:
+# (*si == null)
+# dx += v_idx
+.argv__chk:
+	# {step}
 	add $0x01, %si # buf_idx
 	sub $0x01, %bx # len
 
-	# (len == 0)
+	# {end} (len == 0)
 	test %bx, %bx
-	jz .done
+	jz .argv__end
 
-	add $0x01, %dx # idx
+	# {lp}
+	add $0x01, %dx # v_idx, skip null
 	add $0x01, %cx # argc
-	mov %dx, (%di) # argv
-	add $0x02, %di
-	jmp .build
+	mov %dx, (%di) # *argv = v_idx
+	add $0x02, %di # step argv
+	jmp .argv__lp
 
-.done:
-	# set argc
-	# mov $argc, %si
-	# mov %cx, (%si)
-
+.argv__end:
 	# set argc
 	mov $args, %di
 	mov %cx, (%di)
 
-	# set argv_1
-	# mov $argv, %si
-	# add $0x02, %si
-	# mov (%si), %ax
-	# mov %ax, (argv_1)
+	# {end.done}
+	jmp .done
 
+.done:
 	pop %bx
 	pop %di
 	pop %si

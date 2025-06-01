@@ -54,11 +54,9 @@ exec_cmd:
  	jnz .exec_cmd__pre_done
 
 	# load argc
-	# mov $argc, %di
-	# mov (%di), %cx
 	mov $args, %di
-	mov (%di), %cx
-	add $0x02, %di
+	mov (%di), %cx # argc
+	add $0x04, %di # skip argc+optc
 
 	# init
 	mov $raw_buf, %si

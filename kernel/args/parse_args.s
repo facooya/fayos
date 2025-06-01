@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Parse for arguments
+# Parse for arguments, And option count
 
 .include "chr.s"
 .section .text
@@ -12,7 +12,7 @@
 # parse_args()
 # <INFO>
 # si = &raw_buf
-# di:dx = &argv:argv_off
+# di:dx = &args:v_idx
 # cx = argc
 parse_args:
 	push %si
@@ -20,12 +20,10 @@ parse_args:
 	push %bx
 
 	# {init}
-	# mov $argc, %si
-	mov $args, %di
-	mov (%di), %cx
-
 	mov $raw_buf, %si
-	add $0x02, %si
+	add $0x02, %si # skip len
+	mov $args, %di
+	mov (%di), %cx # argc
 
 	# re_alpha(&chr) [a-zA-Z]
 	# ret: ax = 0(true), ax = 1(false)
@@ -42,19 +40,22 @@ parse_args:
 	# {task}
 	jmp .cmd
 
+# {TASK}
+# <PRE>
+# (*si == valid_chr)
 .cmd:
 .cmd__lp:
-	# {end.step} (chr == null)
+	# {end} (chr == null)
 	mov (%si), %al
 	test %al, %al
 	jz .cmd__end
 
-	# {step}
+	# {lp}
 	add $0x01, %si
 	jmp .cmd__lp
 
 .cmd__end:
-	# {step.adv}
+	# {step}
 	add $0x01, %si # buf_idx
 	sub $0x01, %cx # argc
 
@@ -66,33 +67,23 @@ parse_args:
 	# {task}
 	jmp .opt
 
+# {TASK}
 # <PRE>
 # *si == hyphen || [a-zA-Z]
 .opt:
-	xor %bx, %bx # opt_c
-
-.opt__chk:
-	# {end} (chr != hyphen)
-	mov (%si), %al
-	cmp $CHR_HYPHEN, %al
-	jne .opt__end
-
-	# {step.adv} opt_chr
-	add $0x01, %si
-	add $0x01, %bx # opt_c
-
-	# {end.err} (opt_chr == null)
-	mov (%si), %al
-	test %al, %al
-	jz .call_hdl_opt_syn_err
+	xor %bx, %bx # optc
+	mov $args, %di
+	mov %bx, 0x02(%di) # optc = 0
+	sub $0x01, %si # *si == null
+	jmp .opt__chk
 
 # <PRE>
-# *si == opt_chr
-.opt__chr_lp:
-	# {end.step} (opt_chr == null)
+# (*si == opt_chr)
+.opt__lp:
+	# {chk} (opt_chr == null)
 	mov (%si), %al
 	test %al, %al
-	jz .opt__chr_end
+	jz .opt__chk
 
 	# re_alpha(&chr)
 	push %cx # save argc
@@ -107,39 +98,50 @@ parse_args:
 
 	# {step}
 	add $0x01, %si
-	jmp .opt__chr_lp
+	jmp .opt__lp
 
-.opt__chr_end:
-	# {step.adv}
+# <PRE>
+# (*si == null)
+.opt__chk:
+	# {step}
 	add $0x01, %si
-	jmp .opt__chk
+
+	# {end} (chr != hyphen)
+	mov (%si), %al
+	cmp $CHR_HYPHEN, %al
+	jne .opt__end
+
+	# {step}
+	add $0x01, %si # opt_chr
+	add $0x01, %bx # optc
+
+	# {end.err} (opt_chr == null)
+	mov (%si), %al
+	test %al, %al
+	jz .call_hdl_opt_syn_err
+
+	# {lp}
+	jmp .opt__lp
 
 .opt__end:
-	# get opt_idx
+	# store optc
 	mov $args, %di
-	add $0x04, %di
-	mov (%di), %dx # opt_idx
-
-	# set args_info
-	mov $args_info, %di
-	mov %bx, (%di) # opt_c
-	mov %dx, 0x02(%di) # opt_idx
+	mov %bx, 0x02(%di)
 
 	# {task}
 	jmp .arg
 
+# {TASK}
 # <PRE>
-# *si == [a-zA-Z]
+# (*si == [a-zA-Z])
 .arg:
-	xor %bx, %bx # arg_c
-
 .arg__lp:
-	# {end.step}
+	# {chk}
 	mov (%si), %al
 	test %al, %al
 	jz .arg__chk
 
-	# {step}
+	# {lp}
 	add $0x01, %si
 	jmp .arg__lp
 
@@ -147,7 +149,6 @@ parse_args:
 # *si == 0
 .arg__chk:
 	# {end}
-	add $0x01, %bx
 	sub $0x01, %cx # argc
 	xor %ax, %ax # ret
 	test %cx, %cx
@@ -167,30 +168,12 @@ parse_args:
 	jmp .arg__lp
 
 .arg__end:
-	# get opt_c
-	push %cx
-	mov $args_info, %di
-	mov (%di), %ax # opt_c
-	mov $0x02, %cx
-	mul %cx
-	pop %cx
-
-	# calc arg_idx
-	mov $args, %di
-	add $0x04, %di # skip argc+cmd
-	add %ax, %di # skip opt_c
-	mov (%di), %dx # arg_idx
-
-	# set args_info
-	mov $args_info, %di
-	mov %bx, 0x04(%di) # arg_c
-	mov %dx, 0x06(%di) # arg_idx
-
 	# {end.done}
 	xor %ax, %ax
 	jmp .done
 
-# <PRE> # FIXME
+# {TASK}
+# <PRE> # FIXME!!!
 # *si == 0
 # ah = redir_type
 .parse_redir:
@@ -266,7 +249,6 @@ parse_args:
 	jmp .done
 
 .done:
-	# TODO: opt_idx, arg_idx
 	pop %bx
 	pop %di
 	pop %si

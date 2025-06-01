@@ -18,7 +18,9 @@
 # cmd_echo()
 # <INFO>
 # si = &raw_buf
-# di:dx = &argv:argc
+# di = &args
+# bx = opt_flag
+# cx = argc
 cmd_echo:
 	push %si
 	push %di
@@ -29,15 +31,25 @@ cmd_echo:
 	add $0x02, %si # skip len
 
 	# get
-	mov $args_info, %di
-	mov 0x04(%di), %ax # arg_c
+	# mov $args_info, %di
+	# mov 0x04(%di), %ax # arg_c
+	mov $args, %di
+	mov (%di), %cx # argc
+	add $0x02, %di
+	mov (%di), %bx # optc
+	add $0x02, %di
 
-	# {end.err} (arg_c == 0)
+	mov %cx, %ax
+	sub $0x01, %ax # skip cmd
+	sub %bx, %ax # skip optc
+
+	# {end.err} (argc == 0)
 	test %ax, %ax
 	jz .hdl_arg_err
 
+	# {init}
+	mov %bx, %ax # optc
 	xor %bx, %bx # opt_flag
-	mov (%di), %ax # opt_c
 
 	# {task} (opt_c == 0)
 	test %ax, %ax
@@ -46,11 +58,11 @@ cmd_echo:
 
 # <PRE>
 # *si == hyphen
-# *di == args_info
 .opt:
-.opt__init:
-	mov %ax, %cx # opt_c
-	add 0x02(%di), %si # set opt_idx
+	mov %ax, %dx # opt_c
+
+	add $0x02, %di # skip argv[0] (cmd)
+	add (%di), %si # buf += argv[1]
 	add $0x01, %si # skip hyphen
 
 # <PRE>
@@ -71,12 +83,13 @@ cmd_echo:
 
 .opt__set_e:
 	bts $0x00, %bx
-	jmp .opt__set_end
+	jmp .opt__chk
 
 .opt__set_n:
 	bts $0x01, %bx
-	jmp .opt__set_end
+	jmp .opt__chk
 
+.opt__chk:
 .opt__set_end:
 	add $0x01, %si
 
