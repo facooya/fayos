@@ -115,9 +115,11 @@ exec_redir:
 	# init
 	# mov (arg_ptr), %si
 	# TEST!!!
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add (argv_1), %si
+	add %ax, %si
 	jmp .exec_redir__file_write
 
 .exec_redir__update_file_size:
@@ -125,9 +127,11 @@ exec_redir:
 	# ret: ax = len
 	# mov (arg_ptr), %si
 	# TEST!!!
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add (argv_1), %si
+	add %ax, %si
 	push %si
 	call strlen
 	add $0x02, %sp

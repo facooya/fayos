@@ -34,10 +34,11 @@ cmd_cd:
 
 .cmd_cd__cmp_name_len:
 	# init
-	# mov (arg_ptr), %si
+	mov $args, %si
+	mov 0x06(%si), %ax
 	mov $raw_buf, %si
 	add $0x02, %si
-	add (argv_1), %si
+	add %ax, %si
 
 	# get len
 	push %si

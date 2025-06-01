@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug for argument-vector and argument-count
+# Debug for argc, optc, argv
 
 .section .text
 .code16
@@ -19,25 +19,32 @@ d_args:
 	mov (%si), %bx
 	add $0x02, %si
 
-	# {main} show argc
-	mov $argc, %di
-	mov (%di), %cx
+	# show argc
+	mov $args, %di
+	mov (%di), %cx # argc
+	add $0x02, %di # skip argc
 	mov %cx, %ax
 	add $0x30, %al
 	push %cx
 	call sys_tty_out
 	pop %cx
 
-	# {init} argv
-	mov $argv, %di
+	call outnl
 
-.show_argv:
-	# {end}
+	# show optc
+	mov (%di), %ax # optc
+	add $0x02, %di # skip optc
+	add $0x30, %al
+	push %cx
+	call sys_tty_out
+	pop %cx
+
+.argv__lp:
+	# {end.done}
 	test %cx, %cx
 	jz .done
 	call outnl
 
-	# {update}
 	mov $raw_buf, %si
 	add $0x02, %si
 	mov (%di), %ax
@@ -47,10 +54,10 @@ d_args:
 	call puts
 	add $0x02, %sp
 
-	# {step}
-	add $0x02, %di
-	sub $0x01, %cx
-	jmp .show_argv
+	# {lp}
+	add $0x02, %di # argv
+	sub $0x01, %cx # argc
+	jmp .argv__lp
 
 .done:
 	pop %bx
