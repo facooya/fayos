@@ -36,8 +36,8 @@ cmd_echo:
 	test %ax, %ax
 	jz .hdl_arg_err
 
-	mov (%di), %ax # opt_c
 	xor %bx, %bx # opt_flag
+	mov (%di), %ax # opt_c
 
 	# {task} (opt_c == 0)
 	test %ax, %ax
@@ -45,100 +45,106 @@ cmd_echo:
 	jmp .opt
 
 # <PRE>
-# *si == fst_chr
+# *si == hyphen
+# *di == args_info
 .opt:
-.cmd_echo__chk_opt:
+.opt__init:
+	mov %ax, %cx # opt_c
+	add 0x02(%di), %si # set opt_idx
+	add $0x01, %si # skip hyphen
+
+# <PRE>
+# *si == opt_chr
+.opt__lp_chk:
 	mov (%si), %al
 
-	# (chr == hyphen)
-	cmp $CHR_HYPHEN, %al
-	je .cmd_echo__parse_opt
-
-	# cond: null ? hdl_arg_err
-	test %al, %al
-	jz .hdl_arg_err
-
-	# skip option
-	jmp .cmd_echo__parse_arg
-
-# OPT_FLAG
-.cmd_echo__parse_opt:
-	# pre: (si) = hyphen
-	# load
-	add $0x01, %si
-	mov (%si), %al
-
-	# cond: e ? set_flag_e
+	# (opt_chr == e)
 	cmp $0x65, %al
-	jz .cmd_echo__set_flag_e
+	je .opt__set_e
 
-	# cond: n ? set_flag_n
+	# (opt_chr == n)
 	cmp $0x6E, %al
-	jz .cmd_echo__set_flag_n
+	je .opt__set_n
 
-	# opt err
+	# {end.err}
 	jmp .hdl_opt_err
 
-.cmd_echo__set_flag_e:
-	# set
+.opt__set_e:
 	bts $0x00, %bx
+	jmp .opt__set_end
 
-	# step
-	add $0x02, %si
-	add $0x02, %cx
-	jmp .cmd_echo__chk_opt
-
-.cmd_echo__set_flag_n:
-	# set
+.opt__set_n:
 	bts $0x01, %bx
+	jmp .opt__set_end
 
-	# step
-	add $0x02, %si
-	add $0x02, %cx
-	jmp .cmd_echo__chk_opt
+.opt__set_end:
+	add $0x01, %si
 
-# ARG
+	# {end.step} (opt_chr == null)
+	mov (%si), %al
+	test %al, %al
+	jz .opt__end
+
+	jmp .opt__lp_chk
+
+# <PRE>
+# *si == null
+.opt__end:
+	# {task} (opt_c == 0)
+	sub $0x01, %cx
+	test %cx, %cx
+	jz .arg
+
+	# {step}
+	add $0x02, %si # skip null+hyphen
+	jmp .opt__lp_chk
+
 .arg:
-.cmd_echo__parse_arg:
+.arg__init:
 	# set offset {init}
 	mov $raw_buf, %si
 	add $0x02, %si
 
 	mov $args_info, %di
-	mov 0x06(%di), %ax
+	mov 0x04(%di), %cx # arg_c
+	mov 0x06(%di), %ax # arg_idx
 	add %ax, %si
 
-	# exec
+	# {task}
 	call outnl
-	jmp .cmd_echo__exec
+	jmp .run
 
-.cmd_echo__next_arg:
-	# step
-	add $0x02, %cx
+.run:
+.run__init:
+	push %bx # opt_flag
 
-	# get offset {init}
-	mov $argv, %si
-	add $0x02, %si # skip cmd
-	add %cx, %si # skip opt+arg
-	mov (%si), %ax # get offset
+	mov $args_info, %di
+	mov (%di), %bx # opt_c
+	mov 0x04(%di), %cx # arg_c
 
-	# cond: ax == 0 ? done {escape}
-	test %ax, %ax
-	jz .cmd_echo__nl_done
+	mov $args, %di
+	add $0x02, %di # skip argc
 
-	# set offset {init}
+	xor %dx, %dx
+	mov $0x02, %ax # align
+	mul %bx # opt_c
+	add %ax, %di # *di = arg_idx
+
 	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si # set offset
+	add $0x02, %si # skip len
 
-	# load
-	mov (%si), %al
+	mov (%di), %ax
+	add %ax, %si
 
-# EXEC
-.cmd_echo__exec:
-	# cond: e ? exec_opt_e
+	pop %bx # opt_flag
+
+	add $0x30, %al
+	call sys_tty_out
+
+.run__lp:
+	# (opt == e)
 	bt $0x00, %bx
-	jc .cmd_echo__exec_opt_e
+	jc .run__opt_e
 
 	# default
 	push %si
@@ -146,46 +152,55 @@ cmd_echo:
 	add $0x02, %sp
 
 	# jmp
-	jmp .cmd_echo__skip_opt_e
+	jmp .run__skip_opt_e
 
-.cmd_echo__exec_opt_e:
+.run__opt_e:
 	push %si
 	call print_esc
 	add $0x02, %sp
 
-.cmd_echo__skip_opt_e:
-	# cond: n ? exec_opt_n
+.run__skip_opt_e:
+	# (opt == n)
 	bt $0x1, %bx
-	jc .cmd_echo__exec_opt_n
+	jc .run__opt_n
 
 	# default
 	call outsp
 
-	# jmp
-	jmp .cmd_echo__next_arg
+	# {end}
+	jmp .run__end
 
-.cmd_echo__exec_opt_n:
-	# get offset {init}
-	mov $argv, %si
-	add $0x02, %si # skip cmd
-	add %cx, %si # skip opt+arg
-	add $0x02, %si # skip this arg
-	mov (%si), %ax # get offset
+.run__opt_n:
+	# {end.done} (arg_c == last)
+	cmp $0x01, %cx
+	je .done
 
-	# cond: ax == 0 ? done {pre-done}
-	test %ax, %ax
-	jz .cmd_echo__done
-
+	# {end}
 	call outsp
+	jmp .run__end
 
-	jmp .cmd_echo__next_arg
+.run__end:
+	sub $0x01, %cx # arg_c
+
+	# {end.done} (arg_c == 0)
+	test %cx, %cx
+	jz .nl_done
+
+	mov $raw_buf, %si
+	add $0x02, %si # skip len
+
+	add $0x02, %di
+	mov (%di), %ax
+	add %ax, %si
+
+	# {step}
+	jmp .run__lp
 
 # DONE
-.cmd_echo__nl_done:
+.nl_done:
 	call outnl
 
-.cmd_echo__done:
-	# epil
+.done:
 	pop %bx
 	pop %di
 	pop %si
@@ -204,9 +219,9 @@ cmd_echo:
 	# print err msg
 	call hdl_opt_err
 
-	jmp .cmd_echo__done
+	jmp .done
 
 .hdl_arg_err:
 	call outnl
 	call hdl_arg_err
-	jmp .cmd_echo__done
+	jmp .done

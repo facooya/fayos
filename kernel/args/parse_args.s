@@ -58,7 +58,7 @@ parse_args:
 	add $0x01, %si # buf_idx
 	sub $0x01, %cx # argc
 
-	# {end.done}
+	# {end.done} (argc == 0)
 	xor %ax, %ax
 	test %cx, %cx
 	jz .done
@@ -187,9 +187,10 @@ parse_args:
 	mov %dx, 0x06(%di) # arg_idx
 
 	# {end.done}
+	xor %ax, %ax
 	jmp .done
 
-# <PRE>
+# <PRE> # FIXME
 # *si == 0
 # ah = redir_type
 .parse_redir:
