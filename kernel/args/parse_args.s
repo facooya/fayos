@@ -154,17 +154,17 @@ parse_args:
 	test %cx, %cx
 	jz .arg__end
 
-	# {task} # FIXME!!!
+	# {task}
 	# ah = redir_type
 	mov 0x01(%si), %al
 	mov $0x01, %ah
 	cmp $CHR_GT, %al
-	je .parse_redir
+	je .redir
 	mov $0x03, %ah
 	cmp $CHR_LT, %al
-	je .parse_redir
+	je .redir
 
-	# {step}
+	# {lp}
 	jmp .arg__lp
 
 .arg__end:
@@ -173,73 +173,74 @@ parse_args:
 	jmp .done
 
 # {TASK}
-# <PRE> # FIXME!!!
-# *si == 0
+# <PRE>
+# (*si == 0)
 # ah = redir_type
-.parse_redir:
+.redir:
 	# {init}
 	mov $redir_buf, %di
 	mov %ah, (%di)
-	add $0x02, %di
+	add $0x02, %di # skip type+len
 
 	# {init}
-	add $0x02, %si
-	sub $0x01, %cx
+	add $0x02, %si # skip null+type=null
+	sub $0x01, %cx # argc
 
 	mov (%si), %al
 
-	# {err}
+	# {end.err} (chr != 0)
 	test %al, %al
 	jnz .hdl_redir_type_err
+
+	# {end.err} (argc == 0)
 	test %cx, %cx
 	jz .hdl_redir_req_err
 
-	# {init} cpy
-	add $0x01, %si
-	xor %dx, %dx
+	# {init}
+	add $0x01, %si # skip null
+	xor %dx, %dx # len
 
 # <PRE>
-# *si == fst_chr
-# di = &redir_buf
-# dx = len (redir_buf)
-.parse_redir__cpy:
+# (*si == fst_chr)
+# di:dx = &redir_buf:len
+.redir__lp:
 	mov (%si), %al
 
 	# {end}
 	test %al, %al
-	jz .parse_redir__end
+	jz .redir__end
 
 	mov %al, (%di)
 
-	# {loop}
+	# {lp}
 	add $0x01, %si
 	add $0x01, %di
-	add $0x01, %dx
-	jmp .parse_redir__cpy
+	add $0x01, %dx # len
+	jmp .redir__lp
 
-.parse_redir__end:
-	# save null
+.redir__end:
+	# store last null
 	mov %al, (%di)
 	add $0x01, %dx
 
-	# save len
+	# store len
 	mov $redir_buf, %di
 	add $0x01, %di
 	mov %dl, (%di)
 
-	sub $0x01, %cx
+	sub $0x01, %cx # argc
 
-	# {err}
+	# {end.err} (argc != 0)
 	test %cx, %cx
 	jnz .hdl_redir_extra_err
 
 	# update argc
-	mov $argc, %di
-	mov (%di), %ax
-	sub $0x02, %ax
-	mov %ax, (%di)
+	mov $args, %di
+	mov (%di), %ax # argc
+	sub $0x02, %ax # argc - redir_token_count
+	mov %ax, (%di) # argc
 
-	# {end}
+	# {end.done}
 	xor %ax, %ax
 	jmp .done
 

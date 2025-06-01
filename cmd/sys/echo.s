@@ -14,7 +14,6 @@
 .code16
 .global cmd_echo
 
-# {ENTRY}
 # cmd_echo()
 # <INFO>
 # si = &raw_buf
@@ -26,19 +25,17 @@ cmd_echo:
 	push %di
 	push %bx
 
-	# {init}
-	mov $raw_buf, %si
-	add $0x02, %si # skip len
-
-	# get
-	# mov $args_info, %di
-	# mov 0x04(%di), %ax # arg_c
+	# {{blk.1}
+	# get argc
 	mov $args, %di
 	mov (%di), %cx # argc
 	add $0x02, %di
+
+	# get optc
 	mov (%di), %bx # optc
 	add $0x02, %di
 
+	# calc
 	mov %cx, %ax
 	sub $0x01, %ax # skip cmd
 	sub %bx, %ax # skip optc
@@ -46,6 +43,12 @@ cmd_echo:
 	# {end.err} (argc == 0)
 	test %ax, %ax
 	jz .hdl_arg_err
+	# {blk.1}}
+
+	# {{blk.2}
+	# {init}
+	mov $raw_buf, %si
+	add $0x02, %si # skip len
 
 	# {init}
 	mov %bx, %ax # optc
@@ -53,15 +56,19 @@ cmd_echo:
 	add $0x02, %di # skip argv[0] (cmd)
 	sub $0x01, %cx # skip argv[0]
 
-	# {task} (opt_c == 0)
+	# {task} (optc == 0)
 	test %ax, %ax
 	jz .run
 	jmp .opt
+	# {blk.2}}
 
+# {TASK}
 # <PRE>
-# *si == hyphen
+# (*si == hyphen)
+# <INFO>
+# dx = optc
 .opt:
-	mov %ax, %dx # opt_c
+	mov %ax, %dx # optc
 
 	add (%di), %si # buf += argv[1]
 	add $0x01, %si # skip hyphen
@@ -93,7 +100,7 @@ cmd_echo:
 .opt__set_chk:
 	add $0x01, %si
 
-	# {end.step} (opt_chr == null)
+	# {chk} (opt_chr == null)
 	mov (%si), %al
 	test %al, %al
 	jz .opt__chk
@@ -178,6 +185,7 @@ cmd_echo:
 	mov $raw_buf, %si
 	add $0x02, %si # skip len
 
+	# {lp.step}
 	add $0x02, %di # argv[n+1]
 	mov (%di), %ax
 	add %ax, %si
@@ -190,7 +198,7 @@ cmd_echo:
 	jz .nl_done
 	jmp .done
 
-# DONE
+# {DONE}
 .nl_done:
 	call outnl
 
@@ -200,7 +208,7 @@ cmd_echo:
 	pop %si
 	ret
 
-# ERR
+# {ERR}
 .hdl_opt_err:
 	call outnl
 
