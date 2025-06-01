@@ -35,7 +35,6 @@ cmd_map:
 .code16
 .global exec_cmd
 
-# ENTRY
 # exec_cmd()
 exec_cmd:
 	# prol
@@ -43,15 +42,9 @@ exec_cmd:
 	push %di
 	push %bx
 
-	call tok_args
+	call proc_args
 	test %ax, %ax
 	jnz .exec_cmd__pre_done
-
-	call build_args
-
- 	call parse_args
- 	test %ax, %ax
- 	jnz .exec_cmd__pre_done
 
 	# load argc
 	mov $args, %di

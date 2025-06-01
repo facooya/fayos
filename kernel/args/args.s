@@ -14,3 +14,31 @@
 .global args
 
 args: .zero 0x100
+
+.section .text
+.code16
+.global proc_args
+
+# proc_args()
+# <RET>
+# ax = ret_code
+proc_args:
+	call tok_args
+	test %ax, %ax
+	jnz .exit
+
+	call build_args
+
+	call parse_args
+	test %ax, %ax
+	jnz .exit
+
+	xor %ax, %ax
+	jmp .done
+
+.exit:
+	mov $0x01, %ax
+	jmp .done
+
+.done:
+	ret

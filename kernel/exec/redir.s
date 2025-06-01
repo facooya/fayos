@@ -5,12 +5,10 @@
 # Execute redirection
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global exec_redir
 
-# ENTRY
 # exec_redir()
 exec_redir:
 	# prol
