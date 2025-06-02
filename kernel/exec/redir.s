@@ -16,24 +16,30 @@ exec_redir:
 	push %di
 	push %bx
 
+	# DEBUG!!!
+	call d_redir_buf
+
 	# init
 	mov $redir_buf, %si
+	mov (%si), %ax
 	add $0x02, %si
-	mov (%si), %al
+
+	xor %cx, %cx
+	mov %al, %cl
+
+	# (redir_type == 1)
+	cmp $0x01, %ah
+	je .write
 
 	# (redir_buf[off] == gt) ? type_write
-	cmp $0x3E, %al
-	je .exec_redir__type_write
+	# cmp $0x3E, %al
+	# je .exec_redir__type_write
 
-	# done {escape}
+	# {end.err}
 	jmp .exec_redir__done
 
-.exec_redir__type_write:
-	# pre: al = gt
-	
-	# init
-	add $0x02, %si
-
+# {TASK}
+.write:
 	# read_inode(i_num_hi, i_num_lo)
 	# ret: i_file_size
 	# ret: i_blk
@@ -49,7 +55,7 @@ exec_redir:
 	call read_block
 	mov $0x8000, %bx
 
-.exec_redir__cmp_name:
+.write__name_lp:
 	# get redir name len
 	# ret: ax = len
 	push %si
@@ -60,7 +66,7 @@ exec_redir:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# (de_name_len == 0) ? done
+	# {end.done} (de_name_len == null)
 	test %cx, %cx
 	jz .exec_redir__done
 
@@ -151,8 +157,8 @@ exec_redir:
 	mov DE_REC_LEN_OFF(%bx), %cx
 	add %cx, %bx
 
-	# step
-	jmp .exec_redir__cmp_name
+	# {loop}
+	jmp .write__name_lp
 
 .exec_redir__file_write:
 	# load

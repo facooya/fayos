@@ -178,8 +178,10 @@ parse_args:
 # ah = redir_type
 .redir:
 	# {init}
+	xor %dx, %dx
 	mov $redir_buf, %di
-	mov %ah, (%di)
+	# mov %ah, (%di)
+	mov %ah, %dh
 	add $0x02, %di # skip type+len
 
 	# {init}
@@ -198,11 +200,10 @@ parse_args:
 
 	# {init}
 	add $0x01, %si # skip null
-	xor %dx, %dx # len
 
 # <PRE>
 # (*si == fst_chr)
-# di:dx = &redir_buf:len
+# di:dl = &redir_buf:len
 .redir__lp:
 	mov (%si), %al
 
@@ -215,18 +216,17 @@ parse_args:
 	# {lp}
 	add $0x01, %si
 	add $0x01, %di
-	add $0x01, %dx # len
+	add $0x01, %dl # len
 	jmp .redir__lp
 
 .redir__end:
 	# store last null
 	mov %al, (%di)
-	add $0x01, %dx
+	add $0x01, %dl
 
 	# store len
 	mov $redir_buf, %di
-	add $0x01, %di
-	mov %dl, (%di)
+	mov %dx, (%di)
 
 	sub $0x01, %cx # argc
 
