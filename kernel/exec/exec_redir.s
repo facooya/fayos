@@ -48,11 +48,6 @@ exec_redir:
 	call read_block
 	mov $0x8000, %bx
 
-	call dt_a
-	call dt_b
-	call dt_c
-
-	# DEBUG CONTINUE!!!!!
 	# {task}
 	jmp .match
 
@@ -78,6 +73,12 @@ exec_redir:
 	# {chk} (redir_name_len == de_name_len)
 	cmp %cx, %ax
 	je .match__chk
+
+	# {lp.step} mem_ptr
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
+
+	# {lp}
 	jmp .match__lp
 
 .match__chk:
@@ -179,6 +180,7 @@ exec_redir:
 	xor %ax, %ax
 	jmp .done
 
+# {DONE}
 .exit:
 	mov $0x01, %ax
 	jmp .done

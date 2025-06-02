@@ -6,23 +6,23 @@
 
 .section .text
 .code16
-.global dt_a
-.global dt_b
-.global dt_c
+.global dbg_a
+.global dbg_b
+.global dbg_c
 
-dt_a:
+dbg_a:
 	push %ax
 	call ._prol
 	mov $0x41, %al
 	jmp .done
 
-dt_b:
+dbg_b:
 	push %ax
 	call ._prol
 	mov $0x42, %al
 	jmp .done
 
-dt_c:
+dbg_c:
 	push %ax
 	call ._prol
 	mov $0x43, %al

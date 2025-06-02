@@ -6,10 +6,10 @@
 
 .section .text
 .code16
-.global d_args
+.global dbg_args
 
-# d_args()
-d_args:
+# dbg_args()
+dbg_args:
 	push %si
 	push %di
 	push %bx

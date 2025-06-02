@@ -8,11 +8,11 @@
 
 .section .text
 .code16
-.global d_buf
-.global d_redir_buf
+.global dbg_buf
+.global dbg_redir_buf
 
-# d_buf(buf)
-d_buf:
+# dbg_buf(buf)
+dbg_buf:
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -39,13 +39,13 @@ d_buf:
 	pop %bp
 	ret
 
-# d_redir_buf()
+# dbg_redir_buf()
 # <INFO>
 # hdr:data
 # <REQ>
 # hdr = type:len
 # ax = hdr
-d_redir_buf:
+dbg_redir_buf:
 	push %si
 	push %di
 	push %bx
