@@ -5,7 +5,6 @@
 - ls: colorful file or dir
 - Time
 - Color
-- Debug args update more userful
 - Debug runtime
 - using write buffer
 

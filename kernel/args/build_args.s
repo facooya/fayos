@@ -27,7 +27,9 @@ build_args:
 	mov $args, %di
 	xor %dx, %dx
 	mov %dx, (%di) # argc = 0
-	add $0x04, %di # skip argc+optc
+	add $0x02, %di # skip argc
+	mov %dx, (%di) # optc = 0
+	add $0x02, %di # skip optc
 	mov %dx, (%di) # argv[0] (cmd_idx) = 0
 	add $0x02, %di # skip argv[0]
 

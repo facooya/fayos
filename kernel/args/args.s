@@ -23,6 +23,8 @@ args: .zero 0x100
 # <RET>
 # ax = ret_code
 proc_args:
+	# TODO: init_all
+
 	call tok_args
 	test %ax, %ax
 	jnz .exit
