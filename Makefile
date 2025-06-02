@@ -19,6 +19,9 @@ kernel/exec/exec_redir.s \
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_buf.s \
 kernel/dbg/dbg_trace.s \
+kernel/dbg/dbg_utils.s \
+kernel/io/outs.s \
+kernel/io/out_utils.s \
 \
 sys/disk.s \
 sys/kbd.s \
@@ -35,7 +38,6 @@ lib/str/split.s \
 lib/str/str.s \
 lib/str/trim.s \
 \
-lib/put/out.s \
 lib/put/puts.s \
 \
 fs/fayfs/alloc.s \

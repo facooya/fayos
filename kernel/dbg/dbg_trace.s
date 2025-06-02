@@ -30,12 +30,14 @@ dbg_c:
 
 .done:
 	call sys_tty_out
-	call outcol
+	call outsp
+	call dbg_line
 	call outnl
 	pop %ax
 	ret
 
 ._prol:
 	call outnl
-	call outcol
+	call dbg_line
+	call outsp
 	ret

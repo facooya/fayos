@@ -2,8 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Fixed character output with no arguments
+# Out utilities
 
+.include "chr.s"
 .section .text
 .code16
 .global outc
@@ -11,34 +12,28 @@
 .global outnl
 .global outsp
 
-# ENTRY
-# outc() - out character
+# outc()
 outc:
-	# pre: al = chr
-
 	call sys_tty_out
 	ret
 
-# ENTRY
-# outcol() - out colon
+# outcol()
 outcol:
-	mov $0x3A, %al
+	mov $CHR_COL, %al
 	call sys_tty_out
 	ret
 
-# ENTRY
-# outnl() - out newline
+# outnl()
 outnl:
-	mov $0x0D, %al # CR
+	mov $CHR_CR, %al
 	call sys_tty_out
-	mov $0x0A, %al # LF
+	mov $CHR_LF, %al
 	call sys_tty_out
 	ret
 
-# ENTRY
-# outsp() - out space
+# outsp()
 outsp:
-	mov $0x20, %al
+	mov $CHR_SP, %al
 	call sys_tty_out
 	ret
 

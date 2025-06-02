@@ -4,6 +4,14 @@
 #
 # Debug for argc, optc, argv
 
+.include "chr.s"
+.section .data
+# TODO: using outs
+.argc_str: .asciz "argc: "
+.optc_str: .asciz "optc: "
+.argv_str: .asciz "argv["
+.argv_end_str: .asciz "]: "
+
 .section .text
 .code16
 .global dbg_args
@@ -13,6 +21,10 @@ dbg_args:
 	push %si
 	push %di
 	push %bx
+
+	call outnl
+	call dbg_line
+	call outnl
 
 	# {init} raw_buf
 	mov $raw_buf, %si
@@ -60,6 +72,10 @@ dbg_args:
 	jmp .argv__lp
 
 .done:
+	call outnl
+	call dbg_line
+	call outnl
+
 	pop %bx
 	pop %di
 	pop %si
