@@ -10,24 +10,31 @@
 .global tok_args
 
 # tok_args()
-# si,bx = (raw_buf) len, data
-# di,cx = (tmp_buf) len, data
+# <INFO>
+# si:bx = &raw_buf:len
+# di:cx = &tmp_buf:len
 tok_args:
 	push %si
 	push %di
 	push %bx
 
+	# {init} redir_buf
+	xor %ax, %ax
+	mov $redir_buf, %si
+	mov %ax, (%si) # hdr
+
 	# {init} raw_buf
 	mov $raw_buf, %si
-	mov (%si), %bx
+	mov (%si), %bx # len
 	add $0x02, %si
 
 	# {init} tmp_buf
+	xor %cx, %cx # len
 	mov $tmp_buf, %di
+	mov %cx, (%di)
 	add $0x02, %di
-	xor %cx, %cx
 
-	# {done}
+	# {end}
 	test %bx, %bx
 	jz .exit
 

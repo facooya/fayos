@@ -5,14 +5,13 @@
 - ls: colorful file or dir
 - Time
 - Color
+- Debug args update more userful
+- Debug runtime
+- using write buffer
 
 ## File or dir name  
 allow ., _, - (front disallow)  
 disallow /, \, SP, all  
 
-## include define .equ  
-.equ include/...  
-
 ## Logics  
-- Seperate split function
-- redir append mode
+- redir append mode, insert mode
