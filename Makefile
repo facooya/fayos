@@ -15,9 +15,10 @@ kernel/args/tok_args.s \
 kernel/args/build_args.s \
 kernel/args/parse_args.s \
 kernel/exec/exec.s \
-kernel/exec/redir.s \
+kernel/exec/exec_redir.s \
 kernel/debug/d_args.s \
 kernel/debug/d_buf.s \
+kernel/debug/d_trace.s \
 \
 sys/disk.s \
 sys/kbd.s \

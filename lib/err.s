@@ -9,6 +9,9 @@
 .global redir_req_err_msg
 .global redir_extra_err_msg
 
+.global no_file_err_msg
+.global not_file_err_msg
+
 .opt_err_msg: .asciz "Invalid option."
 .arg_err_msg: .asciz "Missing argument."
 .quot_err_msg: .asciz "Missing double quote."
@@ -26,6 +29,9 @@ redir_req_err_msg: .asciz "Missing redirection target."
 redir_extra_err_msg: .asciz "Too many redirection target."
 
 .disk_err_msg: .asciz "Disk error."
+
+no_file_err_msg: .asciz "No file exists."
+not_file_err_msg: .asciz "Not a file."
 
 .not_found_err_msg: .asciz "Not found."
 .not_file_err_msg: .asciz "Not a file."
