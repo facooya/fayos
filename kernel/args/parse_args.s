@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Parse for arguments, And option count
+# Parse for arguments, And calculation option count
 
 .include "chr.s"
 .section .text
@@ -11,53 +11,54 @@
 
 # parse_args()
 # <INFO>
-# si = &raw_buf
-# di = &args
+# si = raw.data
 # cx = argc
-# dx = idx
+# <RET>
+# ax = 0:true, 1:exit
 parse_args:
 	push %si
 	push %di
 	push %bx
 
+	# {{{
 	# {init}
 	mov $raw_buf, %si
 	add $0x02, %si # skip len
+
 	mov $args, %di
 	mov (%di), %cx # argc
-
-	# re_alpha(&chr) [a-zA-Z]
-	# ret: ax = 0(true), ax = 1(false)
-	push %cx
-	push %si
-	call re_alpha
-	add $0x02, %sp
-	pop %cx
-
-	# {end.err} (re_alpha != true)
-	test %ax, %ax
-	jnz .call_hdl_cmd_syn_err
+	# }}}
 
 	# {task}
 	jmp .cmd
 
 # {TASK}
-# <PRE>
-# (*si == valid_chr)
 .cmd:
+	# re_alpha(&chr)
+	# ret: ax = 0(true), ax = 1(false)
+	push %cx # argc
+	push %si # raw.data
+	call re_alpha
+	add $0x02, %sp
+	pop %cx # argc
+
+	# {end.err} (ret.code != true)
+	test %ax, %ax
+	jnz .call_hdl_cmd_syn_err
+
 .cmd__lp:
-	# {end} (chr == null)
+	# {end} (raw.data == null)
 	mov (%si), %al
 	test %al, %al
 	jz .cmd__end
 
 	# {lp}
-	add $0x01, %si
+	add $0x01, %si # raw.data
 	jmp .cmd__lp
 
 .cmd__end:
 	# {step}
-	add $0x01, %si # buf_idx
+	add $0x01, %si # raw.data
 	sub $0x01, %cx # argc
 
 	# {end.done} (argc == 0)
@@ -65,63 +66,61 @@ parse_args:
 	test %cx, %cx
 	jz .done
 
+	# {task} (raw.data == hy)
+	mov (%si), %al
+	cmp $CHR_HY, %al
+	je .opt
+
 	# {task}
-	jmp .opt
+	jmp .arg
 
 # {TASK}
-# <PRE>
-# *si == hyphen || [a-zA-Z]
+# <INFO>
+# di = &args
+# bx = optc
+# <REQ>
+# (*si == hy)
 .opt:
 	xor %bx, %bx # optc
-	mov $args, %di
-	mov %bx, 0x02(%di) # optc = 0
-	sub $0x01, %si # *si == null
-	jmp .opt__chk
+	add $0x01, %si # skip hy
 
-# <PRE>
-# (*si == opt_chr)
+# <REQ>
+# (*si == alpha)
 .opt__lp:
-	# {chk} (opt_chr == null)
-	mov (%si), %al
+	# {chk} (chr == null)
+	mov (%si), %al # raw.data
 	test %al, %al
 	jz .opt__chk
 
 	# re_alpha(&chr)
-	push %cx # save argc
-	push %si # &chr
+	push %cx # argc
+	push %si # raw.data
 	call re_alpha
 	add $0x02, %sp
-	pop %cx # restore argc
+	pop %cx # argc
 
-	# {end.err} (re_alpha != true)
+	# {end.err} (ret.code != true)
 	test %ax, %ax
 	jnz .call_hdl_opt_syn_err
 
-	# {step}
-	add $0x01, %si
+	# {lp}
+	add $0x01, %si # raw.data
 	jmp .opt__lp
 
-# <PRE>
-# (*si == null)
 .opt__chk:
+	# {{{
 	# {step}
-	add $0x01, %si
+	add $0x01, %si # skip null
 
-	# {end} (chr != hyphen)
-	mov (%si), %al
+	# {end} (chr != hy)
+	mov (%si), %al # raw.data
 	cmp $CHR_HYPHEN, %al
 	jne .opt__end
-
-	# {step}
-	add $0x01, %si # opt_chr
-	add $0x01, %bx # optc
-
-	# {end.err} (opt_chr == null)
-	mov (%si), %al
-	test %al, %al
-	jz .call_hdl_opt_syn_err
+	# }}}
 
 	# {lp}
+	add $0x01, %si # skip hy
+	add $0x01, %bx # optc
 	jmp .opt__lp
 
 .opt__end:
@@ -129,34 +128,38 @@ parse_args:
 	mov $args, %di
 	mov %bx, 0x02(%di)
 
+	# {step}
+	sub %bx, %cx # argc
+
+	# {end.done} (argc == 0)
+	test %cx, %cx
+	jz .done
+
 	# {task}
 	jmp .arg
 
 # {TASK}
-# <PRE>
-# (*si == [a-zA-Z])
 .arg:
+# <REQ>
+# (*si != null)
 .arg__lp:
-	# {chk}
-	mov (%si), %al
+	# {chk} (chr == null)
+	mov (%si), %al # raw.data
 	test %al, %al
 	jz .arg__chk
 
 	# {lp}
-	add $0x01, %si
+	add $0x01, %si # raw.data
 	jmp .arg__lp
 
-# <PRE>
-# *si == 0
 .arg__chk:
-	# {end}
+	# {end} (argc == 0)
 	sub $0x01, %cx # argc
-	xor %ax, %ax # ret
 	test %cx, %cx
 	jz .arg__end
 
 	# {task}
-	# ah = redir_type
+	# ah = redir.type
 	mov 0x01(%si), %al
 	mov $0x01, %ah
 	cmp $CHR_GT, %al
@@ -174,24 +177,25 @@ parse_args:
 	jmp .done
 
 # {TASK}
-# <PRE>
-# (*si == 0)
-# ah = redir_type
+# <INFO>
+# di = &redir_buf
+# dx = offset
+# <REQ>
+# (*si == null)
+# ah = redir.type
 .redir:
 	# {init}
 	xor %dx, %dx
 	mov $redir_buf, %di
-	# mov %ah, (%di)
-	mov %ah, %dh
+	mov %ah, %dh # redir.type
 	add $0x02, %di # skip type+len
 
-	# {init}
-	add $0x02, %si # skip null+type=null
+	# {step}
+	add $0x02, %si # skip null+redir.type
 	sub $0x01, %cx # argc
 
-	mov (%si), %al
-
 	# {end.err} (chr != 0)
+	mov (%si), %al # raw.data
 	test %al, %al
 	jnz .hdl_redir_type_err
 
@@ -199,47 +203,56 @@ parse_args:
 	test %cx, %cx
 	jz .hdl_redir_req_err
 
-	# {init}
+	# {pre}
 	add $0x01, %si # skip null
 
-# <PRE>
-# (*si == fst_chr)
-# di:dl = &redir_buf:len
+# <REQ>
+# (*si == chr)
+# di = redir.data
+# dl = redir.len
 .redir__lp:
-	mov (%si), %al
+	mov (%si), %al # raw.data
 
 	# {end}
 	test %al, %al
 	jz .redir__end
 
-	mov %al, (%di)
+	mov %al, (%di) # redir.data
 
 	# {lp}
-	add $0x01, %si
-	add $0x01, %di
-	add $0x01, %dl # len
+	add $0x01, %si # raw.data
+	add $0x01, %di # redir.data
+	add $0x01, %dl # redir.len
 	jmp .redir__lp
 
 .redir__end:
-	# store last null
-	mov %al, (%di)
-	add $0x01, %dl
+	# {{{ store
+	# store null
+	mov %al, (%di) # redir.data
+	add $0x01, %dl # redir.len
 
-	# store len
+	# store hdr
 	mov $redir_buf, %di
-	mov %dx, (%di)
+	mov %dx, (%di) # redir.hdr
+	# }}}
 
+	# {{{ chk err
+	# {step}
 	sub $0x01, %cx # argc
 
 	# {end.err} (argc != 0)
 	test %cx, %cx
 	jnz .hdl_redir_extra_err
+	# }}}
 
-	# update argc
+	# {{{ update argc
 	mov $args, %di
 	mov (%di), %ax # argc
-	sub $0x02, %ax # argc - redir_token_count
-	mov %ax, (%di) # argc
+
+	# argc -= redir.arg
+	sub $0x02, %ax
+	mov %ax, (%di)
+	# }}}
 
 	# {end.done}
 	xor %ax, %ax
@@ -256,6 +269,7 @@ parse_args:
 	pop %si
 	ret
 
+# FIXME!!!
 # {ERR}
 .call_hdl_cmd_syn_err:
 	call outnl
