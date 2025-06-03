@@ -12,8 +12,9 @@
 # parse_args()
 # <INFO>
 # si = &raw_buf
-# di:dx = &args:v_idx
+# di = &args
 # cx = argc
+# dx = idx
 parse_args:
 	push %si
 	push %di

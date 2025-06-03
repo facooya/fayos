@@ -29,7 +29,7 @@ dbg_args:
 	call dbg_line
 	call outnl
 
-	# {init} raw_buf
+	# {init}
 	mov $raw_buf, %si
 	mov (%si), %bx
 	add $0x02, %si
@@ -73,14 +73,14 @@ dbg_args:
 
 # {TASK}
 .argv:
-	# {end.done}
-	test %cx, %cx
+	# {end.done} (argc == 0)
+	test %cx, %cx # argc
 	jz .done
 
 	xor %dx, %dx # idx
 
 .argv__lp:
-	# {{{
+	# {{{ out str
 	push $.argv_str
 	call outs
 	add $0x02, %sp
@@ -115,7 +115,7 @@ dbg_args:
 	sub $0x01, %cx # argc
 	add $0x01, %dx # idx
 
-	# {chk}
+	# {end.done} (argc == 0)
 	test %cx, %cx
 	jz .done
 

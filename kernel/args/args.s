@@ -28,8 +28,6 @@ proc_args:
 	call ._zero
 
 	# {{{ proc
-	# tok_args()
-	# <ret> ax = 2:skip
 	call tok_args
 	test %ax, %ax
 	jnz .exit
@@ -69,4 +67,5 @@ proc_args:
 	mov $args, %si
 	mov %ax, (%si) # argc
 	mov %ax, 0x02(%si) # optc
+	mov %ax, 0x04(%si) # argv[0]
 	ret
