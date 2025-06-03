@@ -23,8 +23,13 @@ args: .zero 0x100
 # <RET>
 # ax = ret_code
 proc_args:
-	# TODO: init_all
+	push %si
 
+	call ._zero
+
+	# {{{ proc
+	# tok_args()
+	# <ret> ax = 2:skip
 	call tok_args
 	test %ax, %ax
 	jnz .exit
@@ -37,10 +42,31 @@ proc_args:
 
 	xor %ax, %ax
 	jmp .done
+	# }}}
 
 .exit:
+	# {zero}
+	xor %ax, %ax
+	mov $raw_buf, %si
+	mov %ax, (%si) # len
+	call ._zero
+
 	mov $0x01, %ax
 	jmp .done
 
 .done:
+	pop %si
+	ret
+
+._zero:
+	xor %ax, %ax
+	mov $tmp_buf, %si
+	mov %ax, (%si) # len
+
+	mov $redir_buf, %si
+	mov %ax, (%si) # hdr
+
+	mov $args, %si
+	mov %ax, (%si) # argc
+	mov %ax, 0x02(%si) # optc
 	ret

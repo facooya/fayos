@@ -1,6 +1,9 @@
 ## Fixme rm  
 - Fails to remove subdirectories  
 
-## Fix redir
+## Fixme redir
 - multi arg file size
 - dquote
+
+## Fixme kbd
+- raw buf len bs, lsh, rsh

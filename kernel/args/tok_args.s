@@ -18,217 +18,202 @@ tok_args:
 	push %di
 	push %bx
 
-	# {init} redir_buf
-	xor %ax, %ax
-	mov $redir_buf, %si
-	mov %ax, (%si) # hdr
-
-	# {init} raw_buf
+	# {init}
 	mov $raw_buf, %si
 	mov (%si), %bx # len
 	add $0x02, %si
 
-	# {init} tmp_buf
-	xor %cx, %cx # len
+	# {init}
 	mov $tmp_buf, %di
-	mov %cx, (%di)
 	add $0x02, %di
+	xor %cx, %cx # len
 
 	# {end}
 	test %bx, %bx
 	jz .exit
+	jmp .gate
 
-.chk_tok:
-	# {done}
+# {TASK}
+.gate:
+	# {end.done}
 	test %bx, %bx
 	jz .exit
 
 	mov (%si), %al
 
-	# {step}
+	# {task}
 	cmp $CHR_SP, %al
 	je .skip_sp
-	cmp $CHR_QUOT, %al
-	je .tok_quot
+	cmp $CHR_QT, %al
+	je .tok_qt
 	jmp .tok_chr
 
+# {TASK}
 .skip_sp:
-	# {init}
+	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
 
-.skip_sp_lp:
-	# {end}
+.skip_sp__lp:
+	# {task}
 	test %bx, %bx
 	jz .cpy_buf
 
-	mov (%si), %al
-
 	# {end}
+	mov (%si), %al
 	cmp $CHR_SP, %al
-	jne .add_zero
+	jne .skip_sp__end
 
-	# {loop}
+	# {lp}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .skip_sp_lp
+	jmp .skip_sp__lp
 
-.add_zero:
-	# {end}
-	test %cx, %cx
-	jz .chk_tok
-
+.skip_sp__end:
+	# store null
 	xor %al, %al
 	mov %al, (%di)
-
-	# {loop}
 	add $0x01, %di
 	add $0x01, %cx
-	jmp .chk_tok
 
+	# {task}
+	jmp .gate
+
+# {TASK}
 .tok_chr:
-	# (len == 0)
+.tok_chr__lp:
+	# {task} (len == 0)
 	test %bx, %bx
 	jz .cpy_buf
 
 	mov (%si), %al
 
-	# (chr == quot)
-	cmp $CHR_QUOT, %al
-	je .call_hdl_tok_syn_err
+	# {end.err} (chr == qt)
+	cmp $CHR_QT, %al
+	je .err_tok
 
-	# (chr == space)
+	# {task} (chr == sp)
 	cmp $CHR_SP, %al
 	je .skip_sp
-
-	# store chr
-	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
-
-	# {loop}
-	add $0x01, %si
-	sub $0x01, %bx
-	jmp .tok_chr
-
-.tok_quot:
-	# {store} quot
-	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
-
-	# {next} chr
-	add $0x01, %si
-	sub $0x01, %bx
-
-.tok_quot__lp:
-	# {err}
-	test %bx, %bx
-	jz .call_hdl_quot_err
-
-	mov (%si), %al
-
-	# {end}
-	cmp $CHR_QUOT, %al
-	je .tok_quot__chk_bsl
 
 	# store
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
-	# {loop}
+	# {lp}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .tok_quot__lp
+	jmp .tok_chr__lp
 
-.tok_quot__chk_bsl:
-	# store quot
+# {TASK}
+.tok_qt:
+	# store qt
 	mov %al, (%di)
 	add $0x01, %di
 	add $0x01, %cx
 
+	# {step}
+	add $0x01, %si
+	sub $0x01, %bx
+
+.tok_qt__lp:
+	# {end.err}
+	test %bx, %bx
+	jz .err_qt_no
+
+	# {chk}
+	mov (%si), %al
+	cmp $CHR_QT, %al
+	je .tok_qt__chk
+
+	# store
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	# {lp}
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp .tok_qt__lp
+
+.tok_qt__chk:
+	# store qt
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	# {end} (chr != bsl)
 	mov -0x01(%si), %al
+	cmp $CHR_BSL, %al
+	jne .tok_qt__end
 
-	# (chr != back_slash)
-	cmp $CHR_BSLASH, %al
-	jne .tok_quot__end
-
-	# {loop}
+	# {lp}
 	add $0x01, %si
 	sub $0x01, %bx
-	jmp .tok_quot__lp
+	jmp .tok_qt__lp
 
-.tok_quot__end:
-	# {loop}
+.tok_qt__end:
+	# {step}
 	add $0x01, %si
 	sub $0x01, %bx
 
-	# (len == 0)
+	# {task} (len == 0)
 	test %bx, %bx
 	jz .cpy_buf
 
+	# {end.err} (chr != space)
 	mov (%si), %al
-
-	# (chr != space)
 	cmp $CHR_SP, %al
-	jne .call_hdl_tok_syn_err
+	jne .err_tok
 
-	# {loop}
+	# {task}
 	jmp .skip_sp
 
-# {MAIN} CPY_BUF
+# {TASK}
 .cpy_buf:
-	# (len == 0)
+	# {end.done} (len == 0)
 	test %cx, %cx
 	jz .skip
 
-	# add last null
+	# store null
 	xor %ax, %ax
 	mov %al, (%di)
 	add $0x01, %cx
 
 	# {init}
 	mov $tmp_buf, %di
-	mov %cx, (%di)
-	add $0x02, %di
+	mov %cx, (%di) # store len
+	add $0x02, %di # skip len
 
 	# {init}
 	mov $raw_buf, %si
-	xor %bx, %bx
-	add $0x02, %si
+	mov %cx, (%si) # store len
+	add $0x02, %si # skip len
 
-.cpy_buf_lp:
-	# (len == 0)
+# <PRE>
+# cx = src_len
+.cpy_buf__lp:
+	# {end} (src_len == 0)
 	test %cx, %cx
-	jz .cpy_buf_end
+	jz .cpy_buf__end
 
 	# cpy
 	mov (%di), %al
 	mov %al, (%si)
 
-	# {loop}
+	# {lp}
 	add $0x01, %si
 	add $0x01, %di
-	add $0x01, %bx
-	sub $0x01, %cx
-	jmp .cpy_buf_lp
+	sub $0x01, %cx # src_len
+	jmp .cpy_buf__lp
 
-.cpy_buf_end:
-	# save len
-	mov $raw_buf, %si
-	mov %bx, (%si)
-
+.cpy_buf__end:
 	xor %ax, %ax
 	jmp .done
 
 # {DONE}
 .skip:
-	# {init}
-	xor %bx, %bx
-	mov $raw_buf, %si
-	mov %bx, (%si)
-
 	mov $0x02, %ax
 	jmp .done
 
@@ -243,14 +228,18 @@ tok_args:
 	ret
 
 # {ERR}
-.call_hdl_quot_err:
+.err_qt_no:
 	call outnl
-	call hdl_quot_err
-	call outnl
-	jmp .exit
+	push $qt_no_emsg
+	jmp .err_hdl
 
-.call_hdl_tok_syn_err:
+.err_tok:
 	call outnl
-	call hdl_tok_syn_err
+	push $tok_emsg
+	jmp .err_hdl
+
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
 	jmp .exit

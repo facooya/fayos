@@ -45,7 +45,6 @@ dbg_args:
 	mov (%di), %cx # argc
 	add $0x02, %di # skip argc
 
-	# TODO: sprintf, snprintf
 	# byte to ascii
 	mov %cx, %ax
 	add $0x30, %al

@@ -7,6 +7,7 @@
 - Color
 - Debug runtime
 - using write buffer
+- lib sprintf
 
 ## File or dir name  
 allow ., _, - (front disallow)  

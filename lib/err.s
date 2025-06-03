@@ -5,6 +5,8 @@
 # Error Handler
 
 .section .data
+.global qt_no_emsg
+.global tok_emsg
 .global redir_type_err_msg
 .global redir_req_err_msg
 .global redir_extra_err_msg
@@ -14,8 +16,10 @@
 
 .opt_err_msg: .asciz "Invalid option."
 .arg_err_msg: .asciz "Missing argument."
+qt_no_emsg: .asciz "Missing double quote."
 .quot_err_msg: .asciz "Missing double quote."
 
+tok_emsg: .asciz "Token syntax error."
 .syn_err_msg: .asciz "Syntax error."
 .tok_syn_err_msg: .asciz "Token syntax error."
 .cmd_syn_err_msg: .asciz "Command syntax error."
