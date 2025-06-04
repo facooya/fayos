@@ -44,7 +44,7 @@ parse_args:
 
 	# {end.err} (ret.code != true)
 	test %ax, %ax
-	jnz .call_hdl_cmd_syn_err
+	jnz .err_cmd_syn
 
 .cmd__lp:
 	# {end} (raw.data == null)
@@ -101,7 +101,7 @@ parse_args:
 
 	# {end.err} (ret.code != true)
 	test %ax, %ax
-	jnz .call_hdl_opt_syn_err
+	jnz .err_opt_syn
 
 	# {lp}
 	add $0x01, %si # raw.data
@@ -197,11 +197,11 @@ parse_args:
 	# {end.err} (chr != 0)
 	mov (%si), %al # raw.data
 	test %al, %al
-	jnz .hdl_redir_type_err
+	jnz .err_redir_type
 
 	# {end.err} (argc == 0)
 	test %cx, %cx
-	jz .hdl_redir_req_err
+	jz .err_redir_req
 
 	# {pre}
 	add $0x01, %si # skip null
@@ -242,7 +242,7 @@ parse_args:
 
 	# {end.err} (argc != 0)
 	test %cx, %cx
-	jnz .hdl_redir_extra_err
+	jnz .err_redir_extra
 	# }}}
 
 	# {{{ update argc
@@ -269,42 +269,33 @@ parse_args:
 	pop %si
 	ret
 
-# FIXME!!!
 # {ERR}
-.call_hdl_cmd_syn_err:
+.err_cmd_syn:
 	call outnl
-	call hdl_cmd_syn_err
-	call outnl
-	jmp .exit
+	push $emsg_cmd_syn
+	jmp .err_hdl
 
-.call_hdl_opt_syn_err:
+.err_opt_syn:
 	call outnl
-	call hdl_opt_syn_err
-	call outnl
-	jmp .exit
+	push $emsg_opt_syn
+	jmp .err_hdl
 
-.call_hdl_arg_req_err:
+.err_redir_type:
 	call outnl
-	call hdl_arg_req_err
-	call outnl
-	jmp .exit
+	push $emsg_redir_type
+	jmp .err_hdl
 
-.hdl_redir_type_err:
+.err_redir_req:
 	call outnl
-	push $redir_type_err_msg
-	jmp .hdl_err
+	push $emsg_redir_req
+	jmp .err_hdl
 
-.hdl_redir_req_err:
+.err_redir_extra:
 	call outnl
-	push $redir_req_err_msg
-	jmp .hdl_err
+	push $emsg_redir_extra
+	jmp .err_hdl
 
-.hdl_redir_extra_err:
-	call outnl
-	push $redir_extra_err_msg
-	jmp .hdl_err
-
-.hdl_err:
+.err_hdl:
 	call puts
 	add $0x02, %sp
 	call outnl
