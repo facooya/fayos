@@ -90,7 +90,7 @@ tok_args:
 
 	# {end.err} (raw.data == qt)
 	cmp $CHR_QT, %al
-	je .err_tok
+	je .err_tok_syn
 
 	# {task} (raw.data == sp)
 	cmp $CHR_SP, %al
@@ -166,7 +166,7 @@ tok_args:
 	# {end.err} (raw.data != sp)
 	mov (%si), %al
 	cmp $CHR_SP, %al
-	jne .err_tok
+	jne .err_tok_syn
 
 	# {task}
 	jmp .skip_sp
@@ -228,12 +228,12 @@ tok_args:
 # {ERR}
 .err_qt_no:
 	call outnl
-	push $qt_no_emsg
+	push $emsg_qt_no
 	jmp .err_hdl
 
-.err_tok:
+.err_tok_syn:
 	call outnl
-	push $tok_emsg
+	push $emsg_tok_syn
 	jmp .err_hdl
 
 .err_hdl:

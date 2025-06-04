@@ -21,7 +21,7 @@ args: .zero 0x100
 
 # proc_args()
 # <RET>
-# ax = ret_code
+# ax = 0:true, 1:exit
 proc_args:
 	push %si
 

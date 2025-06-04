@@ -38,9 +38,9 @@ build_args:
 	add $0x01, %cx # add argv[0]
 	# }}}
 
-# <PRE>
+# <REQ>
 # bx:si = (raw_buf) len:&data
-# dx = offset
+# dx += offset
 # (*si != null)
 .argv__lp:
 	# {chk} (raw.data == null)
@@ -54,9 +54,6 @@ build_args:
 	add $0x01, %dx # offset
 	jmp .argv__lp
 
-# <PRE>
-# (*si == null)
-# (dx += offset)
 .argv__chk:
 	# {step}
 	add $0x01, %si # raw.data

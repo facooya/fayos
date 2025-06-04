@@ -111,16 +111,16 @@ parse_args:
 	# {{{
 	# {step}
 	add $0x01, %si # skip null
+	add $0x01, %bx # optc
 
 	# {end} (chr != hy)
 	mov (%si), %al # raw.data
-	cmp $CHR_HYPHEN, %al
+	cmp $CHR_HY, %al
 	jne .opt__end
 	# }}}
 
 	# {lp}
 	add $0x01, %si # skip hy
-	add $0x01, %bx # optc
 	jmp .opt__lp
 
 .opt__end:
@@ -296,7 +296,7 @@ parse_args:
 	jmp .err_hdl
 
 .err_hdl:
-	call puts
+	call outs
 	add $0x02, %sp
 	call outnl
 	jmp .exit

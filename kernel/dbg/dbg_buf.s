@@ -20,17 +20,21 @@ dbg_buf:
 	push %bx
 
 	call outnl
+	call dbg_line
+	call outnl
 
 	mov 0x04(%bp), %si
-	mov (%si), %cx
-	add $0x02, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip len
 
-	mov %cx, %ax
+	mov %cx, %ax # buf.len
 	add $0x30, %al
-	call sys_tty_out
+	call outc
 	call outnl
 
 	call ._data
+	call outnl
+	call dbg_line
 	call outnl
 
 	pop %bx
@@ -49,31 +53,40 @@ dbg_redir_buf:
 	push %si
 	push %di
 	push %bx
-	
-	call outnl
 
 	mov $redir_buf, %si
-	mov (%si), %cx
+	mov (%si), %cx # redir.hdr
+	
+	# {{{ out
+	call outnl
+	call dbg_line
+	call outnl
 
 	# type
-	mov %ch, %al
+	mov %ch, %al # redir.type
 	add $0x30, %al
 	call sys_tty_out
 	call outcol
 
 	# len
-	mov %cl, %al
+	mov %cl, %al # redir.len
 	add $0x30, %al
 	call sys_tty_out
 	call outnl
+	# }}}
 
-	mov (%si), %ax
+	# {{{
+	mov (%si), %ax # redir.hdr
 	add $0x02, %si
 
 	xor %cx, %cx
-	mov %al, %cl
+	mov %al, %cl # redir.len
 	call ._data
+
 	call outnl
+	call dbg_line
+	call outnl
+	# }}}
 
 	pop %si
 	pop %di
@@ -82,15 +95,18 @@ dbg_redir_buf:
 
 # {TASK}
 ._data:
-	test %cx, %cx
+	# {end} (buf.len == 0)
+	test %cx, %cx # buf.len
 	jz ._data__end
 
 ._data__lp:
 	mov (%si), %al
 
+	# (buf.data == sp)
 	cmp $CHR_SP, %al
 	je ._data__sp
 
+	# (buf.data == null)
 	test %al, %al
 	jz ._data__nul
 
@@ -98,7 +114,7 @@ dbg_redir_buf:
 	jmp ._data__chk
 
 ._data__sp:
-	mov $CHR_PERIOD, %al
+	mov $CHR_PRD, %al
 	call sys_tty_out
 	jmp ._data__chk
 
@@ -108,10 +124,11 @@ dbg_redir_buf:
 	jmp ._data__chk
 
 ._data__chk:
-	add $0x01, %si
-	sub $0x01, %cx
+	# {step}
+	add $0x01, %si # buf.data
+	sub $0x01, %cx # buf.len
 
-	# {end}
+	# {end} (buf.len == 0)
 	test %cx, %cx
 	jz ._data__end
 

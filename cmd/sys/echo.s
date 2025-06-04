@@ -45,7 +45,7 @@ cmd_echo:
 	jz .hdl_arg_err
 	# {blk.1}}
 
-	# {{blk.2}
+	# {{{
 	# {init}
 	mov $raw_buf, %si
 	add $0x02, %si # skip len
@@ -60,7 +60,7 @@ cmd_echo:
 	test %ax, %ax
 	jz .run
 	jmp .opt
-	# {blk.2}}
+	# }}}
 
 # {TASK}
 # <PRE>
