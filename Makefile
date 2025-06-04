@@ -4,49 +4,57 @@ AS = as --32
 LD_BOOT = ld --oformat binary -m elf_i386 -Ttext 0x7C00
 LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 
+# Don't reposition "kernel/kernel.s",
+# This file always first location in Fayos.
+# kernel_addr: segment:offset = 0x0000:0x1000
 SRCS = \
 kernel/kernel.s \
-\
-kernel/buf.s \
 kernel/cache.s \
-kernel/kbd.s \
+\
 kernel/args/args.s \
 kernel/args/tok_args.s \
 kernel/args/build_args.s \
 kernel/args/parse_args.s \
+\
 kernel/exec/exec.s \
 kernel/exec/exec_redir.s \
+\
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_buf.s \
 kernel/dbg/dbg_trace.s \
 kernel/dbg/dbg_utils.s \
+\
+kernel/io/buf.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
+kernel/io/kbd.s \
 \
-sys/disk.s \
-sys/kbd.s \
-sys/vid.s \
-\
-lib/cursor.s \
-lib/err.s \
-lib/re.s \
-lib/vid.s \
-lib/disk/block.s \
-lib/disk/dap.s \
-lib/err/emsg_io.s \
-lib/err/emsg_syn.s \
-lib/str/print.s \
-lib/str/split.s \
-lib/str/str.s \
-lib/str/trim.s \
-\
-lib/put/puts.s \
+kernel/sys/disk.s \
+kernel/sys/kbd.s \
+kernel/sys/vid.s \
 \
 fs/fayfs/alloc.s \
 fs/fayfs/dir.s \
 fs/fayfs/fayfs.s \
 fs/fayfs/inode.s \
 fs/fayfs/super.s \
+\
+lib/cursor.s \
+lib/err.s \
+lib/re.s \
+lib/vid.s \
+\
+lib/disk/block.s \
+lib/disk/dap.s \
+\
+lib/err/emsg_io.s \
+lib/err/emsg_syn.s \
+\
+lib/str/print.s \
+lib/str/split.s \
+lib/str/str.s \
+lib/str/trim.s \
+lib/put/puts.s \
 \
 cmd/sys/echo.s \
 cmd/sys/help.s \
