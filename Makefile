@@ -16,6 +16,15 @@ kernel/args/tok_args.s \
 kernel/args/build_args.s \
 kernel/args/parse_args.s \
 \
+kernel/cli/cli_main.s \
+kernel/cli/cli_key_bs.s \
+kernel/cli/cli_key_cr.s \
+\
+kernel/cli/cli_key_down.s \
+kernel/cli/cli_key_left.s \
+kernel/cli/cli_key_right.s \
+kernel/cli/cli_key_up.s \
+\
 kernel/exec/exec.s \
 kernel/exec/exec_redir.s \
 \
@@ -27,7 +36,6 @@ kernel/dbg/dbg_utils.s \
 kernel/io/buf.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
-kernel/io/kbd.s \
 \
 kernel/sys/disk.s \
 kernel/sys/kbd.s \

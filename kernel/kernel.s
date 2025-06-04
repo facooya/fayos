@@ -20,27 +20,34 @@ _start:
 	call init_sb
 
 	push $.kernel_ok_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	push $.kernel_welcome_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call outnl
 
 	push $kernel_prompt
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call init_cursor
 	mov $raw_buf, %si
 	add $0x02, %si
 
-# .kernel_lp() - main loop
-.kernel_lp:
+	# {main}
+	jmp kernel_main
+
+# {MAIN}
+# kernel_main()
+# <REQ>
+# (*si == raw_buf.data)
+kernel_main:
+	# {main}
 	call sys_read_key
+	call cli_main
 
-	call hdl_kbd
-
-	jmp .kernel_lp
+	# {lp}
+	jmp kernel_main

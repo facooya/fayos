@@ -10,11 +10,11 @@
 .code16
 .global sys_read_key
 
-# ENTRY
 # sys_read_key()
-# ret: ah = scan code
-# ret: al = ascii code
+# <RET>
+# ah = scan_code
+# al = ascii_code
 sys_read_key:
-	xor %ah, %ah # KBD_READ_KEY
+	xor %ax, %ax
 	int $INT_KBD
 	ret

@@ -1,8 +1,9 @@
 ## Directory Structure
-kernel.s - entry point
-cache.s - cache for kernel
-args/ - arguments (e.g., make argc, argv, optc)
-dbg/ - debug
+kernel.s - Entry point
+cache.s - Cache for kernel
+args/ - Arguments (e.g., make argc, argv, optc)
+cli/ - Command Line Input
+dbg/ - Debug
 exec/ - CLI execution
-io/ - Input, Output (e.g., kbd.s)
+io/ - Input, Output
 sys/ - BIOS interrupt

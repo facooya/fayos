@@ -4,6 +4,7 @@
 #
 # Character constants
 
+.equ CHR_BS, 0x08 # back space
 .equ CHR_LF, 0x0A # line feed
 .equ CHR_CR, 0x0D # carriage return
 
@@ -26,3 +27,9 @@
 
 .equ CHR_LC_A, 0x61
 .equ CHR_LC_Z, 0x7A
+
+# KEY
+.equ KEY_UP, 0x4800
+.equ KEY_LEFT, 0x4B00
+.equ KEY_RIGHT, 0x4D00
+.equ KEY_DOWN, 0x5000
