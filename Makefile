@@ -17,9 +17,11 @@ kernel/args/build_args.s \
 kernel/args/parse_args.s \
 \
 kernel/cli/cli_main.s \
+kernel/cli/cli_lsh.s \
+kernel/cli/cli_rsh.s \
+\
 kernel/cli/cli_key_bs.s \
 kernel/cli/cli_key_cr.s \
-\
 kernel/cli/cli_key_down.s \
 kernel/cli/cli_key_left.s \
 kernel/cli/cli_key_right.s \

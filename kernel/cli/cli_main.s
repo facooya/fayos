@@ -43,6 +43,11 @@ cli_main:
 	je cli_key_down
 	# }}}
 
+	# {end.call} (raw.data != null)
+	mov (%si), %ah
+	test %ah, %ah
+	jnz .call_cli_rsh
+
 	# {{{
 	call outc
 
@@ -61,4 +66,23 @@ cli_main:
 	mov %al, (cursor+0x01)
 	# }}}
 
+.done:
 	ret
+
+.call_cli_rsh:
+	call cli_rsh
+
+	# update len
+	mov (raw_buf), %ax # raw.len
+	add $0x01, %ax
+	mov %ax, (raw_buf)
+
+	# update cursor max
+	mov (cursor+0x01), %al # cursor.max
+	add $0x01, %al
+	mov %al, (cursor+0x01)
+
+	# {step}
+	add $0x01, %si # raw.data
+
+	jmp .done
