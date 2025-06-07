@@ -10,22 +10,29 @@
 
 # cli_lsh()
 # <REQ>
-# si = raw.data
+# si = raw.data (updated)
 cli_lsh:
 	push %di
+	jmp .lsh
 
+.lsh:
 	# cpy
 	mov %si, %di # raw.data
-	mov (raw_buf), %cx # raw.len
+	add $0x01, %di
 
-	call sys_get_cursor
+	# strlen(&str)
+	# <ret> ax = len
+	push %di # raw.data
+	call strlen
+	add $0x02, %sp
+	mov %ax, %cx # str.len
 
 .lsh__lp: # [d_lsh.1]
 	# left shift
 	mov (%di), %al # raw.data
 	mov %al, -0x01(%di)
 
-	# {end} (raw.len == len)
+	# {end} (str.len == 0)
 	test %cx, %cx
 	jz .lsh__end
 
@@ -35,7 +42,8 @@ cli_lsh:
 	jmp .lsh__lp
 
 .lsh__end:
-	# back cursor [d_lsh.2]
+	# left cursor [d_lsh.2]
+	call sys_get_cursor
 	sub $0x01, %dl # cursor.x
 	call sys_set_cursor
 
@@ -47,7 +55,7 @@ cli_lsh:
 	# overwrite [d_lsh.4]
 	call outsp
 
-	# back cursor [d_lsh.5]
+	# left cursor [d_lsh.5]
 	call sys_set_cursor
 
 .done:

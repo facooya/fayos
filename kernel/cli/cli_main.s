@@ -43,36 +43,10 @@ cli_main:
 	je cli_key_down
 	# }}}
 
-	# {end.call} (raw.data != null)
-	mov (%si), %ah
-	test %ah, %ah
-	jnz .call_cli_rsh
-
-	# {{{
-	call outc
-
-	# store chr
-	mov %al, (%si) # raw.data
-	add $0x01, %si
-
-	# update len
-	mov (raw_buf), %ax # raw.len
-	add $0x01, %ax
-	mov %ax, (raw_buf)
-
-	# update max cursor
-	mov (cursor+0x01), %al # cursor.max
-	add $0x01, %al
-	mov %al, (cursor+0x01)
-	# }}}
-
-.done:
-	ret
-
-.call_cli_rsh:
-	call cli_rsh
-
-	# update len
+	# {{{ pre-update
+	# update raw_buf
+	push %ax
+	add $0x01, %si # raw.data
 	mov (raw_buf), %ax # raw.len
 	add $0x01, %ax
 	mov %ax, (raw_buf)
@@ -81,8 +55,24 @@ cli_main:
 	mov (cursor+0x01), %al # cursor.max
 	add $0x01, %al
 	mov %al, (cursor+0x01)
+	pop %ax
+	# }}}
 
-	# {step}
-	add $0x01, %si # raw.data
+	# {task} (raw.data-1 != null)
+	mov -0x01(%si), %ah
+	test %ah, %ah
+	jnz .call_cli_rsh
 
+	# {{{
+	call outc
+
+	# store chr
+	mov %al, -0x01(%si) # raw.data
+	# }}}
+
+.done:
+	ret
+
+.call_cli_rsh:
+	call cli_rsh
 	jmp .done

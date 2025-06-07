@@ -21,6 +21,10 @@ cli_key_cr:
 	mov %al, (cursor+0x01) # cursor.max
 
 	# {init.task}
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
+
 	xor %ax, %ax
 	mov $raw_buf, %si
 	mov %ax, (%si) # raw.len

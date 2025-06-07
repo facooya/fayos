@@ -4,7 +4,7 @@
 #
 # Key backspace
 
-# FIXME!!!: Somthing error
+# FIXME!!!: Somthing error or lsh error
 
 .section .text
 .code16
@@ -12,34 +12,32 @@
 
 # cli_key_bs()
 cli_key_bs:
+	# {end.done} (cursor.x == cursor.min)
 	call sys_get_cursor
-
-	# {end.done} (cursor.min == cursor.x)
 	cmp (cursor), %dl
 	je .done
 
-	# {{{
+	# {{{ pre-update
 	# update cursor max
 	mov (cursor+0x01), %al # cursor.max
 	sub $0x01, %al
 	mov %al, (cursor+0x01)
 
-	# update len
+	# update raw_buf
+	sub $0x01, %si # raw.data
 	mov (raw_buf), %ax # raw.len
 	sub $0x01, %ax
 	mov %ax, (raw_buf)
-
-	# {step}
-	sub $0x01, %si # raw.data
 	# }}}
 
-	# {end.call} (raw.data+1 != null)
+	# {task} (raw.data+1 != null)
 	mov 0x01(%si), %al
 	test %al, %al
 	jnz .call_cli_lsh
 
 	# {{{ [d_nsh]
 	# left cursor [d_nsh.1]
+	call sys_get_cursor
 	sub $0x01, %dl # cursor.x
 	call sys_set_cursor
 
@@ -51,7 +49,7 @@ cli_key_bs:
 
 	# {step} store null [d_nsh.4]
 	xor %al, %al
-	mov %al, (%si)
+	mov %al, (%si) # raw.data
 	# }}}
 
 .done:
