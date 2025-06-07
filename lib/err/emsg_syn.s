@@ -6,6 +6,7 @@
 
 .section .data
 .global emsg_cmd_syn
+.global emsg_cmd_not
 .global emsg_opt_syn
 .global emsg_tok_syn
 
@@ -14,6 +15,7 @@
 .global emsg_qt_no
 
 emsg_cmd_syn: .asciz "Command syntax error."
+emsg_cmd_not: .asciz "Command not found."
 emsg_opt_syn: .asciz "Option syntax error."
 emsg_tok_syn: .asciz "Token syntax error."
 

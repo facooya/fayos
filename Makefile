@@ -27,7 +27,7 @@ kernel/cli/cli_key_left.s \
 kernel/cli/cli_key_right.s \
 kernel/cli/cli_key_up.s \
 \
-kernel/exec/exec.s \
+kernel/exec/exec_cmd.s \
 kernel/exec/exec_redir.s \
 \
 kernel/dbg/dbg_args.s \
@@ -37,6 +37,7 @@ kernel/dbg/dbg_trace.s \
 kernel/dbg/dbg_utils.s \
 \
 kernel/io/buf.s \
+kernel/io/cursor.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
 \
@@ -50,7 +51,6 @@ fs/fayfs/fayfs.s \
 fs/fayfs/inode.s \
 fs/fayfs/super.s \
 \
-lib/cursor.s \
 lib/err.s \
 lib/re.s \
 lib/vid.s \
@@ -62,10 +62,12 @@ lib/err/emsg_io.s \
 lib/err/emsg_syn.s \
 \
 lib/str/print.s \
+lib/str/puts.s \
 lib/str/split.s \
 lib/str/str.s \
 lib/str/trim.s \
-lib/put/puts.s \
+\
+cmd/cmd_map.s \
 \
 cmd/sys/echo.s \
 cmd/sys/help.s \

@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# Command mapping
+
+.section .data
+.global cmd_map
+
+cmd_map:
+	# sys
+	.word cmd_clear
+	.asciz "clear"
+	.word cmd_echo
+	.asciz "echo"
+	.word cmd_help
+	.asciz "help"
+	# dir
+	.word cmd_cd
+	.asciz "cd"
+	.word cmd_ls
+	.asciz "ls"
+	.word cmd_mkdir
+	.asciz "mkdir"
+	# file
+	.word cmd_cat
+	.asciz "cat"
+	.word cmd_touch
+	.asciz "touch"
+	.word cmd_rm
+	.asciz "rm"
+	# end of cmd_map
+	.long 0x00
