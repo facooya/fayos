@@ -1,4 +1,4 @@
-## Fixme rm  
+## Fixme rm
 - Fails to remove subdirectories  
 
 ## Fixme redir

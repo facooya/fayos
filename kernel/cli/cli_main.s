@@ -73,6 +73,6 @@ cli_main:
 .done:
 	ret
 
-.call_cli_rsh:
+.call_cli_rsh: # FIXME
 	call cli_rsh
 	jmp .done

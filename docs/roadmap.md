@@ -1,4 +1,4 @@
-## Feature  
+## Feature
 - History: up down - raw history
 - Tab: autocomplete file or dir
 - Path: Directory path
@@ -9,9 +9,8 @@
 - using write buffer
 - lib sprintf
 
-## File or dir name  
-allow ., _, - (front disallow)  
-disallow /, \, SP, all  
+## File or dir name
+- allow ., _, - (front disallow), disallow /, \, SP, all  
 
-## Logics  
+## Logics
 - redir append mode, insert mode

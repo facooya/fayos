@@ -69,6 +69,10 @@ tok_args:
 	jmp .skip_sp__lp
 
 .skip_sp__end:
+	# {task} (tmp.len == 0)
+	test %cx, %cx
+	jz .gate
+
 	# store null
 	xor %al, %al
 	mov %al, (%di)

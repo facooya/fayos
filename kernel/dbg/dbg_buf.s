@@ -16,8 +16,9 @@ dbg_buf:
 	push %bp
 	mov %sp, %bp
 	push %si
-	push %di
+	push %ax
 	push %bx
+	push %cx
 
 	call outnl
 	call dbg_line
@@ -37,8 +38,9 @@ dbg_buf:
 	call dbg_line
 	call outnl
 
+	pop %cx
 	pop %bx
-	pop %di
+	pop %ax
 	pop %si
 	pop %bp
 	ret
