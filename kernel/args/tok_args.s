@@ -177,6 +177,13 @@ tok_args:
 
 # {TASK}
 .cpy_buf:
+	# clear_buf(raw_buf)
+	push %cx
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
+	pop %cx
+
 	# store null
 	xor %ax, %ax
 	mov %al, (%di) # tmp.data

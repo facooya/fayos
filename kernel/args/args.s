@@ -44,9 +44,9 @@ proc_args:
 
 .exit:
 	# {zero}
-	xor %ax, %ax
-	mov $raw_buf, %si
-	mov %ax, (%si) # len
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
 	call ._zero
 
 	mov $0x01, %ax
@@ -57,13 +57,13 @@ proc_args:
 	ret
 
 ._zero:
+	push $tmp_buf
+	call clear_buf
+	add $0x02, %sp
+
+	call clear_redir_buf
+
 	xor %ax, %ax
-	mov $tmp_buf, %si
-	mov %ax, (%si) # len
-
-	mov $redir_buf, %si
-	mov %ax, (%si) # hdr
-
 	mov $args, %si
 	mov %ax, (%si) # argc
 	mov %ax, 0x02(%si) # optc
