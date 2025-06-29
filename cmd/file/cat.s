@@ -114,9 +114,10 @@ cmd_cat:
 	call read_block
 	mov $0x8000, %bx
 
-	# puts
+	# TODO: using write buffer
+	# outs
 	push %bx
-	call puts
+	call outs
 	add $0x02, %sp
 
 	# restore

@@ -169,6 +169,7 @@ parse_args:
 	je .redir
 
 	# {lp}
+	add $0x01, %si
 	jmp .arg__lp
 
 .arg__end:

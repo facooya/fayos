@@ -143,7 +143,7 @@ cmd_echo:
 	mov (%di), %ax # arg_idx
 	add %ax, %si
 
-	call outnl
+	#call putnl
 
 .run__lp:
 	# {step} (opt == e)
@@ -151,7 +151,7 @@ cmd_echo:
 	jc .run__exec_e
 
 	push %si
-	call print_str
+	call puts
 	add $0x02, %sp
 
 	# {step}
@@ -172,7 +172,7 @@ cmd_echo:
 	je .run__end
 
 .run__skip_n:
-	call outsp
+	call putsp
 
 .run__chk:
 	sub $0x01, %cx # argc

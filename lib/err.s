@@ -70,7 +70,7 @@ not_file_err_msg: .asciz "Not a file."
 # hdl_opt_err()
 hdl_opt_err:
 	push $.opt_err_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call outnl
@@ -80,7 +80,7 @@ hdl_opt_err:
 # hdl_arg_err()
 hdl_arg_err:
 	push $.arg_err_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call outnl
@@ -122,7 +122,7 @@ hdl_arg_req_err:
 # hdl_redir_err()
 hdl_redir_err:
 	push $.redir_err_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call outnl
@@ -132,7 +132,7 @@ hdl_redir_err:
 # hdl_disk_err()
 hdl_disk_err:
 	push $.disk_err_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	call outnl
@@ -164,6 +164,6 @@ hdl_dup_err:
 
 # COMMON
 .hdl_err:
-	call puts
+	call outs
 	add $0x02, %sp
 	ret

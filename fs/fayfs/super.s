@@ -115,7 +115,7 @@ init_sb:
 	jne .init_sb__mag_ne
 
 	push $.sb_found_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	# done
@@ -124,7 +124,7 @@ init_sb:
 
 .init_sb__mag_ne:
 	push $.sb_try_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	# set sb
@@ -200,7 +200,7 @@ init_sb:
 	call read_sb
 
 	push $.sb_ok_msg
-	call puts
+	call outs
 	add $0x02, %sp
 
 	# epil

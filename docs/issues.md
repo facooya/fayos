@@ -2,5 +2,7 @@
 - Fails to remove subdirectories  
 
 ## Fixme redir
-- multi arg file size
-- dquote
+- file name: before (abc != "abc"), after (abc == "abc")
+
+## FIXME
+- all command fix for new line

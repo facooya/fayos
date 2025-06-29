@@ -2,41 +2,51 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Output string
+# Put string in write buffer
 
 .section .text
 .code16
 .global puts
 .global putsc
 
-# ENTRY
-# puts(addr) - put string
+# puts(addr)
 puts:
-	# prol
 	push %bp
 	mov %sp, %bp
 	push %si
+	push %di
 
-	# init
-	mov 4(%bp), %si
+	# {init}
+	mov 0x04(%bp), %si
+
+	mov $write_buf, %di
+	mov (%di), %dx # buf.len
+	add $0x02, %di # skip len
+	add %dx, %di # buf.in
 
 .puts__lp:
 	# load
 	mov (%si), %al
 
-	# cond: null ? done
+	# {end.done} (str == null)
 	test %al, %al
 	jz .puts__done
 
-	# body
-	call sys_tty_out
+	# store in write_buffer
+	mov %al, (%di)
 
 	# step
 	add $0x01, %si
+	add $0x01, %di
+	add $0x01, %dx
 	jmp .puts__lp
 	
 .puts__done:
-	# epil
+	# store len
+	mov $write_buf, %di
+	mov %dx, (%di)
+
+	pop %di
 	pop %si
 	pop %bp
 	ret
@@ -51,7 +61,7 @@ putsc:
 	push %si
 
 	# init
-	mov 4(%bp), %si
+	mov 0x04(%bp), %si
 	xor %cx, %cx
 
 .putsc__lp:

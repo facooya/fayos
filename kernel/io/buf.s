@@ -8,12 +8,12 @@
 .global raw_buf
 .global tmp_buf
 .global redir_buf
-#.global write_buf
+.global write_buf
 
 raw_buf: .zero 0x400
 tmp_buf: .zero 0x400
 redir_buf: .zero 0x200
-#write_buf: .zero 0x400
+write_buf: .zero 0x400
 
 .section .text
 .code16

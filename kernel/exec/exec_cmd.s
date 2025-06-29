@@ -17,7 +17,7 @@ exec_cmd:
 	# {end.done} (ret.code != 0)
 	call proc_args
 	test %ax, %ax
-	jnz .done_nl
+	jnz .done__pre
 
 	# {task}
 	jmp .map
@@ -95,6 +95,16 @@ exec_cmd:
 	test %cx, %cx
 	jnz .redir
 
+	# print
+	mov $write_buf, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip len
+
+	push %si
+	call outs
+	add $0x02, %sp
+	call outnl
+
 	# {end.done}
 	jmp .done
 
@@ -119,10 +129,14 @@ exec_cmd:
 	jmp .done
 
 # {DONE}
-.done_nl:
+.done__pre:
 	call outnl
 
 .done:
+	push $write_buf
+	call clear_buf
+	add $0x02, %sp
+
 	pop %bx
 	pop %di
 	pop %si

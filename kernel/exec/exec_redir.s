@@ -133,19 +133,16 @@ exec_redir:
 	mov $0x8000, %bx
 	xor %dx, %dx # file_size
 
-	# HACK!!! no opt only, get argc == 0 end
-	mov $args, %si
-	mov 0x06(%si), %ax # argv[1]
-	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si
+	mov $write_buf, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip len
 
 .file__write_lp:
 	mov (%si), %al
 
-	# {chk} (chr == null)
-	test %al, %al
-	jz .file__write_chk
+	# {end} (len == 0)
+	test %cx, %cx
+	jz .file__write_end
 
 	mov %al, (%bx)
 
@@ -153,11 +150,8 @@ exec_redir:
 	add $0x01, %si # chr
 	add $0x01, %bx # mem
 	add $0x01, %dx # size
+	sub $0x01, %cx # buf.len
 	jmp .file__write_lp
-
-.file__write_chk:
-	# FIXME: argc--; == 0; end;
-	jmp .file__write_end
 
 .file__write_end:
 	call set_blk_lba
@@ -208,7 +202,7 @@ exec_redir:
 	jmp .hdl_err
 
 .hdl_err:
-	call puts
+	call outs
 	add $0x02, %sp
 	call outnl
 	jmp .exit

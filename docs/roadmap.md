@@ -6,11 +6,9 @@
 - Time
 - Color
 - Debug runtime
-- using write buffer
 - lib sprintf
 
-## File or dir name
-- allow ., _, - (front disallow), disallow /, \, SP, all  
-
-## Logics
+## TODO
 - redir append mode, insert mode
+- using write buffer
+- file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all  
