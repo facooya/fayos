@@ -2,15 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# help
-
-# INDEX
-# cmd_help()
-
-# DEPS
-# cmd_help()
-# outnl
-# cmd_map
+# Command help - show commands list
 
 .section .text
 .code16
@@ -18,36 +10,39 @@
 
 # cmd_help()
 cmd_help:
-	# prol
 	push %si
 
-	# set
+	# {init}
 	mov $cmd_map, %si
 
-.cmd_help__chk_addr_lp:
-	# load cmd_addr
+	# {task}
+	jmp .lp
+
+.lp:
+	# {end.done} (cmd_addr == null)
 	mov (%si), %ax
-
-	# cond: null ? done
 	test %ax, %ax
-	jz .cmd_help__done
+	jz .done
 
-	call outnl
+	add $0x02, %si # cmd_map[cmd_str]
 
-	add $0x02, %si # cmd_map (cmd_str)
-
-	# print cmd_str
+	# puts(cmd_str)
 	push %si
-	call putsc
+	call puts
 	add $0x02, %sp
-	add %cx, %si
 
-.cmd_help__out_char_end:
-	# loop
-	add $0x01, %si # cmd_map (cmd_addr)
-	jmp .cmd_help__chk_addr_lp
+	# strlen(cmd_str)
+	push %si
+	call strlen
+	add $0x02, %sp
+	add %ax, %si
 
-.cmd_help__done:
-	# epil
+	call putnl
+
+	# {lp}
+	add $0x01, %si # cmd_map[cmd_addr]
+	jmp .lp
+
+.done:
 	pop %si
 	ret
