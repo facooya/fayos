@@ -58,6 +58,7 @@ lib/vid.s \
 lib/disk/block.s \
 lib/disk/dap.s \
 \
+lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \
 \

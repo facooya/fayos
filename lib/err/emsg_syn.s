@@ -10,15 +10,11 @@
 .global emsg_opt_syn
 .global emsg_tok_syn
 
-.global emsg_arg_req
-
 .global emsg_qt_no
 
 emsg_cmd_syn: .asciz "Command syntax error."
 emsg_cmd_not: .asciz "Command not found."
 emsg_opt_syn: .asciz "Option syntax error."
 emsg_tok_syn: .asciz "Token syntax error."
-
-emsg_arg_req: .asciz "Argument required."
 
 emsg_qt_no: .asciz "Missing double quote."

@@ -11,4 +11,5 @@
 ## TODO
 - redir append mode, insert mode
 - using write buffer
-- file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all  
+- file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all
+- change emsg

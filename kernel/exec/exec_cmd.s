@@ -14,10 +14,12 @@ exec_cmd:
 	push %di
 	push %bx
 
+	call outnl
+
 	# {end.done} (ret.code != 0)
 	call proc_args
 	test %ax, %ax
-	jnz .done__pre
+	jnz .done
 
 	# {task}
 	jmp .map
@@ -88,6 +90,8 @@ exec_cmd:
 .map__end:
 	mov -0x02(%di), %bx # map_addr
 	call *%bx
+	test %ax, %ax
+	jnz .done
 
 	# {task} (redir.hdr != 0)
 	mov $redir_buf, %si
@@ -103,7 +107,6 @@ exec_cmd:
 	push %si
 	call outs
 	add $0x02, %sp
-	call outnl
 
 	# {end.done}
 	jmp .done
@@ -129,9 +132,6 @@ exec_cmd:
 	jmp .done
 
 # {DONE}
-.done__pre:
-	call outnl
-
 .done:
 	push $write_buf
 	call clear_buf
@@ -144,7 +144,6 @@ exec_cmd:
 
 # {ERR}
 .err_cmd_not:
-	call outnl
 	push $emsg_cmd_not
 	jmp .err_hdl
 

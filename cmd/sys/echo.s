@@ -42,7 +42,7 @@ cmd_echo:
 
 	# {end.err} (argc == 0)
 	test %ax, %ax
-	jz .hdl_arg_err
+	jz .err_arg_req
 	# {blk.1}}
 
 	# {{{
@@ -87,7 +87,7 @@ cmd_echo:
 	je .opt__set_n
 
 	# {end.err}
-	jmp .hdl_opt_err
+	jmp .err_opt_inv
 
 .opt__set_e:
 	bts $0x00, %bx
@@ -143,8 +143,6 @@ cmd_echo:
 	mov (%di), %ax # arg_idx
 	add %ax, %si
 
-	#call putnl
-
 .run__lp:
 	# {step} (opt == e)
 	bt $0x00, %bx
@@ -155,24 +153,12 @@ cmd_echo:
 	add $0x02, %sp
 
 	# {step}
-	jmp .run__skip_e
+	jmp .run__chk
 
 .run__exec_e:
 	push %si
 	call print_esc
 	add $0x02, %sp
-
-.run__skip_e:
-	# {step.skip} (opt != n)
-	bt $0x1, %bx
-	jnc .run__skip_n
-
-	# {end} (argc == last)
-	cmp $0x01, %cx
-	je .run__end
-
-.run__skip_n:
-	call putsp
 
 .run__chk:
 	sub $0x01, %cx # argc
@@ -180,6 +166,8 @@ cmd_echo:
 	# {end} (arg_c == 0)
 	test %cx, %cx
 	jz .run__end
+
+	call putsp
 
 	# {lp.init}
 	mov $raw_buf, %si
@@ -194,14 +182,16 @@ cmd_echo:
 	jmp .run__lp
 
 .run__end:
-	test %cx, %cx
-	jz .nl_done
+	# {end.done} (opt == n)
+	xor %ax, %ax
+	bt $0x01, %bx
+	jc .done
+
+	call putnl
+	xor %ax, %ax
 	jmp .done
 
 # {DONE}
-.nl_done:
-	call outnl
-
 .done:
 	pop %bx
 	pop %di
@@ -209,21 +199,25 @@ cmd_echo:
 	ret
 
 # {ERR}
-.hdl_opt_err:
-	call outnl
-
+.err_opt_inv:
 	# print opt err
 	mov (%si), %al # opt err char
 	call outc
 	call outcol
 	call outsp
 
-	# print err msg
-	call hdl_opt_err
+	push $emsg_opt_inv
+	jmp .err_hdl
 
-	jmp .done
+.err_arg_req:
+	push $emsg_arg_req
+	jmp .err_hdl
 
-.hdl_arg_err:
+.err_hdl:
+	call outs
+	add $0x02, %sp
+
 	call outnl
-	call hdl_arg_err
+
+	mov $0x01, %ax
 	jmp .done
