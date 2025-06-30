@@ -113,14 +113,9 @@ tok_args:
 
 # {TASK}
 .tok_qt:
-	# {{{ store qt
-	mov %al, (%di)
-	add $0x01, %di # tmp.data
-	add $0x01, %cx # tmp.len
-
+	# skip qt
 	add $0x01, %si # raw.data
 	sub $0x01, %bx # raw.len
-	# }}}
 
 .tok_qt__lp:
 	# {end.err} (raw.len == 0)
@@ -143,15 +138,23 @@ tok_args:
 	jmp .tok_qt__lp
 
 .tok_qt__chk:
-	# store qt
-	mov %al, (%di)
-	add $0x01, %di # tmp.data
-	add $0x01, %cx # tmp.len
-
-	# {end} (raw.data-1 != bsl)
+	# {chk} (raw.data-1 == bsl)
 	mov -0x01(%si), %al
 	cmp $CHR_BSL, %al
-	jne .tok_qt__end
+	je .tok_qt__chk_bsl
+
+	# {end}
+	jmp .tok_qt__end
+
+.tok_qt__chk_bsl:
+	# {end} (raw.data-2 == bsl)
+	mov -0x02(%si), %al
+	cmp $CHR_BSL, %al
+	je .tok_qt__end
+
+	# change bsl -> qt
+	mov $CHR_QT, %al
+	mov %al, -0x01(%di) # tmp.data-1
 
 	# {lp}
 	add $0x01, %si # raw.data
