@@ -16,69 +16,75 @@
 # al = chr
 putc:
 	push %si
+	push %bx
 
 	# {init}
 	mov $write_buf, %si
-	mov (%si), %dx # buf.len
+	mov (%si), %bx # buf.len
 	add $0x02, %si # skip len
-	add %dx, %si # buf.in
+	add %bx, %si # buf.in
 
 	# store data
 	mov %al, (%si)
-	add $0x01, %dx
+	add $0x01, %bx
 
 	# store len
 	mov $write_buf, %si
-	mov %dx, (%si)
+	mov %bx, (%si)
 
+	pop %bx
 	pop %si
 	ret
 
 # putnl()
 putnl:
 	push %si
+	push %bx
 
 	# {init}
 	mov $write_buf, %si
-	mov (%si), %dx # buf.len
+	mov (%si), %bx # buf.len
 	add $0x02, %si # skip len
-	add %dx, %si # buf.in
+	add %bx, %si # buf.in
 
 	# store data
 	mov $CHR_CR, %al
 	mov %al, (%si)
 	add $0x01, %si
-	add $0x01, %dx
+	add $0x01, %bx
 
 	mov $CHR_LF, %al
 	mov %al, (%si)
-	add $0x01, %dx
+	add $0x01, %bx
 
 	# store len
 	mov $write_buf, %si
-	mov %dx, (%si)
+	mov %bx, (%si)
 
+	pop %bx
 	pop %si
 	ret
 
 # putsp()
 putsp:
 	push %si
+	push %bx
 
 	# {init}
 	mov $write_buf, %si
-	mov (%si), %dx # buf.len
+	mov (%si), %bx # buf.len
 	add $0x02, %si # skip len
-	add %dx, %si # buf.in
+	add %bx, %si # buf.in
 
 	# store data
 	mov $CHR_SP, %al
 	mov %al, (%si)
-	add $0x01, %dx
+	add $0x01, %bx
 
 	# store len
 	mov $write_buf, %si
-	mov %dx, (%si)
+	mov %bx, (%si)
 
+	pop %bx
 	pop %si
 	ret

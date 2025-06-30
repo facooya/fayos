@@ -15,14 +15,15 @@ puts:
 	mov %sp, %bp
 	push %si
 	push %di
+	push %bx
 
 	# {init}
 	mov 0x04(%bp), %si
 
 	mov $write_buf, %di
-	mov (%di), %dx # buf.len
+	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
-	add %dx, %di # buf.in
+	add %bx, %di # buf.in
 
 .puts__lp:
 	# load
@@ -38,20 +39,21 @@ puts:
 	# step
 	add $0x01, %si
 	add $0x01, %di
-	add $0x01, %dx
+	add $0x01, %bx
 	jmp .puts__lp
 	
 .puts__done:
 	# store len
 	mov $write_buf, %di
-	mov %dx, (%di)
+	mov %bx, (%di)
 
+	pop %bx
 	pop %di
 	pop %si
 	pop %bp
 	ret
 
-# ENTRY
+# FIXME: remove
 # putsc(addr) - put string return count
 # ret: cx = char count
 putsc:

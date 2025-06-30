@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Show list
+# Command list - show file and directory list
 
 .include "fayfs/de.s"
 
@@ -13,12 +13,9 @@
 # ENTRY
 # cmd_ls()
 cmd_ls:
-	# prol
 	push %si
 	push %di
 	push %bx
-
-	call outnl
 
 	# read_inode(i_num_hi, i_num_lo)
 	# ret: i_file_size
@@ -37,17 +34,22 @@ cmd_ls:
 	call read_block
 	mov $0x8000, %bx
 
+	# {task}
+	jmp .write
+
+# {TASK}
+.write:
 	# file_size count
 	xor %dx, %dx
 
-.cmd_ls__out_name:
+.write__lp:
 	# load i_num_lo
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 
-	# (i_num == 0) ? out_skip {skip}
+	# {chk} (i_num == 0)
 	test %ax, %ax
 	or %ax, DE_I_NUM_HI_OFF(%bx)
-	jz .cmd_ls__out_skip
+	jz .write__chk
 
 	# set name ptr
 	mov %bx, %si
@@ -57,21 +59,21 @@ cmd_ls:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-.cmd_ls__out_str:
-	# cond: 0 ? out_str_end
+.write__name_lp:
+	# {end} (name_len == 0)
 	test %cx, %cx
-	jz .cmd_ls__out_str_end
+	jz .write__name_end
 
 	# copy
 	mov (%si), %al
-	call outc # HACK
+	call putc
 
-	# step
+	# {lp}
 	add $0x01, %si
 	sub $0x01, %cx
-	jmp .cmd_ls__out_str
+	jmp .write__name_lp
 
-.cmd_ls__out_str_end:
+.write__name_end:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
@@ -80,16 +82,16 @@ cmd_ls:
 	# load file_size
 	mov (i_file_size), %ax
 
-	# (file_size <= count) ? done
+	# {end.done} (count <= file_size)
 	cmp %ax, %dx
-	jge .cmd_ls__done
+	jge .done
 
-	# loop
-	call outsp
-	call outsp
-	jmp .cmd_ls__out_name
+	# {lp}
+	call putsp
+	call putsp
+	jmp .write__lp
 
-.cmd_ls__out_skip:
+.write__chk:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
@@ -98,17 +100,20 @@ cmd_ls:
 	# load file_size
 	mov (i_file_size), %ax
 
-	# (file_size <= count) ? done
+	# {end.done} (count <= file_size)
 	cmp %ax, %dx
-	jge .cmd_ls__done
+	jge .done
 
-	# loop
-	jmp .cmd_ls__out_name
+	# {lp}
+	jmp .write__lp
 
-.cmd_ls__done:
-	call outnl
+# {DONE}
+.done:
+	call putnl
+	xor %ax, %ax
+	jmp .epli
 
-	# epil
+.epli:
 	pop %bx
 	pop %di
 	pop %si
