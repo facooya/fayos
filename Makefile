@@ -46,6 +46,8 @@ kernel/sys/kbd.s \
 kernel/sys/vid.s \
 \
 fs/fayfs/alloc.s \
+fs/fayfs/dentry/add_dentry.s \
+fs/fayfs/dentry/lookup_dentry.s \
 fs/fayfs/dir.s \
 fs/fayfs/fayfs.s \
 fs/fayfs/inode.s \

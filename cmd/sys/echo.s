@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Echo
+# Command echo
 
 # NOTE
 # [n_opt_flag]

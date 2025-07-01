@@ -6,10 +6,19 @@
 - Time
 - Color
 - Debug runtime
-- lib sprintf
-- lib find free memory
-- lib file name or dir name match
+
+## Command
+- rmdir
+- cp
+- mv
+- printf
+- read
+- grep
+- find
 
 ## TODO
+- before add command
+- - lib find free memory
+- - lib file name or dir name match
 - redir append mode, insert mode
 - file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all
