@@ -2,12 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Make directory
+# Command make directory
 
 .include "fayfs/de.s"
-
 .section .data
-
 .name_dot: .ascii "."
 .name_dotdot: .ascii ".."
 
@@ -15,15 +13,15 @@
 .code16
 .global cmd_mkdir
 
-# ENTRY
 # cmd_mkdir()
 cmd_mkdir:
-	# prol
 	push %si
 	push %di
 	push %bx
 
-	# read inode
+	# {{{ read block
+	# read_inode(i_num_hi, i_num_lo)
+	# <ret> i_file_size, i_blk
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -31,65 +29,69 @@ cmd_mkdir:
 	call read_inode
 	add $0x04, %sp
 
-	# read block {dir}
 	call set_blk_lba
 	call read_block
 	mov $0x8000, %bx
+	# }}}
 
-	# strlen(str)
-	# ret: ax = len
-	# cpy: dx = ax
+	# {{{ get arg
 	mov $args, %si
-	mov 0x06(%si), %ax
+	mov 0x06(%si), %ax # ax = argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si
+	add %ax, %si # si = raw_buf[argv[1]]
 
+	# strlen(raw_buf[argv[1]])
 	push %si
 	call strlen
 	add $0x02, %sp
-	mov %ax, %dx
+	mov %ax, %dx # arg_len
+	# }}}
 
-.cmd_mkdir__cmp_name:
-	# (mem >= i_file_size) ? main
+.lp:
+	# {{{ find free mem
 	mov %bx, %cx
 	sub $0x8000, %cx
 	mov (i_file_size), %ax
-	cmp %ax, %cx
-	jge .cmd_mkdir__main
 
-	# (arg_len != file_name_len) ? ne
+	# {task} (mem >= i_file_size)
+	cmp %ax, %cx
+	jge .run
+	# }}}
+
+	# {lp} (arg_len != file_name_len)
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 	cmp %cx, %dx
-	jne .cmd_mkdir__ne
+	jne .lp_step
 
-	# strncmp(src, dst, n)
-	# ret: ax = true(0), false(1)
+	# {{{ chk dup
+	# strncmp(arg_name, file_name, file_name_len)
+	# <ret> ax = true:0, false:1
 	push %dx
-	push %cx # n
+	push %cx # file_name_len
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
-	push %di # dst
-	push %si # src
+	push %di # file_name
+	push %si # arg_name
 	call strncmp
 	add $0x06, %sp
 	pop %dx
 	
-	# (ret_code == true) ? err : ne
+	# {err} (strncmp == true)
 	test %ax, %ax
-	jz .call_hdl_dup_err
-	jmp .cmd_mkdir__ne
+	jz .err_name_dup
+	# }}}
 
-.cmd_mkdir__ne:
-	# step
+.lp_step:
+	# {step}
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
-	jmp .cmd_mkdir__cmp_name
 
-.cmd_mkdir__main:
-	call outnl
+	# {lp}
+	jmp .lp
 
+.run:
 	# add inode
 	mov $0x40, %ch
 	mov $0x01, %cl
@@ -105,7 +107,7 @@ cmd_mkdir:
 	call add_inode
 	add $0x0A, %sp
 
-	# add dentry
+	# {{{ add dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
 	mov $raw_buf, %si
@@ -116,6 +118,7 @@ cmd_mkdir:
 	call strlen
 	add $0x02, %sp
 	# ax = len
+
 	mov %al, %cl
 	mov $0x40, %ch
 	push %si
@@ -130,7 +133,9 @@ cmd_mkdir:
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
+	# }}}
 
+	# {{{ add meta data
 	# add dentry dot
 	mov $.name_dot, %si
 	mov $0x01, %cl # name len
@@ -164,6 +169,7 @@ cmd_mkdir:
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
+	# }}}
 
 	# update child i_file_size
 	mov (dentry_ptr), %ax # HACK!!! dentry_ptr
@@ -176,8 +182,7 @@ cmd_mkdir:
 	add $0x06, %sp
 
 	# read_inode(i_num_hi, i_num_lo)
-	# ret: i_file_size
-	# ret: i_blk
+	# <ret> i_file_size, i_blk
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -210,15 +215,30 @@ cmd_mkdir:
 	mov %ax, (next_i_blk)
 	call write_sb
 
-.cmd_mkdir__done:
-	# epil
+	jmp .done
+
+# {DONE}
+.done:
+	xor %ax, %ax
+	jmp .epil
+
+.exit:
+	mov $0x01, %ax
+	jmp .epil
+
+.epil:
 	pop %bx
 	pop %di
 	pop %si
 	ret
 
-.call_hdl_dup_err:
+# {ERR}
+.err_name_dup:
+	push $emsg_name_dup
+	jmp .err_hdl
+
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
-	call hdl_dup_err
-	call outnl
-	jmp .cmd_mkdir__done
+	jmp .exit

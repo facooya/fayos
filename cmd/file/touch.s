@@ -29,7 +29,7 @@ cmd_touch:
 	mov $0x8000, %bx
 	# }}}
 
-	# {{{ get arg_len
+	# {{{ get arg
 	mov $args, %si
 	mov 0x06(%si), %ax # ax = argv[1]
 	mov $raw_buf, %si
@@ -64,7 +64,7 @@ cmd_touch:
 	jne .lp_step
 
 	# strncmp(arg_name, file_name, file_name_len)
-	# ret: ax = true:0, false:1
+	# <ret> ax = true:0, false:1
 	push %dx
 	push %cx # file_name_len
 	mov %bx, %di
