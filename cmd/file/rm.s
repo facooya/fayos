@@ -2,25 +2,22 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Remove File
+# Command remove - remove file
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global cmd_rm
 
-# ENTRY
 # cmd_rm()
 cmd_rm:
-	# prol
 	push %si
 	push %di
 	push %bx
 
+	# {{{ read block
 	# read_inode(i_num_hi, i_num_lo)
-	# ret: i_file_size
-	# ret: i_blk
+	# <ret> i_file_size, i_blk
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -28,103 +25,118 @@ cmd_rm:
 	call read_inode
 	add $0x04, %sp
 
-	# read
 	call set_blk_lba
 	call read_block
 	mov $0x8000, %bx
+	# }}}
 
-.cmd_rm__cmp_name:
-	# set arg_ptr
+	# {{{ get arg info
+	# <ret> si = arg_name, dx = arg_len
 	mov $args, %si
-	mov 0x06(%si), %ax
+	mov 0x06(%si), %ax # ax = argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si
+	add %ax, %si # si = raw_buf[argv[1]]
 
-	# strlen(str)
-	# ret: ax = len
+	# strlen(raw_buf[argv[1]]) <ret> ax:len
 	push %si
 	call strlen
 	add $0x02, %sp
+	mov %ax, %dx # arg_len
+	# }}}
 
-	# set name len
+.lp:
+	# FIXME: touch abc def, rm def => file not found
+	# {{{ set file_name_len
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# cond: 0 ? done
+	# {err} (file_name_len == null)
 	test %cx, %cx
-	jz .call_hdl_not_found_err
+	jz .err_file_no
+	# }}}
 
-	# cond: != ? cmp_name_ne
-	cmp %cx, %ax
-	jne .cmd_rm__cmp_name_ne
+	# {lp} (arg_len != file_name_len)
+	cmp %cx, %dx
+	jne .lp_step
 
-	# set name ptr
+	# {{{ check file exists
+	# set file_name
 	mov %bx, %di
-	add $DE_NAME_OFF, %di
+	add $DE_NAME_OFF, %di # file_name
 
-	# cmp
-	push %cx
-	push %di
-	push %si
+	# strncmp(arg_name, file_name, file_name_len)
+	# <ret> ax = true:0, false:1
+	push %cx # file_name_len
+	push %di # file_name
+	push %si # arg_name
 	call strncmp
 	add $0x06, %sp
-	# ax = 0: true, 1: false
 
-	# cond: true ? cmp_name_e
+	# {task} (strncmp == true)
 	test %ax, %ax
-	jz .cmd_rm__cmp_name_e
+	jz .run
+	# }}}
 
-	# ne
-	jmp .cmd_rm__cmp_name_ne
+.lp_step:
+	# {step} add rec len
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
 
-.cmd_rm__cmp_name_e:
-	# TODO chk file_type
+	# {lp}
+	jmp .lp
 
+# {TASK}
+.run:
+	# {{{ check file_type
 	# load file_type
 	mov DE_FILE_TYPE_OFF(%bx), %al
 	
-	# (file_type != file) ? err
+	# {err} (file_type != file)
 	cmp $0x80, %al
-	jne .call_hdl_not_file_err
+	jne .err_file_type
+	# }}}
 
-	# rm i_num
+	# {{{
+	# FIXME: remove inode, dentry
+	# remove i_num
 	xor %ax, %ax
 	mov %ax, DE_I_NUM_LO_OFF(%bx)
 	mov %ax, DE_I_NUM_HI_OFF(%bx)
 
 	# write
 	call write_block
+	# }}}
 
-	# done
-	call outnl
-	jmp .cmd_rm__done
+	# {end.done}
+	jmp .done
 
-.cmd_rm__cmp_name_ne:
-	# add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
+# {DONE}
+.done:
+	xor %ax, %ax
+	jmp .epil
 
-	# next name
-	jmp .cmd_rm__cmp_name
+.exit:
+	mov $0x01, %ax
+	jmp .epil
 
-.cmd_rm__done:
-	# epil
+.epil:
 	pop %bx
 	pop %di
 	pop %si
 	ret
 
-# ERR
-.call_hdl_not_found_err:
-	call outnl
-	call hdl_not_found_err
-	call outnl
-	jmp .cmd_rm__done
+# {ERR}
+.err_file_no:
+	push $emsg_file_no
+	jmp .err_hdl
 
-.call_hdl_not_file_err:
+.err_file_type:
+	push $emsg_file_type
+	jmp .err_hdl
+
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
-	call hdl_not_file_err
-	call outnl
-	jmp .cmd_rm__done
-	
+	jmp .exit
