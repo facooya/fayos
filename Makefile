@@ -62,9 +62,10 @@ lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \
 \
-lib/str/print.s \
+lib/str/putf.s \
 lib/str/puts.s \
 lib/str/put_utils.s \
+lib/str/print.s \
 lib/str/split.s \
 lib/str/str.s \
 lib/str/trim.s \

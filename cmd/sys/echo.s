@@ -157,7 +157,7 @@ cmd_echo:
 
 .run__exec_e:
 	push %si
-	call print_esc
+	call putf
 	add $0x02, %sp
 
 .run__chk:

@@ -26,6 +26,7 @@
 .equ CHR_BSL, 0x5C # back slash
 
 .equ CHR_LC_A, 0x61
+.equ CHR_LC_N, 0x6E
 .equ CHR_LC_Z, 0x7A
 
 # KEY
