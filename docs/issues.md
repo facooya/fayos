@@ -1,6 +1,3 @@
-## FIXME
-- all command fix for new line
-
 ## rmdir
 - Fails to remove subdirectories
 

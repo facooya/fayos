@@ -2,23 +2,22 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Change directory
+# Command change directory
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global cmd_cd
 
-# ENTRY
 # cmd_cd()
 cmd_cd:
-	# prol
 	push %si
 	push %di
 	push %bx
 
-	# get i blk
+	# {{{ read block
+	# read_inode(i_num_hi, i_num_lo)
+	# <ret> i_file_size, i_blk
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -27,63 +26,75 @@ cmd_cd:
 	add $0x04, %sp
 
 	call set_blk_lba
-
-	# read block
 	call read_block
 	mov $0x8000, %bx
+	# }}}
 
-.cmd_cd__cmp_name_len:
-	# init
+	# {{{ get arg
 	mov $args, %si
-	mov 0x06(%si), %ax
+	mov 0x06(%si), %ax # ax = argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si
+	add %ax, %si # si = raw_buf[argv[1]]
 
-	# get len
+	# strlen(raw_buf[argv[1]]) <ret> ax = len
 	push %si
 	call strlen
 	add $0x02, %sp
-	# ax = len
+	mov %ax, %dx # arg_len
+	# }}}
 
-	# set name len
+.lp:
+	# {{{ set name len
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# cond: 0 ? err
+	# {err} (name_len == null)
 	test %cx, %cx
-	jz .call_hdl_not_found_err
+	jz .err_dir_no
 
-	# cond: != ? cmp_name_ne
-	cmp %cx, %ax
-	jne .cmd_cd__cmp_name_ne
+	# {lp} (arg_len != name_len)
+	cmp %cx, %dx
+	jne .lp_step
+	# }}}
 
-	# set name ptr
+	# {{{
 	mov %bx, %di
-	add $DE_NAME_OFF, %di
+	add $DE_NAME_OFF, %di # name
 
-	# cmp
-	push %cx
-	push %di
-	push %si
+	# strncmp(arg_name, name, name_len)
+	# <ret> ax = true:0, false:1
+	push %dx
+	push %cx # name_len
+	push %di # name
+	push %si # arg_name
 	call strncmp
 	add $0x06, %sp
-	# ax = 0: true, 1: false
+	pop %dx
 
-	# cond: true ? cmp_name_e
+	# {task} (strncmp == true)
 	test %ax, %ax
-	jz .cmd_cd__cmp_name_e
+	jz .run
+	# }}}
 
-	# ne
-	jmp .cmd_cd__cmp_name_ne
+.lp_step:
+	# {step} add rec len
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
 
-.cmd_cd__cmp_name_e:
+	# {lp}
+	jmp .lp
+
+# {TASK}
+.run:
+	# {{{
 	# load file_type
 	mov DE_FILE_TYPE_OFF(%bx), %al
 
-	# (file_type != dir) ? err
+	# {err} (file_type != dir)
 	cmp $0x40, %al
-	jne .call_hdl_not_dir_err
+	jne .err_dir_type
+	# }}}
 
 	# get dst inode num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
@@ -99,34 +110,35 @@ cmd_cd:
 	call read_inode
 	add $0x04, %sp
 
-	# done
-	call outnl
-	jmp .cmd_cd__done
+	# {end.done}
+	jmp .done
 
-.cmd_cd__cmp_name_ne:
-	# add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
+# {DONE}
+.done:
+	xor %ax, %ax
+	jmp .epil
 
-	# next name
-	jmp .cmd_cd__cmp_name_len
+.exit:
+	mov $0x01, %ax
+	jmp .epil
 
-.cmd_cd__done:
-	# epil
+.epil:
 	pop %si
 	pop %di
 	pop %bx
 	ret
 
-# ERR
-.call_hdl_not_found_err:
-	call outnl
-	call hdl_not_found_err
-	call outnl
-	jmp .cmd_cd__done
+# {ERR}
+.err_dir_no:
+	push $emsg_dir_no
+	jmp .err_hdl
 
-.call_hdl_not_dir_err:
+.err_dir_type:
+	push $emsg_dir_type
+	jmp .err_hdl
+
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
-	call hdl_not_dir_err
-	call outnl
-	jmp .cmd_cd__done
+	jmp .exit
