@@ -2,18 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Show file data
+# Command concatenate - show file data
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global cmd_cat
 
-# ENTRY
 # cmd_cat()
 cmd_cat:
-	# prol
 	push %si
 	push %di
 	push %bx
@@ -33,8 +30,8 @@ cmd_cat:
 	call read_block
 	mov $0x8000, %bx
 
-.cmd_cat__cmp_name:
-	# init
+.lp:
+	# {init}
 	mov $args, %si
 	mov 0x06(%si), %ax
 	mov $raw_buf, %si
@@ -51,49 +48,56 @@ cmd_cat:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-	# (name_len == 0) ? not_found_err
+	# {err} (name_len == 0)
 	test %cx, %cx
-	jz .call_hdl_not_found_err
+	jz .err_file_no
 
-	# (arg_len != name_len) ? ne
+	# {lp.step} (arg_len != name_len)
 	cmp %cx, %ax
-	jne .cmd_cat__cmp_name_ne
+	jne .lp_step
 
 	# set name ptr
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
 
+	# {{{
 	# strncmp(src, dst, n)
-	# ret: ax = true(0), false(1)
+	# ret: ax = true:0, false:1
 	push %cx
 	push %di
 	push %si
 	call strncmp
 	add $0x06, %sp
 
-	# (ret_code == true) ? e : ne
+	# {end} (ret_code == true)
 	test %ax, %ax
-	jz .cmd_cat__cmp_name_e
-	jmp .cmd_cat__cmp_name_ne
+	jz .end
+	# }}}
 
-.cmd_cat__cmp_name_e:
+.lp_step:
+	# add rec len
+	mov DE_REC_LEN_OFF(%bx), %cx
+	add %cx, %bx
+
+	# {lp}
+	jmp .lp
+
+.end:
 	# get file_type
 	mov DE_FILE_TYPE_OFF(%bx), %al
 
-	# (file_type != file) ? err
+	# {err} (file_type != file)
 	cmp $0x80, %al
-	jne .call_hdl_not_file_err
+	jne .err_file_type
 
-	call outnl
-
-	# save
+	# save i_num
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
 	push %ax
 	push %bx
 
-	# set
+	# set i_num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 	mov %ax, (i_num)
 	mov DE_I_NUM_HI_OFF(%bx), %ax
@@ -114,10 +118,9 @@ cmd_cat:
 	call read_block
 	mov $0x8000, %bx
 
-	# TODO: using write buffer
-	# outs
+	# puts
 	push %bx
-	call outs
+	call puts
 	add $0x02, %sp
 
 	# restore
@@ -127,36 +130,35 @@ cmd_cat:
 	pop %ax
 	mov %ax, (i_num)
 
-	# done
-	call outnl
-	jmp .cmd_cat__done
+	# {end.done}
+	jmp .done
 
-.cmd_cat__cmp_name_ne:
-	# add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
+# {DONE}
+.done:
+	xor %ax, %ax
+	jmp .epil
 
-	# step
-	jmp .cmd_cat__cmp_name
+.exit:
+	mov $0x01, %ax
+	jmp .epil
 
-.cmd_cat__done:
-	# epil
+.epil:
 	pop %bx
 	pop %di
 	pop %si
 	ret
 
-# ERR
-.call_hdl_not_found_err:
-	call outnl
-	call hdl_not_found_err
-	call outnl
+# {ERR}
+.err_file_no:
+	push $emsg_file_no
+	jmp .err_hdl
 
-	jmp .cmd_cat__done
+.err_file_type:
+	push $emsg_file_type
+	jmp .err_hdl
 
-.call_hdl_not_file_err:
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
-	call hdl_not_file_err
-	call outnl
-
-	jmp .cmd_cat__done
+	jmp .exit
