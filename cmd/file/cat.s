@@ -15,74 +15,37 @@ cmd_cat:
 	push %di
 	push %bx
 
-	# read_inode(i_num_hi, i_num_lo)
-	# ret: i_file_size
-	# ret: i_blk
-	mov (i_num), %ax
-	push %ax
-	mov (i_num+0x02), %ax
-	push %ax
-	call read_inode
-	add $0x04, %sp
-
-	# read block
-	call set_blk_lba
-	call read_block
-	mov $0x8000, %bx
-
-.lp:
-	# {init}
+	# {{{ lookup dentry
 	mov $args, %si
-	mov 0x06(%si), %ax
+	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si
+	add %ax, %si # raw_buf[argv[1]]
 
-	# strlen(str)
-	# ret: ax = len
-	push %si
+	push %si # arg
 	call strlen
 	add $0x02, %sp
+	mov %ax, %cx
 
-	# set name len
-	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl
+	push %si # src_name
+	push %cx # src_name_len
+	mov (i_num), %ax
+	push %ax # i_num_lo
+	mov (i_num+0x02), %ax
+	push %ax # i_num_hi
+	call lookup_dentry
+	add $0x08, %sp
 
-	# {err} (name_len == 0)
-	test %cx, %cx
+	# {err} (lookup_dentry == no_match)
+	test %ax, %ax
 	jz .err_file_no
 
-	# {lp.step} (arg_len != name_len)
-	cmp %cx, %ax
-	jne .lp_step
-
-	# set name ptr
-	mov %bx, %di
-	add $DE_NAME_OFF, %di
-
-	# {{{
-	# strncmp(src, dst, n)
-	# ret: ax = true:0, false:1
-	push %cx
-	push %di
-	push %si
-	call strncmp
-	add $0x06, %sp
-
-	# {end} (ret_code == true)
-	test %ax, %ax
-	jz .end
+	# {task}
+	mov %ax, %bx
+	jmp .run
 	# }}}
 
-.lp_step:
-	# add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-
-	# {lp}
-	jmp .lp
-
-.end:
+.run:
 	# get file_type
 	mov DE_FILE_TYPE_OFF(%bx), %al
 
