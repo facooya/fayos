@@ -2,23 +2,21 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Create file
+# Command touch - create file
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global cmd_touch
 
-# ENTRY
 # cmd_touch()
 cmd_touch:
-	# prol
 	push %si
 	push %di
 	push %bx
 
-	# read inode
+	# {{{ read block
+	# read_inode(i_num_hi, i_num_lo)
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax
@@ -26,65 +24,72 @@ cmd_touch:
 	call read_inode
 	add $0x04, %sp
 
-	# read block {dir}
 	call set_blk_lba
 	call read_block
 	mov $0x8000, %bx
+	# }}}
 
-	# strlen(str)
-	# ret: ax = len
-	# cpy: dx = ax
+	# {{{ get arg_len
 	mov $args, %si
-	mov 0x06(%si), %ax
+	mov 0x06(%si), %ax # ax = argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si
+	add %ax, %si # si = raw_buf[argv[1]]
+
+	# strlen(raw_buf[argv[1]])
 	push %si
 	call strlen
 	add $0x02, %sp
 	mov %ax, %dx
+	# dx = arg_len
+	# si = arg_name
+	# }}}
 
-.cmd_touch__cmp_name:
-	# (mem >= i_file_size) ? main
+.lp:
+	# {{{ find free mem
 	mov %bx, %cx
 	sub $0x8000, %cx
 	mov (i_file_size), %ax
-	cmp %ax, %cx
-	jge .cmd_touch__main
 
-	# (arg_len != file_name_len) ? ne
+	# {task} (mem >= i_file_size)
+	cmp %ax, %cx
+	jge .run
+	# }}}
+
+	# {{{ check file duplicate
+	# {lp} (arg_len != file_name_len)
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 	cmp %cx, %dx
-	jne .cmd_touch__ne
+	jne .lp_step
 
-	# strncmp(src, dst, n)
-	# ret: ax = true(0), false(1)
+	# strncmp(arg_name, file_name, file_name_len)
+	# ret: ax = true:0, false:1
 	push %dx
-	push %cx # n
+	push %cx # file_name_len
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
-	push %di # dst
-	push %si # src
+	push %di # file_name
+	push %si # arg_name
 	call strncmp
 	add $0x06, %sp
 	pop %dx
-	
-	# (ret_code == true) ? err : ne
-	test %ax, %ax
-	jz .call_hdl_dup_err
-	jmp .cmd_touch__ne
 
-.cmd_touch__ne:
-	# step
+	# {err} (ret_code == true)
+	test %ax, %ax
+	jz .err_name_dup
+	# }}}
+
+.lp_step:
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
-	jmp .cmd_touch__cmp_name
 
-.cmd_touch__main:
-	call outnl
+	# {lp}
+	jmp .lp
 
-	# add inode
+# {TASK}
+.run:
+	# {{{ add inode
 	mov $0x80, %ch
 	mov $0x01, %cl
 	push %cx
@@ -98,8 +103,9 @@ cmd_touch:
 	push %ax
 	call add_inode
 	add $0x0A, %sp
+	# }}}
 
-	# add dentry
+	# {{{ add dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
 	mov $raw_buf, %si
@@ -109,6 +115,7 @@ cmd_touch:
 	call strlen
 	add $0x02, %sp
 	# ax = len
+
 	mov %al, %cl
 	mov $0x80, %ch
 	push %si
@@ -123,6 +130,7 @@ cmd_touch:
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
+	# }}}
 
 	# update i file_size
 	mov (dentry_ptr), %ax
@@ -143,15 +151,31 @@ cmd_touch:
 	mov %ax, (next_i_blk)
 	call write_sb
 
-.cmd_touch__done:
-	# epil
+	# {end.done}
+	jmp .done
+
+# {DONE}
+.done:
+	xor %ax, %ax
+	jmp .epil
+
+.exit:
+	mov $0x01, %ax
+	jmp .epil
+
+.epil:
 	pop %bx
 	pop %di
 	pop %si
 	ret
 
-.call_hdl_dup_err:
+# {ERR}
+.err_name_dup:
+	push $emsg_name_dup
+	jmp .err_hdl
+
+.err_hdl:
+	call outs
+	add $0x02, %sp
 	call outnl
-	call hdl_dup_err
-	call outnl
-	jmp .cmd_touch__done
+	jmp .exit
