@@ -17,8 +17,8 @@
 - find
 
 ## TODO
+- support multi arguments - touch, mkdir, rm, ...
 - before add command
 - - lib find free memory
-- - lib file name or dir name match
 - redir append mode, insert mode
 - file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all

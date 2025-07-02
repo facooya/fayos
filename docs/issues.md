@@ -5,5 +5,4 @@
 - Hack: `dentry_ptr`
 
 ## rm
-- `touch` or `rm` broken: touch abc def, rm def => file not found
-- Remove dentry, inode
+- Remove dentry, inode - name already exist
