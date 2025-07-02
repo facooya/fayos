@@ -15,86 +15,42 @@ cmd_cd:
 	push %di
 	push %bx
 
-	# {{{ read block
-	# read_inode(i_num_hi, i_num_lo)
-	# <ret> i_file_size, i_blk
-	mov (i_num), %ax
-	push %ax
-	mov (i_num+0x02), %ax
-	push %ax
-	call read_inode
-	add $0x04, %sp
-
-	call set_blk_lba
-	call read_block
-	mov $0x8000, %bx
-	# }}}
-
-	# {{{ get arg
+	# {{{ lookup dentry
 	mov $args, %si
-	mov 0x06(%si), %ax # ax = argv[1]
+	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si # si = raw_buf[argv[1]]
+	add %ax, %si # raw_buf[argv[1]]
 
-	# strlen(raw_buf[argv[1]]) <ret> ax = len
-	push %si
+	push %si # arg
 	call strlen
 	add $0x02, %sp
-	mov %ax, %dx # arg_len
-	# }}}
+	mov %ax, %cx
 
-.lp:
-	# {{{ set name len
-	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl
+	push %si # src_name
+	push %cx # src_name_len
+	mov (i_num), %ax
+	push %ax # i_num_lo
+	mov (i_num+0x02), %ax
+	push %ax # i_num_hi
+	call lookup_dentry
+	add $0x08, %sp
 
-	# {err} (name_len == null)
-	test %cx, %cx
+	# {err} (lookup_dentry == no_match)
+	test %ax, %ax
 	jz .err_dir_no
 
-	# {lp} (arg_len != name_len)
-	cmp %cx, %dx
-	jne .lp_step
+	# {task}
+	mov %ax, %bx
+	jmp .run
 	# }}}
-
-	# {{{
-	mov %bx, %di
-	add $DE_NAME_OFF, %di # name
-
-	# strncmp(arg_name, name, name_len)
-	# <ret> ax = true:0, false:1
-	push %dx
-	push %cx # name_len
-	push %di # name
-	push %si # arg_name
-	call strncmp
-	add $0x06, %sp
-	pop %dx
-
-	# {task} (strncmp == true)
-	test %ax, %ax
-	jz .run
-	# }}}
-
-.lp_step:
-	# {step} add rec len
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-
-	# {lp}
-	jmp .lp
 
 # {TASK}
 .run:
-	# {{{
-	# load file_type
-	mov DE_FILE_TYPE_OFF(%bx), %al
-
 	# {err} (file_type != dir)
+	mov DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
-	# }}}
 
 	# get dst inode num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
