@@ -15,77 +15,34 @@ cmd_touch:
 	push %di
 	push %bx
 
-	# {{{ read block
-	# read_inode(i_num_hi, i_num_lo)
-	mov (i_num), %ax
-	push %ax
-	mov (i_num+0x02), %ax
-	push %ax
-	call read_inode
-	add $0x04, %sp
-
-	call set_blk_lba
-	call read_block
-	mov $0x8000, %bx
-	# }}}
-
-	# {{{ get arg
+	# {{{ lookup dentry
 	mov $args, %si
-	mov 0x06(%si), %ax # ax = argv[1]
+	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
-	add %ax, %si # si = raw_buf[argv[1]]
+	add %ax, %si # raw_buf[argv[1]]
 
-	# strlen(raw_buf[argv[1]])
-	push %si
+	push %si # arg
 	call strlen
 	add $0x02, %sp
-	mov %ax, %dx
-	# dx = arg_len
-	# si = arg_name
-	# }}}
+	mov %ax, %cx
 
-.lp:
-	# {{{ find free mem
-	mov %bx, %cx
-	sub $0x8000, %cx
-	mov (i_file_size), %ax
+	push %si # src_name
+	push %cx # src_name_len
+	mov (i_num), %ax
+	push %ax # i_num_lo
+	mov (i_num+0x02), %ax
+	push %ax # i_num_hi
+	call lookup_dentry
+	add $0x08, %sp
 
-	# {task} (mem >= i_file_size)
-	cmp %ax, %cx
-	jge .run
-	# }}}
-
-	# {{{ check file duplicate
-	# {lp} (arg_len != file_name_len)
-	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl
-	cmp %cx, %dx
-	jne .lp_step
-
-	# strncmp(arg_name, file_name, file_name_len)
-	# <ret> ax = true:0, false:1
-	push %dx
-	push %cx # file_name_len
-	mov %bx, %di
-	add $DE_NAME_OFF, %di
-	push %di # file_name
-	push %si # arg_name
-	call strncmp
-	add $0x06, %sp
-	pop %dx
-
-	# {err} (ret_code == true)
+	# {err} (lookup_dentry != 0)
 	test %ax, %ax
-	jz .err_name_dup
+	jnz .err_name_dup
+
+	# {task}
+	jmp .run
 	# }}}
-
-.lp_step:
-	mov DE_REC_LEN_OFF(%bx), %ax
-	add %ax, %bx
-
-	# {lp}
-	jmp .lp
 
 # {TASK}
 .run:
