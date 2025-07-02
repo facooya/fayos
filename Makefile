@@ -45,13 +45,13 @@ kernel/sys/disk.s \
 kernel/sys/kbd.s \
 kernel/sys/vid.s \
 \
-fs/fayfs/alloc.s \
-fs/fayfs/dentry/add_dentry.s \
-fs/fayfs/dentry/lookup_dentry.s \
-fs/fayfs/dir.s \
-fs/fayfs/fayfs.s \
-fs/fayfs/inode.s \
-fs/fayfs/super.s \
+fayfs/alloc.s \
+fayfs/dentry/add_dentry.s \
+fayfs/dentry/lookup_dentry.s \
+fayfs/dir.s \
+fayfs/fayfs.s \
+fayfs/inode.s \
+fayfs/super.s \
 \
 lib/err.s \
 lib/re.s \

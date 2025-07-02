@@ -46,10 +46,8 @@ cmd_cat:
 	# }}}
 
 .run:
-	# get file_type
-	mov DE_FILE_TYPE_OFF(%bx), %al
-
 	# {err} (file_type != file)
+	mov DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 
