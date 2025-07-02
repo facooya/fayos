@@ -4,5 +4,5 @@
 ## mkdir
 - Hack: `dentry_ptr`
 
-## rm
-- Remove dentry, inode - name already exist
+## fayfs
+- alloc block remove

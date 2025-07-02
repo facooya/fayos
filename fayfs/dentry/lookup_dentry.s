@@ -42,6 +42,14 @@ lookup_dentry:
 	mov 0x0A(%bp), %si # src_name
 
 .lp:
+	# {{{ chk delete
+	# {lp.step} (i_num == 0)
+	mov DE_I_NUM_LO_OFF(%bx), %ax
+	test %ax, %ax
+	or DE_I_NUM_LO_OFF(%bx), %ax
+	jz .lp__step
+	# }}}
+
 	# {{{ len compare
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl # dst_name_len
@@ -73,8 +81,13 @@ lookup_dentry:
 	# }}}
 
 .lp__step:
+	# {{{ chk end
+	# {end.done.nm} (rec_len == null)
 	mov DE_REC_LEN_OFF(%bx), %cx
+	test %cx, %cx
+	jz .done__nm
 	add %cx, %bx
+	# }}}
 
 	# {lp}
 	jmp .lp

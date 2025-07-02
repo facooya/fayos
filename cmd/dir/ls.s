@@ -17,6 +17,7 @@ cmd_ls:
 	push %di
 	push %bx
 
+	# {{{
 	# read_inode(i_num_hi, i_num_lo)
 	# ret: i_file_size
 	# ret: i_blk
@@ -27,12 +28,10 @@ cmd_ls:
 	call read_inode
 	add $0x04, %sp
 
-	# set blk lba
 	call set_blk_lba
-
-	# read block
 	call read_block
 	mov $0x8000, %bx
+	# }}}
 
 	# {task}
 	jmp .write

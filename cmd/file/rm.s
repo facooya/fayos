@@ -53,7 +53,6 @@ cmd_rm:
 	jne .err_file_type
 
 	# {{{
-	# FIXME: remove inode, dentry - name already exist
 	# remove i_num
 	xor %ax, %ax
 	mov %ax, DE_I_NUM_LO_OFF(%bx)
