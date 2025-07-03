@@ -50,7 +50,8 @@ cmd_mkdir:
 
 # {TASK}
 .run:
-	# add inode
+	# {{{ create directory
+	# add_inode
 	mov $0x40, %ch
 	mov $0x01, %cl
 	push %cx
@@ -65,7 +66,7 @@ cmd_mkdir:
 	call add_inode
 	add $0x0A, %sp
 
-	# {{{ add dentry
+	# {init} for add_dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
 	mov $raw_buf, %si
@@ -77,6 +78,7 @@ cmd_mkdir:
 	add $0x02, %sp
 	# ax = len
 
+	# add_dentry
 	mov %al, %cl
 	mov $0x40, %ch
 	push %si
@@ -93,7 +95,7 @@ cmd_mkdir:
 	add $0x0C, %sp
 	# }}}
 
-	# {{{ add meta data
+	# {{{ add child directory
 	# add dentry dot
 	mov $.name_dot, %si
 	mov $0x01, %cl # name len
@@ -130,39 +132,39 @@ cmd_mkdir:
 	# }}}
 
 	# update child i_file_size
-	mov (dentry_ptr), %ax # HACK!!! dentry_ptr
-	push %ax
-	mov (next_i_num), %ax
-	push %ax
-	mov (next_i_num+0x02), %ax
-	push %ax
-	call update_i_file_size
-	add $0x06, %sp
+	#mov (dentry_ptr), %ax # HACK!!! dentry_ptr
+	#push %ax
+	#mov (next_i_num), %ax
+	#push %ax
+	#mov (next_i_num+0x02), %ax
+	#push %ax
+	#call update_i_file_size
+	#add $0x06, %sp
 
 	# read_inode(i_num_hi, i_num_lo)
 	# <ret> i_file_size, i_blk
-	mov (i_num), %ax
-	push %ax
-	mov (i_num+0x02), %ax
-	push %ax
-	call read_inode
-	add $0x04, %sp
+	#mov (i_num), %ax
+	#push %ax
+	#mov (i_num+0x02), %ax
+	#push %ax
+	#call read_inode
+	#add $0x04, %sp
 
 	# read
-	call set_blk_lba
-	call read_block
-	mov $0x8000, %bx
-	call alloc_dentry
+	#call set_blk_lba
+	#call read_block
+	#mov $0x8000, %bx
+	#call alloc_dentry
 
 	# update i file_size # HACK!!! dentry_ptr
-	mov (dentry_ptr), %ax
-	push %ax
-	mov (i_num), %ax
-	push %ax
-	mov (i_num+0x02), %ax
-	push %ax
-	call update_i_file_size
-	add $0x06, %sp
+	#mov (dentry_ptr), %ax
+	#push %ax
+	#mov (i_num), %ax
+	#push %ax
+	#mov (i_num+0x02), %ax
+	#push %ax
+	#call update_i_file_size
+	#add $0x06, %sp
 
 	# update sb
 	mov (next_i_num), %ax

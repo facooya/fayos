@@ -11,7 +11,6 @@
 .code16
 .global set_i_lba
 .global add_inode
-.global update_i_file_size
 .global read_inode
 
 # ENTRY
@@ -60,40 +59,6 @@ add_inode:
 	pop %bp
 	ret
 
-# ENTRY
-# update_i_file_size(i_num_hi, i_num_lo, i_file_size)
-update_i_file_size:
-	# prol
-	push %bp
-	mov %sp, %bp
-	push %bx
-
-	# read i tbl
-	call set_i_lba
-	call read_block
-	mov $0x8000, %bx
-
-	# calc inode # HACK!!!: only low
-	xor %dx, %dx
-	mov 0x06(%bp), %cx
-	mov $I_SIZE, %ax
-	mul %cx
-	# ax *= cx
-
-	# set mem
-	add %ax, %bx
-
-	# update file_size
-	mov 0x08(%bp), %ax
-	mov %ax, I_FILE_SIZE_OFF(%bx)
-
-	# write
-	call write_block
-
-	# epil
-	pop %bx
-	pop %bp
-	ret
 
 # ENTRY
 # read_inode(i_num_hi, i_num_lo)

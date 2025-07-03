@@ -76,14 +76,10 @@ cmd_ls:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
-	add %ax, %dx
 
-	# load file_size
-	mov (i_file_size), %ax
-
-	# {end.done} (count <= file_size)
-	cmp %ax, %dx
-	jge .done
+	# {end.done} (rec_len == null)
+	test %ax, %ax
+	jz .done
 
 	# {lp}
 	call putsp
@@ -94,14 +90,10 @@ cmd_ls:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
-	add %ax, %dx
 
-	# load file_size
-	mov (i_file_size), %ax
-
-	# {end.done} (count <= file_size)
-	cmp %ax, %dx
-	jge .done
+	# {end.done} (rec_len == null)
+	test %ax, %ax
+	jz .done
 
 	# {lp}
 	jmp .write__lp

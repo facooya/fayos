@@ -2,41 +2,42 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Allocate
+# Allocate directory entry
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global alloc_dentry
 
-# ENTRY
 # alloc_dentry()
-# pre: bx = main mem ptr
+# <pre> bx = main mem ptr
 alloc_dentry:
-	# prol
 	push %bx
 
-.alloc_dentry__lp:
-	# load
+.lp:
+	# {lp} (i_num == 0)
 	mov DE_I_NUM_LO_OFF(%bx), %ax
-
-	# cond: null ? end
 	test %ax, %ax
 	or DE_I_NUM_HI_OFF(%bx), %ax
-	jz .alloc_dentry__end
+	jz .lp__step
 
-	# step
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-	jmp .alloc_dentry__lp
+.lp__step:
+	# {end} (rec_len == null)
+	mov DE_REC_LEN_OFF(%bx), %ax
+	test %ax, %ax
+	jz .end
 
-.alloc_dentry__end:
-	# set
+	# {lp}
+	add %ax, %bx
+	jmp .lp
+
+.end:
+	# <ret>
 	mov %bx, %ax
+
+	# FIXME: remove dentry_ptr
 	sub $0x8000, %ax
 	mov %ax, (dentry_ptr)
 
-	# epil
 	pop %bx
 	ret
