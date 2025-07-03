@@ -33,16 +33,16 @@ cmd_ls:
 	# }}}
 
 	# {task}
-	jmp .write
+	jmp .run
 
 # {TASK}
-.write:
-.write__lp:
+.run:
+.run__lp:
 	# {chk} (i_num == 0)
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 	test %ax, %ax
 	or %ax, DE_I_NUM_HI_OFF(%bx)
-	jz .write__chk
+	jz .run__chk
 
 	# set name ptr
 	mov %bx, %si
@@ -52,10 +52,10 @@ cmd_ls:
 	xor %cx, %cx
 	mov DE_NAME_LEN_OFF(%bx), %cl
 
-.write__name_lp:
+.run__name_lp:
 	# {end} (name_len == 0)
 	test %cx, %cx
-	jz .write__name_end
+	jz .run__name_end
 
 	# copy
 	mov (%si), %al
@@ -64,9 +64,9 @@ cmd_ls:
 	# {lp}
 	add $0x01, %si
 	sub $0x01, %cx
-	jmp .write__name_lp
+	jmp .run__name_lp
 
-.write__name_end:
+.run__name_end:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
@@ -78,9 +78,9 @@ cmd_ls:
 	# {lp}
 	call putsp
 	call putsp
-	jmp .write__lp
+	jmp .run__lp
 
-.write__chk:
+.run__chk:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
@@ -90,7 +90,7 @@ cmd_ls:
 	jz .done
 
 	# {lp}
-	jmp .write__lp
+	jmp .run__lp
 
 # {DONE}
 .done:
