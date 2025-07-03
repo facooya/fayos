@@ -10,7 +10,6 @@
 .code16
 .global cmd_ls
 
-# ENTRY
 # cmd_ls()
 cmd_ls:
 	push %si
@@ -38,14 +37,9 @@ cmd_ls:
 
 # {TASK}
 .write:
-	# file_size count
-	xor %dx, %dx
-
 .write__lp:
-	# load i_num_lo
-	mov DE_I_NUM_LO_OFF(%bx), %ax
-
 	# {chk} (i_num == 0)
+	mov DE_I_NUM_LO_OFF(%bx), %ax
 	test %ax, %ax
 	or %ax, DE_I_NUM_HI_OFF(%bx)
 	jz .write__chk

@@ -35,9 +35,5 @@ alloc_dentry:
 	# <ret>
 	mov %bx, %ax
 
-	# FIXME: remove dentry_ptr
-	sub $0x8000, %ax
-	mov %ax, (dentry_ptr)
-
 	pop %bx
 	ret

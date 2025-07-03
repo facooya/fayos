@@ -52,14 +52,11 @@ add_dentry:
 	call read_block
 	mov $0x8000, %bx
 
-	# alloc # TODO: return %ax = alloc mem
 	# alloc_dentry()
 	# <req> bx = main mem
 	# <ret> ax = dentry end mem
 	call alloc_dentry
-	#mov %ax, %bx
-	mov (dentry_ptr), %ax
-	add %ax, %bx
+	mov %ax, %bx
 
 	# write i_num
 	mov 0x08(%bp), %ax # dst_hi
@@ -80,24 +77,6 @@ add_dentry:
 	add $0x0B, %cx # fix (8), align 4 (3)
 	and $0xFFFC, %cx # mask: 0b1100
 	mov %cx, DE_REC_LEN_OFF(%bx)
-
-	# ret dentry_ptr # i_file_size_update
-	mov (dentry_ptr), %ax
-	add %cx, %ax
-	mov %ax, (dentry_ptr)
-
-	# update_i_file_size()
-	#push %dx
-	#add %bx, %cx
-	#sub $0x8000, %cx
-	#push %cx # file_size
-	#mov 0x0A(%bp), %ax
-	#push %ax # dst_i_num_lo
-	#mov 0x08(%bp), %ax
-	#push %ax # dst_i_num_hi
-	#call update_i_file_size
-	#add $0x06, %sp
-	#pop %dx
 
 	# dst name
 	mov %bx, %di
