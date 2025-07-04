@@ -4,34 +4,17 @@
 #
 # Add directory entry
 
-# NOTE
-# [n_add_dentry]
-# add_dentry(
-# src_i_num_hi, src_i_num_lo,
-# dst_i_num_hi, dst_i_num_lo,
-# info,
-# name
-# )
-# [4-byte] *_i_num
-# [2-byte] _hi
-# [2-byte] _lo
-# [2-byte] info: hi=file_type, lo=name_len
-# [1-byte] file_type
-# [1-byte] name_len
-# [2-byte] name: name ptr
-
 .include "fayfs/sb.s"
 .include "fayfs/de.s"
 .section .text
 .code16
 .global add_dentry
 
-# [n_add_dentry]
 # add_dentry(
 # src_i_num_hi, src_i_num_lo,
 # dst_i_num_hi, dst_i_num_lo,
-# info,
-# name
+# info (file_type:name_len),
+# name_ptr
 # )
 add_dentry:
 	push %bp
@@ -70,7 +53,7 @@ add_dentry:
 	mov %dh, DE_FILE_TYPE_OFF(%bx)
 	mov %dl, DE_NAME_LEN_OFF(%bx)
 
-	# write rec_len
+	# write rec_size
 	xor %cx, %cx
 	mov %dl, %cl
 	add $0x0B, %cx # fix (8), align 4 (3)

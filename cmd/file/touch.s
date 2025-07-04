@@ -73,10 +73,10 @@ cmd_touch:
 	add $0x02, %sp
 	# ax = len
 
-	mov %al, %cl
-	mov $0x80, %ch
-	push %si
-	push %cx
+	mov $0x80, %ch # (info) file_type
+	mov %al, %cl # (info) name_len
+	push %si # name
+	push %cx # info
 	mov (next_i_num), %ax
 	push %ax
 	mov (next_i_num+0x02), %ax

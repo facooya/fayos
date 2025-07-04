@@ -18,8 +18,8 @@ dentry size [12-byte - 264-byte]
 - [off+0] inode number [4-byte]
 - [off+4] record size [2-byte]
 - [off+6] information [2-byte]
-- - [off+6] name length [1-byte]
-- - [off+7] file type [1-byte]
+- - [off+6] file type [1-byte]
+- - [off+7] name length [1-byte]
 - [off+8] name [1-byte - 255-byte]
 - [off+n] dentry size align [0-byte - 3-byte]
 
@@ -77,7 +77,9 @@ block array pointer [4KiB] = capacity block count (1024)
 ---
 
 ## Superblock Structure
-LBA: Logical Block Address
+> [!NOTE]
+> LBA: Logical Block Address
+
 Superblock surmmery and default value:
 - Immutable data in Fayos:
 - - magNum = 0xC0DEFAC0
@@ -88,6 +90,7 @@ Superblock surmmery and default value:
 - - fstInodeNum = 0x11
 - - rootInodeBlkNum = 0x01
 - - inodeSize = 0x20
+
 - Mutable data by Fayos:
 - - nextInodeNum = 0x11
 - - nextInodeBlkNum = 0x05
@@ -108,4 +111,5 @@ low = lowOff, high = lowOff+2
 
 ---
 
-> Fayfs is **FAcooYa File System**
+> **Fayfs** is **FA**coo**Y**a **F**ile **S**ystem
+> Authors: Facooya and Fanone Facooya
