@@ -20,7 +20,11 @@ update_i_file_size:
 	push %bx
 
 	# read i tbl
-	call set_i_lba
+	push $I_LBA_LO
+	push $I_LBA_HI
+	call set_dap_lba
+	add $0x04, %sp
+
 	call read_block
 	mov $0x8000, %bx
 

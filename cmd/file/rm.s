@@ -53,6 +53,10 @@ cmd_rm:
 	jne .err_file_type
 
 	# {{{
+	# backup
+	mov DE_I_NUM_LO_OFF(%bx), %cx
+	mov DE_I_NUM_HI_OFF(%bx), %dx
+
 	# remove i_num
 	xor %ax, %ax
 	mov %ax, DE_I_NUM_LO_OFF(%bx)

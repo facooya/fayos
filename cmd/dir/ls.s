@@ -5,7 +5,6 @@
 # Command list - show file and directory list
 
 .include "fayfs/de.s"
-
 .section .text
 .code16
 .global cmd_ls

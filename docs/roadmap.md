@@ -18,6 +18,5 @@
 
 ## TODO
 - support multi arguments - touch, mkdir, rm, ...
-- lib find free memory
 - redir append mode, insert mode
 - file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all
