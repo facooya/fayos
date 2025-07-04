@@ -8,10 +8,10 @@ Fayos is a 16-bit real-mode OS written in GNU Assembler.
 
 - `make clean_all` : Deletes the `build/` directory and everything inside it. Note that the `fayos.img` file inside `build/` will also be removed, so be careful. If needed, make sure to copy it or move it elsewhere beforehand. This is used for a full clean reset before rebuilding.
 
-# Quick test for Linux x86-64 using qemu
+## Quick test for Linux x86-64 using qemu
 - `./tools/qemu.sh`
 
-# Documentation
+## Documentation
 Every files follow the documentation rules, Examples:
 - `boot/boot.s` - `docs/boot/boot.md`
 - `kernel/args/args.s` - `docs/kernel/args/args.md`

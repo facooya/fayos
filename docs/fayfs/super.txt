@@ -1,9 +1,0 @@
-# Copyright (C) 2025 Facooya
-# Copyright (C) 2025 Fanone Facooya
-
-# INDEX
-# init_super_block()
-
-# NOTE
-# 0x10: super block
-# 0x80: root block
