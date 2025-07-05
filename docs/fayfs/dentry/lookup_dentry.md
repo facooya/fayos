@@ -9,6 +9,9 @@ lookup_dentry(
 ```
 return:
 - ax = `not_match:0, match:memory`
+- TODO: (available) dx = `true:1, false:0`
+- - Matched name, But already removed file name.
+- - if avaliable, use return memory.
 
 ---
 

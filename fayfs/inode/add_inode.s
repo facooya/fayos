@@ -10,11 +10,10 @@
 .code16
 .global add_inode
 
-# [n_add_inode]
 # add_inode(
-# i_num_hi, i_num_lo
-# i_blk_num_hi, i_blk_num_lo
-# info (hi=file_type, lo=blk_len),
+# i_num_hi, i_num_lo,
+# i_blk_num_hi, i_blk_num_lo,
+# info (file_type:blk_len),
 # )
 add_inode:
 	push %bp

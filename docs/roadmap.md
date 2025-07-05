@@ -18,5 +18,6 @@
 
 ## TODO
 - support multi arguments - touch, mkdir, rm, ...
+- lookup dentry, available return value.
 - redir append mode, insert mode
 - file or dir name: allow ., _, - (front disallow), disallow /, \, SP, all
