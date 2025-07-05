@@ -187,7 +187,7 @@ tok_args:
 	add $0x02, %sp
 	pop %cx
 
-	# store null
+	# store last null
 	xor %ax, %ax
 	mov %al, (%di) # tmp.data
 	add $0x01, %cx # tmp.len

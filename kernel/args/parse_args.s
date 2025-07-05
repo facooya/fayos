@@ -214,7 +214,7 @@ parse_args:
 .redir__lp:
 	mov (%si), %al # raw.data
 
-	# {end}
+	# {end} (raw.data == null)
 	test %al, %al
 	jz .redir__end
 
@@ -227,15 +227,9 @@ parse_args:
 	jmp .redir__lp
 
 .redir__end:
-	# {{{ store
-	# store null
-	mov %al, (%di) # redir.data
-	add $0x01, %dl # redir.len
-
 	# store hdr
 	mov $redir_buf, %di
 	mov %dx, (%di) # redir.hdr
-	# }}}
 
 	# {{{ chk err
 	# {step}

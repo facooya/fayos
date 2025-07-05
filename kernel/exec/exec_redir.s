@@ -11,7 +11,6 @@
 
 # exec_redir()
 exec_redir:
-	# prol
 	push %si
 	push %di
 	push %bx
@@ -29,92 +28,36 @@ exec_redir:
 	je .type__write
 
 	# {end.err}
-	jmp .hdl_redir_type_err
+	jmp .err_redir_type
 
 # {TASK}
 .type__write:
-	# read_inode(i_num_hi, i_num_lo)
-	# <ret> i_file_size
-	# <ret> i_blk
+	# {{{ lookup dentry
+	push %si # name
+	push %cx # name_len
 	mov (i_num), %ax
-	push %ax
+	push %ax # i_num_lo
 	mov (i_num+0x02), %ax
-	push %ax
-	call read_inode
-	add $0x04, %sp
+	push %ax # i_num_hi
+	call lookup_dentry
+	add $0x08, %sp
+	mov %ax, %bx
 
-	# read block
-	call set_blk_lba
-	call read_block
-	mov $0x8000, %bx
-
-	# {task}
-	jmp .match
-
-# {TASK}
-.match:
-# <PRE>
-# (*si == fst_chr)
-.match__lp:
-	# strlen(src)
-	# <ret> ax = len
-	push %si
-	call strlen
-	add $0x02, %sp
-
-	# {init} de_name_len
-	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl
-
-	# {end.err} (de_name_len == null)
-	test %cx, %cx
-	jz .hdl_no_file_err
-
-	# {chk} (redir_name_len == de_name_len)
-	cmp %cx, %ax
-	je .match__chk
-
-	# {lp.step} mem_ptr
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-
-	# {lp}
-	jmp .match__lp
-
-.match__chk:
-	mov %bx, %di # de
-	add $DE_NAME_OFF, %di # de_name
-
-	# strncmp(src, dst, n)
-	# <ret> ax = true || false
-	push %cx # redir_name_len
-	push %di # de_name
-	push %si # redir_name
-	call strncmp
-	add $0x06, %sp
-
-	# {end} (strncmp == true)
+	# {err} (lookup_dentry == no_match)
 	test %ax, %ax
-	jz .match__end
+	jz .err_file_no
 
-	# {lp.step} mem_ptr
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-
-	# {lp}
-	jmp .match__lp
-
-.match__end:
-	# {end.err} (file_type != file)
+	# {err} (file_type != file)
 	mov DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
-	jnz .hdl_not_file_err
+	jne .err_file_type
 
 	# {task}
-	jmp .file
+	jmp .run
+	# }}}
 
 # {TASK}
-.file:
+.run:
 	# get dst i num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 	mov %ax, (i_num)
@@ -137,12 +80,12 @@ exec_redir:
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
 
-.file__write_lp:
+.run__write_lp:
 	mov (%si), %al
 
 	# {end} (len == 0)
 	test %cx, %cx
-	jz .file__write_end
+	jz .run__write_end
 
 	mov %al, (%bx)
 
@@ -151,26 +94,23 @@ exec_redir:
 	add $0x01, %bx # mem
 	add $0x01, %dx # size
 	sub $0x01, %cx # buf.len
-	jmp .file__write_lp
+	jmp .run__write_lp
 
-.file__write_end:
+.run__write_end:
 	call set_blk_lba
 	call write_block
 
-.file__end:
+.run__end:
 	# update_i_file_size
-	# (
-	# i_num_hi
-	# i_num_lo
-	# file_size
-	# )
-	push %dx # size
+	push %dx # file_size
 	mov (i_num), %ax
-	push %ax
+	push %ax # inum_lo
 	mov (i_num+0x02), %ax
-	push %ax
+	push %ax # inum_hi
 	call update_i_file_size
 	add $0x06, %sp
+
+	# {end.done}
 	xor %ax, %ax
 	jmp .done
 
@@ -186,22 +126,19 @@ exec_redir:
 	ret
 
 # {ERR}
-.hdl_redir_type_err:
-	call outnl
-	push $redir_type_err_msg
-	jmp .hdl_err
+.err_redir_type:
+	push $emsg_redir_type
+	jmp .err_hdl
 
-.hdl_no_file_err:
-	call outnl
-	push $no_file_err_msg
-	jmp .hdl_err
+.err_file_no:
+	push $emsg_file_no
+	jmp .err_hdl
 
-.hdl_not_file_err:
-	call outnl
-	push $not_file_err_msg
-	jmp .hdl_err
+.err_file_type:
+	push $emsg_file_type
+	jmp .err_hdl
 
-.hdl_err:
+.err_hdl:
 	call outs
 	add $0x02, %sp
 	call outnl

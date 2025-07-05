@@ -31,20 +31,21 @@ read_inode:
 	mov 0x06(%bp), %cx
 	mov $I_SIZE, %ax
 	mul %cx
-	# ax *= cx
-
-	# set mem
 	add %ax, %bx
+
+	mov $inode, %si
 
 	# set i_file_size
 	mov I_FILE_SIZE_OFF(%bx), %ax
-	mov %ax, (i_file_size)
+	mov %ax, I_FILE_SIZE_OFF(%si)
 
 	# set i_blk
 	mov I_BLK_LO_OFF(%bx), %ax
 	mov %ax, (i_blk)
+	mov %ax, I_BLK_LO_OFF(%si)
 	mov I_BLK_HI_OFF(%bx), %dx
 	mov %dx, (i_blk+0x02)
+	mov %ax, I_BLK_HI_OFF(%si)
 
 	pop %bx
 	pop %bp
