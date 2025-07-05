@@ -46,7 +46,6 @@ kernel/sys/kbd.s \
 kernel/sys/vid.s \
 \
 fayfs/dentry/add_dentry.s \
-fayfs/dentry/alloc_dentry.s \
 fayfs/dentry/lookup_dentry.s \
 fayfs/inode/add_inode.s \
 fayfs/inode/update_i_file_size.s \

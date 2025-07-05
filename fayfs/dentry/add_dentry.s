@@ -36,12 +36,27 @@ add_dentry:
 	call read_block
 	mov $0x8000, %bx
 
-	# alloc_dentry()
-	# <req> bx = main mem
-	# <ret> ax = dentry end mem
-	call alloc_dentry
-	mov %ax, %bx
+	# {task}
+	jmp .alloc
 
+# {TASK}
+.alloc:
+.alloc__lp:
+	# {end} (rec_len == null)
+	mov DE_REC_LEN_OFF(%bx), %ax
+	test %ax, %ax
+	jz .alloc__end
+
+	# {lp}
+	add %ax, %bx
+	jmp .alloc__lp
+
+.alloc__end:
+	# {task}
+	jmp .write
+
+# {TASK}
+.write:
 	# write i_num
 	mov 0x08(%bp), %ax # dst_hi
 	mov %ax, DE_I_NUM_HI_OFF(%bx)
@@ -68,10 +83,10 @@ add_dentry:
 	xor %cx, %cx
 	mov %dl, %cl # name_len
 
-.lp:
+.write__name_lp:
 	# {end} (name_len == null)
 	test %cl, %cl
-	jz .end
+	jz .write__end
 
 	# cpy
 	mov (%si), %al
@@ -81,9 +96,9 @@ add_dentry:
 	add $0x01, %si
 	add $0x01, %di
 	sub $0x01, %cl
-	jmp .lp
+	jmp .write__name_lp
 
-.end:
+.write__end:
 	# write blk
 	call write_block
 

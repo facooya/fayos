@@ -10,7 +10,16 @@ add_dentry(
 ```
 
 ## Arguments
-> sp: Stack pointer
+> SP: Stack Pointer
+Get values:
+- [sp+4] `src_i_num_hi`
+- [sp+6] `src_i_num_lo`
+- [sp+8] `dst_i_num_hi`
+- [sp+10] `dst_i_num_lo`
+- [sp+12] `info`
+- [sp+14] `name_ptr`
+
+Detail:
 - `src_i_num` [4-byte]
 - - [sp+4] `src_i_num_hi` [2-byte]
 - - [sp+6] `src_i_num_lo` [2-byte]
@@ -29,9 +38,7 @@ add_dentry(
 
 - read block
 - - set memory (bx=0x8000)
-- - allocate dentry
-- - - ret ax = dentry end memory
-- - update memory bx=ax
+- - allocate dentry (update memory)
 
 - write in memory
 - - inode number
@@ -45,6 +52,7 @@ add_dentry(
 - `if (file_type == directory)`
 - - file\_size = inode\_size
 - - [exten] `update_i_file_size`
+
 - epilog
 
 ---
