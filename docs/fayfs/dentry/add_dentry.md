@@ -1,5 +1,5 @@
 # Add Dentry
-Surmmary arguments:
+Surmmary:
 ```
 add_dentry(
   src_i_num_hi, src_i_num_lo,
@@ -9,8 +9,9 @@ add_dentry(
 )
 ```
 
+---
+
 ## Arguments
-> SP: Stack Pointer
 Get values:
 - [sp+4] `src_i_num_hi`
 - [sp+6] `src_i_num_lo`
@@ -30,6 +31,8 @@ Detail:
 - - `high=file_type` [1-byte]
 - - `low=name_len` [1-byte]
 - [sp+14] `name_ptr` [2-byte]
+
+---
 
 ## Workflow
 - prolog
