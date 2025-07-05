@@ -11,7 +11,6 @@
 .global read_inode
 
 # read_inode(i_num_hi, i_num_lo)
-# <ret> i_blk, i_file_size
 read_inode:
 	push %bp
 	mov %sp, %bp
@@ -41,10 +40,8 @@ read_inode:
 
 	# set i_blk
 	mov I_BLK_LO_OFF(%bx), %ax
-	mov %ax, (i_blk)
 	mov %ax, I_BLK_LO_OFF(%si)
-	mov I_BLK_HI_OFF(%bx), %dx
-	mov %dx, (i_blk+0x02)
+	mov I_BLK_HI_OFF(%bx), %ax
 	mov %ax, I_BLK_HI_OFF(%si)
 
 	pop %bx

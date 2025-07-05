@@ -17,8 +17,6 @@ cmd_ls:
 
 	# {{{
 	# read_inode(i_num_hi, i_num_lo)
-	# ret: i_file_size
-	# ret: i_blk
 	mov (i_num), %ax
 	push %ax
 	mov (i_num+0x02), %ax

@@ -24,7 +24,6 @@ lookup_dentry:
 
 	# {{{ read block
 	# read_inode(i_num_hi, i_num_lo)
-	# <ret> i_file_size, i_blk
 	mov 0x06(%bp), %ax
 	push %ax # i_num_lo
 	mov 0x04(%bp), %ax

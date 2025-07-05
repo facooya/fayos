@@ -5,15 +5,19 @@
 # Directory entry
 
 .include "fayfs/sb.s"
+.include "fayfs/i.s"
 .section .text
 .code16
 .global set_blk_lba
 
 # set_blk_lba() # FIXME: blk overflow
-# pre: i_blk
 set_blk_lba:
+	push %si
+
 	# init
-	mov (i_blk), %ax
+	mov $inode, %si
+	mov I_BLK_LO_OFF(%si), %ax
+	
 	mov $0x08, %cx
 
 	# calc
@@ -29,5 +33,5 @@ set_blk_lba:
 	call set_dap_lba
 	add $0x04, %sp
 
-	# ret
+	pop %si
 	ret

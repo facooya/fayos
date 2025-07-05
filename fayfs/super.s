@@ -37,12 +37,6 @@ read_sb:
 	mov ROOT_I_NUM_HI_OFF(%bx), %ax
 	mov %ax, (i_num+0x02)
 
-	# root i_blk
-	mov ROOT_I_BLK_LO_OFF(%bx), %ax
-	mov %ax, (i_blk)
-	mov ROOT_I_BLK_HI_OFF(%bx), %ax
-	mov %ax, (i_blk+0x02)
-
 	# next_i_num
 	mov NEXT_I_NUM_LO_OFF(%bx), %ax
 	mov %ax, (next_i_num)
@@ -140,9 +134,9 @@ init_sb:
 	mov $0x40, %ch
 	mov $0x01, %cl
 	push %cx
-	mov (i_blk), %ax
+	mov ROOT_I_BLK_LO_OFF(%bx), %ax
 	push %ax
-	mov (i_blk+0x02), %ax
+	mov ROOT_I_BLK_HI_OFF(%bx), %ax
 	push %ax
 	mov (i_num), %ax
 	push %ax
