@@ -4,7 +4,9 @@
 #
 # Fayos file system
 
+.include "fayfs/sb.s"
 .section .data
+.global inode
 
 .global i_file_size
 
@@ -13,6 +15,8 @@
 
 .global next_i_num
 .global next_i_blk
+
+inode: .zero I_SIZE
 
 i_file_size: .word 0x00
 

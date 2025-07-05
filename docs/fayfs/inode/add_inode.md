@@ -37,14 +37,12 @@ Detail:
 ---
 
 ## Workflow
-- prolog
 - read block (inode table)
-- calculate inode table memory
+- set memory (inum)
 - write inode table
 - write block (inode table)
-- epilog
 
-### Calculate Inode Tabel Memory
+### Calculate Set Memory
 ```asm
 # (memory) bx = 0x8000
 xor %dx, %dx
