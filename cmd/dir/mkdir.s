@@ -138,7 +138,7 @@ cmd_mkdir:
 	mov (next_i_blk), %ax
 	add $0x01, %ax
 	mov %ax, (next_i_blk)
-	call write_sb
+	call write_super
 
 	jmp .done
 

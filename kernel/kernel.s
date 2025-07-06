@@ -17,7 +17,7 @@ kernel_prompt: .asciz "fayos:/# "
 
 # _start()
 _start:
-	call init_sb
+	call init_super
 
 	push $.kernel_ok_msg
 	call outs

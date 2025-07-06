@@ -21,6 +21,7 @@ set_blk_lba:
 	mov $0x08, %cx
 
 	# calc
+	xor %dx, %dx
 	mul %cx
 
 	mov $FST_LBA_LO, %cx
