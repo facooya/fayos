@@ -16,10 +16,10 @@ cmd_ls:
 	push %bx
 
 	# {{{
-	# read_inode(i_num_hi, i_num_lo)
-	mov (i_num), %ax
+	# read_inode(inum_hi, inum_lo)
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call read_inode
 	add $0x04, %sp
@@ -35,7 +35,7 @@ cmd_ls:
 # {TASK}
 .run:
 .run__lp:
-	# {chk} (i_num == 0)
+	# {chk} (inum == 0)
 	mov DE_I_NUM_LO_OFF(%bx), %ax
 	test %ax, %ax
 	or %ax, DE_I_NUM_HI_OFF(%bx)

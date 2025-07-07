@@ -10,7 +10,7 @@
 .global lookup_dentry
 
 # lookup_dentry(
-# i_num_hi, i_num_lo
+# inum_hi, inum_lo
 # name_len,
 # name_ptr
 # )
@@ -23,11 +23,11 @@ lookup_dentry:
 	push %bx
 
 	# {{{ read block
-	# read_inode(i_num_hi, i_num_lo)
+	# read_inode(inum_hi, inum_lo)
 	mov 0x06(%bp), %ax
-	push %ax # i_num_lo
+	push %ax # inum_lo
 	mov 0x04(%bp), %ax
-	push %ax # i_num_hi
+	push %ax # inum_hi
 	call read_inode
 	add $0x04, %sp
 

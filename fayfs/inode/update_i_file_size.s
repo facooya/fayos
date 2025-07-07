@@ -11,7 +11,7 @@
 .global update_i_file_size
 
 # update_i_file_size(
-# i_num_hi, i_num_lo,
+# inum_hi, inum_lo,
 # i_file_size
 # )
 update_i_file_size:
@@ -30,7 +30,7 @@ update_i_file_size:
 
 	# calc inode # HACK!!!: only low
 	xor %dx, %dx
-	mov 0x06(%bp), %cx # i_num_lo
+	mov 0x06(%bp), %cx # inum_lo
 	mov $I_SIZE, %ax
 	mul %cx
 	# ax *= cx

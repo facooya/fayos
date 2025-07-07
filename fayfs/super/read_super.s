@@ -31,11 +31,11 @@ read_super:
 	mov $0x8000, %bx
 	# }}}
 
-	# root i_num
+	# root inum
 	mov ROOT_I_NUM_LO_OFF(%bx), %ax
-	mov %ax, (i_num)
+	mov %ax, (inum)
 	mov ROOT_I_NUM_HI_OFF(%bx), %ax
-	mov %ax, (i_num+0x02)
+	mov %ax, (inum+0x02)
 
 	# next_i_num
 	mov NEXT_I_NUM_LO_OFF(%bx), %ax

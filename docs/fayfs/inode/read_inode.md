@@ -1,18 +1,18 @@
 # Read Inode
 Surmmary:
 ```
-read_inode(i_num_hi, i_num_lo)
+read_inode(inum_hi, inum_lo)
 ```
 
 ---
 
 ## Arguments
 Surmmary:
-- `i_num` [4-byte]
+- `inum` [4-byte]
 
 Get values:
-- [sp+4] `i_num_hi`
-- [sp+6] `i_num_lo`
+- [sp+4] `inum_hi`
+- [sp+6] `inum_lo`
 
 ---
 

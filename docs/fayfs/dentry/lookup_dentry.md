@@ -2,7 +2,7 @@
 Surmmary:
 ```
 lookup_dentry(
-  i_num_hi, i_num_lo
+  inum_hi, inum_lo
   name_len,
   name_ptr
 )
@@ -17,15 +17,15 @@ return:
 
 ## Arguments
 Get values:
-- [sp+4] `i_num_hi`
-- [sp+6] `i_num_lo`
+- [sp+4] `inum_hi`
+- [sp+6] `inum_lo`
 - [sp+8] `name_len`
 - [sp+10] `name_ptr`
 
 Detail:
-- `i_num` [4-byte]
-- - [sp+4] `i_num_hi` [2-byte]
-- - [sp+6] `i_num_lo` [2-byte]
+- `inum` [4-byte]
+- - [sp+4] `inum_hi` [2-byte]
+- - [sp+6] `inum_lo` [2-byte]
 - [sp+8] `name_len` [2-byte]
 - [sp+10] `name_ptr` [2-byte]
 

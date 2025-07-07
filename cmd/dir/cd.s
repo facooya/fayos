@@ -29,10 +29,10 @@ cmd_cd:
 
 	push %si # src_name
 	push %cx # src_name_len
-	mov (i_num), %ax
-	push %ax # i_num_lo
-	mov (i_num+0x02), %ax
-	push %ax # i_num_hi
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
 
@@ -54,14 +54,14 @@ cmd_cd:
 
 	# get dst inode num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
-	mov %ax, (i_num)
+	mov %ax, (inum)
 	mov DE_I_NUM_HI_OFF(%bx), %ax
-	mov %ax, (i_num+0x02)
+	mov %ax, (inum+0x02)
 
 	# get i blk
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call read_inode
 	add $0x04, %sp

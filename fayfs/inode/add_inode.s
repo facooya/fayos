@@ -11,7 +11,7 @@
 .global add_inode
 
 # add_inode(
-# i_num_hi, i_num_lo,
+# inum_hi, inum_lo,
 # i_blk_num_hi, i_blk_num_lo,
 # info (file_type:blk_len),
 # )

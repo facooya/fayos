@@ -11,8 +11,8 @@
 .global add_dentry
 
 # add_dentry(
-# src_i_num_hi, src_i_num_lo,
-# dst_i_num_hi, dst_i_num_lo,
+# src_inum_hi, src_inum_lo,
+# dst_inum_hi, dst_inum_lo,
 # info (file_type:name_len),
 # name_ptr
 # )
@@ -57,7 +57,7 @@ add_dentry:
 
 # {TASK}
 .write:
-	# write i_num
+	# write inum
 	mov 0x08(%bp), %ax # dst_hi
 	mov %ax, DE_I_NUM_HI_OFF(%bx)
 	mov 0x0A(%bp), %ax # dst_lo
@@ -123,9 +123,9 @@ add_dentry:
 	mov $I_SIZE, %ax
 	push %ax # dir_size
 	mov 0x0A(%bp), %ax
-	push %ax # i_num_lo
+	push %ax # inum_lo
 	mov 0x08(%bp), %ax
-	push %ax # i_num_hi
+	push %ax # inum_hi
 	call update_i_file_size
 	add $0x06, %sp
 

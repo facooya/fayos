@@ -33,10 +33,10 @@ cmd_mkdir:
 
 	push %si # src_name
 	push %cx # src_name_len
-	mov (i_num), %ax
-	push %ax # i_num_lo
-	mov (i_num+0x02), %ax
-	push %ax # i_num_hi
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
 
@@ -87,9 +87,9 @@ cmd_mkdir:
 	push %ax
 	mov (next_i_num+0x02), %ax
 	push %ax
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
@@ -119,9 +119,9 @@ cmd_mkdir:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	mov (next_i_num), %ax
 	push %ax

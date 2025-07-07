@@ -29,10 +29,10 @@ cmd_touch:
 
 	push %si # src_name
 	push %cx # src_name_len
-	mov (i_num), %ax
-	push %ax # i_num_lo
-	mov (i_num+0x02), %ax
-	push %ax # i_num_hi
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
 
@@ -81,9 +81,9 @@ cmd_touch:
 	push %ax
 	mov (next_i_num+0x02), %ax
 	push %ax
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp

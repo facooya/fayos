@@ -35,10 +35,10 @@ exec_redir:
 	# {{{ lookup dentry
 	push %si # name
 	push %cx # name_len
-	mov (i_num), %ax
-	push %ax # i_num_lo
-	mov (i_num+0x02), %ax
-	push %ax # i_num_hi
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
 	mov %ax, %bx
@@ -60,14 +60,14 @@ exec_redir:
 .run:
 	# get dst i num
 	mov DE_I_NUM_LO_OFF(%bx), %ax
-	mov %ax, (i_num)
+	mov %ax, (inum)
 	mov DE_I_NUM_HI_OFF(%bx), %ax
-	mov %ax, (i_num+0x02)
+	mov %ax, (inum+0x02)
 
 	# read i node
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call read_inode
 	add $0x04, %sp
@@ -103,9 +103,9 @@ exec_redir:
 .run__end:
 	# update_i_file_size
 	push %dx # file_size
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax # inum_lo
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax # inum_hi
 	call update_i_file_size
 	add $0x06, %sp

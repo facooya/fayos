@@ -2,8 +2,8 @@
 Surmmary:
 ```
 add_dentry(
-  src_i_num_hi, src_i_num_lo,
-  dst_i_num_hi, dst_i_num_lo,
+  src_inum_hi, src_inum_lo,
+  dst_inum_hi, dst_inum_lo,
   info (file_type:name_len),
   name_ptr
 )
@@ -13,20 +13,20 @@ add_dentry(
 
 ## Arguments
 Get values:
-- [sp+4] `src_i_num_hi`
-- [sp+6] `src_i_num_lo`
-- [sp+8] `dst_i_num_hi`
-- [sp+10] `dst_i_num_lo`
+- [sp+4] `src_inum_hi`
+- [sp+6] `src_inum_lo`
+- [sp+8] `dst_inum_hi`
+- [sp+10] `dst_inum_lo`
 - [sp+12] `info`
 - [sp+14] `name_ptr`
 
 Detail:
-- `src_i_num` [4-byte]
-- - [sp+4] `src_i_num_hi` [2-byte]
-- - [sp+6] `src_i_num_lo` [2-byte]
-- `dst_i_num` [4-byte]
-- - [sp+8] `dst_i_num_hi` [2-byte]
-- - [sp+10] `dst_i_num_lo` [2-byte]
+- `src_inum` [4-byte]
+- - [sp+4] `src_inum_hi` [2-byte]
+- - [sp+6] `src_inum_lo` [2-byte]
+- `dst_inum` [4-byte]
+- - [sp+8] `dst_inum_hi` [2-byte]
+- - [sp+10] `dst_inum_lo` [2-byte]
 - [sp+12] `info` [2-byte]
 - - `high=file_type` [1-byte]
 - - `low=name_len` [1-byte]

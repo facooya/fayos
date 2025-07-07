@@ -29,10 +29,10 @@ cmd_rm:
 
 	push %si # src_name
 	push %cx # src_name_len
-	mov (i_num), %ax
-	push %ax # i_num_lo
-	mov (i_num+0x02), %ax
-	push %ax # i_num_hi
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
 
@@ -57,7 +57,7 @@ cmd_rm:
 	mov DE_I_NUM_LO_OFF(%bx), %cx
 	mov DE_I_NUM_HI_OFF(%bx), %dx
 
-	# remove i_num
+	# remove inum
 	xor %ax, %ax
 	mov %ax, DE_I_NUM_LO_OFF(%bx)
 	mov %ax, DE_I_NUM_HI_OFF(%bx)

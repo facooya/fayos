@@ -10,7 +10,7 @@
 .code16
 .global read_inode
 
-# read_inode(i_num_hi, i_num_lo)
+# read_inode(inum_hi, inum_lo)
 read_inode:
 	push %bp
 	mov %sp, %bp
@@ -25,7 +25,7 @@ read_inode:
 	call read_block
 	mov $0x8000, %bx
 
-	# calc i_num
+	# calc inum
 	xor %dx, %dx
 	mov 0x06(%bp), %cx
 	mov $I_SIZE, %ax

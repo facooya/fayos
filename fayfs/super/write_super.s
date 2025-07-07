@@ -29,7 +29,7 @@ write_super:
 	mov $0x8000, %bx
 	# }}}
 
-	# write i_num
+	# write inum
 	mov (next_i_num), %ax
 	mov %ax, NEXT_I_NUM_LO_OFF(%bx)
 	mov (next_i_num+0x02), %ax

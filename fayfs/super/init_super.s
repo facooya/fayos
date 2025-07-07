@@ -153,9 +153,9 @@ init_super:
 	push %ax
 	mov ROOT_I_BLK_HI_OFF(%bx), %ax
 	push %ax
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call add_inode
 	add $0x0A, %sp
@@ -166,13 +166,13 @@ init_super:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
@@ -183,13 +183,13 @@ init_super:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
-	mov (i_num), %ax
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp

@@ -2,7 +2,7 @@
 Surmmary:
 ```
 add_inode(
-  i_num_hi, i_num_lo,
+  inum_hi, inum_lo,
   i_blk_num_hi, i_blk_num_lo,
   info (file_type:blk_len)
 )
@@ -12,21 +12,21 @@ add_inode(
 
 ## Arguments
 Surmmary:
-- `i_num` [4-byte]
+- `inum` [4-byte]
 - `i_blk_num` [4-byte]
 - `info` [2-byte]
 
 Get values:
-- [sp+4] `i_num_hi`
-- [sp+6] `i_num_lo`
+- [sp+4] `inum_hi`
+- [sp+6] `inum_lo`
 - [sp+8] `i_blk_num_hi`
 - [sp+10] `i_blk_num_lo`
 - [sp+12] `info`
 
 Detail:
-- `i_num` [4-byte]
-- - [sp+4] `i_num_hi` [2-byte]
-- - [sp+6] `i_num_lo` [2-byte]
+- `inum` [4-byte]
+- - [sp+4] `inum_hi` [2-byte]
+- - [sp+6] `inum_lo` [2-byte]
 - `i_blk_num` [4-byte]
 - - [sp+8] `i_blk_num_hi` [2-byte]
 - - [sp+10] `i_blk_num_lo` [2-byte]
@@ -55,7 +55,7 @@ add %ax, %bx
 Examples:
 ```asm
 xor %dx, %dx
-mov 0x06(%bp), %cx # i_num_lo = 0x10 (Example value)
+mov 0x06(%bp), %cx # inum_lo = 0x10 (Example value)
 mov $I_SIZE, %ax # I_SIZE = 0x20
 ```
 - ax = 0x20

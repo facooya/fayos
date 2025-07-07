@@ -113,20 +113,20 @@ exec_cmd:
 
 # {TASK}
 .redir:
-	# save i_num
-	mov (i_num), %ax
+	# save inum
+	mov (inum), %ax
 	push %ax
-	mov (i_num+0x02), %ax
+	mov (inum+0x02), %ax
 	push %ax
 
 	# call
 	call exec_redir
 
-	# restore i_num
+	# restore inum
 	pop %ax
-	mov %ax, (i_num+0x02)
+	mov %ax, (inum+0x02)
 	pop %ax
-	mov %ax, (i_num)
+	mov %ax, (inum)
 
 	# {end.done}
 	jmp .done
