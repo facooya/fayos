@@ -16,16 +16,10 @@ read_inode:
 	mov %sp, %bp
 	push %bx
 
-	# read inode
-	push $I_LBA_LO
-	push $I_LBA_HI
-	call set_dap_lba
-	add $0x04, %sp
-
-	push $dap
+	push $dap_inode
 	call read_disk
 	add $0x02, %sp
-	mov $0x8000, %bx
+	mov %ax, %bx
 
 	# calc inum
 	xor %dx, %dx

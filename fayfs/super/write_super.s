@@ -16,7 +16,7 @@ write_super:
 	push $dap_super
 	call read_disk
 	add $0x02, %sp
-	mov $0x0600, %bx
+	mov %ax, %bx
 
 	# write inum
 	mov (next_i_num), %ax

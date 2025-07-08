@@ -20,23 +20,10 @@
 init_super:
 	push %bx
 
-	# {{{ read super lba
-	push $0x8000
-	push $0x00
-	push $0x02
-	call set_dap_target
-	add $0x06, %sp
-
-	push $SB_LBA_LO
-	push $SB_LBA_HI
-	call set_dap_lba
-	add $0x04, %sp
-
-	push $dap
+	push $dap_super
 	call read_disk
 	add $0x02, %sp
-	mov $0x8000, %bx
-	# }}}
+	mov %ax, %bx
 
 	# {{{ check superblock
 	# {task} (get_magic_low != magic_low)
@@ -54,7 +41,6 @@ init_super:
 	add $0x02, %sp
 
 	# {end.done}
-	call reset_dap_target
 	call read_super
 	jmp .done
 	# }}}
@@ -66,10 +52,9 @@ init_super:
 	add $0x02, %sp
 
 	call ._set_data
-	push $dap
+	push $dap_super
 	call write_disk
 	add $0x02, %sp
-	call reset_dap_target
 
 	call read_super
 	call ._set_dentry

@@ -77,7 +77,7 @@ cmd_cat:
 	push $dap
 	call read_disk
 	add $0x02, %sp
-	mov $0x8000, %bx
+	mov %ax, %bx
 
 	# puts
 	push %bx

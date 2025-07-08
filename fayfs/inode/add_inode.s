@@ -12,7 +12,7 @@
 
 # add_inode(
 # inum_hi, inum_lo,
-# i_blk_num_hi, i_blk_num_lo,
+# blk_num_hi, blk_num_lo,
 # info (file_type:blk_len),
 # )
 add_inode:
@@ -20,16 +20,10 @@ add_inode:
 	mov %sp, %bp
 	push %bx
 
-	# read i tbl
-	push $I_LBA_LO
-	push $I_LBA_HI
-	call set_dap_lba
-	add $0x04, %sp
-
-	push $dap
+	push $dap_inode
 	call read_disk
 	add $0x02, %sp
-	mov $0x8000, %bx
+	mov %ax, %bx
 
 	# calc inode # FIXME!!! hi,lo
 	xor %dx, %dx
@@ -53,7 +47,7 @@ add_inode:
 	mov %al, I_BLK_LEN_OFF(%bx)
 
 	# write
-	push $dap
+	push $dap_inode
 	call write_disk
 	add $0x02, %sp
 

@@ -16,7 +16,7 @@ read_super:
 	push $dap_super
 	call read_disk
 	add $0x02, %sp
-	mov $0x0600, %bx
+	mov %ax, %bx
 
 	# root inum
 	mov ROOT_I_NUM_LO_OFF(%bx), %ax

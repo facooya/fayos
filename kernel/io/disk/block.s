@@ -39,7 +39,7 @@ write_disk:
 	jmp .epil
 
 .done:
-	xor %ax, %ax
+	mov 0x04(%si), %ax
 	jmp .epil
 
 .epil:

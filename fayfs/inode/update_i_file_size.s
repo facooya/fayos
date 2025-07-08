@@ -19,16 +19,10 @@ update_i_file_size:
 	mov %sp, %bp
 	push %bx
 
-	# read i tbl
-	push $I_LBA_LO
-	push $I_LBA_HI
-	call set_dap_lba
-	add $0x04, %sp
-
-	push $dap
+	push $dap_inode
 	call read_disk
 	add $0x02, %sp
-	mov $0x8000, %bx
+	mov %ax, %bx
 
 	# calc inode # HACK!!!: only low
 	xor %dx, %dx
@@ -41,7 +35,7 @@ update_i_file_size:
 	mov 0x08(%bp), %ax # file_size
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 
-	push $dap
+	push $dap_inode
 	call write_disk
 	add $0x02, %sp
 
