@@ -27,8 +27,8 @@ dap_super:
 	.word 0x01
 	.word 0x0600
 	.word 0x00
-	.word SB_LBA_LO
-	.word SB_LBA_HI
+	.word SB_LBA
+	.word 0x00
 	.word 0x00
 	.word 0x00
 
@@ -38,8 +38,8 @@ dap_inode:
 	.word 0x08
 	.word 0x8000
 	.word 0x00
-	.word I_LBA_LO
-	.word I_LBA_HI
+	.word 0x10
+	.word 0x00
 	.word 0x00
 	.word 0x00
 

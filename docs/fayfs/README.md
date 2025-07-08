@@ -81,41 +81,6 @@ block array pointer [4KiB] = capacity block count (1024)
 
 ---
 
-## Superblock Structure
-> [!NOTE]
-> LBA: Logical Block Address
-
-Superblock surmmery and default value:
-- Immutable data in Fayos:
-- - magNum = 0xC0DEFAC0
-- - superblockLBA = 0x02
-- - inodeLBA = 0x10
-- - rootInodeNum = 0x02
-- - fstAllocLBA = 0x80
-- - fstInodeNum = 0x11
-- - rootInodeBlkNum = 0x01
-- - inodeSize = 0x20
-
-- Mutable data by Fayos:
-- - nextInodeNum = 0x11
-- - nextInodeBlkNum = 0x05
-
-SuperBlock detail:
-low = lowOff, high = lowOff+2
-- [off+0] magic number [4-byte]
-- [off+4] superblock LBA [4-byte]
-- [off+8] inode LBA [4-byte]
-- [off+12] root inode number [4-byte]
-- [off+16] first allocate LBA [4-byte]
-- [off+20] first inode number [4-byte]
-- [off+24] root inode block number [4-byte]
-- [off+28] inode size [2-byte]
-- [off+30]-[off+64] padding [34-byte]
-- [off+64] next inode number [4-byte]
-- [off+68] next inode block number [4-byte]
-
----
-
 > **Fayfs** is **FA**coo**Y**a **F**ile **S**ystem
 
 > Authors: Facooya and Fanone Facooya

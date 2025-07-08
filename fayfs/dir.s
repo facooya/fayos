@@ -24,7 +24,7 @@ set_blk_lba:
 	xor %dx, %dx
 	mul %cx
 
-	mov $FST_LBA_LO, %cx
+	mov $FST_LBA, %cx
 	add %cx, %ax
 
 	# set dap lba # HACK!!!: low high

@@ -21,14 +21,10 @@ write_super:
 	# write inum
 	mov (next_i_num), %ax
 	mov %ax, NEXT_I_NUM_LO_OFF(%bx)
-	mov (next_i_num+0x02), %ax
-	mov %ax, NEXT_I_NUM_HI_OFF(%bx)
 
-	# write i_blk
+	# write iblk
 	mov (next_i_blk), %ax
 	mov %ax, NEXT_I_BLK_LO_OFF(%bx)
-	mov (next_i_blk+0x02), %ax
-	mov %ax, NEXT_I_BLK_HI_OFF(%bx)
 
 	# write
 	push $dap_super

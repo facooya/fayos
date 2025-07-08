@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Initialization superblock
+# Superblock
 
 .include "fayfs/sb.s"
 .section .data
@@ -52,13 +52,16 @@ init_super:
 	add $0x02, %sp
 
 	# TODO: super block
-	mov $0x0500, %si
+	mov $0x0600, %si
+	add $DP_BUF_OFF, %si
 	call _sys_read_disk_param
 
 	call ._set_data
 	push $dap_super
 	call write_disk
 	add $0x02, %sp
+
+	# FST_INUM = root
 
 	call read_super
 	call ._set_dentry
@@ -83,40 +86,20 @@ init_super:
 	mov %ax, SB_MAG_HI_OFF(%bx)
 
 	# sb lba
-	mov $SB_LBA_LO, %ax
-	mov %ax, SB_LBA_LO_OFF(%bx)
-	mov $SB_LBA_HI, %ax
-	mov %ax, SB_LBA_HI_OFF(%bx)
-
-	# i tbl lba
-	mov $I_LBA_LO, %ax
-	mov %ax, I_LBA_LO_OFF(%bx)
-	mov $I_LBA_HI, %ax
-	mov %ax, I_LBA_HI_OFF(%bx)
-
-	# root i num
-	mov $ROOT_I_NUM_LO, %ax
-	mov %ax, ROOT_I_NUM_LO_OFF(%bx)
-	mov $ROOT_I_NUM_HI, %ax
-	mov %ax, ROOT_I_NUM_HI_OFF(%bx)
+	mov $SB_LBA, %ax
+	mov %ax, SB_LBA_OFF(%bx)
 
 	# fst lba
-	mov $FST_LBA_LO, %ax
-	mov %ax, FST_LBA_LO_OFF(%bx)
-	mov $FST_LBA_HI, %ax
-	mov %ax, FST_LBA_HI_OFF(%bx)
+	mov $FST_LBA, %ax
+	mov %ax, FST_LBA_OFF(%bx)
 
-	# fst i num
-	mov $FST_I_NUM_LO, %ax
-	mov %ax, FST_I_NUM_LO_OFF(%bx)
-	mov $FST_I_NUM_HI, %ax
-	mov %ax, FST_I_NUM_HI_OFF(%bx)
+	# fst blk
+	mov $FST_BLK, %ax
+	mov %ax, FST_BLK_OFF(%bx)
 
-	# root i blk
-	mov $ROOT_I_BLK_LO, %ax
-	mov %ax, ROOT_I_BLK_LO_OFF(%bx)
-	mov $ROOT_I_BLK_HI, %ax
-	mov %ax, ROOT_I_BLK_HI_OFF(%bx)
+	# fst inum
+	mov $FST_INUM, %ax
+	mov %ax, FST_INUM_OFF(%bx)
 
 	# i size
 	mov $I_SIZE, %ax
@@ -125,14 +108,10 @@ init_super:
 	# next i num
 	mov $NEXT_I_NUM_LO, %ax
 	mov %ax, NEXT_I_NUM_LO_OFF(%bx)
-	mov $NEXT_I_NUM_HI, %ax
-	mov %ax, NEXT_I_NUM_HI_OFF(%bx)
 
 	# next blk num
 	mov $NEXT_I_BLK_LO, %ax
 	mov %ax, NEXT_I_BLK_LO_OFF(%bx)
-	mov $NEXT_I_BLK_HI, %ax
-	mov %ax, NEXT_I_BLK_HI_OFF(%bx)
 	ret
 
 # {TASK}
@@ -142,9 +121,9 @@ init_super:
 	mov $0x40, %ch
 	mov $0x01, %cl
 	push %cx
-	mov ROOT_I_BLK_LO_OFF(%bx), %ax
+	mov FST_BLK_OFF(%bx), %ax
 	push %ax
-	mov ROOT_I_BLK_HI_OFF(%bx), %ax
+	xor %ax, %ax
 	push %ax
 	mov (inum), %ax
 	push %ax
@@ -179,10 +158,12 @@ init_super:
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
+	xor %ax, %ax
 	push %ax
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
+	xor %ax, %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp

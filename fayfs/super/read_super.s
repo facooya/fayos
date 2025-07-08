@@ -19,22 +19,16 @@ read_super:
 	mov %ax, %bx
 
 	# root inum
-	mov ROOT_I_NUM_LO_OFF(%bx), %ax
+	mov FST_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov ROOT_I_NUM_HI_OFF(%bx), %ax
-	mov %ax, (inum+0x02)
 
 	# next_i_num
 	mov NEXT_I_NUM_LO_OFF(%bx), %ax
 	mov %ax, (next_i_num)
-	mov NEXT_I_NUM_HI_OFF(%bx), %ax
-	mov %ax, (next_i_num+0x02)
 
 	# next_i_blk
 	mov NEXT_I_BLK_LO_OFF(%bx), %ax
 	mov %ax, (next_i_blk)
-	mov NEXT_I_BLK_HI_OFF(%bx), %ax
-	mov %ax, (next_i_blk+0x02)
 
 	pop %bx
 	ret
