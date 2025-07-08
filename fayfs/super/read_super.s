@@ -13,25 +13,10 @@
 read_super:
 	push %bx
 
-	# {{{
-	# read superblock LBA
-	push $0x8000
-	push $0x00
-	push $0x02
-	call set_dap_target
-	add $0x06, %sp
-
-	push $SB_LBA_LO
-	push $SB_LBA_HI
-	call set_dap_lba
-	add $0x04, %sp
-
-	push $dap
+	push $dap_super
 	call read_disk
 	add $0x02, %sp
-	call reset_dap_target
-	mov $0x8000, %bx
-	# }}}
+	mov $0x0600, %bx
 
 	# root inum
 	mov ROOT_I_NUM_LO_OFF(%bx), %ax

@@ -4,10 +4,11 @@
 #
 # Disk Address Packet
 
+.include "fayfs/sb.s"
 .section .data
 .global dap
+.global dap_super
 
-# dap [n_dap]
 dap:
 	.byte 0x10
 	.byte 0x00
@@ -15,7 +16,18 @@ dap:
 	.word 0x8000
 	.word 0x00
 	.word 0x80
-	.word 0x00 
+	.word 0x00
+	.word 0x00
+	.word 0x00
+
+dap_super:
+	.byte 0x10
+	.byte 0x00
+	.word 0x01
+	.word 0x0600
+	.word 0x00
+	.word SB_LBA_LO
+	.word 0x00
 	.word 0x00
 	.word 0x00
 

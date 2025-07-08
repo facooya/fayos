@@ -13,7 +13,7 @@
 # Superblock LBA
 .equ SB_LBA_LO_OFF, 0x04
 .equ SB_LBA_HI_OFF, SB_LBA_LO_OFF+0x02
-.equ SB_LBA_LO, 0x02
+.equ SB_LBA_LO, 0x01
 .equ SB_LBA_HI, 0x00
 
 # Inode table LBA
@@ -25,7 +25,7 @@
 # Root inode number
 .equ ROOT_I_NUM_LO_OFF, 0x0C
 .equ ROOT_I_NUM_HI_OFF, ROOT_I_NUM_LO_OFF+0x02
-.equ ROOT_I_NUM_LO, 0x02
+.equ ROOT_I_NUM_LO, 0x01
 .equ ROOT_I_NUM_HI, 0x00
 
 # First alloc LBA
@@ -37,7 +37,7 @@
 # First inode number
 .equ FST_I_NUM_LO_OFF, 0x14
 .equ FST_I_NUM_HI_OFF, FST_I_NUM_LO_OFF+0x02
-.equ FST_I_NUM_LO, 0x11
+.equ FST_I_NUM_LO, ROOT_I_NUM_LO+0x01
 .equ FST_I_NUM_HI, 0x00
 
 # Root inode block
@@ -53,11 +53,11 @@
 # Next inode number
 .equ NEXT_I_NUM_LO_OFF, 0x40
 .equ NEXT_I_NUM_HI_OFF, NEXT_I_NUM_LO_OFF+0x02
-.equ NEXT_I_NUM_LO, 0x11
+.equ NEXT_I_NUM_LO, FST_I_NUM_LO
 .equ NEXT_I_NUM_HI, 0x00
 
 # Next block number
 .equ NEXT_I_BLK_LO_OFF, 0x44
 .equ NEXT_I_BLK_HI_OFF, NEXT_I_BLK_LO_OFF+0x02
-.equ NEXT_I_BLK_LO, 0x05
+.equ NEXT_I_BLK_LO, ROOT_I_BLK_LO+0x01
 .equ NEXT_I_BLK_HI, 0x00
