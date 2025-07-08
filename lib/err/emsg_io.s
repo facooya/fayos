@@ -5,6 +5,8 @@
 # Error message related to I/O
 
 .section .data
+.global emsg_disk_io
+
 .global emsg_redir_type
 .global emsg_redir_req
 .global emsg_redir_extra
@@ -17,6 +19,8 @@
 .global emsg_dir_type
 
 .global emsg_name_dup
+
+emsg_disk_io: .asciz "Disk IO error."
 
 emsg_redir_type: .asciz "Invalid redirection type."
 emsg_redir_req: .asciz "Redirection target required."

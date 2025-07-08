@@ -74,7 +74,9 @@ cmd_cat:
 
 	# read block
 	call set_blk_lba
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 
 	# puts

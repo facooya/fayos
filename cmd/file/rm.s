@@ -63,7 +63,9 @@ cmd_rm:
 	mov %ax, DE_I_NUM_HI_OFF(%bx)
 
 	# write
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 	# }}}
 
 	# {end.done}

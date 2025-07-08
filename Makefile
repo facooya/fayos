@@ -41,7 +41,10 @@ kernel/io/cursor.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
 \
-kernel/sys/disk.s \
+kernel/io/disk/block.s \
+kernel/io/disk/dap.s \
+\
+kernel/sys/_sys_disk.s \
 kernel/sys/kbd.s \
 kernel/sys/vid.s \
 \
@@ -63,9 +66,6 @@ fayfs/dir.s \
 lib/err.s \
 lib/re.s \
 lib/vid.s \
-\
-lib/disk/block.s \
-lib/disk/dap.s \
 \
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \

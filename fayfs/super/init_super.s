@@ -32,7 +32,9 @@ init_super:
 	call set_dap_lba
 	add $0x04, %sp
 
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 	# }}}
 
@@ -64,7 +66,9 @@ init_super:
 	add $0x02, %sp
 
 	call ._set_data
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 	call reset_dap_target
 
 	call read_super

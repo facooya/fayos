@@ -29,11 +29,11 @@ _start:
 	add $0x02, %sp
 
 	# kernel
-	call .read_block
+	call .read_kernel_disk
 	ljmp $0x0000, $0x1000
 
-# .read_block()
-.read_block:
+# .read_kernel_disk()
+.read_kernel_disk:
 	# prol
 	push %si
 	push %ax
@@ -45,7 +45,7 @@ _start:
 	mov $0x80, %dl
 	mov $.dap, %si
 	int $0x13
-	jc .read_block__err
+	jc .read_kernel_disk__err
 
 	push $.boot_ok_msg
 	call .out_str
@@ -57,7 +57,7 @@ _start:
 	pop %si
 	ret
 
-.read_block__err:
+.read_kernel_disk__err:
 	push $.boot_err_msg
 	call .out_str
 	add $0x02, %sp
@@ -103,7 +103,7 @@ _start:
 .boot_ok_msg: .asciz "Boot ok\r\n"
 .boot_err_msg: .asciz "Boot err\r\n"
 
-# dap [n_dap]
+# dap
 .dap:
 	.byte 0x10
 	.byte 0x00

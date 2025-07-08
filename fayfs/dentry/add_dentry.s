@@ -33,7 +33,9 @@ add_dentry:
 
 	# read blk
 	call set_blk_lba
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 
 	# {task}
@@ -100,7 +102,9 @@ add_dentry:
 
 .write__end:
 	# write blk
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 
 	# {call} (file_type == dir)
 	cmp $0x40, %dh

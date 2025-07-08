@@ -25,7 +25,9 @@ write_super:
 	call set_dap_lba
 	add $0x04, %sp
 
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 	# }}}
 
@@ -42,7 +44,9 @@ write_super:
 	mov %ax, NEXT_I_BLK_HI_OFF(%bx)
 
 	# write
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 	call reset_dap_target
 
 	pop %bx

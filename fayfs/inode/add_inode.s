@@ -26,7 +26,9 @@ add_inode:
 	call set_dap_lba
 	add $0x04, %sp
 
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 
 	# calc inode # FIXME!!! hi,lo
@@ -51,7 +53,9 @@ add_inode:
 	mov %al, I_BLK_LEN_OFF(%bx)
 
 	# write
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 
 	pop %bx
 	pop %bp

@@ -25,7 +25,9 @@ update_i_file_size:
 	call set_dap_lba
 	add $0x04, %sp
 
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 
 	# calc inode # HACK!!!: only low
@@ -39,7 +41,9 @@ update_i_file_size:
 	mov 0x08(%bp), %ax # file_size
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 
 	pop %bx
 	pop %bp

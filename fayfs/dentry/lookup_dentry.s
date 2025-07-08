@@ -32,7 +32,9 @@ lookup_dentry:
 	add $0x04, %sp
 
 	call set_blk_lba
-	call read_block
+	push $dap
+	call read_disk
+	add $0x02, %sp
 	mov $0x8000, %bx
 	# }}}
 

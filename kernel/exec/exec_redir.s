@@ -98,7 +98,9 @@ exec_redir:
 
 .run__write_end:
 	call set_blk_lba
-	call write_block
+	push $dap
+	call write_disk
+	add $0x02, %sp
 
 .run__end:
 	# update_i_file_size
