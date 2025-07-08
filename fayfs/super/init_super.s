@@ -51,6 +51,10 @@ init_super:
 	call outs
 	add $0x02, %sp
 
+	# TODO: super block
+	mov $0x0500, %si
+	call _sys_read_disk_param
+
 	call ._set_data
 	push $dap_super
 	call write_disk
