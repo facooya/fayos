@@ -2,14 +2,12 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Kernel for Fayos (docs/kernel/kernel.txt)
+# Kernel for Fayos
 
 .section .data
 .global kernel_prompt
-
 kernel_prompt: .asciz "fayos:/# "
-.kernel_ok_msg: .asciz "\nKernel ok\r\n"
-.kernel_welcome_msg: .asciz "Welcome to Fayos kernel\r\n"
+.kmsg_welcome: .asciz "\nWelcome to Fayos kernel\r\n"
 
 .section .text
 .code16
@@ -19,11 +17,7 @@ kernel_prompt: .asciz "fayos:/# "
 _start:
 	call init_super
 
-	push $.kernel_ok_msg
-	call outs
-	add $0x02, %sp
-
-	push $.kernel_welcome_msg
+	push $.kmsg_welcome
 	call outs
 	add $0x02, %sp
 
@@ -40,7 +34,6 @@ _start:
 	# {main}
 	jmp kernel_main
 
-# {MAIN}
 # kernel_main()
 # <REQ>
 # (*si == raw_buf.data)

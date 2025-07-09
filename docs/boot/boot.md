@@ -74,5 +74,9 @@ The `es` and `ss` register is always `0x00` in Fayos.
 
 ### Kerne1
 - sector count: 48
-- LBA: 0x20-0x50
-- memory: 0x1000-0x7000
+- LBA: 0x10-0x3F
+- memory: 0x1000-0x6FFF
+
+---
+
+> Authors: Facooya and Fanone Facooya
