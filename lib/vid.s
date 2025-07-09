@@ -9,16 +9,14 @@
 .global get_mode
 .global scroll_up
 
-# ENTRY
 # get_mode()
 get_mode:
-	call sys_get_mode
+	call _sys_get_mode
 	ret
 
-# ENTRY
 # scroll_up()
 scroll_up:
 	push %bx
-	call sys_scroll_up
+	call _sys_scroll_up
 	pop %bx
 	ret

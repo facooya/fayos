@@ -10,7 +10,7 @@
 
 # cli_key_left()
 cli_key_left:
-	call sys_get_cursor
+	call _sys_get_cursor
 
 	# {end.done} (cursor.x == cursor.min)
 	cmp (cursor), %dl
@@ -18,7 +18,7 @@ cli_key_left:
 
 	# left cursor
 	sub $0x01, %dl # cursor.x
-	call sys_set_cursor
+	call _sys_set_cursor
 
 	# ptr
 	sub $0x01, %si # raw.data

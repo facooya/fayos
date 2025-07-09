@@ -1,4 +1,4 @@
-# Disk
+# System Disk
 ## Index
 - `_sys_read_disk`
 - - require: si = &DAP

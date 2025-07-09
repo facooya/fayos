@@ -5,40 +5,36 @@
 # Video services
 
 .include "sys.s"
-
 .section .text
 .code16
-.global sys_get_cursor
-.global sys_set_cursor
-.global sys_scroll_up
-.global sys_tty_out
-.global sys_get_mode
+.global _sys_get_cursor
+.global _sys_set_cursor
+.global _sys_scroll_up
+.global _sys_tty_out
+.global _sys_get_mode
 
-# ENTRY
-# sys_get_cursor()
-# ret: dh = y
-# ret: dl = x
-sys_get_cursor:
+# _sys_get_cursor()
+# <ret> dh = y
+# <ret> dl = x
+_sys_get_cursor:
 	mov $VID_GET_CURSOR, %ah
 	xor %bh, %bh # VID_CURSOR_PAGE_NUM
 	int $INT_VID
 	ret
 
-# ENTRY
-# sys_set_cursor()
-# pre: dh = y
-# pre: dl = x
-sys_set_cursor:
+# _sys_set_cursor()
+# <req> dh = y
+# <req> dl = x
+_sys_set_cursor:
 	mov $VID_SET_CURSOR, %ah
 	xor %bh, %bh # VID_CURSOR_PAGE_NUM
 	int $INT_VID
 	ret
 
-# ENTRY
-# sys_scroll_up()
-# pre: dh = end_y
-# pre: dl = end_x
-sys_scroll_up:
+# _sys_scroll_up()
+# <req> dh = end_y
+# <req> dl = end_x
+_sys_scroll_up:
 	mov $VID_SCROLL_UP, %ah
 	xor %al, %al # VID_SCROLL_FULL
 	mov $VID_SCROLL_COLOR_ATTR, %bh
@@ -46,18 +42,16 @@ sys_scroll_up:
 	int $INT_VID
 	ret
 
-# ENTRY
-# sys_tty_out()
-# pre: al = chr
-sys_tty_out:
+# _sys_tty_out()
+# <req> al = chr
+_sys_tty_out:
 	mov $VID_TTY_OUT, %ah
 	int $INT_VID
 	ret
 
-# ENTRY
-# sys_get_mode()
-# ret: ah = end_x
-sys_get_mode:
+# _sys_get_mode()
+# <ret> ah = end_x
+_sys_get_mode:
 	mov $VID_GET_MODE, %ah
 	int $INT_VID
 	ret

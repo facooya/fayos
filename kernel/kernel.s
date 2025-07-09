@@ -38,8 +38,7 @@ _start:
 # <REQ>
 # (*si == raw_buf.data)
 kernel_main:
-	# {main}
-	call sys_read_key
+	call _sys_read_key
 	call cli_main
 
 	# {lp}

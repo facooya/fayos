@@ -58,7 +58,7 @@ cli_rsh:
 	sub $0x01, %di
 	mov %ah, (%di) # raw.data
 
-	call sys_get_cursor
+	call _sys_get_cursor
 
 	push %dx # cursor.pos
 	push %di # raw.data
@@ -68,7 +68,7 @@ cli_rsh:
 
 	# restore cursor.pos
 	add $0x01, %dl # cursor.x
-	call sys_set_cursor
+	call _sys_set_cursor
 
 	pop %di
 	ret

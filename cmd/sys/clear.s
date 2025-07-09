@@ -18,7 +18,7 @@
 #
 # set cursor:
 # Q: Why are DH and DL 0x00?
-# A: Cursor auto-inc in sys_tty_out.
+# A: Cursor auto-inc in _sys_tty_out.
 # Prompt (kernel_prompt) is printed by handler (.hdl_kbd_enter).
 
 .section .text

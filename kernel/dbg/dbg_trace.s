@@ -29,7 +29,7 @@ dbg_c:
 	jmp .done
 
 .done:
-	call sys_tty_out
+	call _sys_tty_out
 	call outsp
 	call dbg_line
 	call outnl

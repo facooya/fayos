@@ -14,26 +14,26 @@
 
 # outc()
 outc:
-	call sys_tty_out
+	call _sys_tty_out
 	ret
 
 # outcol()
 outcol:
 	mov $CHR_COL, %al
-	call sys_tty_out
+	call _sys_tty_out
 	ret
 
 # outnl()
 outnl:
 	mov $CHR_CR, %al
-	call sys_tty_out
+	call _sys_tty_out
 	mov $CHR_LF, %al
-	call sys_tty_out
+	call _sys_tty_out
 	ret
 
 # outsp()
 outsp:
 	mov $CHR_SP, %al
-	call sys_tty_out
+	call _sys_tty_out
 	ret
 

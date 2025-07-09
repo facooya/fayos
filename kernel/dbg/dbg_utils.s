@@ -21,7 +21,7 @@ dbg_line:
 	jz .done
 
 	mov $CHR_EQ, %al
-	call sys_tty_out
+	call _sys_tty_out
 
 	# {lp}
 	sub $0x01, %cx

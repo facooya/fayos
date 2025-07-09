@@ -43,9 +43,9 @@ cli_lsh:
 
 .lsh__end:
 	# left cursor [d_lsh.2]
-	call sys_get_cursor
+	call _sys_get_cursor
 	sub $0x01, %dl # cursor.x
-	call sys_set_cursor
+	call _sys_set_cursor
 
 	# [d_lsh.3]
 	push %si
@@ -56,7 +56,7 @@ cli_lsh:
 	call outsp
 
 	# left cursor [d_lsh.5]
-	call sys_set_cursor
+	call _sys_set_cursor
 
 .done:
 	pop %di

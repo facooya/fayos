@@ -67,13 +67,13 @@ dbg_redir_buf:
 	# type
 	mov %ch, %al # redir.type
 	add $0x30, %al
-	call sys_tty_out
+	call _sys_tty_out
 	call outcol
 
 	# len
 	mov %cl, %al # redir.len
 	add $0x30, %al
-	call sys_tty_out
+	call _sys_tty_out
 	call outnl
 	# }}}
 
@@ -112,17 +112,17 @@ dbg_redir_buf:
 	test %al, %al
 	jz ._data__nul
 
-	call sys_tty_out
+	call _sys_tty_out
 	jmp ._data__chk
 
 ._data__sp:
 	mov $CHR_PRD, %al
-	call sys_tty_out
+	call _sys_tty_out
 	jmp ._data__chk
 
 ._data__nul:
 	mov $CHR_ZERO, %al
-	call sys_tty_out
+	call _sys_tty_out
 	jmp ._data__chk
 
 ._data__chk:

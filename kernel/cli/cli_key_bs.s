@@ -13,7 +13,7 @@
 # cli_key_bs()
 cli_key_bs:
 	# {end.done} (cursor.x == cursor.min)
-	call sys_get_cursor
+	call _sys_get_cursor
 	cmp (cursor), %dl
 	je .done
 
@@ -37,15 +37,15 @@ cli_key_bs:
 
 	# {{{ [d_nsh]
 	# left cursor [d_nsh.1]
-	call sys_get_cursor
+	call _sys_get_cursor
 	sub $0x01, %dl # cursor.x
-	call sys_set_cursor
+	call _sys_set_cursor
 
 	# overwrite [d_nsh.2]
 	call outsp
 
 	# left cursor [d_nsh.3]
-	call sys_set_cursor
+	call _sys_set_cursor
 
 	# {step} store null [d_nsh.4]
 	xor %al, %al

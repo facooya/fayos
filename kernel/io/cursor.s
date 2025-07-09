@@ -25,7 +25,7 @@ cursor: # docs/kernel/kernel.txt [s_cur]
 # ret: dl = x
 get_cursor:
 	push %bx
-	call sys_get_cursor
+	call _sys_get_cursor
 	pop %bx
 	ret
 
@@ -35,7 +35,7 @@ get_cursor:
 # pre: dl = x
 set_cursor:
 	push %bx
-	call sys_set_cursor
+	call _sys_set_cursor
 	pop %bx
 	ret
 
@@ -81,7 +81,7 @@ write_cursor:
 # init_cursor()
 init_cursor:
 	push %bx
-	call sys_get_cursor
+	call _sys_get_cursor
 
 	# pre
 	mov %dl, %dh
