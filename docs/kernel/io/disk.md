@@ -3,7 +3,7 @@
 - `read_disk(&dap)`
 - `write_disk(&dap)`
 
-return - done:0, exit:1
+return - done:memory, exit:1
 
 ---
 

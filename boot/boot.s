@@ -2,29 +2,33 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Boot for Fayos (docs/boot/boot.txt)
+# Boot for Fayos
 
 .code16
 .global _start
 
 # _start()
 _start:
-	cli # [n_cli]
+	# clear interrupt
+	cli
 
-	# init [n_init]
+	# init
 	xor %ax, %ax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %ss
+	mov %ax, %sp
+	mov %ax, %bp
+	mov %ax, %si
+	mov %ax, %di
 	mov %ax, %bx
 	mov %ax, %cx
 	mov %ax, %dx
-	mov %ax, %bp
 
-	# set stack [n_stack]
+	# set stack
 	mov $0x7C00, %sp
 
-	push $.os_name_str
+	push $.bmsg_fayos
 	call .out_str
 	add $0x02, %sp
 
@@ -34,12 +38,10 @@ _start:
 
 # .read_kernel_disk()
 .read_kernel_disk:
-	# prol
 	push %si
 	push %ax
 	push %dx
 
-	# read block
 	clc
 	mov $0x42, %ah
 	mov $0x80, %dl
@@ -47,61 +49,57 @@ _start:
 	int $0x13
 	jc .read_kernel_disk__err
 
-	push $.boot_ok_msg
+	push $.bmsg_kd_ok
 	call .out_str
 	add $0x02, %sp
 
-	# epil
 	pop %dx
 	pop %ax
 	pop %si
 	ret
 
 .read_kernel_disk__err:
-	push $.boot_err_msg
+	push $.bmsg_kd_err
 	call .out_str
 	add $0x02, %sp
 
-	# epil
 	pop %dx
 	pop %ax
 	pop %si
 	hlt
 
-# .out_str(str)
+# .out_str(&str)
 .out_str:
-	# prol
 	push %bp
 	mov %sp, %bp
 	push %si
 	push %ax
 
-	mov 4(%bp), %si
+	mov 0x04(%bp), %si
 	mov $0x0E, %ah
 
 .out_str__lp:
-	# cond: null ? done
+	# {end} (chr == null)
 	mov (%si), %al
 	test %al, %al
-	jz .out_str__done
+	jz .out_str__end
 
 	int $0x10
 
-	# loop
+	# {lp}
 	add $0x01, %si
 	jmp .out_str__lp
 
-.out_str__done:
-	# epil
+.out_str__end:
 	pop %ax
 	pop %si
 	pop %bp
 	ret
 
-# data
-.os_name_str: .asciz "\nFAYOS\r\n"
-.boot_ok_msg: .asciz "Boot ok\r\n"
-.boot_err_msg: .asciz "Boot err\r\n"
+# bmsg
+.bmsg_fayos: .asciz "\nFAYOS\r\n"
+.bmsg_kd_ok: .asciz "Kernel disk read ok\r\n"
+.bmsg_kd_err: .asciz "kernel disk read error\r\n"
 
 # dap
 .dap:
@@ -115,6 +113,6 @@ _start:
 	.word 0x00
 	.word 0x00
 
-# end [n_end]
+# end
 .fill 0x01FE-(.-_start), 0x01, 0x00
 .word 0xAA55
