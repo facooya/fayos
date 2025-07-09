@@ -4,6 +4,7 @@
 #
 # Execute redirection
 
+.include "fayfs/i.s"
 .include "fayfs/de.s"
 .section .text
 .code16
@@ -72,10 +73,31 @@ exec_redir:
 	call read_inode
 	add $0x04, %sp
 
-	# init mem
-	mov $0x8000, %bx
-	xor %dx, %dx # file_size
+	call set_blk_lba
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx # mem
+	mov %ax, %dx # backup mem
 
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %cx
+	xor %ax, %ax
+
+.run__clear_lp:
+	# {end} (file_size <= 0)
+	cmp $0x00, %cx
+	jle .run__clear_end
+
+	mov %ax, (%bx)
+
+	add $0x02, %bx
+	sub $0x02, %cx
+	jmp .run__clear_lp
+
+.run__clear_end:
+	mov %dx, %bx # set mem
+	xor %dx, %dx # file_size
 	mov $write_buf, %si
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
@@ -97,10 +119,11 @@ exec_redir:
 	jmp .run__write_lp
 
 .run__write_end:
-	call set_blk_lba
+	push %dx
 	push $dap
 	call write_disk
 	add $0x02, %sp
+	pop %dx
 
 .run__end:
 	# update_i_file_size

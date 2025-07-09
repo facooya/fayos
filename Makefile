@@ -41,8 +41,8 @@ kernel/io/cursor.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
 \
-kernel/io/disk/block.s \
-kernel/io/disk/dap.s \
+kernel/io/disk.s \
+kernel/io/dap.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/kbd.s \
