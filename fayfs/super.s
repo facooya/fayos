@@ -18,6 +18,7 @@
 
 # init_super()
 init_super:
+	push %si
 	push %bx
 
 	push $dap_super
@@ -52,16 +53,19 @@ init_super:
 	add $0x02, %sp
 
 	# TODO: super block
+	# {{{ allocate lba
 	mov $0x0600, %si
 	add $DP_BUF_OFF, %si
 	call _sys_read_disk_param
+	call ._alloc_lba
+	# }}}
 
 	call ._set_data
 	push $dap_super
 	call write_disk
 	add $0x02, %sp
 
-	# FST_INUM = root
+	# TODO: FST_INUM = root
 
 	call read_super
 	call ._set_dentry
@@ -74,6 +78,14 @@ init_super:
 	add $0x02, %sp
 
 	pop %bx
+	pop %si
+	ret
+
+# {TASK}
+# ._alloc_lba()
+._alloc_lba:
+	# mov DP_LBA_LO_SIZE_OFF(%bx), %ax
+	# mov DP_LBA_HI_SIZE_OFF(%bx), %ax
 	ret
 
 # {TASK}

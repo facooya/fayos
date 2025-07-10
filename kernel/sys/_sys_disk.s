@@ -32,6 +32,7 @@ _sys_write_disk:
 	ret
 
 # _sys_read_disk_param()
+# <req> ds:si
 # <ret> cf
 _sys_read_disk_param:
 	clc
