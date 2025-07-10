@@ -9,7 +9,6 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 # kernel_addr: segment:offset = 0x0000:0x1000
 SRCS = \
 kernel/kernel.s \
-kernel/cache.s \
 \
 kernel/args/args.s \
 kernel/args/tok_args.s \
