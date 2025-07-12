@@ -19,13 +19,14 @@ set_blk_lba:
 	mov I_BLK_LO_OFF(%si), %ax
 	
 	mov $0x08, %cx
-
-	# calc
 	xor %dx, %dx
 	mul %cx
 
-	mov $FST_LBA, %cx
+	push %bx
+	mov $0x600, %bx
+	mov NORM_LBA_LO_OFF(%bx), %cx
 	add %cx, %ax
+	pop %bx
 
 	# set dap lba # HACK!!!: low high
 	push %ax # low

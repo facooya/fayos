@@ -57,7 +57,6 @@ fayfs/inode/add_inode.s \
 fayfs/inode/update_i_file_size.s \
 fayfs/inode/read_inode.s \
 \
-fayfs/super/read_super.s \
 fayfs/super/write_super.s \
 \
 fayfs/dir.s \

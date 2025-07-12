@@ -1,6 +1,6 @@
 # Superblock
 > [!NOTE]
-> LBA - Logical Block Address
+> LBA: Logical Block Address  
 > EDD: Enhanced Disk Drive
 
 ## Workflow
