@@ -21,16 +21,16 @@ Superblock surmmery immutable value:
 - FST\_INUM = 0x01 [2-byte]
 - I\_SIZE = 0x20 [2-byte]
 
-SuperBlock:
+Superblock:
 - Immutable: [off=0x00]
 - - [off+0] magic number [4-byte]
-- - [off+4] superblock LBA [2-byte]
+- - [off+4] superblock LBA [2-byte] // TODO: values
 - - [off+6] first LBA [2-byte]
 - - [off+8] first block [2-byte]
 - - [off+10] first inum [2-byte]
-- - [off+12] inode size [2-byte]
+- - [off+12] inode size [2-byte] // TODO: bottom
 
-- Disk parameters: [off=0x20]
+- Disk Parameters: [off=0x20]
 - - [0ff+0] buffer size [2-byte]
 - - [off+2] flag [2-byte]
 - - [off+4] physical cylinders [4-byte]
@@ -40,17 +40,28 @@ SuperBlock:
 - - [off+24] bytes per sector [2-byte]
 - - [off+26] option EDD [4-byte]
 
-- Mutable: [off=0x40]
+- Size: [off=0x40]
+- - [off+0] block bitmap size [4-byte]
+- - [off+4] inum bitmap size [4-byte]
+- - [off+8] inode table size [4-byte]
+
+- Block Count: [off=0x50]
+- - [off+0] block bitmap block count [2-byte]
+- - [off+2] inum bitmap block count [2-byte]
+- - [off+4] inode table block count [2-byte]
+
+- Start LBA [off=0x60]
 - - [off+0] block bitmap LBA [4-byte]
 - - [off+4] inum bitmap LBA [4-byte]
-- - [off+8] inode LBA [4-byte]
+- - [off+8] inode table LBA [4-byte]
+- - [off+12] normal LBA [4-byte]
 
 ---
 
 ## Allocate LBA
 ### Calculate Size
 Immutable values:
-```c
+```
 RATE_INUM = 4 // Allocate block count per inum
 SECTOR_SIZE = 512 // 512 Bytes
 RATE_BLOCK = 8 // Allocate sector count in a block
@@ -62,7 +73,7 @@ TOTAL_SECTOR = x // Mutable x by hard disk
 ```
 
 Expressions:
-```c
+```
 hard_disk_size = TOTAL_SECTOR * SECTOR_SIZE
 
 total_block = TOTAL_SECTOR / RATE_BLOCK
@@ -75,7 +86,7 @@ total_inode_size = total_inum * INODE_SIZE
 ```
 
 Examples:
-```c
+```
 /* --- Example: x = 2048 --- */
 TOTAL_SECTOR = 2048
 
@@ -131,14 +142,14 @@ Normal LBA Start: 0x104F
 
 ### Calculate LBA
 Immutable values:
-```c
+```
 FST_LBA = 64 // 0x40, end of kernel lba: 0x3F
 BLOCK_SIZE = 4096 // [4 KiB]
 RATE_BLOCK = 8 // Allocate sector count in a block
 ```
 
 Expressions:
-```c
+```
 /* block_bitmap_size:inum_bitmap_size:total_inode_size */
 /* 4:1:256 = 1:0.25:64 */
 TOTAL_SECTOR = x
@@ -157,7 +168,7 @@ normal_lba = inode_lba_block_count * RATE_BLOCK + inode_lba
 ```
 
 Examples:
-```c
+```
 /* --- Example: x = 2097152 --- */
 TOTAL_SECTOR = 2097152
 
@@ -174,6 +185,29 @@ block_bitmap_lba = 64 // FST_LBA:0x40
 inum_bitmap_lba = 8 * 8 + 64 // 128:0x80
 inode_lba = 2 * 8 + 128 // 144:0xA0
 normal_lba = 512 * 8 + 144 // 4240:0x1090
+```
+
+Algorithm for LBA:
+```c
+#define BLOCK_SIZE 4096
+#define FST_LBA 64
+#define RATE_SECTOR_PER_BLOCK 8
+
+int sizeArr[3] = {block_bitmap_size, inum_bitmap_size, inode_size};
+int countArr[3] = {0};
+
+for (int i = 0; i < sizeof(sizeArr); i++) {
+  countArr[i] = sizeArr[i] / BLOCK_SIZE;
+}
+
+/* Algorithm LBA */
+int lbaArr[4] = {0};
+lbaArr[0] = FST_LBA;
+
+for(int i = 1; i < sizeof(lbaArr); i++) {
+  lbaArr[i] = countArr[i-1] * RATE_SECTOR_PER_BLOCK + lbaArr[i-1];
+}
+
 ```
 
 ---

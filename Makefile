@@ -97,7 +97,7 @@ OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 all: $(BUILD)/fayos.img
 
 $(BUILD)/fayos.img: $(BUILD)/boot.bin $(BUILD)/kernel.bin | $(BUILD)
-	dd if=/dev/zero of=$(BUILD)/fayos.img bs=512 count=2880
+	dd if=/dev/zero of=$(BUILD)/fayos.img bs=512 count=20480
 	dd if=$(BUILD)/boot.bin of=$(BUILD)/fayos.img bs=512 count=1 conv=notrunc
 	dd if=$(BUILD)/kernel.bin of=$(BUILD)/fayos.img bs=512 seek=16 conv=notrunc
 
