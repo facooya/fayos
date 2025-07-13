@@ -42,6 +42,7 @@ init_super:
 	# {end.done}
 	mov $0x01, %ax
 	mov %ax, (inum)
+	call ._read_super
 	jmp .done
 	# }}}
 
@@ -279,13 +280,14 @@ init_super:
 	mov $NEXT_I_BLK_LO, %ax
 	mov %ax, NEXT_I_BLK_LO_OFF(%bx)
 
+._read_super:
 	# {{{ set dap
 	mov BB_LBA_LO_OFF(%bx), %ax
 	push %ax
 	mov BB_LBA_HI_OFF(%bx), %ax
 	push %ax
 	push $dap_bb
-	call _super_set_dap_lba
+	call src_set_dap_lba
 	add $0x06, %sp
 
 	mov IB_LBA_LO_OFF(%bx), %ax
@@ -293,7 +295,7 @@ init_super:
 	mov IB_LBA_HI_OFF(%bx), %ax
 	push %ax
 	push $dap_ib
-	call _super_set_dap_lba
+	call src_set_dap_lba
 	add $0x06, %sp
 
 	mov IT_LBA_LO_OFF(%bx), %ax
@@ -301,7 +303,7 @@ init_super:
 	mov IT_LBA_HI_OFF(%bx), %ax
 	push %ax
 	push $dap_it
-	call _super_set_dap_lba
+	call src_set_dap_lba
 	add $0x06, %sp
 	# }}}
 	ret
