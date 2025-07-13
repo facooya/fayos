@@ -301,9 +301,8 @@ init_super:
 	add $0x0A, %sp
 
 	# add dentry dot
-	mov $.name_dot, %si
-	mov $0x01, %cl # name len
-	mov $0x40, %ch
+	mov $de_dots, %si
+	mov 0x02(%si), %cx
 	push %si
 	push %cx
 	mov (inum), %ax
@@ -318,9 +317,9 @@ init_super:
 	add $0x0C, %sp
 
 	# add dentry dotdot
-	mov $.name_dotdot, %si
-	mov $0x02, %cl # name len
-	mov $0x40, %ch
+	mov $de_dots, %si
+	add $0x04, %si
+	mov 0x02(%si), %cx
 	push %si
 	push %cx
 	mov (inum), %ax
