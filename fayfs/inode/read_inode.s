@@ -16,7 +16,7 @@ read_inode:
 	mov %sp, %bp
 	push %bx
 
-	push $dap_inode
+	push $dap_it
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx

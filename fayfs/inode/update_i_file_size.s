@@ -19,7 +19,7 @@ update_i_file_size:
 	mov %sp, %bp
 	push %bx
 
-	push $dap_inode
+	push $dap_it
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
@@ -35,7 +35,7 @@ update_i_file_size:
 	mov 0x08(%bp), %ax # file_size
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 
-	push $dap_inode
+	push $dap_it
 	call write_disk
 	add $0x02, %sp
 

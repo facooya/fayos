@@ -20,7 +20,7 @@ add_inode:
 	mov %sp, %bp
 	push %bx
 
-	push $dap_inode
+	push $dap_it
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
@@ -47,7 +47,7 @@ add_inode:
 	mov %al, I_BLK_LEN_OFF(%bx)
 
 	# write
-	push $dap_inode
+	push $dap_it
 	call write_disk
 	add $0x02, %sp
 

@@ -6,11 +6,9 @@
 
 .include "fayfs/sb.s"
 .section .data
-.name_dot: .asciz "."
-.name_dotdot: .asciz ".."
-.sb_try_msg: .asciz "\nSuperblock not found. Try creating ...\r\n"
-.sb_found_msg: .asciz "\nSuperblock found.\r\n"
-.sb_ok_msg: .asciz "Superblock ok\r\n"
+.kmsg_try: .asciz "\nSuperblock not found. Try creating ...\r\n"
+.kmsg_found: .asciz "\nSuperblock found.\r\n"
+.kmsg_ok: .asciz "Superblock ok\r\n"
 
 .section .text
 .code16
@@ -37,7 +35,7 @@ init_super:
 	cmp $SB_MAG_HI, %ax
 	jne .run
 
-	push $.sb_found_msg
+	push $.kmsg_found
 	call outs
 	add $0x02, %sp
 
@@ -49,7 +47,7 @@ init_super:
 
 # {TASK}
 .run:
-	push $.sb_try_msg
+	push $.kmsg_try
 	call outs
 	add $0x02, %sp
 
@@ -77,7 +75,7 @@ init_super:
 
 # {DONE}
 .done:
-	push $.sb_ok_msg
+	push $.kmsg_ok
 	call outs
 	add $0x02, %sp
 
@@ -280,6 +278,32 @@ init_super:
 	# next blk num
 	mov $NEXT_I_BLK_LO, %ax
 	mov %ax, NEXT_I_BLK_LO_OFF(%bx)
+
+	# {{{ set dap
+	mov BB_LBA_LO_OFF(%bx), %ax
+	push %ax
+	mov BB_LBA_HI_OFF(%bx), %ax
+	push %ax
+	push $dap_bb
+	call _super_set_dap_lba
+	add $0x06, %sp
+
+	mov IB_LBA_LO_OFF(%bx), %ax
+	push %ax
+	mov IB_LBA_HI_OFF(%bx), %ax
+	push %ax
+	push $dap_ib
+	call _super_set_dap_lba
+	add $0x06, %sp
+
+	mov IT_LBA_LO_OFF(%bx), %ax
+	push %ax
+	mov IT_LBA_HI_OFF(%bx), %ax
+	push %ax
+	push $dap_it
+	call _super_set_dap_lba
+	add $0x06, %sp
+	# }}}
 	ret
 
 # {TASK}
