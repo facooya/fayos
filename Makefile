@@ -51,6 +51,8 @@ kernel/sys/_sys_vid.s \
 fayfs/fayfs.s \
 \
 fayfs/bitmap/alloc_bit.s \
+fayfs/bitmap/clear_bit.s \
+fayfs/bitmap/set_bit.s \
 fayfs/bitmap/bitmap.s \
 \
 fayfs/dentry/add_dentry.s \

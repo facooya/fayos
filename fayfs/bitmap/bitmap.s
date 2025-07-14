@@ -14,10 +14,6 @@
 .global clear_block_bitmap
 .global clear_inum_bitmap
 
-# alloc_bit() <ret> ax = bitnum
-# set_bit(bitnum)
-# clear_bit(bitnum)
-
 # alloc_block_bitmap()
 # <ret> dx:ax = free_block_number
 alloc_block_bitmap:
