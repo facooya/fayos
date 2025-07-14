@@ -9,7 +9,6 @@
 .code16
 .global _super_write_data
 
-# {TASK}
 # _super_write_data()
 _super_write_data:
 	# magic

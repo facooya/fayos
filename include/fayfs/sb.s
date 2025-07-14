@@ -33,8 +33,8 @@
 
 # Read disk parameters [0x20-0x3E]
 .equ DP_BUF_OFF, 0x20
-.equ DP_LBA_LO_SIZE_OFF, 0x30
-.equ DP_LBA_HI_SIZE_OFF, DP_LBA_LO_SIZE_OFF+0x02
+.equ DP_LBA_SIZE_LO_OFF, 0x30
+.equ DP_LBA_SIZE_HI_OFF, DP_LBA_SIZE_LO_OFF+0x02
 
 # Mutable LBA by disk size [0x40-0x6F]
 # BB: Block Bitmap

@@ -11,8 +11,8 @@
 
 # _super_alloc_lba()
 _super_alloc_lba:
-	mov DP_LBA_LO_SIZE_OFF(%bx), %ax
-	# TODO: mov DP_LBA_HI_SIZE_OFF(%bx), %ax
+	mov DP_LBA_SIZE_LO_OFF(%bx), %ax
+	# TODO: mov DP_LBA_SIZE_HI_OFF(%bx), %ax
 
 	# {{{
 	# bbs

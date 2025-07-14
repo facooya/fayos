@@ -1,4 +1,33 @@
 # Allocate LBA
+## Summary
+```c
+#include "fayfs/sb.s"
+void _super_alloc_lba() {
+  total_sector = DP_LBA_SIZE_OFF(mem);
+
+  uint32_t size_arr[3] = {0};
+  size_arr[0] = total_sector / 64;
+  size_arr[1] = block_bitmap_size / 4;
+  size_arr[2] = block_bitmap_size * 64;
+
+  uint16_t block_count_arr[3] = {0};
+  for (int i = 0; i < sizeof(size_arr); i++) {
+    block_count_arr[i] = size_arr[i] / 4096;
+    if ((size_arr[i] % 4096) != 0) {
+      block_count_arr[i]++;
+    }
+  }
+
+  uint32_t lba_arr[4] = {0};
+  lba_arr[0] = FST_LBA;
+  for (int i = 1; i < sizeof(lba_arr); i++) {
+    lba_arr[i] = block_count_arr[i-1] * 8 + lba_arr[i-1];
+  }
+}
+```
+
+---
+
 ## Calculate Size
 Immutable values:
 ```
