@@ -90,13 +90,13 @@ cmd_touch:
 	# }}}
 
 	# update sb
-	mov (next_i_num), %ax
-	add $0x01, %ax
-	mov %ax, (next_i_num)
-	mov (next_i_blk), %ax
-	add $0x01, %ax
-	mov %ax, (next_i_blk)
-	call write_super
+	#mov (next_i_num), %ax
+	#add $0x01, %ax
+	#mov %ax, (next_i_num)
+	#mov (next_i_blk), %ax
+	#add $0x01, %ax
+	#mov %ax, (next_i_blk)
+	#call write_super
 
 	# {end.done}
 	jmp .done

@@ -49,7 +49,6 @@ kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
 \
 fayfs/fayfs.s \
-fayfs/super.s \
 \
 fayfs/dentry/add_dentry.s \
 fayfs/dentry/lookup_dentry.s \
@@ -58,7 +57,12 @@ fayfs/inode/add_inode.s \
 fayfs/inode/update_i_file_size.s \
 fayfs/inode/read_inode.s \
 \
-fayfs/super/write_super.s \
+fayfs/super/super.s \
+fayfs/super/_super_alloc_lba.s \
+fayfs/super/_super_make_root.s \
+fayfs/super/_super_set_bitmap.s \
+fayfs/super/_super_set_lba.s \
+fayfs/super/_super_write_data.s \
 \
 fayfs/dir.s \
 \

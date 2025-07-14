@@ -4,12 +4,15 @@
 > EDD: Enhanced Disk Drive
 
 ## Workflow
-init\_super
-- read superblock LBA
+proc\_super
+- read superblock disk
 - check exist the superblock
-- - exist: read superblock and done
+- - exist: set lba
+- read disk parameters
+- calculate LBA
 - set data
-- read superblock
+- write superblock disk
+- set bitmap
 - set dentry
 
 ## Superblock Structure
