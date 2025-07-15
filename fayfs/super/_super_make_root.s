@@ -15,16 +15,75 @@ _super_make_root:
 	mov $0x40, %ch
 	mov $0x01, %cl
 	push %cx
-	mov FST_BLK_OFF(%bx), %ax
+
+	# {{{ alloc blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
 	xor %ax, %ax
 	push %ax
-	mov (inum), %ax
+	# }}}
+
+	# {{{ alloc inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+	mov %ax, (inum)
 	push %ax
-	mov (inum+0x02), %ax
+	xor %ax, %ax
 	push %ax
+	# }}}
 	call add_inode
 	add $0x0A, %sp
+
+	# {{{ set inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	mov (inum), %ax
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_ib
+	call write_disk
+	add $0x02, %sp
+	# }}}
+
+	# {{{ set blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_bb
+	call write_disk
+	add $0x02, %sp
+	# }}}
 
 	# add dentry dot
 	mov $de_dots, %si

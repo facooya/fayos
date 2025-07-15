@@ -47,19 +47,19 @@ cmd_touch:
 # {TASK}
 .run:
 	# {{{ add inode
-	mov $0x80, %ch
-	mov $0x01, %cl
-	push %cx
-	mov (next_i_blk), %ax
-	push %ax
-	mov (next_i_blk+0x02), %ax
-	push %ax
-	mov (next_i_num), %ax
-	push %ax
-	mov (next_i_num+0x02), %ax
-	push %ax
-	call add_inode
-	add $0x0A, %sp
+	#mov $0x80, %ch
+	#mov $0x01, %cl
+	#push %cx
+	#mov (next_i_blk), %ax
+	#push %ax
+	#mov (next_i_blk+0x02), %ax
+	#push %ax
+	#mov (next_i_num), %ax
+	#push %ax
+	#mov (next_i_num+0x02), %ax
+	#push %ax
+	#call add_inode
+	#add $0x0A, %sp
 	# }}}
 
 	# {{{ add dentry

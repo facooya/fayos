@@ -50,10 +50,9 @@ kernel/sys/_sys_vid.s \
 \
 fayfs/fayfs.s \
 \
-fayfs/bitmap/alloc_bit.s \
-fayfs/bitmap/clear_bit.s \
-fayfs/bitmap/set_bit.s \
-fayfs/bitmap/bitmap.s \
+fayfs/bit/alloc_bit.s \
+fayfs/bit/clear_bit.s \
+fayfs/bit/set_bit.s \
 \
 fayfs/dentry/add_dentry.s \
 fayfs/dentry/lookup_dentry.s \
