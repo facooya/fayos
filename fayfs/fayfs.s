@@ -14,9 +14,6 @@
 
 .global de_dots
 
-.global next_i_num
-.global next_i_blk
-
 inode: .zero I_SIZE
 tmp_inode: .zero I_SIZE
 
@@ -28,7 +25,3 @@ de_dots:
 	.word 0x4001
 	.word 0x2E2E
 	.word 0x4002
-
-# TODO: remove
-next_i_num: .long 0x00
-next_i_blk: .long 0x00

@@ -5,10 +5,6 @@
 # Command make directory
 
 .include "fayfs/de.s"
-.section .data
-.name_dot: .ascii "."
-.name_dotdot: .ascii ".."
-
 .section .text
 .code16
 .global cmd_mkdir
@@ -50,21 +46,62 @@ cmd_mkdir:
 
 # {TASK}
 .run:
-	# {{{ create directory
-	# add_inode
-	#mov $0x40, %ch
-	#mov $0x01, %cl
-	#push %cx
-	#mov (next_i_blk), %ax
-	#push %ax
-	#mov (next_i_blk+0x02), %ax
-	#push %ax
-	#mov (next_i_num), %ax
-	#push %ax
-	#mov (next_i_num+0x02), %ax
-	#push %ax
-	#call add_inode
-	#add $0x0A, %sp
+	# {{{ add_inode
+	mov $0x40, %ch
+	mov $0x01, %cl
+	push %cx
+
+	# ((( alloc blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	xor %ax, %ax
+	push %ax
+	# )))
+	# ((( alloc inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+	push %ax
+	xor %ax, %ax
+	push %ax
+	# )))
+
+	call add_inode
+	add $0x0A, %sp
+	# }}}
+
+	# {{{ set blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_bb
+	call write_disk
+	add $0x02, %sp
+	# }}}
 
 	# {init} for add_dentry
 	mov $args, %si
@@ -83,10 +120,22 @@ cmd_mkdir:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	mov (next_i_num), %ax
+
+	# ((( alloc inum
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
-	mov (next_i_num+0x02), %ax
+	xor %ax, %ax
 	push %ax
+	# )))
+
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
@@ -97,48 +146,93 @@ cmd_mkdir:
 
 	# {{{ add child directory
 	# add dentry dot
-	mov $.name_dot, %si
-	mov $0x01, %cl # name len
-	mov $0x40, %ch
+	mov $de_dots, %si
+	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	mov (next_i_num), %ax
+
+	# ((( alloc inum
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
-	mov (next_i_num+0x02), %ax
+	xor %ax, %ax
 	push %ax
-	mov (next_i_num), %ax
+	# )))
+
+	# ((( alloc inum
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
-	mov (next_i_num+0x02), %ax
+	xor %ax, %ax
 	push %ax
+	# )))
+
 	call add_dentry
 	add $0x0C, %sp
 
 	# add dentry dotdot
-	mov $.name_dotdot, %si
-	mov $0x02, %cl # name len
-	mov $0x40, %ch
+	mov $de_dots, %si
+	add $0x04, %si
+	mov 0x02(%si), %cx
 	push %si
 	push %cx
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
 	push %ax
-	mov (next_i_num), %ax
+
+	# ((( alloc inum
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
-	mov (next_i_num+0x02), %ax
+	xor %ax, %ax
 	push %ax
+	# )))
+
 	call add_dentry
 	add $0x0C, %sp
 	# }}}
 
-	# update sb
-	#mov (next_i_num), %ax
-	#add $0x01, %ax
-	#mov %ax, (next_i_num)
-	#mov (next_i_blk), %ax
-	#add $0x01, %ax
-	#mov %ax, (next_i_blk)
-	#call write_super
+	# {{{ set inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_ib
+	call write_disk
+	add $0x02, %sp
+	# }}}
 
 	jmp .done
 

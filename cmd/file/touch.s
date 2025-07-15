@@ -46,20 +46,61 @@ cmd_touch:
 
 # {TASK}
 .run:
-	# {{{ add inode
-	#mov $0x80, %ch
-	#mov $0x01, %cl
-	#push %cx
-	#mov (next_i_blk), %ax
-	#push %ax
-	#mov (next_i_blk+0x02), %ax
-	#push %ax
-	#mov (next_i_num), %ax
-	#push %ax
-	#mov (next_i_num+0x02), %ax
-	#push %ax
-	#call add_inode
-	#add $0x0A, %sp
+	# {{{ add_inode
+	mov $0x80, %ch
+	mov $0x01, %cl
+	push %cx
+
+	# ((( alloc blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	xor %ax, %ax
+	push %ax
+	# )))
+	# ((( alloc inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+	push %ax
+	xor %ax, %ax
+	push %ax
+	# )))
+
+	call add_inode
+	add $0x0A, %sp
+	# }}}
+
+	# {{{ set blknum bit
+	push $dap_bb
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_bb
+	call write_disk
+	add $0x02, %sp
 	# }}}
 
 	# {{{ add dentry
@@ -77,10 +118,22 @@ cmd_touch:
 	mov %al, %cl # (info) name_len
 	push %si # name
 	push %cx # info
-	mov (next_i_num), %ax
+
+	# (((
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
 	push %ax
-	mov (next_i_num+0x02), %ax
+	xor %ax, %ax
 	push %ax
+	# )))
+
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
@@ -89,14 +142,25 @@ cmd_touch:
 	add $0x0C, %sp
 	# }}}
 
-	# update sb
-	#mov (next_i_num), %ax
-	#add $0x01, %ax
-	#mov %ax, (next_i_num)
-	#mov (next_i_blk), %ax
-	#add $0x01, %ax
-	#mov %ax, (next_i_blk)
-	#call write_super
+	# {{{ set inum bit
+	push $dap_ib
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+
+	push %bx
+	call alloc_bit
+	add $0x02, %sp
+
+	push %ax
+	push %bx
+	call set_bit
+	add $0x04, %sp
+
+	push $dap_ib
+	call write_disk
+	add $0x02, %sp
+	# }}}
 
 	# {end.done}
 	jmp .done
