@@ -1,74 +1,61 @@
 # Add Inode
 Surmmary:
-```
-add_inode(
-  inum_hi, inum_lo,
-  i_blk_num_hi, i_blk_num_lo,
-  info (file_type:blk_len)
-)
+```c
+// return tmp_inum
+void add_inode() {
+	mem = read_disk(dap_bb);
+	uint16_t blknum = alloc_bit(mem);
+
+	mem = read_disk(dap_ib);
+	uint16_t inum = alloc_bit(mem);
+
+	mem = read_disk(dap_it);
+	mem += inum * I_SIZE;
+	*(mem+I_BLK_0_LO_OFF) = blknum;
+	write_disk(dap_it);
+
+	mem = read_disk(dap_ib);
+	inum = alloc_bit(mem);
+	tmp_inum = inum; // return
+	set_bit(mem, inum);
+	write_disk(dap_ib);
+
+	mem = read_disk(dap_bb);
+	blknum = alloc_bit(mem);
+	set_bit(mem, blknum);
+	write_disk(dap_bb);
+}
 ```
 
 ---
 
-## Arguments
-Surmmary:
-- `inum` [4-byte]
-- `i_blk_num` [4-byte]
-- `info` [2-byte]
-
-Get values:
-- [sp+4] `inum_hi`
-- [sp+6] `inum_lo`
-- [sp+8] `i_blk_num_hi`
-- [sp+10] `i_blk_num_lo`
-- [sp+12] `info`
-
-Detail:
-- `inum` [4-byte]
-- - [sp+4] `inum_hi` [2-byte]
-- - [sp+6] `inum_lo` [2-byte]
-- `i_blk_num` [4-byte]
-- - [sp+8] `i_blk_num_hi` [2-byte]
-- - [sp+10] `i_blk_num_lo` [2-byte]
-- [sp+12] `info` [2-byte]
-- - `file_type` [1-byte]
-- - `blk_len` [1-byte]
-
----
-
-## Workflow
-- read block (inode table)
-- set memory (inum)
-- write inode table
-- write block (inode table)
-
-### Calculate Set Memory
+## Calculate Inode Table Logic
 ```asm
-# (memory) bx = 0x8000
+# (mem) bx = 0x8000
 xor %dx, %dx
-mov 0x06(%bp), %cx
-mov $I_SIZE, %ax
-mul %cx
-add %ax, %bx
+pop %ax # inum, before push
+mov $I_SIZE, %cx
+mul %cx # ax *= cx
+add %ax, %bx # set mem
 ```
 
 Examples:
 ```asm
 xor %dx, %dx
-mov 0x06(%bp), %cx # inum_lo = 0x10 (Example value)
-mov $I_SIZE, %ax # I_SIZE = 0x20
+pop %ax # inum = 0x10 (Example value)
+mov $I_SIZE, %cx # I_SIZE = 0x20
 ```
-- ax = 0x20
+- ax = 0x10 (Example)
 - bx = 0x8000 (Example)
-- cx = 0x10 (Example)
+- cx = 0x20
 - dx = 0x00
 
 ```asm
-mul %cx # ax * cx = dx:ax
+mul %cx # dx:ax *= cx
 add %ax, %bx # bx += ax
 ```
 - ax * cx = dx:ax
-- - 0x20 * 0x10 = 0x0000:0x0200
+- - 0x10 * 0x20 = 0x0000:0x0200
 - bx += ax
 - - 0x8000 + 0x0200 = 0x8200
 
