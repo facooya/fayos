@@ -4,10 +4,11 @@
 - - Example: when using `mkdir`, you need to child inode. Because it will execute add-dentries `.`, `..` like this.
 
 ## Directory Structure
-- dentry - Directory entry
-- inode - Index node
-- fayfs.s - cache
-- super.s - superblock  
+- bit/ - Bitmap
+- dentry/ - Directory entry
+- inode/ - Index node
+- super/ - Superblock
+- fayfs.s - Cache
 
 ---
 
