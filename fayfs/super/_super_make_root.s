@@ -4,7 +4,6 @@
 #
 # Make root
 
-.include "fayfs/sb.s"
 .section .text
 .code16
 .global _super_make_root

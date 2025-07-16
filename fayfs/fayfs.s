@@ -4,7 +4,7 @@
 #
 # Fayos file system
 
-.include "fayfs/sb.s"
+.include "fayfs/i.s"
 .section .data
 .global inode
 .global tmp_inode

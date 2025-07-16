@@ -4,7 +4,6 @@
 #
 # Update file size in inode
 
-.include "fayfs/sb.s"
 .include "fayfs/i.s"
 .section .text
 .code16

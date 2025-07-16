@@ -4,7 +4,8 @@
 #
 # Disk Address Packet
 
-.include "fayfs/sb.s"
+.include "fayfs/super.s"
+.include "dap.s"
 .section .data
 .global dap
 .global dap_super
@@ -14,9 +15,9 @@
 
 # Mutable
 dap:
-	.byte 0x10
-	.byte 0x00
-	.word 0x08
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word DAP_SECTOR_COUNT
 	.word 0x8000
 	.word 0x00
 	.word 0x80
@@ -26,21 +27,21 @@ dap:
 
 # Immutable
 dap_super:
-	.byte 0x10
-	.byte 0x00
-	.word 0x01
-	.word 0x0600
-	.word 0x00
-	.word SB_LBA
-	.word 0x00
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word S_SECTOR_COUNT
+	.word S_OFF_MEM
+	.word S_SEG_MEM
+	.word S_LBA_LO
+	.word S_LBA_HI
 	.word 0x00
 	.word 0x00
 
 # Mutable by superblock
 dap_bb:
-	.byte 0x10
-	.byte 0x00
-	.word 0x08
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word DAP_SECTOR_COUNT
 	.word 0x8000
 	.word 0x00
 	.word 0x00
@@ -49,9 +50,9 @@ dap_bb:
 	.word 0x00
 
 dap_ib:
-	.byte 0x10
-	.byte 0x00
-	.word 0x08
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word DAP_SECTOR_COUNT
 	.word 0x8000
 	.word 0x00
 	.word 0x00
@@ -60,9 +61,9 @@ dap_ib:
 	.word 0x00
 
 dap_it:
-	.byte 0x10
-	.byte 0x00
-	.word 0x08
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word DAP_SECTOR_COUNT
 	.word 0x8000
 	.word 0x00
 	.word 0x00

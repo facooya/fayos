@@ -4,7 +4,6 @@
 #
 # Set bitmap
 
-.include "fayfs/sb.s"
 .section .text
 .code16
 .global _super_set_bitmap

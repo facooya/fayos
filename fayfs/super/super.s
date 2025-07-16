@@ -4,7 +4,7 @@
 #
 # Process superblock
 
-.include "fayfs/sb.s"
+.include "fayfs/super.s"
 .section .data
 .kmsg_try: .asciz "\nSuperblock not found. Try creating ...\r\n"
 .kmsg_found: .asciz "\nSuperblock found.\r\n"
@@ -26,13 +26,13 @@ proc_super:
 
 	# {{{ check superblock
 	# {task} (get_magic_low != magic_low)
-	mov SB_MAG_LO_OFF(%bx), %ax
-	cmp $SB_MAG_LO, %ax
+	mov S_MAG_LO_OFF(%bx), %ax
+	cmp $S_MAG_LO, %ax
 	jne .run_make
 
 	# {task} (get_magic_high != magic_high)
-	mov SB_MAG_HI_OFF(%bx), %ax
-	cmp $SB_MAG_HI, %ax
+	mov S_MAG_HI_OFF(%bx), %ax
+	cmp $S_MAG_HI, %ax
 	jne .run_make
 
 	push $.kmsg_found

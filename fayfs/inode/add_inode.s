@@ -4,7 +4,6 @@
 #
 # Add inode in inode table
 
-.include "fayfs/sb.s"
 .include "fayfs/i.s"
 .section .text
 .code16
@@ -37,9 +36,9 @@ add_inode:
 
 	# write i_blk
 	mov 0x08(%bp), %ax
-	mov %ax, I_BLK_HI_OFF(%bx)
+	mov %ax, I_BLK_0_HI_OFF(%bx)
 	mov 0x0A(%bp), %ax
-	mov %ax, I_BLK_LO_OFF(%bx)
+	mov %ax, I_BLK_0_LO_OFF(%bx)
 
 	# write info
 	mov 0x0C(%bp), %ax

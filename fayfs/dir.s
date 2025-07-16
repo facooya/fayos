@@ -4,7 +4,7 @@
 #
 # Directory entry
 
-.include "fayfs/sb.s"
+.include "fayfs/super.s"
 .include "fayfs/i.s"
 .section .text
 .code16
@@ -16,7 +16,7 @@ set_blk_lba:
 
 	# init
 	mov $inode, %si
-	mov I_BLK_LO_OFF(%si), %ax
+	mov I_BLK_0_LO_OFF(%si), %ax
 	
 	mov $0x08, %cx
 	xor %dx, %dx

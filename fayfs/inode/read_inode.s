@@ -4,7 +4,6 @@
 #
 # Read inode in inode table
 
-.include "fayfs/sb.s"
 .include "fayfs/i.s"
 .section .text
 .code16
@@ -35,10 +34,10 @@ read_inode:
 	mov %ax, I_FILE_SIZE_OFF(%si)
 
 	# set i_blk
-	mov I_BLK_LO_OFF(%bx), %ax
-	mov %ax, I_BLK_LO_OFF(%si)
-	mov I_BLK_HI_OFF(%bx), %ax
-	mov %ax, I_BLK_HI_OFF(%si)
+	mov I_BLK_0_LO_OFF(%bx), %ax
+	mov %ax, I_BLK_0_LO_OFF(%si)
+	mov I_BLK_0_HI_OFF(%bx), %ax
+	mov %ax, I_BLK_0_HI_OFF(%si)
 
 	pop %bx
 	pop %bp
