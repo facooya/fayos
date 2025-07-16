@@ -46,62 +46,7 @@ cmd_mkdir:
 
 # {TASK}
 .run:
-	# {{{ add_inode
-	mov $0x40, %ch
-	mov $0x01, %cl
-	push %cx
-
-	# ((( alloc blknum bit
-	push $dap_bb
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
-	push %ax
-	xor %ax, %ax
-	push %ax
-	# )))
-	# ((( alloc inum bit
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-	push %ax
-	xor %ax, %ax
-	push %ax
-	# )))
-
 	call add_inode
-	add $0x0A, %sp
-	# }}}
-
-	# {{{ set blknum bit
-	push $dap_bb
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
-	push %ax
-	push %bx
-	call set_bit
-	add $0x04, %sp
-
-	push $dap_bb
-	call write_disk
-	add $0x02, %sp
-	# }}}
 
 	# {init} for add_dentry
 	mov $args, %si
@@ -121,20 +66,10 @@ cmd_mkdir:
 	push %si
 	push %cx
 
-	# ((( alloc inum
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
+	mov (tmp_inum), %ax
 	push %ax
-	xor %ax, %ax
+	mov (tmp_inum+0x02), %ax
 	push %ax
-	# )))
 
 	mov (inum), %ax
 	push %ax
@@ -151,35 +86,15 @@ cmd_mkdir:
 	push %si
 	push %cx
 
-	# ((( alloc inum
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
+	mov (tmp_inum), %ax
 	push %ax
-	xor %ax, %ax
+	mov (tmp_inum+0x02), %ax
 	push %ax
-	# )))
 
-	# ((( alloc inum
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
+	mov (tmp_inum), %ax
 	push %ax
-	xor %ax, %ax
+	mov (tmp_inum+0x02), %ax
 	push %ax
-	# )))
 
 	call add_dentry
 	add $0x0C, %sp
@@ -195,43 +110,13 @@ cmd_mkdir:
 	mov (inum+0x02), %ax
 	push %ax
 
-	# ((( alloc inum
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
+	mov (tmp_inum), %ax
 	push %ax
-	xor %ax, %ax
+	mov (tmp_inum+0x02), %ax
 	push %ax
-	# )))
 
 	call add_dentry
 	add $0x0C, %sp
-	# }}}
-
-	# {{{ set inum bit
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
-	push %ax
-	push %bx
-	call set_bit
-	add $0x04, %sp
-
-	push $dap_ib
-	call write_disk
-	add $0x02, %sp
 	# }}}
 
 	jmp .done

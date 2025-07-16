@@ -1,7 +1,7 @@
 # Process Superblock
 ## Summary
 ```c
-#include "fayfs/sb.s"
+#include "fayfs/super.s"
 void proc_super() {
   mem = read_disk(&dap_super);
 

@@ -1,21 +1,8 @@
 # Superblock
 ## Superblock Structure
-Superblock surmmery immutable value:
-- magic number = 0xC0DEFAC0 [4-byte]
-- superblock LBA = 0x01 [2-byte]
-- first LBA = 0x80 [2-byte]
-- first block = 0x01 [2-byte]
-- first inum = 0x01 [2-byte]
-- inode size = 0x20 [2-byte]
-
 Superblock:
 - Immutable: [off=0x00]
 - - [off+0] magic number [4-byte]
-- - [off+4] superblock LBA [2-byte] // TODO: values
-- - [off+6] first LBA [2-byte]
-- - [off+8] first block [2-byte]
-- - [off+10] first inum [2-byte]
-- - [off+12] inode size [2-byte] // TODO: bottom
 
 - Disk Parameters: [off=0x20]
 - - [0ff+0] buffer size [2-byte]
@@ -42,6 +29,18 @@ Superblock:
 - - [off+4] inum bitmap LBA [4-byte]
 - - [off+8] inode table LBA [4-byte]
 - - [off+12] normal LBA [4-byte]
+
+Values:
+- magic number [4-byte]
+- - magic low number = 0xFAC0 [2-byte]
+- - magic high number = 0xC0DE [2-byte]
+- sector count = 0x01 [2-byte]
+- offset memory = 0x0600 [2-byte]
+- segment memory = 0x00 [2-byte]
+- super LBA [4-byte]
+- - super low LBA = 0x01 [2-byte]
+- - super high LBA = 0x00 [2-byte]
+- first lba = 0x40 [2-byte]
 
 ---
 

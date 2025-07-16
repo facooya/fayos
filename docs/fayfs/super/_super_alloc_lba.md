@@ -1,7 +1,7 @@
 # Allocate LBA
 ## Summary
 ```c
-#include "fayfs/sb.s"
+#include "fayfs/super.s"
 void _super_alloc_lba() {
   total_sector = DP_LBA_SIZE_OFF(mem);
 
