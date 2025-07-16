@@ -8,9 +8,9 @@
 .equ I_SIZE, 0x20
 
 # Information
-.equ I_FILE_SIZE_OFF, 0x00 # 2
-.equ I_FILE_TYPE_OFF, 0x02 # 1
-.equ I_BLK_LEN_OFF, 0x03 # 1
+.equ I_FILE_SIZE_OFF, 0x00
+.equ I_FILE_TYPE_OFF, 0x02
+.equ I_BLK_LEN_OFF, 0x03
 
 # Block array 7
 .equ I_BLK_0_LO_OFF, 0x04

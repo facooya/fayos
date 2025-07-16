@@ -4,7 +4,7 @@
 #
 # Command touch - create file
 
-.include "fayfs/de.s"
+.include "fayfs/dentry.s"
 .section .text
 .code16
 .global cmd_touch

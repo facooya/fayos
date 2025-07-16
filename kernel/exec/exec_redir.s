@@ -4,8 +4,8 @@
 #
 # Execute redirection
 
-.include "fayfs/i.s"
-.include "fayfs/de.s"
+.include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global exec_redir
@@ -60,9 +60,9 @@ exec_redir:
 # {TASK}
 .run:
 	# get dst i num
-	mov DE_I_NUM_LO_OFF(%bx), %ax
+	mov DE_INUM_LO_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_I_NUM_HI_OFF(%bx), %ax
+	mov DE_INUM_HI_OFF(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	# read i node

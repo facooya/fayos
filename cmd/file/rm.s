@@ -4,7 +4,7 @@
 #
 # Command remove - remove file
 
-.include "fayfs/de.s"
+.include "fayfs/dentry.s"
 .section .text
 .code16
 .global cmd_rm
@@ -54,13 +54,13 @@ cmd_rm:
 
 	# {{{
 	# backup
-	mov DE_I_NUM_LO_OFF(%bx), %cx
-	mov DE_I_NUM_HI_OFF(%bx), %dx
+	mov DE_INUM_LO_OFF(%bx), %cx
+	mov DE_INUM_HI_OFF(%bx), %dx
 
 	# remove inum
 	xor %ax, %ax
-	mov %ax, DE_I_NUM_LO_OFF(%bx)
-	mov %ax, DE_I_NUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_HI_OFF(%bx)
 
 	# write
 	push $dap

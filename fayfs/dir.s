@@ -4,8 +4,8 @@
 #
 # Directory entry
 
+.include "fayfs/inode.s"
 .include "fayfs/super.s"
-.include "fayfs/i.s"
 .section .text
 .code16
 .global set_blk_lba

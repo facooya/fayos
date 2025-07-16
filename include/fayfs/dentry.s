@@ -5,8 +5,8 @@
 # Directory entry
 
 # Inode number
-.equ DE_I_NUM_LO_OFF, 0x00
-.equ DE_I_NUM_HI_OFF, 0x02
+.equ DE_INUM_LO_OFF, 0x00
+.equ DE_INUM_HI_OFF, 0x02
 
 # Record length
 .equ DE_REC_LEN_OFF, 0x04

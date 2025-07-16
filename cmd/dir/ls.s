@@ -4,7 +4,7 @@
 #
 # Command list - show file and directory list
 
-.include "fayfs/de.s"
+.include "fayfs/dentry.s"
 .section .text
 .code16
 .global cmd_ls
@@ -38,9 +38,9 @@ cmd_ls:
 .run:
 .run__lp:
 	# {chk} (inum == 0)
-	mov DE_I_NUM_LO_OFF(%bx), %ax
+	mov DE_INUM_LO_OFF(%bx), %ax
 	test %ax, %ax
-	or %ax, DE_I_NUM_HI_OFF(%bx)
+	or %ax, DE_INUM_HI_OFF(%bx)
 	jz .run__chk
 
 	# set name ptr

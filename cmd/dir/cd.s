@@ -4,7 +4,7 @@
 #
 # Command change directory
 
-.include "fayfs/de.s"
+.include "fayfs/dentry.s"
 .section .text
 .code16
 .global cmd_cd
@@ -53,9 +53,9 @@ cmd_cd:
 	jne .err_dir_type
 
 	# get dst inode num
-	mov DE_I_NUM_LO_OFF(%bx), %ax
+	mov DE_INUM_LO_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_I_NUM_HI_OFF(%bx), %ax
+	mov DE_INUM_HI_OFF(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	# get i blk

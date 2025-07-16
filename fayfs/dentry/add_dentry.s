@@ -4,8 +4,8 @@
 #
 # Add directory entry
 
-.include "fayfs/de.s"
-.include "fayfs/i.s"
+.include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global add_dentry
@@ -61,9 +61,9 @@ add_dentry:
 .write:
 	# write inum
 	mov 0x08(%bp), %ax # dst_hi
-	mov %ax, DE_I_NUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_HI_OFF(%bx)
 	mov 0x0A(%bp), %ax # dst_lo
-	mov %ax, DE_I_NUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_LO_OFF(%bx)
 
 	# write info
 	mov 0x0C(%bp), %dx # dh:dl = file_type:name_len

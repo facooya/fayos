@@ -4,7 +4,7 @@
 #
 # Read inode in inode table
 
-.include "fayfs/i.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global read_inode
