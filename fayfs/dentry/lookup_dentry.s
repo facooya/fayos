@@ -54,6 +54,12 @@ lookup_dentry:
 	# {lp.step} (src_name_len != dst_name_len)
 	cmp %cx, %dx
 	jne .lp__step
+
+	# {lp.step} (inum == 0)
+	mov DE_INUM_LO_OFF(%bx), %ax
+	test %ax, %ax
+	or %ax, DE_INUM_HI_OFF(%bx)
+	jz .lp__step
 	# }}}
 
 	# {{{ str compare

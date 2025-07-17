@@ -41,7 +41,7 @@ cmd_rm:
 	jz .err_file_no
 
 	# {task}
-	mov %ax, %bx
+	mov %ax, %bx # set mem
 	jmp .run
 	# }}}
 
