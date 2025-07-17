@@ -112,9 +112,20 @@ add_dentry:
 	call write_disk
 	add $0x02, %sp
 
-	# {call} (file_type == dir)
+	# {end.done} (file_type != dir)
 	cmp $0x40, %dh
-	jz .call_update_i_file_size
+	jnz .done
+
+	mov $tmp_inode, %si
+	mov $I_SIZE, %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov 0x0A(%bp), %ax
+	push %ax # inum_lo
+	mov 0x08(%bp), %ax
+	push %ax # inum_hi
+	call update_inode
+	add $0x06, %sp
 
 	# {end.done}
 	jmp .done
@@ -126,18 +137,3 @@ add_dentry:
 	pop %si
 	pop %bp
 	ret
-
-# {CALL}
-.call_update_i_file_size:
-	# update_i_file_size()
-	mov $I_SIZE, %ax
-	push %ax # dir_size
-	mov 0x0A(%bp), %ax
-	push %ax # inum_lo
-	mov 0x08(%bp), %ax
-	push %ax # inum_hi
-	call update_i_file_size
-	add $0x06, %sp
-
-	# {end.done}
-	jmp .done

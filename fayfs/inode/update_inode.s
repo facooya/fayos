@@ -2,20 +2,21 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Update file size in inode
+# Update inode in inode table
 
 .include "fayfs/inode.s"
 .section .text
 .code16
-.global update_i_file_size
+.global update_inode
 
-# update_i_file_size(
+# update_inode(
 # inum_hi, inum_lo,
-# i_file_size
+# &inode
 # )
-update_i_file_size:
+update_inode:
 	push %bp
 	mov %sp, %bp
+	push %si
 	push %bx
 
 	push $dap_it
@@ -23,15 +24,14 @@ update_i_file_size:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	# calc inode # HACK!!!: only low
 	xor %dx, %dx
-	mov 0x06(%bp), %cx # inum_lo
-	mov $I_SIZE, %ax
-	mul %cx
-	# ax *= cx
+	mov 0x06(%bp), %ax # inum_lo
+	mov $I_SIZE, %cx
+	mul %cx # ax *= cx
+	add %ax, %bx # set mem
 
-	add %ax, %bx # mem
-	mov 0x08(%bp), %ax # file_size
+	mov 0x08(%bp), %si # &inode
+	mov I_FILE_SIZE_OFF(%si), %ax
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 
 	push $dap_it
@@ -39,5 +39,6 @@ update_i_file_size:
 	add $0x02, %sp
 
 	pop %bx
+	pop %si
 	pop %bp
 	ret

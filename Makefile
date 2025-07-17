@@ -59,8 +59,8 @@ fayfs/dentry/lookup_dentry.s \
 \
 fayfs/inode/add_inode.s \
 fayfs/inode/clear_inode.s \
-fayfs/inode/update_i_file_size.s \
 fayfs/inode/read_inode.s \
+fayfs/inode/update_inode.s \
 \
 fayfs/super/super.s \
 fayfs/super/_super_alloc_lba.s \

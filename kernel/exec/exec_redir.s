@@ -134,12 +134,14 @@ exec_redir:
 
 .run__end:
 	# update_i_file_size
-	push %dx # file_size
+	mov $inode, %si
+	mov %dx, I_FILE_SIZE_OFF(%si)
+	push %si
 	mov (inum), %ax
 	push %ax # inum_lo
 	mov (inum+0x02), %ax
 	push %ax # inum_hi
-	call update_i_file_size
+	call update_inode
 	add $0x06, %sp
 
 	# {end.done}
