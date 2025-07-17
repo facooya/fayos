@@ -5,6 +5,7 @@
 # Command list - show file and directory list
 
 .include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global cmd_ls
@@ -24,7 +25,14 @@ cmd_ls:
 	call read_inode
 	add $0x04, %sp
 
-	call set_blk_lba
+	mov $inode, %si
+	mov I_BLK_0_LO_OFF(%si), %ax
+	push %ax
+	mov I_BLK_0_HI_OFF(%si), %ax
+	push %ax
+	call set_dap_blk_lba
+	add $0x04, %sp
+
 	push $dap
 	call read_disk
 	add $0x02, %sp

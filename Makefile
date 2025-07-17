@@ -69,8 +69,6 @@ fayfs/super/_super_set_bitmap.s \
 fayfs/super/_super_set_lba.s \
 fayfs/super/_super_write_data.s \
 \
-fayfs/dir.s \
-\
 lib/err.s \
 lib/re.s \
 lib/vid.s \

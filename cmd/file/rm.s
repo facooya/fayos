@@ -58,7 +58,7 @@ cmd_rm:
 	mov DE_INUM_HI_OFF(%bx), %ax
 	push %ax
 
-	# remove inum
+	# clear inum
 	xor %ax, %ax
 	mov %ax, DE_INUM_LO_OFF(%bx)
 	mov %ax, DE_INUM_HI_OFF(%bx)
