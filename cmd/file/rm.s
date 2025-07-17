@@ -53,9 +53,10 @@ cmd_rm:
 	jne .err_file_type
 
 	# {{{
-	# backup
-	mov DE_INUM_LO_OFF(%bx), %cx
-	mov DE_INUM_HI_OFF(%bx), %dx
+	mov DE_INUM_LO_OFF(%bx), %ax
+	push %ax
+	mov DE_INUM_HI_OFF(%bx), %ax
+	push %ax
 
 	# remove inum
 	xor %ax, %ax
@@ -66,6 +67,9 @@ cmd_rm:
 	push $dap
 	call write_disk
 	add $0x02, %sp
+
+	call clear_inode
+	add $0x04, %sp
 	# }}}
 
 	# {end.done}

@@ -61,7 +61,7 @@ void clear_bit(uint16_t *mem, uint16_t bitnum) {
 
 Note:
 ```
-mem_value & ~(1 << 3) = 0b11111111 AND ~0b00001000 = 0b11111111 AND 0b11110111 = 0b11110111
+mem_value & ~(1 << 3) = 0b11111111 AND ~(0b00001000) = 0b11111111 AND 0b11110111 = 0b11110111
 ```
 
 ---
