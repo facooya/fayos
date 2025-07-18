@@ -112,20 +112,15 @@ add_dentry:
 	call write_disk
 	add $0x02, %sp
 
-	# TODO: read_inode this is file
-	# {end.done} (file_type != dir)
-	cmp $0x40, %dh
-	jnz .done
-
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	mov DE_REC_LEN_OFF(%bx), %cx
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
 	push %si
-	mov 0x0A(%bp), %ax
+	mov 0x06(%bp), %ax
 	push %ax # inum_lo
-	mov 0x08(%bp), %ax
+	mov 0x04(%bp), %ax
 	push %ax # inum_hi
 	call update_inode
 	add $0x06, %sp
