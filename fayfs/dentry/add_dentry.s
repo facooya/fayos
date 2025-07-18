@@ -82,6 +82,7 @@ add_dentry:
 	add $0x0B, %cx # fix (8), align 4 (3)
 	and $0xFFFC, %cx # mask: 0b1100
 	mov %cx, DE_REC_LEN_OFF(%bx)
+	push %cx
 
 	# dst name
 	mov %bx, %di
@@ -112,20 +113,8 @@ add_dentry:
 	call write_disk
 	add $0x02, %sp
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov 0x06(%bp), %ax
-	push %ax # inum_lo
-	mov 0x04(%bp), %ax
-	push %ax # inum_hi
-	call update_inode
-	add $0x06, %sp
-
 	# {end.done}
+	pop %ax # rec_len
 	jmp .done
 
 # {DONE}
