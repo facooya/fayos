@@ -9,10 +9,14 @@
 .code16
 .global read_inode
 
-# read_inode(inum_hi, inum_lo)
+# read_inode(
+# inum_hi, inum_lo
+# &inode
+# )
 read_inode:
 	push %bp
 	mov %sp, %bp
+	push %si
 	push %bx
 
 	push $dap_it
@@ -27,7 +31,7 @@ read_inode:
 	mul %cx
 	add %ax, %bx
 
-	mov $inode, %si
+	mov 0x08(%bp), %si
 
 	# set i_file_size
 	mov I_FILE_SIZE_OFF(%bx), %ax
@@ -40,5 +44,6 @@ read_inode:
 	mov %ax, I_BLK_0_HI_OFF(%si)
 
 	pop %bx
+	pop %si
 	pop %bp
 	ret

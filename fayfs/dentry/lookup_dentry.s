@@ -25,14 +25,15 @@ lookup_dentry:
 
 	# {{{ read block
 	# read_inode(inum_hi, inum_lo)
+	mov $inode, %si
+	push %si
 	mov 0x06(%bp), %ax
 	push %ax # inum_lo
 	mov 0x04(%bp), %ax
 	push %ax # inum_hi
 	call read_inode
-	add $0x04, %sp
+	add $0x06, %sp
 
-	mov $inode, %si
 	mov I_BLK_0_LO_OFF(%si), %ax
 	push %ax
 	mov I_BLK_0_HI_OFF(%si), %ax
