@@ -96,7 +96,8 @@ cmd/file/touch.s \
 \
 cmd/dir/cd.s \
 cmd/dir/ls.s \
-cmd/dir/mkdir.s
+cmd/dir/mkdir.s \
+cmd/dir/rmdir.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 

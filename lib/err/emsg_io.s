@@ -17,6 +17,7 @@
 
 .global emsg_dir_no
 .global emsg_dir_type
+.global emsg_dir_dup
 
 .global emsg_name_dup
 
@@ -32,5 +33,6 @@ emsg_file_dup: .asciz "File already exists."
 
 emsg_dir_no: .asciz "Directory not found."
 emsg_dir_type: .asciz "Not a directory."
+emsg_dir_dup: .asciz "Directory already exists."
 
 emsg_name_dup: .asciz "Name already exists."

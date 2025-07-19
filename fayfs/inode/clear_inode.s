@@ -34,6 +34,7 @@ clear_inode:
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
+	mov %ax, I_FILE_SIZE_OFF(%bx)
 	mov %ax, I_BLK_0_LO_OFF(%bx)
 	mov %ax, I_BLK_0_HI_OFF(%bx)
 

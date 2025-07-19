@@ -22,6 +22,8 @@ cmd_map:
 	.asciz "ls"
 	.word cmd_mkdir
 	.asciz "mkdir"
+	.word cmd_rmdir
+	.asciz "rmdir"
 	# file
 	.word cmd_cat
 	.asciz "cat"

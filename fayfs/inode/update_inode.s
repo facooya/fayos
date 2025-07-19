@@ -34,6 +34,11 @@ update_inode:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 
+	mov I_BLK_0_LO_OFF(%si), %ax
+	mov %ax, I_BLK_0_LO_OFF(%bx)
+	mov I_BLK_0_HI_OFF(%si), %ax
+	mov %ax, I_BLK_0_HI_OFF(%bx)
+
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
