@@ -30,6 +30,25 @@ _super_make_root:
 	add $0x0C, %sp
 	push %ax
 
+	mov $inode, %si
+	push %si
+	mov (inum), %ax
+	push %ax
+	mov (inum+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x06, %sp
+
+	pop %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov (inum), %ax
+	push %ax
+	mov (inum+0x02), %ax
+	push %ax
+	call update_inode
+	add $0x06, %sp
+
 	# add dentry dotdot
 	mov $de_dots, %si
 	add $0x04, %si
@@ -60,7 +79,7 @@ _super_make_root:
 	add $0x06, %sp
 
 	pop %cx
-	pop %ax
+	mov I_FILE_SIZE_OFF(%si), %ax
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
 	push %si

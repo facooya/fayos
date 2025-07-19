@@ -80,28 +80,44 @@ cmd_mkdir:
 	add $0x0C, %sp
 	# }}}
 
-	# {{{ add child directory
-	# add dentry dot
+	# {{{ add dot
 	mov $de_dots, %si
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
 	push %ax
-
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
 	push %ax
-
 	call add_dentry
 	add $0x0C, %sp
 	push %ax
 
-	# add dentry dotdot
+	mov $inode, %si
+	push %si
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x06, %sp
+
+	pop %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call update_inode
+	add $0x06, %sp
+	# }}}
+
+	# {{{ add dentry dotdot
 	mov $de_dots, %si
 	add $0x04, %si
 	mov 0x02(%si), %cx
@@ -120,7 +136,6 @@ cmd_mkdir:
 	call add_dentry
 	add $0x0C, %sp
 	push %ax
-	# }}}
 
 	mov $inode, %si
 	push %si
@@ -132,8 +147,8 @@ cmd_mkdir:
 	add $0x06, %sp
 
 	pop %cx
-	pop %ax
-	add %cx, %ax # rec_len
+	mov I_FILE_SIZE_OFF(%si), %ax
+	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
 	push %si
 	mov (tmp_inum), %ax
@@ -142,6 +157,7 @@ cmd_mkdir:
 	push %ax
 	call update_inode
 	add $0x06, %sp
+	# }}}
 
 	jmp .done
 

@@ -44,22 +44,9 @@ add_dentry:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	# {task}
-	jmp .alloc
+	mov I_FILE_SIZE_OFF(%si), %ax
+	add %ax, %bx # set mem
 
-# {TASK}
-.alloc:
-.alloc__lp:
-	# {end} (rec_len == null)
-	mov DE_REC_LEN_OFF(%bx), %ax
-	test %ax, %ax
-	jz .alloc__end
-
-	# {lp}
-	add %ax, %bx
-	jmp .alloc__lp
-
-.alloc__end:
 	# {task}
 	jmp .write
 
