@@ -61,23 +61,43 @@ cmd_mkdir:
 	add $0x02, %sp
 	# ax = len
 
-	# add_dentry
+	# {{{ add directory
 	mov %al, %cl
 	mov $0x40, %ch
 	push %si
 	push %cx
-
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
 	push %ax
-
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp
+	push %ax
+
+	mov $inode, %si
+	push %si
+	mov (inum), %ax
+	push %ax
+	mov (inum+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x06, %sp
+
+	pop %ax
+	mov I_FILE_SIZE_OFF(%si), %cx
+	add %cx, %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov (inum), %ax
+	push %ax
+	mov (inum+0x02), %ax
+	push %ax
+	call update_inode
+	add $0x06, %sp
 	# }}}
 
 	# {{{ add dot
@@ -127,12 +147,10 @@ cmd_mkdir:
 	push %ax
 	mov (inum+0x02), %ax
 	push %ax
-
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
 	push %ax
-
 	call add_dentry
 	add $0x0C, %sp
 	push %ax

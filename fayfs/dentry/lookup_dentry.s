@@ -89,8 +89,17 @@ lookup_dentry:
 	# }}}
 
 .lp__step:
+	mov $inode, %di
+	mov I_FILE_SIZE_OFF(%di), %ax
+
 	mov DE_REC_LEN_OFF(%bx), %cx
 	add %cx, %bx
+	mov %bx, %cx
+	sub $0x8000, %cx
+
+	# {end.done.nm} (cpy_mem >= file_size)
+	cmp %ax, %cx
+	jge .done__nm
 
 	# {lp}
 	jmp .lp
