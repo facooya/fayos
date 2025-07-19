@@ -5,6 +5,7 @@
 # Command make directory
 
 .include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global cmd_mkdir
@@ -98,6 +99,7 @@ cmd_mkdir:
 
 	call add_dentry
 	add $0x0C, %sp
+	push %ax
 
 	# add dentry dotdot
 	mov $de_dots, %si
@@ -117,7 +119,29 @@ cmd_mkdir:
 
 	call add_dentry
 	add $0x0C, %sp
+	push %ax
 	# }}}
+
+	mov $inode, %si
+	push %si
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x06, %sp
+
+	pop %cx
+	pop %ax
+	add %cx, %ax # rec_len
+	mov %ax, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call update_inode
+	add $0x06, %sp
 
 	jmp .done
 
