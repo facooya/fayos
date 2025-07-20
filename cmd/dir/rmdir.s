@@ -5,6 +5,7 @@
 # Command remove directory
 
 .include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global cmd_rmdir
@@ -52,8 +53,79 @@ cmd_rmdir:
 	cmp $0x40, %al
 	jne .err_dir_type
 
-	# TODO!!!: delete subdirectories
+	mov DE_INUM_LO_OFF(%bx), %ax
+	mov %ax, (tmp_inum)
+	mov DE_INUM_HI_OFF(%bx), %ax
+	mov %ax, (tmp_inum+0x02)
+
+	xor %ax, %ax
+	mov %ax, DE_INUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_HI_OFF(%bx)
+
+	# write
+	push $dap
+	call write_disk
+	add $0x02, %sp
+
+	mov $tmp_inode, %si
+	push %si
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call read_inode
+	add $0x06, %sp
+
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call clear_inode
+	add $0x04, %sp
+
+	# {{{ read sub
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+
+	mov I_BLK_0_LO_OFF(%si), %ax
+	push %ax
+	mov I_BLK_0_HI_OFF(%si), %ax
+	push %ax
+	call set_dap_blk_lba
+	add $0x04, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	# }}}
+
+	# {end} (file_size <= 0)
+	pop %dx
+	sub $0x18, %dx # HACK: default dots
+	cmp $0x00, %dx
+	jle .run__end
+
+	xor %cx, %cx # rm_rec_len
+	mov $0x18, %cx # HACK: default dots
+
+.run__lp:
+	# TODO: bottom to up remove sequence
+	mov DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x80, %al
+	je .run__rm_file
+
+	cmp $0x40, %al
+	je .run__rm_file
+
+.run__rm_file:
 	# {{{
+	mov DE_REC_LEN_OFF(%bx), %ax
+	push %ax
+
+	push %cx # rm_rec_len++
+	push %dx # file_size--
+
 	mov DE_INUM_LO_OFF(%bx), %ax
 	push %ax
 	mov DE_INUM_HI_OFF(%bx), %ax
@@ -70,7 +142,40 @@ cmd_rmdir:
 
 	call clear_inode
 	add $0x04, %sp
+	pop %dx
+	pop %cx
 	# }}}
+
+	pop %ax # rec_len
+	sub %ax, %dx # file_size
+	add %ax, %cx # rm_rec_len
+	jmp .run__chk
+
+.run__chk:
+	# {end} (file_size <= 0)
+	cmp $0x00, %dx
+	jle .run__end
+
+	push %cx
+	push %dx
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	pop %dx
+	pop %cx
+	add %cx, %bx
+
+	# {lp}
+	jmp .run__lp
+
+.run__end:
+	mov (tmp_inum), %ax
+	push %ax
+	mov (tmp_inum+0x02), %ax
+	push %ax
+	call clear_inode
+	add $0x04, %sp
 
 	# {end.done}
 	jmp .done

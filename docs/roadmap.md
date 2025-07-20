@@ -8,7 +8,6 @@
 - Debug runtime
 
 ## Command
-- rmdir
 - cp
 - mv
 - printf
@@ -16,8 +15,13 @@
 - grep
 - find
 
-## TODO
+## TODO Priority
 - rmdir remove subdirectories.
+- ls apply end by file size.
+- redirection file size.
+- check low, high memory.
+
+## TODO
 - support multi arguments - touch, mkdir, rm, ...
 - lookup dentry, available return value.
 - redir append mode, insert mode
