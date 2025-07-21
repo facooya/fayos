@@ -37,6 +37,7 @@ cmd_ls:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 	# }}}
 
 	# {task}

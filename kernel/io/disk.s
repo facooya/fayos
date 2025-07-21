@@ -10,6 +10,8 @@
 .global write_disk
 
 # read_disk(&dap)
+# <ret> ax = offset
+# <ret> dx = segment
 read_disk:
 	push %bp
 	mov %sp, %bp
@@ -40,6 +42,7 @@ write_disk:
 
 .done:
 	mov 0x04(%si), %ax
+	mov 0x06(%si), %dx
 	jmp .epil
 
 .epil:

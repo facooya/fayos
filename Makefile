@@ -73,6 +73,9 @@ lib/err.s \
 lib/re.s \
 lib/vid.s \
 \
+lib/dir/get_bottom_dir.s \
+lib/dir/rm_dir.s \
+\
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \

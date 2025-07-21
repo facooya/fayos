@@ -23,6 +23,7 @@ update_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	xor %dx, %dx
 	mov 0x06(%bp), %ax # inum_lo
@@ -42,6 +43,8 @@ update_inode:
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
+	xor %ax, %ax
+	mov %ax, %ds
 
 	pop %bx
 	pop %si

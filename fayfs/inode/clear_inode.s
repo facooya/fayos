@@ -20,6 +20,7 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	# calc inode # TODO: low, high
 	xor %dx, %dx
@@ -41,6 +42,8 @@ clear_inode:
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
+	xor %ax, %ax
+	mov %ax, %ds
 	# } push bitnum
 
 	# { clear block bit
