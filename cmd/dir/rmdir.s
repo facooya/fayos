@@ -58,34 +58,18 @@ cmd_rmdir:
 	mov DE_INUM_HI_OFF(%bx), %ax
 	mov %ax, (tmp_inum+0x02)
 
-	xor %ax, %ax
-	mov %ax, DE_INUM_LO_OFF(%bx)
-	mov %ax, DE_INUM_HI_OFF(%bx)
-
-	# write
-	push $dap
-	call write_disk
-	add $0x02, %sp
-
+.run__bottom_lp:
 	mov $tmp_inode, %si
 	push %si
-	mov (tmp_inum), %ax
+	mov DE_INUM_LO_OFF(%bx), %ax
 	push %ax
-	mov (tmp_inum+0x02), %ax
+	mov DE_INUM_HI_OFF(%bx), %ax
 	push %ax
 	call read_inode
 	add $0x06, %sp
 
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
-	call clear_inode
-	add $0x04, %sp
-
-	# {{{ read sub
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
+	mov I_FILE_SIZE_OFF(%si), %dx
+	push %dx
 
 	mov I_BLK_0_LO_OFF(%si), %ax
 	push %ax
@@ -98,34 +82,60 @@ cmd_rmdir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	# }}}
 
-	# {end} (file_size <= 0)
-	pop %dx
-	sub $0x18, %dx # HACK: default dots
+	add $0x18, %bx # HACK: dots
+	pop %dx # file_size--
+	mov %dx, %cx
+
+	# (file_size <= 0)
+	sub $0x18, %dx
 	cmp $0x00, %dx
-	jle .run__end
+	jle .run__bottom_rm
 
+.run__bottom_find_lp:
+	mov DE_INUM_LO_OFF(%bx), %ax
+	test %ax, %ax
+	or DE_INUM_HI_OFF(%bx), %ax
+	jz .run__bottom_find_lp_skip
+
+	# (file_type == dir)
+	mov DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x40, %al
+	je .run__bottom_lp
+
+.run__bottom_find_lp_skip:
+	mov DE_REC_LEN_OFF(%bx), %ax
+	add %ax, %bx
+
+	# (file_size <= 0) # not found directory in this dentry
+	sub %ax, %dx # file_size--
+	cmp $0x00, %dx
+	jle .run__bottom_rm
+
+	# {lp}
+	jmp .run__bottom_find_lp
+
+.run__bottom_rm:
+	mov %cx, %dx # this.file_size
 	xor %cx, %cx # rm_rec_len
 	mov $0x18, %cx # HACK: default dots
+	sub $0x18, %dx # file_size--
+	jmp .run__rm_file_lp
 
-.run__lp:
-	# TODO: bottom to up remove sequence
-	mov DE_FILE_TYPE_OFF(%bx), %al
-	cmp $0x80, %al
-	je .run__rm_file
-
-	cmp $0x40, %al
-	je .run__rm_file
-
-.run__rm_file:
+.run__rm_file_lp:
 	# {{{
 	mov DE_REC_LEN_OFF(%bx), %ax
 	push %ax
 
+	mov DE_INUM_LO_OFF(%bx), %ax
+	test %ax, %ax
+	or DE_INUM_HI_OFF(%bx), %ax
+	jz .run__rm_file_lp_skip
+
 	push %cx # rm_rec_len++
 	push %dx # file_size--
 
+	# clear_inode() - 1
 	mov DE_INUM_LO_OFF(%bx), %ax
 	push %ax
 	mov DE_INUM_HI_OFF(%bx), %ax
@@ -140,12 +150,14 @@ cmd_rmdir:
 	call write_disk
 	add $0x02, %sp
 
+	# clear_inode() - 2
 	call clear_inode
 	add $0x04, %sp
 	pop %dx
 	pop %cx
 	# }}}
 
+.run__rm_file_lp_skip:
 	pop %ax # rec_len
 	sub %ax, %dx # file_size
 	add %ax, %cx # rm_rec_len
@@ -167,9 +179,40 @@ cmd_rmdir:
 	add %cx, %bx
 
 	# {lp}
-	jmp .run__lp
+	jmp .run__rm_file_lp
 
 .run__end:
+	# {{{ lookup dentry
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+
+	push %si # arg
+	call strlen
+	add $0x02, %sp
+	mov %ax, %cx
+
+	push %si # src_name
+	push %cx # src_name_len
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
+	call lookup_dentry
+	add $0x08, %sp
+	mov %ax, %bx # set mem
+	# }}}
+
+	xor %ax, %ax
+	mov %ax, DE_INUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_HI_OFF(%bx)
+
+	push $dap
+	call write_disk
+	add $0x02, %sp
+
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
@@ -193,6 +236,10 @@ cmd_rmdir:
 	pop %bx
 	pop %di
 	pop %si
+	ret
+
+# {TASK}
+._dir_chk:
 	ret
 
 # {ERR}

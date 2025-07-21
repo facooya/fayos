@@ -65,7 +65,7 @@ clear_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	mov 0x06(%bp), %ax
+	mov 0x06(%bp), %ax # inum_lo FIXME!!!: inum_hi
 	push %ax
 	push %bx
 	call clear_bit

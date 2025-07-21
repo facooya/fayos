@@ -6,6 +6,7 @@
 - Time
 - Color
 - Debug runtime
+- Comment
 
 ## Command
 - cp
@@ -25,4 +26,4 @@
 - support multi arguments - touch, mkdir, rm, ...
 - lookup dentry, available return value.
 - redir append mode, insert mode
-- file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, all
+- file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
