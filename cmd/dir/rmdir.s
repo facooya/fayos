@@ -36,21 +36,21 @@ cmd_rmdir:
 	push %ax # inum_hi
 	call lookup_dentry
 	add $0x08, %sp
+	mov %ax, %bx # set mem
 
 	# {err} (lookup_dentry == no_match)
 	test %ax, %ax
 	jz .err_dir_no
 
-	# {task}
-	mov %ax, %bx # set mem
-	jmp .run
-
-.run:
 	# {err} (file_type != dir)
 	mov DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
 
+	# {task}
+	jmp .run
+
+.run:
 	mov DE_INUM_LO_OFF(%bx), %ax
 	mov %ax, (rmdir_inum)
 	mov DE_INUM_HI_OFF(%bx), %ax
@@ -64,11 +64,6 @@ cmd_rmdir:
 	call get_bottom_dir
 	add $0x04, %sp
 	# <ret> dx:ax
-
-	push %ax
-	add $0x30, %al
-	call outc
-	pop %ax
 
 	push %ax # lo
 	push %dx # hi
@@ -91,10 +86,6 @@ cmd_rmdir:
 	pop %bx
 	pop %di
 	pop %si
-	ret
-
-# {TASK}
-._dir_chk:
 	ret
 
 # {ERR}

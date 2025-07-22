@@ -28,6 +28,19 @@ rm_dir:
 	add $0x06, %sp
 
 	mov I_FILE_SIZE_OFF(%si), %dx
+
+	push %dx
+	mov $tmp_inode, %si
+	mov $0x18, I_FILE_SIZE_OFF(%si)
+	push %si
+	mov 0x06(%bp), %ax
+	push %ax
+	mov 0x04(%bp), %ax
+	push %ax
+	call update_inode
+	add $0x06, %sp
+	pop %dx
+
 	mov $0x18, %cx # rm_rec_len++
 	sub $0x18, %dx # file_size--
 

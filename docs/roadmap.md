@@ -17,9 +17,8 @@
 - find
 
 ## TODO Priority
-- rmdir remove subdirectories.
-- ls apply end by file size.
-- redirection file size.
+- `rmdir` remove subdirectories.
+- `ls` apply end by file size.
 - check low, high memory.
 
 ## TODO
