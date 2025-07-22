@@ -44,8 +44,8 @@
 .equ NORM_LBA_HI_OFF, NORM_LBA_LO_OFF+0x02
 
 # Immutable values
-.equ S_MAG_LO, 0xFAC0
-.equ S_MAG_HI, 0xC0DE
+.equ S_MAG_LO, 0xC0FA
+.equ S_MAG_HI, 0xDEC0
 
 # DAP
 .equ S_SECTOR_COUNT, 0x01

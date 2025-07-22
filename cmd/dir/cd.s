@@ -55,8 +55,9 @@ cmd_cd:
 	# get dst inode num
 	mov DE_INUM_LO_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_INUM_HI_OFF(%bx), %ax
-	mov %ax, (inum+0x02)
+	# FIXME!!!!!!!!!!!!!!!!!
+	#mov DE_INUM_HI_OFF(%bx), %ax
+	#mov %ax, (inum+0x02)
 
 	# get i blk
 	mov $inode, %si

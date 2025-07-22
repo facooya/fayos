@@ -57,21 +57,40 @@ cmd_rmdir:
 	mov %ax, (rmdir_inum+0x02)
 
 .run__lp:
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov (rmdir_inum), %ax
 	push %ax
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov (rmdir_inum+0x02), %ax
 	push %ax
 	call get_bottom_dir
 	add $0x04, %sp
 	# <ret> dx:ax
+	# <ret> tmp_inum
 
+	# {task} (rmdir_inum != tmp_inum)
+	mov (tmp_inum), %ax
+	mov (rmdir_inum), %dx
+	cmp %ax, %dx
+	jne .run__rm_dir
+	#mov (tmp_inum+0x02), %ax
+	#mov (rmdir_inum+0x02), %dx
+	#cmp %ax, %dx
+	#jne .run__rm_dir
+
+	jmp .run__end
+
+.run__rm_dir:
+	mov (tmp_inum), %ax
 	push %ax # lo
-	push %dx # hi
+	mov (tmp_inum+0x02), %ax
+	push %ax # hi
 	call rm_dir
 	add $0x04, %sp
 
+	# {end}
+	jmp .run__lp
+
+.run__end:
 	jmp .done
-	# }}}
 
 # {DONE}
 .done:
