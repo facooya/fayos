@@ -31,7 +31,7 @@ clear_inode:
 
 	# clear_bit(mem, bitnum)
 	mov I_BLK_0_LO_OFF(%bx), %ax
-	push %ax # bitnum
+	mov %ax, (bbnum)
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
@@ -52,7 +52,7 @@ clear_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	# already push bitnum
+	push $bbnum
 	push %bx
 	call clear_bit
 	add $0x04, %sp
@@ -68,8 +68,9 @@ clear_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	mov 0x06(%bp), %ax # inum_lo FIXME!!!: inum_hi
-	push %ax
+	mov 0x06(%bp), %ax
+	mov %ax, (ibnum)
+	push $ibnum
 	push %bx
 	call clear_bit
 	add $0x04, %sp

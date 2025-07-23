@@ -17,12 +17,12 @@
 - find
 
 ## TODO Priority
-- `rmdir` remove subdirectories.
 - `ls` apply end by file size.
-- check low, high memory.
 
 ## TODO
 - support multi arguments - touch, mkdir, rm, ...
 - lookup dentry, available return value.
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
+- calculate low, high address.
+- disk use segment

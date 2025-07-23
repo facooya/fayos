@@ -8,19 +8,20 @@
 .code16
 .global alloc_bit
 
-# alloc_bit(mem)
-# <ret> ax = bitnum
+# alloc_bit(mem, *bnum)
+# <ret> bnum
 alloc_bit:
 	push %bp
 	mov %sp, %bp
+	push %si
 	push %bx
 
-	mov 0x04(%bp), %bx
+	mov 0x04(%bp), %bx # mem
 	jmp .chk_word
 
 # {TASK}
 .chk_word:
-	xor %dx, %dx
+	xor %dx, %dx # word count
 
 .chk_word__lp:
 	# {task} (block_bitmap != full)
@@ -30,12 +31,12 @@ alloc_bit:
 
 	# {lp}
 	add $0x02, %bx
-	add $0x01, %dx
+	add $0x01, %dx # word count
 	jmp .chk_word__lp
 
 # {TASK}
 .chk_bit:
-	xor %cx, %cx
+	xor %cx, %cx # bit count
 
 .chk_bit__lp:
 	# {end} (bit != 1)
@@ -43,21 +44,25 @@ alloc_bit:
 	jnc .chk_bit__end
 
 	# {lp}
-	add $0x01, %cx
+	add $0x01, %cx # bit count
 	jmp .chk_bit__lp
 
 .chk_bit__end:
 	# calc bitnum
-	push %cx
-	mov %dx, %ax
+	push %cx # bit count
+	mov %dx, %ax # word count
 	xor %dx, %dx
 	mov $0x10, %cx
 	mul %cx
-	pop %cx
-	add %cx, %ax
+	pop %cx # bit count
+	add %cx, %ax # bnum
+
+	mov 0x06(%bp), %si # bnum
+	mov %ax, (%si) # bnum_lo
 
 # {DONE}
 .done:
+	pop %si
 	pop %bx
 	pop %bp
 	ret

@@ -20,10 +20,10 @@ add_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
+	push $bbnum
 	push %bx
 	call alloc_bit
-	add $0x02, %sp
-	push %ax
+	add $0x04, %sp
 	# }}}
 
 	# {{{ alloc inum
@@ -32,10 +32,12 @@ add_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
+	push $ibnum
 	push %bx
 	call alloc_bit
-	add $0x02, %sp
-	push %ax
+	add $0x04, %sp
+	mov (ibnum), %ax
+	mov %ax, (tmp_inum)
 	# }}}
 
 	# {{{ read/write inode table
@@ -48,13 +50,13 @@ add_inode:
 
 	# calc inode # TODO: LO,HI
 	xor %dx, %dx
-	pop %ax # inum
+	mov (ibnum), %ax
 	mov $I_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
 	# write blk # TODO: LO,HI
-	pop %ax # blknum
+	mov (bbnum), %ax
 	mov %ax, I_BLK_0_LO_OFF(%bx)
 
 	# write inode table
@@ -71,12 +73,7 @@ add_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-	mov %ax, (tmp_inum)
-
-	push %ax
+	push $ibnum
 	push %bx
 	call set_bit
 	add $0x04, %sp
@@ -92,11 +89,7 @@ add_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	push %bx
-	call alloc_bit
-	add $0x02, %sp
-
-	push %ax
+	push $bbnum
 	push %bx
 	call set_bit
 	add $0x04, %sp

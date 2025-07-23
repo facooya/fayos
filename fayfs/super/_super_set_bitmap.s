@@ -18,8 +18,7 @@ _super_set_bitmap:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	xor %ax, %ax
-	push %ax
+	push $bbnum
 	push %bx
 	call set_bit
 	add $0x04, %sp
@@ -39,8 +38,7 @@ _super_set_bitmap:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	xor %ax, %ax
-	push %ax
+	push $ibnum
 	push %bx
 	call set_bit
 	add $0x04, %sp

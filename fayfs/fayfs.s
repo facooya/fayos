@@ -14,6 +14,9 @@
 .global tmp_dir_inum
 .global rmdir_inum
 
+.global bbnum
+.global ibnum
+
 .global de_dots
 
 inode: .zero I_SIZE
@@ -23,6 +26,9 @@ inum: .long 0x00
 tmp_inum: .long 0x00
 tmp_dir_inum: .long 0x00
 rmdir_inum: .long 0x00
+
+bbnum: .long 0x00
+ibnum: .long 0x00
 
 de_dots:
 	.word 0x002E
