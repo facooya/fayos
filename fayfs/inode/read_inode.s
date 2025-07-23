@@ -23,11 +23,11 @@ read_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	#mov %dx, %ds
 
 	# calc inum
 	xor %dx, %dx
-	mov 0x06(%bp), %cx
+	mov 0x06(%bp), %cx # inum_lo
 	mov $I_SIZE, %ax
 	mul %cx
 	add %ax, %bx

@@ -58,12 +58,10 @@ _super_make_root:
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
-	xor %ax, %ax
 	push %ax
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
-	xor %ax, %ax
 	push %ax
 	call add_dentry
 	add $0x0C, %sp

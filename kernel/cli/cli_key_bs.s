@@ -4,8 +4,6 @@
 #
 # Key backspace
 
-# FIXME!!!: Somthing error or lsh error
-
 .section .text
 .code16
 .global cli_key_bs

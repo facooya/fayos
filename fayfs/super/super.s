@@ -67,6 +67,8 @@ proc_super:
 
 	mov $0x01, %ax
 	mov %ax, (inum)
+	xor %ax, %ax
+	mov %ax, (inum+0x02)
 	call _super_make_root
 
 	jmp .done
@@ -75,6 +77,8 @@ proc_super:
 .run_init:
 	mov $0x01, %ax # root
 	mov %ax, (inum)
+	xor %ax, %ax
+	mov %ax, (inum+0x02)
 
 	call _super_set_lba
 

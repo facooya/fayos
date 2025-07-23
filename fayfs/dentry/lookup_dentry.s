@@ -67,7 +67,7 @@ lookup_dentry:
 	# {lp.step} (inum == 0)
 	mov DE_INUM_LO_OFF(%bx), %ax
 	test %ax, %ax
-	or %ax, DE_INUM_HI_OFF(%bx)
+	or DE_INUM_HI_OFF(%bx), %ax
 	jz .lp__step
 	# }}}
 

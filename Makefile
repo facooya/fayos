@@ -32,6 +32,7 @@ kernel/exec/exec_redir.s \
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_cursor.s \
 kernel/dbg/dbg_buf.s \
+kernel/dbg/dbg_inum.s \
 kernel/dbg/dbg_trace.s \
 kernel/dbg/dbg_utils.s \
 \

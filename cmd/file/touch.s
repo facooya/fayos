@@ -64,12 +64,10 @@ cmd_touch:
 	mov %al, %cl # (info) name_len
 	push %si # name
 	push %cx # info
-
 	mov (tmp_inum), %ax
 	push %ax
 	mov (tmp_inum+0x02), %ax
 	push %ax
-
 	mov (inum), %ax
 	push %ax
 	mov (inum+0x02), %ax
