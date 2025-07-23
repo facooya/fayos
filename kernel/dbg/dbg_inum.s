@@ -2,20 +2,24 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug inum
+# Debug inum - show inum value
 
 .section .text
 .code16
 .global dbg_inum
 
-# dbg_inum()
+# dbg_inum(*inum)
 dbg_inum:
+	push %bp
+	mov %sp, %bp
+	push %si
 	push %ax
 	push %dx
 
 	call dbg_line
 
-	mov (inum+0x02), %dx
+	mov 0x04(%bp), %si
+	mov 0x02(%si), %dx
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
@@ -23,7 +27,7 @@ dbg_inum:
 	mov %dl, %al
 	call outc
 
-	mov (inum), %dx
+	mov (%si), %dx
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
@@ -36,4 +40,6 @@ dbg_inum:
 
 	pop %dx
 	pop %ax
+	pop %si
+	pop %bp
 	ret
