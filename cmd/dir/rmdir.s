@@ -66,19 +66,6 @@ cmd_rmdir:
 	# <ret> dx:ax
 	# <ret> tmp_inum
 
-	# {task} (rmdir_inum != tmp_inum)
-	mov (tmp_inum), %ax
-	mov (rmdir_inum), %dx
-	cmp %ax, %dx
-	jne .run__rm_dir
-	#mov (tmp_inum+0x02), %ax
-	#mov (rmdir_inum+0x02), %dx
-	#cmp %ax, %dx
-	#jne .run__rm_dir
-
-	jmp .run__end
-
-.run__rm_dir:
 	mov (tmp_inum), %ax
 	push %ax # lo
 	mov (tmp_inum+0x02), %ax
@@ -86,10 +73,51 @@ cmd_rmdir:
 	call rm_dir
 	add $0x04, %sp
 
+	# {lp} (rmdir_inum != tmp_inum)
+	mov (tmp_inum), %ax
+	mov (rmdir_inum), %dx
+	cmp %ax, %dx
+	jne .run__lp
+	mov (tmp_inum+0x02), %ax
+	mov (rmdir_inum+0x02), %dx
+	cmp %ax, %dx
+	jne .run__lp
+
 	# {end}
-	jmp .run__lp
+	jmp .run__end
 
 .run__end:
+	# {{{ last remove
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+
+	push %si # arg
+	call strlen
+	add $0x02, %sp
+	mov %ax, %cx
+
+	push %si # src_name
+	push %cx # src_name_len
+	mov (inum), %ax
+	push %ax # inum_lo
+	mov (inum+0x02), %ax
+	push %ax # inum_hi
+	call lookup_dentry
+	add $0x08, %sp
+	mov %ax, %bx # set mem
+
+	xor %ax, %ax
+	mov %ax, DE_INUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_HI_OFF(%bx)
+	
+	push $dap
+	call write_disk
+	add $0x02, %sp
+	# }}}
+
 	jmp .done
 
 # {DONE}
