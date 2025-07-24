@@ -34,12 +34,9 @@ lookup_dentry:
 	call read_inode
 	add $0x06, %sp
 
-	mov I_BLK_0_LO_OFF(%si), %ax
-	push %ax
-	mov I_BLK_0_HI_OFF(%si), %ax
-	push %ax
+	push $inode
 	call set_dap_blk_lba
-	add $0x04, %sp
+	add $0x02, %sp
 
 	push $dap
 	call read_disk

@@ -5,6 +5,7 @@
 # set DAP by block LBA
 
 .include "fayfs/super.s"
+.include "fayfs/inode.s"
 .section .data
 .blk_lba: .long 0x00
 
@@ -12,14 +13,18 @@
 .code16
 .global set_dap_blk_lba
 
-# set_dap_blk_lba(blknum_hi, blknum_lo)
+# set_dap_blk_lba(struct inode *inode)
 set_dap_blk_lba:
 	push %bp
 	mov %sp, %bp
+	push %si
 	push %bx
 
 	# calc low
-	mov 0x06(%bp), %ax
+	mov 0x04(%bp), %si
+	add $I_BLK_0_LO_OFF, %si
+	mov (%si), %ax
+
 	xor %dx, %dx
 	mov $0x08, %cx
 	mul %cx
@@ -28,7 +33,7 @@ set_dap_blk_lba:
 	mov %dx, (.blk_lba+0x02)
 
 	# calc high
-	mov 0x04(%bp), %ax
+	mov 0x02(%si), %ax
 	xor %dx, %dx
 	mov $0x08, %cx
 	mul %cx
@@ -75,6 +80,7 @@ set_dap_blk_lba:
 
 .epil:
 	pop %bx
+	pop %si
 	pop %bp
 	ret
 

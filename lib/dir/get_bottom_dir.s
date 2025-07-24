@@ -37,12 +37,9 @@ get_bottom_dir:
 	mov I_FILE_SIZE_OFF(%si), %dx
 	push %dx
 
-	mov I_BLK_0_LO_OFF(%si), %ax
-	push %ax
-	mov I_BLK_0_HI_OFF(%si), %ax
-	push %ax
+	push $tmp_inode
 	call set_dap_blk_lba
-	add $0x04, %sp
+	add $0x02, %sp
 
 	push $dap
 	call read_disk

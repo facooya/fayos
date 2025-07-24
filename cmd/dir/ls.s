@@ -29,12 +29,9 @@ cmd_ls:
 	mov I_FILE_SIZE_OFF(%si), %dx
 	push %dx
 
-	mov I_BLK_0_LO_OFF(%si), %ax
-	push %ax
-	mov I_BLK_0_HI_OFF(%si), %ax
-	push %ax
+	push $inode
 	call set_dap_blk_lba
-	add $0x04, %sp
+	add $0x02, %sp
 
 	push $dap
 	call read_disk
@@ -67,7 +64,7 @@ cmd_ls:
 .run__name_lp:
 	# {end} (name_len == 0)
 	test %cx, %cx
-	jz .run__lp_step
+	jz .run__name_end
 
 	# copy
 	mov (%si), %al
@@ -77,6 +74,10 @@ cmd_ls:
 	add $0x01, %si
 	sub $0x01, %cx
 	jmp .run__name_lp
+
+.run__name_end:
+	call putsp
+	call putsp
 
 .run__lp_step:
 	# add rec_len
@@ -89,8 +90,6 @@ cmd_ls:
 	jle .done
 
 	# {lp}
-	call putsp
-	call putsp
 	jmp .run__lp
 
 # {DONE}
