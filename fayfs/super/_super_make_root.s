@@ -18,16 +18,10 @@ _super_make_root:
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inum
+	push $inum
 	call add_dentry
-	add $0x0C, %sp
+	add $0x08, %sp
 	push %ax
 
 	mov $inode, %si
@@ -55,16 +49,10 @@ _super_make_root:
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inum
+	push $inum
 	call add_dentry
-	add $0x0C, %sp
+	add $0x08, %sp
 	push %ax
 
 	mov $inode, %si

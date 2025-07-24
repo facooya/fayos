@@ -66,16 +66,10 @@ cmd_mkdir:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $tmp_inum
+	push $inum
 	call add_dentry
-	add $0x0C, %sp
+	add $0x08, %sp
 	push %ax
 
 	mov $inode, %si
@@ -105,16 +99,10 @@ cmd_mkdir:
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+	push $tmp_inum
+	push $tmp_inum
 	call add_dentry
-	add $0x0C, %sp
+	add $0x08, %sp
 	push %ax
 
 	mov $inode, %si
@@ -143,16 +131,10 @@ cmd_mkdir:
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+	push $inum
+	push $tmp_inum
 	call add_dentry
-	add $0x0C, %sp
+	add $0x08, %sp
 	push %ax
 
 	mov $inode, %si

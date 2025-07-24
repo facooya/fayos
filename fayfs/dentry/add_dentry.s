@@ -11,10 +11,10 @@
 .global add_dentry
 
 # add_dentry(
-# src_inum_hi, src_inum_lo,
-# dst_inum_hi, dst_inum_lo,
-# info (file_type:name_len),
-# name_ptr
+# *src_inum
+# *dst_inum
+# info (file_type:name_len)
+# *name
 # )
 add_dentry:
 	push %bp
@@ -23,12 +23,10 @@ add_dentry:
 	push %di
 	push %bx
 
-	mov $inode, %si
-	push %si
-	mov 0x06(%bp), %ax # src_lo
-	push %ax
-	mov 0x04(%bp), %ax # src_hi
-	push %ax
+	push $inode
+	mov 0x04(%bp), %si
+	push (%si)
+	push 0x02(%si)
 	call read_inode
 	add $0x06, %sp
 
@@ -41,6 +39,7 @@ add_dentry:
 	add $0x02, %sp
 	mov %ax, %bx
 
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	add %ax, %bx # set mem
 
@@ -50,13 +49,14 @@ add_dentry:
 # {TASK}
 .write:
 	# write inum
-	mov 0x0A(%bp), %ax # dst_lo
+	mov 0x06(%bp), %si
+	mov (%si), %ax # dst_lo
 	mov %ax, DE_INUM_OFF(%bx)
-	mov 0x08(%bp), %ax # dst_hi
+	mov 0x02(%si), %ax # dst_hi
 	mov %ax, DE_INUM_OFF+0x02(%bx)
 
 	# write info
-	mov 0x0C(%bp), %dx # dh:dl = file_type:name_len
+	mov 0x08(%bp), %dx # dh:dl = file_type:name_len
 	mov %dh, DE_FILE_TYPE_OFF(%bx)
 	mov %dl, DE_NAME_LEN_OFF(%bx)
 
@@ -72,7 +72,7 @@ add_dentry:
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
 
-	mov 0x0E(%bp), %si # name
+	mov 0x0A(%bp), %si # name
 	xor %cx, %cx
 	mov %dl, %cl # name_len
 
