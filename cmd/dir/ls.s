@@ -26,6 +26,9 @@ cmd_ls:
 	call read_inode
 	add $0x06, %sp
 
+	mov I_FILE_SIZE_OFF(%si), %dx
+	push %dx
+
 	mov I_BLK_0_LO_OFF(%si), %ax
 	push %ax
 	mov I_BLK_0_HI_OFF(%si), %ax
@@ -41,6 +44,7 @@ cmd_ls:
 	# }}}
 
 	# {task}
+	pop %dx # file_size
 	jmp .run
 
 # {TASK}
@@ -50,7 +54,7 @@ cmd_ls:
 	mov DE_INUM_LO_OFF(%bx), %ax
 	test %ax, %ax
 	or DE_INUM_HI_OFF(%bx), %ax
-	jz .run__chk
+	jz .run__lp_step
 
 	# set name ptr
 	mov %bx, %si
@@ -63,7 +67,7 @@ cmd_ls:
 .run__name_lp:
 	# {end} (name_len == 0)
 	test %cx, %cx
-	jz .run__name_end
+	jz .run__lp_step
 
 	# copy
 	mov (%si), %al
@@ -74,30 +78,19 @@ cmd_ls:
 	sub $0x01, %cx
 	jmp .run__name_lp
 
-.run__name_end:
+.run__lp_step:
 	# add rec_len
 	mov DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
+	sub %ax, %dx # file_size--
 
-	# {end.done} (rec_len == null)
-	test %ax, %ax
-	jz .done
+	# {end.done} (file_size <= 0)
+	cmp $0x00, %dx
+	jle .done
 
 	# {lp}
 	call putsp
 	call putsp
-	jmp .run__lp
-
-.run__chk:
-	# add rec_len
-	mov DE_REC_LEN_OFF(%bx), %ax
-	add %ax, %bx
-
-	# {end.done} (rec_len == null)
-	test %ax, %ax
-	jz .done
-
-	# {lp}
 	jmp .run__lp
 
 # {DONE}
