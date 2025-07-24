@@ -46,6 +46,7 @@ kernel/io/out_utils.s \
 kernel/io/dap.s \
 kernel/io/dap_utils.s \
 kernel/io/disk.s \
+kernel/io/set_dap_blk_lba.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \

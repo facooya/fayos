@@ -6,7 +6,6 @@
 
 .include "fayfs/super.s"
 .include "dap.s"
-.section .data
 .global dap
 .global dap_super
 .global dap_bb
