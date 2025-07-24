@@ -57,7 +57,7 @@ add_inode:
 
 	# write blk # TODO: LO,HI
 	mov (bbnum), %ax
-	mov %ax, I_BLK_0_LO_OFF(%bx)
+	mov %ax, I_BLK_0_OFF(%bx)
 
 	# write inode table
 	push $dap_it

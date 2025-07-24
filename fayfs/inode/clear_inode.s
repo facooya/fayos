@@ -30,14 +30,14 @@ clear_inode:
 	add %ax, %bx # set mem
 
 	# clear_bit(mem, bitnum)
-	mov I_BLK_0_LO_OFF(%bx), %ax
+	mov I_BLK_0_OFF(%bx), %ax
 	mov %ax, (bbnum)
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
 	mov %ax, I_FILE_SIZE_OFF(%bx)
-	mov %ax, I_BLK_0_LO_OFF(%bx)
-	mov %ax, I_BLK_0_HI_OFF(%bx)
+	mov %ax, I_BLK_0_OFF(%bx)
+	mov %ax, I_BLK_0_OFF+0x02(%bx)
 
 	push $dap_it
 	call write_disk

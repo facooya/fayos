@@ -51,9 +51,9 @@ add_dentry:
 .write:
 	# write inum
 	mov 0x0A(%bp), %ax # dst_lo
-	mov %ax, DE_INUM_LO_OFF(%bx)
+	mov %ax, DE_INUM_OFF(%bx)
 	mov 0x08(%bp), %ax # dst_hi
-	mov %ax, DE_INUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_OFF+0x02(%bx)
 
 	# write info
 	mov 0x0C(%bp), %dx # dh:dl = file_type:name_len

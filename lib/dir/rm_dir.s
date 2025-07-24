@@ -53,22 +53,22 @@ rm_dir:
 	sub $0x18, %dx # file_size--
 
 .clear__lp:
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_HI_OFF(%bx), %ax
+	or DE_INUM_OFF+0x02(%bx), %ax
 	jz .clear__lp_step
 
 	push %cx
 	push %dx
 
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	push %ax
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
 	push %ax
 
 	xor %ax, %ax
-	mov %ax, DE_INUM_LO_OFF(%bx)
-	mov %ax, DE_INUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_OFF(%bx)
+	mov %ax, DE_INUM_OFF+0x02(%bx)
 
 	push $dap
 	call write_disk

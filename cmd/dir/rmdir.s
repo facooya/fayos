@@ -51,9 +51,9 @@ cmd_rmdir:
 	jmp .run
 
 .run:
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (rmdir_inum)
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (rmdir_inum+0x02)
 
 .run__lp:
@@ -110,8 +110,8 @@ cmd_rmdir:
 	mov %ax, %bx # set mem
 
 	xor %ax, %ax
-	mov %ax, DE_INUM_LO_OFF(%bx)
-	mov %ax, DE_INUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_OFF(%bx)
+	mov %ax, DE_INUM_OFF+0x02(%bx)
 	
 	push $dap
 	call write_disk

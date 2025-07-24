@@ -57,9 +57,9 @@ get_bottom_dir:
 
 .find__lp:
 	# {step} (inum == 0)
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_HI_OFF(%bx), %ax
+	or DE_INUM_OFF+0x02(%bx), %ax
 	jz .find__lp_step
 
 	# (file_type == dir)
@@ -87,10 +87,10 @@ get_bottom_dir:
 
 	mov $tmp_inode, %si
 	push %si
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_dir_inum)
 	push %ax
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (tmp_dir_inum+0x02)
 	push %ax
 	call read_inode

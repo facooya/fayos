@@ -22,7 +22,7 @@ set_dap_blk_lba:
 
 	# calc low
 	mov 0x04(%bp), %si
-	add $I_BLK_0_LO_OFF, %si
+	add $I_BLK_0_OFF, %si
 	mov (%si), %ax
 
 	xor %dx, %dx

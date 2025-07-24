@@ -53,15 +53,15 @@ cmd_rm:
 	jne .err_file_type
 
 	# {{{
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	push %ax
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
 	push %ax
 
 	# clear inum
 	xor %ax, %ax
-	mov %ax, DE_INUM_LO_OFF(%bx)
-	mov %ax, DE_INUM_HI_OFF(%bx)
+	mov %ax, DE_INUM_OFF(%bx)
+	mov %ax, DE_INUM_OFF+0x02(%bx)
 
 	# write
 	push $dap

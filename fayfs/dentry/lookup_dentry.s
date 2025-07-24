@@ -62,9 +62,9 @@ lookup_dentry:
 	jne .lp__step
 
 	# {lp.step} (inum == 0)
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_HI_OFF(%bx), %ax
+	or DE_INUM_OFF+0x02(%bx), %ax
 	jz .lp__step
 	# }}}
 

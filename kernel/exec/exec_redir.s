@@ -60,9 +60,9 @@ exec_redir:
 # {TASK}
 .run:
 	# get dst i num
-	mov DE_INUM_LO_OFF(%bx), %ax
+	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_INUM_HI_OFF(%bx), %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	# read i node

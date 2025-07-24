@@ -39,10 +39,10 @@ read_inode:
 	mov %ax, I_FILE_SIZE_OFF(%si)
 
 	# set i_blk
-	mov I_BLK_0_LO_OFF(%bx), %ax
-	mov %ax, I_BLK_0_LO_OFF(%si)
-	mov I_BLK_0_HI_OFF(%bx), %ax
-	mov %ax, I_BLK_0_HI_OFF(%si)
+	mov I_BLK_0_OFF(%bx), %ax
+	mov %ax, I_BLK_0_OFF(%si)
+	mov I_BLK_0_OFF+0x02(%bx), %ax
+	mov %ax, I_BLK_0_OFF+0x02(%si)
 
 	pop %bx
 	pop %si
