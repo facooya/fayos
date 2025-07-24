@@ -25,14 +25,14 @@ proc_super:
 	mov %ax, %bx
 
 	# {{{ check superblock
-	# {task} (get_magic_low != magic_low)
-	mov S_MAG_LO_OFF(%bx), %ax
-	cmp $S_MAG_LO, %ax
+	# {task} (disk_magic_low != magic_low)
+	mov S_MAG_OFF(%bx), %ax
+	cmp $(S_MAG&0xFFFF), %ax
 	jne .run_make
 
-	# {task} (get_magic_high != magic_high)
-	mov S_MAG_HI_OFF(%bx), %ax
-	cmp $S_MAG_HI, %ax
+	# {task} (disk_magic_high != magic_high)
+	mov S_MAG_OFF+0x02(%bx), %ax
+	cmp $(S_MAG>>0x10), %ax
 	jne .run_make
 
 	push $.kmsg_found

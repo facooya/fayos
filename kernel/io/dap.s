@@ -31,8 +31,8 @@ dap_super:
 	.word S_SECTOR_COUNT
 	.word S_OFF_MEM
 	.word S_SEG_MEM
-	.word S_LBA_LO
-	.word S_LBA_HI
+	.word (S_LBA&0xFFFF)
+	.word (S_LBA>>0x10)
 	.word 0x00
 	.word 0x00
 

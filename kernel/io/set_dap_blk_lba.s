@@ -53,7 +53,8 @@ set_dap_blk_lba:
 	# add normal lba
 	mov (.blk_lba), %ax
 	mov $S_OFF_MEM, %bx
-	mov NORM_LBA_LO_OFF(%bx), %cx
+	mov NORM_LBA_OFF(%bx), %cx
+	# TODO: NORM_LBA_OFF+0x02(%bx)
 
 	clc
 	add %cx, %ax

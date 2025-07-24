@@ -11,34 +11,35 @@
 
 # _super_alloc_lba()
 _super_alloc_lba:
-	mov DP_LBA_SIZE_LO_OFF(%bx), %ax
-	# TODO: mov DP_LBA_SIZE_HI_OFF(%bx), %ax
+	mov DP_LBA_SIZE_OFF(%bx), %ax
+	# TODO: mov DP_LBA_SIZE_OFF+0x02(%bx), %ax
+	# TODO: calcluate high lba
 
 	# {{{
 	# bbs
 	xor %dx, %dx
 	mov $0x40, %cx
 	div %cx
-	mov %ax, BBS_LO_OFF(%bx)
+	mov %ax, BBS_OFF(%bx)
 
 	# ibs
-	mov BBS_LO_OFF(%bx), %ax
+	mov BBS_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x04, %cx
 	div %cx
-	mov %ax, IBS_LO_OFF(%bx)
+	mov %ax, IBS_OFF(%bx)
 
 	# its
-	mov BBS_LO_OFF(%bx), %ax
+	mov BBS_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x40, %cx
 	mul %cx
-	mov %ax, ITS_LO_OFF(%bx)
+	mov %ax, ITS_OFF(%bx)
 	# }}}
 
 	# {{{
 	# bbbc
-	mov BBS_LO_OFF(%bx), %ax
+	mov BBS_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x1000, %cx
 	div %cx
@@ -51,7 +52,7 @@ _super_alloc_lba:
 	mov %ax, BBBC_OFF(%bx)
 
 	# ibbc
-	mov IBS_LO_OFF(%bx), %ax
+	mov IBS_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x1000, %cx
 	div %cx
@@ -64,7 +65,7 @@ _super_alloc_lba:
 	mov %ax, IBBC_OFF(%bx)
 
 	# itbc
-	mov ITS_LO_OFF(%bx), %ax
+	mov ITS_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x1000, %cx
 	div %cx
@@ -80,33 +81,33 @@ _super_alloc_lba:
 	# {{{
 	# bb
 	mov $FST_LBA, %ax
-	mov %ax, BB_LBA_LO_OFF(%bx)
+	mov %ax, BB_LBA_OFF(%bx)
 
 	# ib
 	mov BBBC_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x08, %cx
 	mul %cx
-	mov BB_LBA_LO_OFF(%bx), %cx
+	mov BB_LBA_OFF(%bx), %cx
 	add %cx, %ax
-	mov %ax, IB_LBA_LO_OFF(%bx)
+	mov %ax, IB_LBA_OFF(%bx)
 
 	# it
 	mov IBBC_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x08, %cx
 	mul %cx
-	mov IB_LBA_LO_OFF(%bx), %cx
+	mov IB_LBA_OFF(%bx), %cx
 	add %cx, %ax
-	mov %ax, IT_LBA_LO_OFF(%bx)
+	mov %ax, IT_LBA_OFF(%bx)
 
 	# normal
 	mov ITBC_OFF(%bx), %ax
 	xor %dx, %dx
 	mov $0x08, %cx
 	mul %cx
-	mov IT_LBA_LO_OFF(%bx), %cx
+	mov IT_LBA_OFF(%bx), %cx
 	add %cx, %ax
-	mov %ax, NORM_LBA_LO_OFF(%bx)
+	mov %ax, NORM_LBA_OFF(%bx)
 	# }}}
 	ret

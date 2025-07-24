@@ -12,8 +12,8 @@
 # _super_write_data()
 _super_write_data:
 	# magic
-	mov $S_MAG_LO, %ax
-	mov %ax, S_MAG_LO_OFF(%bx)
-	mov $S_MAG_HI, %ax
-	mov %ax, S_MAG_HI_OFF(%bx)
+	mov $(S_MAG&0xFFFF), %ax
+	mov %ax, S_MAG_OFF(%bx)
+	mov $(S_MAG>>0x10), %ax
+	mov %ax, S_MAG_OFF+0x02(%bx)
 	ret
