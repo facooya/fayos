@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug inum - show inum value
+# Debug number - show number value
 
 .section .text
 .code16
-.global dbg_inum
+.global dbg_num
 
-# dbg_inum(*inum)
-dbg_inum:
+# dbg_num(uint32_t* num)
+dbg_num:
 	push %bp
 	mov %sp, %bp
 	push %si

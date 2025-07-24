@@ -26,4 +26,3 @@
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address.
 - disk use segment
-- dots structure move to include file
