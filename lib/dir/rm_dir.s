@@ -28,8 +28,8 @@ rm_dir:
 	add $0x06, %sp
 
 	mov I_FILE_SIZE_OFF(%si), %dx
-
 	push %dx
+
 	mov $tmp_inode, %si
 	mov $0x18, I_FILE_SIZE_OFF(%si)
 	push %si
@@ -39,8 +39,20 @@ rm_dir:
 	push %ax
 	call update_inode
 	add $0x06, %sp
-	pop %dx
 
+	mov $tmp_inode, %si
+	mov I_BLK_0_LO_OFF(%si), %ax
+	push %ax
+	mov I_BLK_0_HI_OFF(%si), %ax
+	push %ax
+	call set_dap_blk_lba
+	add $0x04, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+
+	pop %dx
 	mov $0x18, %cx # rm_rec_len++
 	sub $0x18, %dx # file_size--
 
