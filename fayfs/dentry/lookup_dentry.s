@@ -11,9 +11,9 @@
 .global lookup_dentry
 
 # lookup_dentry(
-# inum_hi, inum_lo
+# *inum
 # name_len,
-# name_ptr
+# *name
 # )
 # <ret> ax = not_match:0, match:memory
 lookup_dentry:
@@ -27,10 +27,9 @@ lookup_dentry:
 	# read_inode(inum_hi, inum_lo)
 	mov $inode, %si
 	push %si
-	mov 0x06(%bp), %ax
-	push %ax # inum_lo
-	mov 0x04(%bp), %ax
-	push %ax # inum_hi
+	mov 0x04(%bp), %si # *inum
+	push (%si)
+	push 0x02(%si)
 	call read_inode
 	add $0x06, %sp
 
@@ -45,8 +44,8 @@ lookup_dentry:
 	# }}}
 
 	# {pre}
-	mov 0x08(%bp), %dx # src_name_len
-	mov 0x0A(%bp), %si # src_name
+	mov 0x06(%bp), %dx # name_len
+	mov 0x08(%bp), %si # *name
 
 .lp:
 	# {{{ len compare

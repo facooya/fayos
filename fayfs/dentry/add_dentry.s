@@ -11,11 +11,12 @@
 .global add_dentry
 
 # add_dentry(
-# *src_inum
-# *dst_inum
-# info (file_type:name_len)
+# *src_inum,
+# *dst_inum,
+# info,
 # *name
 # )
+# <req> info = file_type:name_len
 add_dentry:
 	push %bp
 	mov %sp, %bp

@@ -36,12 +36,9 @@ exec_redir:
 	# {{{ lookup dentry
 	push %si # name
 	push %cx # name_len
-	mov (inum), %ax
-	push %ax # inum_lo
-	mov (inum+0x02), %ax
-	push %ax # inum_hi
+	push $inum
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x06, %sp
 	mov %ax, %bx
 
 	# {err} (lookup_dentry == no_match)
