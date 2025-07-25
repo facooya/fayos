@@ -67,6 +67,10 @@ cmd_cat:
 	call read_inode
 	add $0x04, %sp
 
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+
 	push $inode
 	call set_dap_blk_lba
 	add $0x02, %sp
@@ -76,10 +80,12 @@ cmd_cat:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	# puts
+	# putns
+	pop %ax # file size
+	push %ax
 	push %bx
-	call puts
-	add $0x02, %sp
+	call putns
+	add $0x04, %sp
 
 	# restore
 	pop %bx

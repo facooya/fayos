@@ -85,6 +85,7 @@ lib/err/emsg_io.s \
 lib/err/emsg_syn.s \
 \
 lib/str/putf.s \
+lib/str/putns.s \
 lib/str/puts.s \
 lib/str/put_utils.s \
 lib/str/split.s \
