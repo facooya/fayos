@@ -51,9 +51,9 @@ cmd_rm:
 
 	# {{{
 	mov DE_INUM_OFF(%bx), %ax
-	push %ax
+	mov %ax, (clear_inum)
 	mov DE_INUM_OFF+0x02(%bx), %ax
-	push %ax
+	mov %ax, (clear_inum+0x02)
 
 	# clear inum
 	xor %ax, %ax
@@ -65,8 +65,9 @@ cmd_rm:
 	call write_disk
 	add $0x02, %sp
 
+	push $clear_inum
 	call clear_inode
-	add $0x04, %sp
+	add $0x02, %sp
 	# }}}
 
 	# {end.done}

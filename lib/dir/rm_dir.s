@@ -29,14 +29,11 @@ rm_dir:
 
 	mov $tmp_inode, %si
 	mov $0x18, I_FILE_SIZE_OFF(%si)
+
 	push $tmp_inode
-	mov 0x04(%bp), %si
-	mov (%si), %ax
-	push %ax
-	mov 0x02(%si), %ax
-	push %ax
+	push 0x04(%bp)
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $tmp_inode
 	call set_dap_blk_lba
@@ -60,9 +57,9 @@ rm_dir:
 	push %dx
 
 	mov DE_INUM_OFF(%bx), %ax
-	push %ax
+	mov %ax, (clear_inum)
 	mov DE_INUM_OFF+0x02(%bx), %ax
-	push %ax
+	mov %ax, (clear_inum+0x02)
 
 	xor %ax, %ax
 	mov %ax, DE_INUM_OFF(%bx)
@@ -72,8 +69,9 @@ rm_dir:
 	call write_disk
 	add $0x02, %sp
 
+	push $clear_inum
 	call clear_inode
-	add $0x04, %sp
+	add $0x02, %sp
 
 	pop %dx
 	pop %cx

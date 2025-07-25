@@ -9,10 +9,11 @@
 .code16
 .global clear_inode
 
-# clear_inode(inum_hi, inum_lo)
+# clear_inode(*inum)
 clear_inode:
 	push %bp
 	mov %sp, %bp
+	push %si
 	push %bx
 
 	# {{{ read/write inode table
@@ -24,7 +25,8 @@ clear_inode:
 
 	# calc inode # TODO: low, high
 	xor %dx, %dx
-	mov 0x06(%bp), %ax # inum
+	mov 0x04(%bp), %si # *inum
+	mov (%si), %ax # inum_lo
 	mov $I_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
@@ -68,7 +70,8 @@ clear_inode:
 	add $0x02, %sp
 	mov %ax, %bx
 
-	mov 0x06(%bp), %ax
+	mov 0x04(%bp), %si
+	mov (%si), %ax
 	mov %ax, (ibnum)
 	push $ibnum
 	push %bx
@@ -81,5 +84,6 @@ clear_inode:
 	# }}}
 
 	pop %bx
+	pop %si
 	pop %bp
 	ret

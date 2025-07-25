@@ -10,8 +10,8 @@
 .global update_inode
 
 # update_inode(
-# inum_hi, inum_lo,
-# &inode
+# *inum
+# *inode
 # )
 update_inode:
 	push %bp
@@ -26,12 +26,13 @@ update_inode:
 	mov %dx, %ds
 
 	xor %dx, %dx
-	mov 0x06(%bp), %ax # inum_lo
+	mov 0x04(%bp), %si # *inum
+	mov (%si), %ax # inum_lo
 	mov $I_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
-	mov 0x08(%bp), %si # &inode
+	mov 0x06(%bp), %si # *inode
 	mov I_FILE_SIZE_OFF(%si), %ax
 	mov %ax, I_FILE_SIZE_OFF(%bx)
 

@@ -124,16 +124,13 @@ exec_redir:
 	pop %dx
 
 .run__end:
-	# update_i_file_size
 	mov $inode, %si
 	mov %dx, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov (inum), %ax
-	push %ax # inum_lo
-	mov (inum+0x02), %ax
-	push %ax # inum_hi
+
+	push $inode
+	push $inum
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	# {end.done}
 	xor %ax, %ax

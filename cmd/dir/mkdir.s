@@ -79,13 +79,11 @@ cmd_mkdir:
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+
+	push $inode
+	push $inum
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 	# }}}
 
 	# {{{ add dot
@@ -107,13 +105,11 @@ cmd_mkdir:
 	pop %ax
 	mov $inode, %si
 	mov %ax, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+
+	push $inode
+	push $tmp_inum
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 	# }}}
 
 	# {{{ add dentry dotdot
@@ -138,13 +134,11 @@ cmd_mkdir:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+
+	push $inode
+	push $tmp_inum
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 	# }}}
 
 	jmp .done
