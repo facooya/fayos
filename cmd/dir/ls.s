@@ -17,15 +17,12 @@ cmd_ls:
 	push %bx
 
 	# {{{
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %dx
 	push %dx
 

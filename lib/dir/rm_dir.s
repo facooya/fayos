@@ -10,7 +10,7 @@
 .code16
 .global rm_dir
 
-# rm_dir(inum_hi, inum_lo)
+# rm_dir(*inum)
 rm_dir:
 	push %bp
 	mov %sp, %bp
@@ -18,24 +18,22 @@ rm_dir:
 	push %di
 	push %bx
 
-	mov $tmp_inode, %si
-	push %si
-	mov 0x06(%bp), %ax
-	push %ax
-	mov 0x04(%bp), %ax
-	push %ax
+	push $tmp_inode
+	push 0x04(%bp)
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
+	mov $tmp_inode, %si
 	mov I_FILE_SIZE_OFF(%si), %dx
 	push %dx
 
 	mov $tmp_inode, %si
 	mov $0x18, I_FILE_SIZE_OFF(%si)
-	push %si
-	mov 0x06(%bp), %ax
+	push $tmp_inode
+	mov 0x04(%bp), %si
+	mov (%si), %ax
 	push %ax
-	mov 0x04(%bp), %ax
+	mov 0x02(%si), %ax
 	push %ax
 	call update_inode
 	add $0x06, %sp

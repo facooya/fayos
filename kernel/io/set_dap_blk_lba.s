@@ -13,7 +13,7 @@
 .code16
 .global set_dap_blk_lba
 
-# set_dap_blk_lba(struct inode *inode)
+# set_dap_blk_lba(*inode)
 set_dap_blk_lba:
 	push %bp
 	mov %sp, %bp

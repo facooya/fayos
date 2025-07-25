@@ -25,11 +25,9 @@ add_dentry:
 	push %bx
 
 	push $inode
-	mov 0x04(%bp), %si
-	push (%si)
-	push 0x02(%si)
+	push 0x04(%bp)
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $inode
 	call set_dap_blk_lba

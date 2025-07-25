@@ -62,14 +62,10 @@ cmd_cat:
 	mov DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (inum+0x02)
 
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $inode
 	call set_dap_blk_lba

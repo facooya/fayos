@@ -10,8 +10,8 @@
 .code16
 .global get_bottom_dir
 
-# get_bottom_dir(inum_hi, inum_lo)
-# <ret> dx:ax bottom dir inum
+# get_bottom_dir(*inum)
+# <ret> tmp_inum bottom dir inum
 get_bottom_dir:
 	push %bp
 	mov %sp, %bp
@@ -19,21 +19,19 @@ get_bottom_dir:
 	push %di
 	push %bx
 
-	mov 0x06(%bp), %ax
+	mov 0x04(%bp), %si
+	mov (%si), %ax
 	mov %ax, (tmp_inum)
-	mov 0x04(%bp), %ax
+	mov 0x02(%si), %ax
 	mov %ax, (tmp_inum+0x02)
 
 .down__lp:
-	mov $tmp_inode, %si
-	push %si
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+	push $tmp_inode
+	push $tmp_inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
+	mov $tmp_inode, %si
 	mov I_FILE_SIZE_OFF(%si), %dx
 	push %dx
 
@@ -85,18 +83,18 @@ get_bottom_dir:
 	push %dx
 	push %cx
 
-	mov $tmp_inode, %si
-	push %si
 	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_dir_inum)
-	push %ax
 	mov DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (tmp_dir_inum+0x02)
-	push %ax
+
+	push $tmp_inode
+	push $tmp_dir_inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	# (file_size == dots)
+	mov $tmp_inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	cmp $0x18, %ax
 	je .find__continue
@@ -130,8 +128,6 @@ get_bottom_dir:
 
 # {DONE}
 .done:
-	mov (tmp_inum), %ax
-	mov (tmp_inum+0x02), %dx
 	jmp .epil
 
 .epil:

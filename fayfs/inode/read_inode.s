@@ -10,8 +10,8 @@
 .global read_inode
 
 # read_inode(
-# inum_hi, inum_lo
-# &inode
+# *inum
+# *inode
 # )
 read_inode:
 	push %bp
@@ -23,16 +23,17 @@ read_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	#mov %dx, %ds
+	mov %dx, %ds
 
 	# calc inum
 	xor %dx, %dx
-	mov 0x06(%bp), %cx # inum_lo
-	mov $I_SIZE, %ax
+	mov 0x04(%bp), %si # *inum
+	mov (%si), %ax # inum_lo
+	mov $I_SIZE, %cx
 	mul %cx
 	add %ax, %bx
 
-	mov 0x08(%bp), %si
+	mov 0x06(%bp), %si # *inode
 
 	# set i_file_size
 	mov I_FILE_SIZE_OFF(%bx), %ax

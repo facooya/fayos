@@ -68,16 +68,13 @@ cmd_touch:
 	push %ax
 	# }}}
 
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %ax
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)

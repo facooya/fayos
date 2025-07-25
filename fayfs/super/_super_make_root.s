@@ -24,16 +24,13 @@ _super_make_root:
 	add $0x08, %sp
 	push %ax
 
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %ax
+	mov $inode, %si
 	mov %ax, I_FILE_SIZE_OFF(%si)
 	push %si
 	mov (inum), %ax
@@ -55,16 +52,13 @@ _super_make_root:
 	add $0x08, %sp
 	push %ax
 
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %cx
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)

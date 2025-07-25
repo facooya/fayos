@@ -24,14 +24,10 @@ lookup_dentry:
 	push %bx
 
 	# {{{ read block
-	# read_inode(inum_hi, inum_lo)
-	mov $inode, %si
-	push %si
-	mov 0x04(%bp), %si # *inum
-	push (%si)
-	push 0x02(%si)
+	push $inode
+	push 0x04(%bp)
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $inode
 	call set_dap_blk_lba

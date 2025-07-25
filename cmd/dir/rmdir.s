@@ -54,21 +54,14 @@ cmd_rmdir:
 	mov %ax, (rmdir_inum+0x02)
 
 .run__lp:
-	mov (rmdir_inum), %ax
-	push %ax
-	mov (rmdir_inum+0x02), %ax
-	push %ax
+	push $rmdir_inum
 	call get_bottom_dir
-	add $0x04, %sp
-	# <ret> dx:ax
+	add $0x02, %sp
 	# <ret> tmp_inum
 
-	mov (tmp_inum), %ax
-	push %ax # lo
-	mov (tmp_inum+0x02), %ax
-	push %ax # hi
+	push $tmp_inum
 	call rm_dir
-	add $0x04, %sp
+	add $0x02, %sp
 
 	# {lp} (rmdir_inum != tmp_inum)
 	mov (tmp_inum), %ax
@@ -103,6 +96,12 @@ cmd_rmdir:
 	add $0x06, %sp
 	mov %ax, %bx # set mem
 
+	# clear_inode(): set param
+	mov DE_INUM_OFF(%bx), %ax
+	push %ax
+	mov DE_INUM_OFF+0x02(%bx), %ax
+	push %ax
+
 	xor %ax, %ax
 	mov %ax, DE_INUM_OFF(%bx)
 	mov %ax, DE_INUM_OFF+0x02(%bx)
@@ -110,6 +109,10 @@ cmd_rmdir:
 	push $dap
 	call write_disk
 	add $0x02, %sp
+
+	# clear_inode(): exec
+	call clear_inode
+	add $0x04, %sp
 	# }}}
 
 	jmp .done

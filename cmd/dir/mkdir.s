@@ -69,16 +69,13 @@ cmd_mkdir:
 	add $0x08, %sp
 	push %ax
 
-	mov $inode, %si
-	push %si
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
+	push $inode
+	push $inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %ax
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
@@ -102,16 +99,13 @@ cmd_mkdir:
 	add $0x08, %sp
 	push %ax
 
-	mov $inode, %si
-	push %si
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+	push $inode
+	push $tmp_inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %ax
+	mov $inode, %si
 	mov %ax, I_FILE_SIZE_OFF(%si)
 	push %si
 	mov (tmp_inum), %ax
@@ -134,16 +128,13 @@ cmd_mkdir:
 	add $0x08, %sp
 	push %ax
 
-	mov $inode, %si
-	push %si
-	mov (tmp_inum), %ax
-	push %ax
-	mov (tmp_inum+0x02), %ax
-	push %ax
+	push $inode
+	push $tmp_inum
 	call read_inode
-	add $0x06, %sp
+	add $0x04, %sp
 
 	pop %cx
+	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
