@@ -9,6 +9,7 @@
 .code16
 .global _super_set_lba
 
+# _super_set_lba()
 _super_set_lba:
 	mov BB_LBA_OFF(%bx), %ax
 	push %ax
