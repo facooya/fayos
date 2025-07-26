@@ -2,7 +2,7 @@
 ## Allocate Bit
 Summary:
 ```c
-uint16_t alloc_bit(uint16_t *mem) { // bx
+void alloc_bit(uint16_t *mem, uint16_t *bitnum) { // bx
 
   /* .chk_word */
   uint16_t word_count = 0; // dx
@@ -24,11 +24,11 @@ uint16_t alloc_bit(uint16_t *mem) { // bx
   }
 
   /* .chk_bit__end (calc bitnum) */
-  uint16_t bitnum = 0;
-  bitnum = word_count * 16;
-  bitnum += bit_count;
+  uint16_t bitnum_calc = 0;
+  bitnum_calc = word_count * 16;
+  bitnum_calc += bit_count;
 
-  return bitnum; // ax // TODO: dx:ax
+  *bitnum = bitnum_calc
 }
 ```
 
@@ -46,9 +46,9 @@ mem_value & (1 << 4) = 0b00001111 AND 0b000.10000 = 0b00000000 = 0
 ## Clear Bit
 Summary:
 ```c
-void clear_bit(uint16_t *mem, uint16_t bitnum) {
-  uint16_t word_count = bitnum / 16; // ax
-  uint16_t bit_count = bitnum % 16; // dx
+void clear_bit(uint16_t *mem, uint16_t *bitnum) {
+  uint16_t word_count = *bitnum / 16; // ax
+  uint16_t bit_count = *bitnum % 16; // dx
 
   /* align 2 bytes */
   mem += word_count * 2 // bx
@@ -69,9 +69,9 @@ mem_value & ~(1 << 3) = 0b11111111 AND ~(0b00001000) = 0b11111111 AND 0b11110111
 ## Set Bit
 Summary:
 ```c
-void set_bit(uint16_t *mem, uint16_t bitnum) {
-  uint16_t word_count = bitnum / 16; // ax
-  uint16_t bit_count = bitnum % 16; // dx
+void set_bit(uint16_t *mem, uint16_t *bitnum) {
+  uint16_t word_count = *bitnum / 16; // ax
+  uint16_t bit_count = *bitnum % 16; // dx
 
   /* align 2 bytes */
   mem += word_count * 2 // bx

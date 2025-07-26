@@ -8,17 +8,17 @@
 .code16
 .global set_bit
 
-# set_bit(mem, *bnum)
+# set_bit(*mem, *bitnum)
 set_bit:
 	push %bp
 	mov %sp, %bp
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %bx # mem
-	mov 0x06(%bp), %si # bnum
+	mov 0x04(%bp), %bx # *mem
+	mov 0x06(%bp), %si # *bitnum
 
-	mov (%si), %ax # bnum_lo
+	mov (%si), %ax # bitnum_lo
 	xor %dx, %dx
 	mov $0x10, %cx
 	div %cx

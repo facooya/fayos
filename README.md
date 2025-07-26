@@ -49,7 +49,7 @@ Manual execute Fayos with qemu:
 ```bash
 qemu-system-x86_64 -drive format=raw,file=./build/fayos.img
 ```
-- `qemu-system-[architecture] -drive format=raw,file=[path].img
+- `qemu-system-[architecture] -drive format=raw,file=[path].img`
 
 Follow the command list.
 

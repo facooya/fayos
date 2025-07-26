@@ -29,36 +29,4 @@ void add_inode() {
 
 ---
 
-## Calculate Inode Table Logic
-```asm
-# (mem) bx = 0x8000
-xor %dx, %dx
-pop %ax # inum, before push
-mov $I_SIZE, %cx
-mul %cx # ax *= cx
-add %ax, %bx # set mem
-```
-
-Examples:
-```asm
-xor %dx, %dx
-pop %ax # inum = 0x10 (Example value)
-mov $I_SIZE, %cx # I_SIZE = 0x20
-```
-- ax = 0x10 (Example)
-- bx = 0x8000 (Example)
-- cx = 0x20
-- dx = 0x00
-
-```asm
-mul %cx # dx:ax *= cx
-add %ax, %bx # bx += ax
-```
-- ax * cx = dx:ax
-- - 0x10 * 0x20 = 0x0000:0x0200
-- bx += ax
-- - 0x8000 + 0x0200 = 0x8200
-
----
-
 > Authors: Facooya and Fanone Facooya

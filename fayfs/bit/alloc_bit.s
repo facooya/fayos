@@ -8,7 +8,7 @@
 .code16
 .global alloc_bit
 
-# alloc_bit(mem, *bnum)
+# alloc_bit(*mem, *bitnum)
 # <ret> bnum
 alloc_bit:
 	push %bp
@@ -55,10 +55,10 @@ alloc_bit:
 	mov $0x10, %cx
 	mul %cx
 	pop %cx # bit count
-	add %cx, %ax # bnum
+	add %cx, %ax # bitnum
 
-	mov 0x06(%bp), %si # bnum
-	mov %ax, (%si) # bnum_lo
+	mov 0x06(%bp), %si # bitnum
+	mov %ax, (%si) # bitnum_lo
 
 # {DONE}
 .done:

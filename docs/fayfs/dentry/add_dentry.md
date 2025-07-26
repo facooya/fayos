@@ -1,62 +1,43 @@
 # Add Dentry
 Surmmary:
+```c
+void add_dentry(
+  uint16_t *src_inum,
+  uint16_t *dst_inum,
+  uint16_t info,
+  uint16_t *name
+) {
+  read_inode(src_inum, inode);
+  set_dap_blk_lba(inode);
+  mem = read_disk(dap);
+  mem += *(inode+I_FILE_SIZE_OFF);
+
+  *(mem+DE_INUM_OFF) = *(dst_inum+DE_INUM_OFF);
+  uint8_t file_type = (info >> 8);
+  *(mem+DE_FILE_TYPE_OFF) = file_type;
+  uint8_t name_len = (info | 0x00FF);
+  *(mem+DE_NAME_LEN_OFF) = name_len;
+
+  uint16_t rec_len = name_len;
+  rec_len += 0x0B; // (fix size) 8 + (for align 4) 3 = 11
+  rec_len |= 0xFFFC; // mask: 0b1100
+
+  mem += DE_NAME_OFF;
+  while (1) {
+    if (name_len == 0) ? break;
+    *mem = *name;
+    mem++;
+    name++;
+    name_len--;
+  }
+
+  write_disk(dap);
+}
 ```
-add_dentry(
-  src_inum_hi, src_inum_lo,
-  dst_inum_hi, dst_inum_lo,
-  info (file_type:name_len),
-  name_ptr
-)
-```
 
----
-
-## Arguments
-Get values:
-- [sp+4] `src_inum_hi`
-- [sp+6] `src_inum_lo`
-- [sp+8] `dst_inum_hi`
-- [sp+10] `dst_inum_lo`
-- [sp+12] `info`
-- [sp+14] `name_ptr`
-
-Detail:
-- `src_inum` [4-byte]
-- - [sp+4] `src_inum_hi` [2-byte]
-- - [sp+6] `src_inum_lo` [2-byte]
-- `dst_inum` [4-byte]
-- - [sp+8] `dst_inum_hi` [2-byte]
-- - [sp+10] `dst_inum_lo` [2-byte]
-- [sp+12] `info` [2-byte]
-- - `high=file_type` [1-byte]
-- - `low=name_len` [1-byte]
-- [sp+14] `name_ptr` [2-byte]
-
----
-
-## Workflow
-- prolog
-- read inode
-- set block lba
-
-- read block
-- - set memory (bx=0x8000)
-- - allocate dentry (update memory)
-
-- write in memory
-- - inode number
-- - information
-- - record size
-- - - align 4
-- - init before write name
-- - write name
-
-- write block
-- `if (file_type == directory)`
-- - file\_size = inode\_size
-- - [exten] `update_i_file_size`
-
-- epilog
+Parameter:
+- info
+- - `high:low = file_type:name_len`
 
 ---
 
