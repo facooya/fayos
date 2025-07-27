@@ -67,6 +67,8 @@ fs/bit/clear_bit.s \
 fs/bit/set_bit.s \
 \
 \
+shell/history.s \
+\
 shell/args/args.s \
 shell/args/tok_args.s \
 shell/args/build_args.s \

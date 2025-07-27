@@ -1,0 +1,163 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# Shell history
+
+# HACK
+.include "chr.s"
+.include "fayfs/dentry.s"
+.include "fayfs/inode.s"
+.section .data
+.history: .asciz ".history"
+.root_inum: .long 0x01
+.his_inum: .long 0x00
+
+.section .text
+.code16
+.global history
+
+# history()
+# <req> raw_buf
+history:
+	push %si
+	push %bx
+
+	push $.history
+	call strlen
+	add $0x02, %sp
+	push %ax # his_len
+
+	push $.history
+	push %ax
+	push $.root_inum
+	call lookup_dentry
+	add $0x06, %sp
+
+	pop %cx # his_len
+	# {task} (lookup_dentry == 0)
+	test %ax, %ax
+	jz .create
+	jmp .save
+
+.create:
+	push %cx # his_len
+	call add_inode
+	# <ret> tmp_inum
+	pop %cx # his_len
+
+	mov $0x80, %ch # file_type
+	push $.history # name
+	push %cx # info
+	push $tmp_inum # dst
+	push $.root_inum # src
+	call add_dentry
+	add $0x08, %sp
+	push %ax
+
+	# {{{ update root file size
+	push $inode
+	push $.root_inum
+	call read_inode
+	add $0x04, %sp
+
+	pop %ax # dentry size
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %cx
+	add %cx, %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+
+	push $inode
+	push $.root_inum
+	call update_inode
+	add $0x04, %sp
+	# }}}
+
+	jmp .save
+
+.save:
+	push $.history
+	call strlen
+	add $0x02, %sp
+
+	push $.history
+	push %ax
+	push $.root_inum
+	call lookup_dentry
+	add $0x06, %sp
+	mov %ax, %bx
+
+	mov DE_INUM_OFF(%bx), %ax
+	mov %ax, (tmp_inum)
+	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %ax, (tmp_inum+0x02)
+
+	push $inode
+	push $tmp_inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx # mem
+
+.write:
+	mov $raw_buf, %si
+	mov (%si), %cx # buf.len
+	push %cx # buf.len
+	add $0x02, %si # skip len
+
+.write__lp:
+	mov (%si), %al
+
+	# {end} (len == 0)
+	test %cx, %cx
+	jz .write__end
+
+	mov %al, (%bx)
+
+	# {lp}
+	add $0x01, %si # buf.data
+	add $0x01, %bx # mem
+	sub $0x01, %cx # buf.len
+	jmp .write__lp
+
+.write__end:
+	pop %cx # buf.len
+	mov $CHR_CR, (%bx)
+	mov $CHR_LF, 0x01(%bx)
+	add $0x02, %bx # mem
+	add $0x02, %cx # his.len
+	push %cx
+
+	push $dap
+	call write_disk
+	add $0x02, %sp
+
+	# {{{ update .history size
+	push $inode
+	push $tmp_inum
+	call read_inode
+	add $0x04, %sp
+
+	pop %cx # his.len
+	mov $inode, %si
+	mov %cx, I_FILE_SIZE_OFF(%si)
+
+	push $inode
+	push $tmp_inum
+	call update_inode
+	add $0x04, %sp
+	# }}}
+
+	jmp .done
+
+.done:
+	pop %bx
+	pop %si
+	ret

@@ -3,7 +3,7 @@
 # Copyright 2025 Facooya and Fanone Facooya
 #
 # Argments main
-#
+
 # NOTE
 # [n_args]
 # argc [2-byte]
@@ -25,6 +25,7 @@ args: .zero 0x100
 proc_args:
 	push %si
 
+	call history
 	call ._zero
 
 	# {{{ proc
@@ -38,7 +39,6 @@ proc_args:
 	test %ax, %ax
 	jnz .exit
 
-	xor %ax, %ax
 	jmp .done
 	# }}}
 
@@ -50,9 +50,13 @@ proc_args:
 	call ._zero
 
 	mov $0x01, %ax
-	jmp .done
+	jmp .epil
 
 .done:
+	xor %ax, %ax
+	jmp .epil
+
+.epil:
 	pop %si
 	ret
 
