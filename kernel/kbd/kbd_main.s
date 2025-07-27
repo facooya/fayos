@@ -2,45 +2,43 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command Line Interface for Fayos
+# Keyboard main
 
 .include "chr.s"
 .section .text
 .code16
-.global cli_main
+.global kbd_main
 
-# cli_main()
-# <REQ>
-# al = ascii_code
-cli_main:
+# kbd_main()
+# <req> al = ascii_code
+# <req> ax = scan_code
+kbd_main:
 	# {{{
 	# {task} (ascii_code == bs)
 	cmp $CHR_BS, %al
-	je cli_key_bs
+	je _key_bs
 
 	# {task} (ascii_code == cr)
 	cmp $CHR_CR, %al
-	je cli_key_cr
+	je _key_cr
 	# }}}
 
 	# {{{
-	# <PRE>
-	# ax = scan_code
 	# {task} (scan_code == left)
 	cmp $KEY_LEFT, %ax
-	je cli_key_left
+	je _key_left
 
 	# {task} (scan_code == right)
 	cmp $KEY_RIGHT, %ax
-	je cli_key_right
+	je _key_right
 
 	# {task} (scan_code == up)
 	cmp $KEY_UP, %ax
-	je cli_key_up
+	je _key_up
 
 	# {task} (scan_code == down)
 	cmp $KEY_DOWN, %ax
-	je cli_key_down
+	je _key_down
 	# }}}
 
 	# {{{ pre-update
@@ -61,7 +59,7 @@ cli_main:
 	# {task} (raw.data-1 != null)
 	mov -0x01(%si), %ah
 	test %ah, %ah
-	jnz .call_cli_rsh
+	jnz .call_kbd_rsh
 
 	# {{{
 	call outc
@@ -73,6 +71,6 @@ cli_main:
 .done:
 	ret
 
-.call_cli_rsh:
-	call cli_rsh
+.call_kbd_rsh:
+	call kbd_rsh
 	jmp .done

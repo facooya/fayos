@@ -2,12 +2,12 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Key arrow down
+# Key arrow up
 
 .section .text
 .code16
-.global cli_key_down
+.global _key_up
 
-# cli_key_down()
-cli_key_down:
+# _key_up()
+_key_up:
 	ret

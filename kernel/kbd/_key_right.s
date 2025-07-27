@@ -6,10 +6,10 @@
 
 .section .text
 .code16
-.global cli_key_right
+.global _key_right
 
-# cli_key_right()
-cli_key_right:
+# _key_right()
+_key_right:
 	call _sys_get_cursor
 
 	# {end.done} (cursor.x == cursor.max)

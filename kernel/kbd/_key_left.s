@@ -6,10 +6,10 @@
 
 .section .text
 .code16
-.global cli_key_left
+.global _key_left
 
-# cli_key_left()
-cli_key_left:
+# _key_left()
+_key_left:
 	call _sys_get_cursor
 
 	# {end.done} (cursor.x == cursor.min)

@@ -6,13 +6,13 @@
 
 .section .text
 .code16
-.global cli_rsh
+.global kbd_rsh
 
-# cli_rsh()
-# <REQ>
-# si = raw.data (pre-update)
-# al = ascii
-cli_rsh:
+# kbd_rsh()
+# <req> *si = raw.data (pre-update)
+# <req> al = ascii
+# <ret> *si = raw.data
+kbd_rsh:
 	push %di
 	jmp .rsh
 

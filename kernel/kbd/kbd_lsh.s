@@ -6,12 +6,12 @@
 
 .section .text
 .code16
-.global cli_lsh
+.global kbd_lsh
 
-# cli_lsh()
-# <REQ>
-# si = raw.data (updated)
-cli_lsh:
+# kbd_lsh()
+# <req> *si = raw.data (updated)
+# <ret> *si = raw.data
+kbd_lsh:
 	push %di
 	jmp .lsh
 

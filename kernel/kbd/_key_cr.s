@@ -6,10 +6,10 @@
 
 .section .text
 .code16
-.global cli_key_cr
+.global _key_cr
 
-# cli_key_cr()
-cli_key_cr:
+# _key_cr()
+_key_cr:
 	call exec_cmd
 
 	push $kernel_prompt

@@ -6,10 +6,10 @@
 
 .section .text
 .code16
-.global cli_key_bs
+.global _key_bs
 
-# cli_key_bs()
-cli_key_bs:
+# _key_bs()
+_key_bs:
 	# {end.done} (cursor.x == cursor.min)
 	call _sys_get_cursor
 	cmp (cursor), %dl
@@ -31,7 +31,7 @@ cli_key_bs:
 	# {task} (raw.data+1 != null)
 	mov 0x01(%si), %al
 	test %al, %al
-	jnz .call_cli_lsh
+	jnz .call_kbd_lsh
 
 	# {{{ [d_nsh]
 	# left cursor [d_nsh.1]
@@ -53,6 +53,6 @@ cli_key_bs:
 .done:
 	ret
 
-.call_cli_lsh:
-	call cli_lsh
+.call_kbd_lsh:
+	call kbd_lsh
 	jmp .done

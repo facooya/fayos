@@ -14,16 +14,16 @@ kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
 \
-kernel/kbd/cli_main.s \
-kernel/kbd/cli_lsh.s \
-kernel/kbd/cli_rsh.s \
+kernel/kbd/kbd_main.s \
+kernel/kbd/kbd_lsh.s \
+kernel/kbd/kbd_rsh.s \
 \
-kernel/kbd/cli_key_bs.s \
-kernel/kbd/cli_key_cr.s \
-kernel/kbd/cli_key_down.s \
-kernel/kbd/cli_key_left.s \
-kernel/kbd/cli_key_right.s \
-kernel/kbd/cli_key_up.s \
+kernel/kbd/_key_bs.s \
+kernel/kbd/_key_cr.s \
+kernel/kbd/_key_down.s \
+kernel/kbd/_key_left.s \
+kernel/kbd/_key_right.s \
+kernel/kbd/_key_up.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \

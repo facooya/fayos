@@ -2,12 +2,12 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Kernel for Fayos
+# Fayos kernel
 
 .section .data
 .global kernel_prompt
 kernel_prompt: .asciz "fayos:/# "
-.kmsg_welcome: .asciz "\nWelcome to Fayos kernel\r\n"
+.kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
 
 .section .text
 .code16
@@ -35,11 +35,10 @@ _start:
 	jmp kernel_main
 
 # kernel_main()
-# <REQ>
-# (*si == raw_buf.data)
+# <req> (*si == raw_buf.data)
 kernel_main:
 	call _sys_read_key
-	call cli_main
+	call kbd_main
 
 	# {lp}
 	jmp kernel_main
