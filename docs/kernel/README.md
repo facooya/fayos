@@ -1,8 +1,6 @@
 ## Directory Structure
 `kernel.s` - Entry point
-`args/` - Arguments (e.g., argc, argv, optc)
-`cli/` - Command Line Input
+`kbd/` - Keyboard
 `dbg/` - Inline debug
-`exec/` - CLI execution
 `io/` - Input, Output
-`sys/` - BIOS interrupt
+`sys/` - System: BIOS interrupt

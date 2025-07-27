@@ -98,11 +98,11 @@ Every files follow the documentation rules, Examples:
 
 ## Directory Structure
 - boot/ - Boot
-- cmd/ - Commands
+- shell/ - Shell
 - docs/ - Documentation
-- fayfs/ - File system for Fayos
+- fs/ - File system
 - include/ - Constants only
-- kernel/ - Kernel for Fayos
+- kernel/ - Kernel
 - lib/ - Library
 - tools/ - Misc
 

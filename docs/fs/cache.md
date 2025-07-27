@@ -1,4 +1,4 @@
-# Fayfs
+# Cache
 - `inode`
 - `tmp_inode`
 - `inum`

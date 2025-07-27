@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Fayos file system
+# Cache for file system
 
 .include "fayfs/inode.s"
 .section .data

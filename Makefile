@@ -10,33 +10,20 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 SRCS = \
 kernel/kernel.s \
 \
-kernel/args/args.s \
-kernel/args/tok_args.s \
-kernel/args/build_args.s \
-kernel/args/parse_args.s \
+kernel/sys/_sys_disk.s \
+kernel/sys/_sys_kbd.s \
+kernel/sys/_sys_vid.s \
 \
-kernel/cli/cli_main.s \
-kernel/cli/cli_lsh.s \
-kernel/cli/cli_rsh.s \
+kernel/kbd/cli_main.s \
+kernel/kbd/cli_lsh.s \
+kernel/kbd/cli_rsh.s \
 \
-kernel/cli/cli_key_bs.s \
-kernel/cli/cli_key_cr.s \
-kernel/cli/cli_key_down.s \
-kernel/cli/cli_key_left.s \
-kernel/cli/cli_key_right.s \
-kernel/cli/cli_key_up.s \
-\
-kernel/exec/exec_cmd.s \
-kernel/exec/exec_redir.s \
-\
-kernel/dbg/dbg_args.s \
-kernel/dbg/dbg_cursor.s \
-kernel/dbg/dbg_buf.s \
-kernel/dbg/dbg_trace.s \
-kernel/dbg/dbg_utils.s \
-\
-kernel/dbg/num/dbg_num.s \
-kernel/dbg/num/dbg_reg.s \
+kernel/kbd/cli_key_bs.s \
+kernel/kbd/cli_key_cr.s \
+kernel/kbd/cli_key_down.s \
+kernel/kbd/cli_key_left.s \
+kernel/kbd/cli_key_right.s \
+kernel/kbd/cli_key_up.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \
@@ -48,30 +35,61 @@ kernel/io/dap_utils.s \
 kernel/io/disk.s \
 kernel/io/set_dap_blk_lba.s \
 \
-kernel/sys/_sys_disk.s \
-kernel/sys/_sys_kbd.s \
-kernel/sys/_sys_vid.s \
+kernel/dbg/dbg_args.s \
+kernel/dbg/dbg_cursor.s \
+kernel/dbg/dbg_buf.s \
+kernel/dbg/dbg_trace.s \
+kernel/dbg/dbg_utils.s \
 \
-fayfs/fayfs.s \
+kernel/dbg/num/dbg_num.s \
+kernel/dbg/num/dbg_reg.s \
 \
-fayfs/bit/alloc_bit.s \
-fayfs/bit/clear_bit.s \
-fayfs/bit/set_bit.s \
 \
-fayfs/dentry/add_dentry.s \
-fayfs/dentry/lookup_dentry.s \
+fs/cache.s \
 \
-fayfs/inode/add_inode.s \
-fayfs/inode/clear_inode.s \
-fayfs/inode/read_inode.s \
-fayfs/inode/update_inode.s \
+fs/super/super.s \
+fs/super/_super_alloc_lba.s \
+fs/super/_super_make_root.s \
+fs/super/_super_set_bitmap.s \
+fs/super/_super_set_lba.s \
+fs/super/_super_write_data.s \
 \
-fayfs/super/super.s \
-fayfs/super/_super_alloc_lba.s \
-fayfs/super/_super_make_root.s \
-fayfs/super/_super_set_bitmap.s \
-fayfs/super/_super_set_lba.s \
-fayfs/super/_super_write_data.s \
+fs/inode/add_inode.s \
+fs/inode/clear_inode.s \
+fs/inode/read_inode.s \
+fs/inode/update_inode.s \
+\
+fs/dentry/add_dentry.s \
+fs/dentry/lookup_dentry.s \
+\
+fs/bit/alloc_bit.s \
+fs/bit/clear_bit.s \
+fs/bit/set_bit.s \
+\
+\
+shell/args/args.s \
+shell/args/tok_args.s \
+shell/args/build_args.s \
+shell/args/parse_args.s \
+\
+shell/exec/exec_cmd.s \
+shell/exec/exec_redir.s \
+\
+shell/cmd/cmd_map.s \
+\
+shell/cmd/sys/echo.s \
+shell/cmd/sys/help.s \
+shell/cmd/sys/clear.s \
+\
+shell/cmd/file/cat.s \
+shell/cmd/file/rm.s \
+shell/cmd/file/touch.s \
+\
+shell/cmd/dir/cd.s \
+shell/cmd/dir/ls.s \
+shell/cmd/dir/mkdir.s \
+shell/cmd/dir/rmdir.s \
+\
 \
 lib/err.s \
 lib/re.s \
@@ -90,22 +108,7 @@ lib/str/puts.s \
 lib/str/put_utils.s \
 lib/str/split.s \
 lib/str/str.s \
-lib/str/trim.s \
-\
-cmd/cmd_map.s \
-\
-cmd/sys/echo.s \
-cmd/sys/help.s \
-cmd/sys/clear.s \
-\
-cmd/file/cat.s \
-cmd/file/rm.s \
-cmd/file/touch.s \
-\
-cmd/dir/cd.s \
-cmd/dir/ls.s \
-cmd/dir/mkdir.s \
-cmd/dir/rmdir.s
+lib/str/trim.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)
 
