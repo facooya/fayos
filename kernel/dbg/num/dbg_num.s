@@ -8,7 +8,8 @@
 .code16
 .global dbg_num
 
-# dbg_num(uint32_t* num)
+# dbg_num(*num)
+# <req> *num [4-byte]
 dbg_num:
 	push %bp
 	mov %sp, %bp

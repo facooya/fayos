@@ -97,6 +97,10 @@ history:
 	call read_inode
 	add $0x04, %sp
 
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax # file_size
+
 	push $inode
 	call set_dap_blk_lba
 	add $0x02, %sp
@@ -105,19 +109,22 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
+	pop %ax # file_size
+	add %ax, %bx
+	push %ax # file_size
 
-.write:
+.append:
 	mov $raw_buf, %si
 	mov (%si), %cx # buf.len
 	push %cx # buf.len
 	add $0x02, %si # skip len
 
-.write__lp:
+.append__lp:
 	mov (%si), %al
 
 	# {end} (len == 0)
 	test %cx, %cx
-	jz .write__end
+	jz .append__end
 
 	mov %al, (%bx)
 
@@ -125,9 +132,9 @@ history:
 	add $0x01, %si # buf.data
 	add $0x01, %bx # mem
 	sub $0x01, %cx # buf.len
-	jmp .write__lp
+	jmp .append__lp
 
-.write__end:
+.append__end:
 	pop %cx # buf.len
 	mov $CHR_CR, (%bx)
 	mov $CHR_LF, 0x01(%bx)
@@ -146,6 +153,8 @@ history:
 	add $0x04, %sp
 
 	pop %cx # his.len
+	pop %ax # file_size
+	add %ax, %cx
 	mov $inode, %si
 	mov %cx, I_FILE_SIZE_OFF(%si)
 
