@@ -23,3 +23,11 @@
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
 - disk use segment
+
+## Kernel
+- display clear/update
+- cursor.max inc/dec
+- cursor.x left/right
+
+## Shell
+- history stack

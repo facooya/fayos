@@ -76,7 +76,7 @@ add_dentry:
 	mov %dl, %cl # name_len
 
 .write__name_lp:
-	# {end} (name_len == null)
+	# {end} (name_len == 0)
 	test %cl, %cl
 	jz .write__end
 

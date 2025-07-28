@@ -4,14 +4,8 @@
 #
 # Key arrow up - history
 
-# HACK
 .include "chr.s"
 .include "fayfs/dentry.s"
-.section .data
-.history: .asciz ".history"
-.root_inum: .long 0x01
-.hist_inum: .long 0x00
-
 .section .text
 .code16
 .global _key_up
@@ -21,14 +15,16 @@
 # <ret> raw_buf
 _key_up:
 	push %bx
+	push %di
 
-	push $.history
-	call strlen
-	add $0x02, %sp
-
-	push $.history
-	push %ax
-	push $.root_inum
+	mov $de_hist, %di
+	xor %cx, %cx
+	mov (%di), %ax
+	mov %al, %cl
+	add $0x02, %di
+	push %di
+	push %cx
+	push $root_inum
 	call lookup_dentry
 	add $0x06, %sp
 	mov %ax, %bx
@@ -38,12 +34,12 @@ _key_up:
 	jz .done
 
 	mov DE_INUM_OFF(%bx), %ax
-	mov %ax, (.hist_inum)
+	mov %ax, (tmp_inum)
 	mov DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (.hist_inum+0x02)
+	mov %ax, (tmp_inum+0x02)
 
 	push $inode
-	push $.hist_inum
+	push $tmp_inum
 	call read_inode
 	add $0x04, %sp
 
@@ -145,4 +141,5 @@ _key_up:
 
 .done:
 	pop %bx
+	pop %di
 	ret

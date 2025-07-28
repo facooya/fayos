@@ -4,14 +4,14 @@
 #
 # Shell history
 
-# HACK
 .include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
+
+# TODO: history/cache.s
 .section .data
-.history: .asciz ".history"
-.root_inum: .long 0x01
-.his_inum: .long 0x00
+.global hist_stack
+hist_stack: .word 0x00
 
 .section .text
 .code16
@@ -23,52 +23,51 @@ history:
 	push %si
 	push %bx
 
-	push $.history
-	call strlen
-	add $0x02, %sp
-	push %ax # his_len
-
-	push $.history
-	push %ax
-	push $.root_inum
+	mov $de_hist, %si
+	xor %cx, %cx
+	mov (%si), %ax
+	mov %al, %cl
+	add $0x02, %si
+	push %si
+	push %cx
+	push $root_inum
 	call lookup_dentry
 	add $0x06, %sp
 
-	pop %cx # his_len
 	# {task} (lookup_dentry == 0)
 	test %ax, %ax
 	jz .create
 	jmp .save
 
 .create:
-	push %cx # his_len
 	call add_inode
 	# <ret> tmp_inum
-	pop %cx # his_len
 
-	mov $0x80, %ch # file_type
-	push $.history # name
+	mov $de_hist, %si
+	mov (%si), %cx
+	add $0x02, %si
+	push %si # name
 	push %cx # info
 	push $tmp_inum # dst
-	push $.root_inum # src
+	push $root_inum # src
 	call add_dentry
 	add $0x08, %sp
-	push %ax
+	push %ax # [s.1] dentry_size
 
 	# {{{ update root file size
 	push $inode
-	push $.root_inum
+	push $root_inum
 	call read_inode
 	add $0x04, %sp
 
-	pop %ax # dentry size
+	pop %ax # [s.1] dentry size
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
 
 	push $inode
-	push $.root_inum
+	push $root_inum
 	call update_inode
 	add $0x04, %sp
 	# }}}
@@ -76,13 +75,14 @@ history:
 	jmp .save
 
 .save:
-	push $.history
-	call strlen
-	add $0x02, %sp
-
-	push $.history
-	push %ax
-	push $.root_inum
+	mov $de_hist, %si
+	xor %cx, %cx
+	mov (%si), %ax
+	mov %al, %cl
+	add $0x02, %si
+	push %si
+	push %cx
+	push $root_inum
 	call lookup_dentry
 	add $0x06, %sp
 	mov %ax, %bx
@@ -99,7 +99,7 @@ history:
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax # file_size
+	push %ax # [s.2] file_size
 
 	push $inode
 	call set_dap_blk_lba
@@ -109,14 +109,14 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
-	pop %ax # file_size
+	pop %ax # [s.2] file_size
 	add %ax, %bx
-	push %ax # file_size
+	push %ax # [s.3] file_size
 
 .append:
 	mov $raw_buf, %si
 	mov (%si), %cx # buf.len
-	push %cx # buf.len
+	push %cx # [s.4] buf.len
 	add $0x02, %si # skip len
 
 .append__lp:
@@ -135,12 +135,12 @@ history:
 	jmp .append__lp
 
 .append__end:
-	pop %cx # buf.len
+	pop %cx # [s.4] buf.len
 	mov $CHR_CR, (%bx)
 	mov $CHR_LF, 0x01(%bx)
 	add $0x02, %bx # mem
 	add $0x02, %cx # his.len
-	push %cx
+	push %cx # [s.5] his.len
 
 	push $dap
 	call write_disk
@@ -152,8 +152,8 @@ history:
 	call read_inode
 	add $0x04, %sp
 
-	pop %cx # his.len
-	pop %ax # file_size
+	pop %cx # [s.5] his.len
+	pop %ax # [s.3] file_size
 	add %ax, %cx
 	mov $inode, %si
 	mov %cx, I_FILE_SIZE_OFF(%si)

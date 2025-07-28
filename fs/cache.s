@@ -10,6 +10,7 @@
 .global tmp_inode
 
 .global inum
+.global root_inum
 .global tmp_inum
 .global tmp_dir_inum
 .global rmdir_inum
@@ -19,11 +20,14 @@
 .global ibnum
 
 .global de_dots
+.global de_hist
 
 inode: .zero I_SIZE
 tmp_inode: .zero I_SIZE
 
 inum: .long 0x00
+root_inum: .long 0x01
+
 tmp_inum: .long 0x00
 tmp_dir_inum: .long 0x00
 rmdir_inum: .long 0x00
@@ -37,3 +41,7 @@ de_dots:
 	.word 0x4001
 	.word 0x2E2E
 	.word 0x4002
+
+de_hist:
+	.word 0x8008
+	.ascii ".history"
