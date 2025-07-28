@@ -56,6 +56,45 @@ _key_up:
 	add $0x02, %sp
 	mov %ax, %bx
 
+.clear:
+	push %bx
+
+	# update cursor
+	call _sys_get_cursor
+	mov (cursor+0x01), %dl
+	call _sys_set_cursor
+
+	mov $raw_buf, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip buf.len
+	add %cx, %si # last buf.data
+
+.clear__lp:
+	# {end} (buf.len == 0)
+	test %cx, %cx
+	jz .clear__end
+
+	push %cx
+	call _sys_get_cursor
+	sub $0x01, %dl # cursor.x
+	call _sys_set_cursor
+
+	call outsp
+	call _sys_set_cursor
+	pop %cx
+
+	xor %al, %al
+	mov %al, (%si)
+
+	sub $0x01, %si
+	sub $0x01, %cx
+	jmp .clear__lp
+
+.clear__end:
+	mov %cx, (raw_buf)
+	pop %bx
+	jmp .raw
+
 .raw:
 	# *si = raw_buf
 	mov $raw_buf, %si
@@ -76,7 +115,33 @@ _key_up:
 	jmp .raw__lp
 
 .raw__end:
-	mov %cx, (raw_buf) # save buf.len
+	mov $raw_buf, %si
+	mov %cx, (%si) # save buf.len
+
+.disp:
+	mov $raw_buf, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip len
+	push %cx
+
+	mov (cursor), %al # cursor.min
+	add %al, %cl
+	mov %cl, (cursor+0x01) # update cursor.max
+	pop %cx
+
+.disp__lp:
+	# {end} (buf.len == 0)
+	mov (%si), %al
+	test %cx, %cx
+	jz .disp__end
+
+	call outc
+
+	add $0x01, %si
+	sub $0x01, %cx
+	jmp .disp__lp
+
+.disp__end:
 
 .done:
 	pop %bx
