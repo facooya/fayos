@@ -100,6 +100,8 @@ lib/vid.s \
 lib/dir/get_bottom_dir.s \
 lib/dir/rm_dir.s \
 \
+lib/file/parse_file_lines.s \
+\
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \

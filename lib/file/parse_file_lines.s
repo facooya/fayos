@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# Parse file lines and each line size except cr/lf
+
+.include "chr.s"
+.include "fayfs/inode.s"
+.section .data
+.global file_lines
+file_lines: .zero 0x100
+# lines_c, line_size, line_size, ... (word, word, word, ...)
+
+.section .text
+.code16
+.global parse_file_lines
+
+# parse_file_lines(*mem, *inode)
+parse_file_lines:
+	push %bp
+	mov %sp, %bp
+	push %si
+	push %di
+	push %bx
+
+	mov $file_lines, %di
+	add $0x02, %di # skip lines_c
+	mov 0x06(%bp), %si
+	mov I_FILE_SIZE_OFF(%si), %dx
+	mov 0x04(%bp), %bx
+
+.lp:
+	# {end} (file_size == 0)
+	test %dx, %dx
+	jz .end
+
+	# {line} (chr == CR)
+	mov (%bx), %al
+	cmp $CHR_CR, %al
+	je .line
+
+	# {lp}
+	add $0x01, %bx
+	add $0x01, %cx # line_size
+	sub $0x01, %dx # file_size
+	jmp .lp
+
+.line:
+	# update line_s
+	mov %cx, (%di)
+	add $0x02, %di
+
+	# update lines_c
+	mov (file_lines), %ax
+	add $0x01, %ax
+	mov %ax, (file_lines)
+
+	xor %cx, %cx
+
+	# {lp} skip cr, lf
+	add $0x02, %bx
+	sub $0x02, %dx # file_size
+	jmp .lp
+
+.end:
+	pop %bx
+	pop %di
+	pop %si
+	pop %bp
+	ret

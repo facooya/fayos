@@ -31,3 +31,6 @@
 
 ## Shell
 - history stack
+
+## Library
+- file read/write/append/create/line\_parser

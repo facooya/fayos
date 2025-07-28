@@ -5,6 +5,7 @@
 # Key arrow up - history
 
 .include "chr.s"
+.include "fayfs/inode.s"
 .include "fayfs/dentry.s"
 .section .text
 .code16
@@ -53,7 +54,7 @@ _key_up:
 	mov %ax, %bx
 
 .clear:
-	push %bx
+	push %bx # [s.1] mem
 
 	# update cursor
 	call _sys_get_cursor
@@ -70,14 +71,14 @@ _key_up:
 	test %cx, %cx
 	jz .clear__end
 
-	push %cx
+	push %cx # [s.2] buf.len
 	call _sys_get_cursor
 	sub $0x01, %dl # cursor.x
 	call _sys_set_cursor
 
 	call outsp
 	call _sys_set_cursor
-	pop %cx
+	pop %cx # [s.2] buf.len
 
 	xor %al, %al
 	mov %al, (%si)
@@ -87,12 +88,18 @@ _key_up:
 	jmp .clear__lp
 
 .clear__end:
-	mov %cx, (raw_buf)
-	pop %bx
-	jmp .raw
+	# zero len
+	xor %ax, %ax
+	mov %ax, (raw_buf)
+
+	pop %bx # [s.1] mem
+
+	push $inode
+	push %bx
+	call parse_file_lines
+	add $0x04, %sp
 
 .raw:
-	# *si = raw_buf
 	mov $raw_buf, %si
 	add $0x02, %si # skip buf.len
 	xor %cx, %cx # size
