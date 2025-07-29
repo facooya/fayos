@@ -20,14 +20,17 @@ parse_file_lines:
 	push %bp
 	mov %sp, %bp
 	push %si
-	push %di
 	push %bx
 
-	mov $file_lines, %di
-	add $0x02, %di # skip lines_c
 	mov 0x06(%bp), %si
 	mov I_FILE_SIZE_OFF(%si), %dx
 	mov 0x04(%bp), %bx
+
+	mov $file_lines, %si
+	xor %ax, %ax
+	mov %ax, (%si) # init lines_c
+	add $0x02, %si # skip lines_c
+	xor %cx, %cx
 
 .lp:
 	# {end} (file_size == 0)
@@ -47,8 +50,8 @@ parse_file_lines:
 
 .line:
 	# update line_s
-	mov %cx, (%di)
-	add $0x02, %di
+	mov %cx, (%si)
+	add $0x02, %si
 
 	# update lines_c
 	mov (file_lines), %ax
@@ -64,7 +67,6 @@ parse_file_lines:
 
 .end:
 	pop %bx
-	pop %di
 	pop %si
 	pop %bp
 	ret

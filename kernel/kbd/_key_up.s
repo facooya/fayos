@@ -53,6 +53,21 @@ _key_up:
 	add $0x02, %sp
 	mov %ax, %bx
 
+	# {{{ HMI
+	push $inode
+	push %bx
+	call parse_file_lines
+	add $0x04, %sp
+
+	mov $file_lines, %si
+	mov (%si), %cx # lines_c
+	sub (hist_stack), %cx # target_line
+
+	# {err.hmi} (target_line <= 0)
+	cmp $0x00, %cx
+	jle .done
+	# }}}
+
 .clear:
 	push %bx # [s.1] mem
 
@@ -92,12 +107,41 @@ _key_up:
 	xor %ax, %ax
 	mov %ax, (raw_buf)
 
+.line:
 	pop %bx # [s.1] mem
 
-	push $inode
-	push %bx
-	call parse_file_lines
-	add $0x04, %sp
+	# note
+	# lines_c - hist_stack = target_line
+	# &file_lines + 2 = line_size
+	# &line_size + (target_line * 2) = target_line_size
+	mov $file_lines, %si
+	mov (%si), %cx # lines_c
+	add $0x02, %si
+	sub (hist_stack), %cx # target_line
+
+	add %cx, %si
+	add %cx, %si
+	mov (%si), %dx # target_line_size
+
+	mov $file_lines, %si
+	add $0x02, %si # skip lines_c
+	sub $0x01, %cx
+
+.line__lp:
+	# {end} (target_line == 0)
+	test %cx, %cx
+	jz .line__end
+
+	mov (%si), %ax
+	add %ax, %bx
+	add $0x02, %bx # skip cr,lf
+
+	# {lp}
+	add $0x02, %si
+	sub $0x01, %cx
+	jmp .line__lp
+
+.line__end:
 
 .raw:
 	mov $raw_buf, %si
@@ -145,6 +189,10 @@ _key_up:
 	jmp .disp__lp
 
 .disp__end:
+	# inc stack
+	mov (hist_stack), %ax
+	add $0x01, %ax
+	mov %ax, (hist_stack)
 
 .done:
 	pop %bx

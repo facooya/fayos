@@ -37,6 +37,7 @@ history:
 	# {task} (lookup_dentry == 0)
 	test %ax, %ax
 	jz .create
+
 	jmp .save
 
 .create:

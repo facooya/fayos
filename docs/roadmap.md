@@ -35,4 +35,4 @@
 - history stack
 
 ## Library
-- file read/write/append/create/line\_parser
+- file open?/append/create

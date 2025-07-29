@@ -30,6 +30,10 @@ _key_cr:
 	mov %ax, (%si) # raw.len
 	add $0x02, %si # skip len
 
+	# zero stack
+	xor %ax, %ax
+	mov %ax, (hist_stack)
+
 	jmp .done
 
 .done:
