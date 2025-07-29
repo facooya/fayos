@@ -36,6 +36,7 @@
 
 # Immutable values
 .equ S_MAG, 0xDEC0C0FA
+.equ ROOT_INUM, 0x00000001
 
 # DAP
 .equ S_SECTOR_COUNT, 0x01

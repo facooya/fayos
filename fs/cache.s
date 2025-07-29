@@ -26,7 +26,7 @@ inode: .zero I_SIZE
 tmp_inode: .zero I_SIZE
 
 inum: .long 0x00
-root_inum: .long 0x01
+root_inum: .long 0x00
 
 tmp_inum: .long 0x00
 tmp_dir_inum: .long 0x00

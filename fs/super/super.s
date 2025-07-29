@@ -65,9 +65,11 @@ proc_super:
 	call _super_set_lba
 	call _super_set_bitmap
 
-	mov $0x01, %ax
+	mov $(ROOT_INUM&0xFFFF), %ax
+	mov %ax, (root_inum)
 	mov %ax, (inum)
-	xor %ax, %ax
+	mov $(ROOT_INUM>>0x10), %ax
+	mov %ax, (root_inum+0x02)
 	mov %ax, (inum+0x02)
 	call _super_make_root
 
@@ -75,9 +77,11 @@ proc_super:
 
 # {TASK}
 .run_init:
-	mov $0x01, %ax # root
+	mov $(ROOT_INUM&0xFFFF), %ax
+	mov %ax, (root_inum)
 	mov %ax, (inum)
-	xor %ax, %ax
+	mov $(ROOT_INUM>>0x10), %ax
+	mov %ax, (root_inum+0x02)
 	mov %ax, (inum+0x02)
 
 	call _super_set_lba
