@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Boot for Fayos
+# Bootloader
 
 .code16
 .global _start
@@ -28,6 +28,7 @@ _start:
 	# set stack
 	mov $0x7C00, %sp
 
+	call .clear_disp
 	push $.bmsg_fayos
 	call .out_str
 	add $0x02, %sp
@@ -94,6 +95,42 @@ _start:
 	pop %ax
 	pop %si
 	pop %bp
+	ret
+
+# .clear_disp()
+.clear_disp:
+	push %ax
+	push %bx
+	push %cx
+	push %dx
+
+	# _sys_get_cursor
+	mov $0x03, %ah
+	xor %bh, %bh
+	int $0x10 # dh = scroll_up_end_y
+
+	# _sys_get_mode
+	mov $0x0F, %ah
+	int $0x10
+	mov %ah, %dl # vid_end_x
+
+	# _sys_scroll_up
+	mov $0x06, %ah
+	xor %al, %al
+	mov $0x07, %bh
+	xor %cx, %cx
+	int $0x10
+
+	# _sys_set_cursor
+	xor %dx, %dx # cursor(0,0)
+	mov $0x02, %ah
+	xor %bh, %bh
+	int $0x10
+
+	pop %dx
+	pop %cx
+	pop %bx
+	pop %ax
 	ret
 
 # bmsg

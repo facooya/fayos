@@ -25,15 +25,17 @@ kernel/kbd/_key_left.s \
 kernel/kbd/_key_right.s \
 kernel/kbd/_key_up.s \
 \
+kernel/disk/disk.s \
+kernel/disk/dap.s \
+kernel/disk/dap_utils.s \
+kernel/disk/set_dap_blk_lba.s \
+\
+kernel/disp/clear_disp.s \
+\
 kernel/io/buf.s \
 kernel/io/cursor.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
-\
-kernel/io/dap.s \
-kernel/io/dap_utils.s \
-kernel/io/disk.s \
-kernel/io/set_dap_blk_lba.s \
 \
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_cursor.s \

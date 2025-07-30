@@ -27,14 +27,5 @@
 
 # cmd_clear() [n_cmd_clear]
 cmd_clear:
-	call get_cursor
-	call get_mode
-
-	# copy end_x
-	mov %ah, %dl
-
-	call scroll_up
-
-	xor %dx, %dx
-	call set_cursor
+	call clear_disp
 	ret
