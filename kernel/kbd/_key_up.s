@@ -68,48 +68,25 @@ _key_up:
 	jle .done
 	# }}}
 
-.clear:
+	# {{{ clear line
+	call clear_line_disp
+	
+	push $kernel_prompt
+	call outs
+	add $0x02, %sp
+
 	push %bx # [s.1] mem
-
-	# update cursor
 	call _sys_get_cursor
-	mov (cursor+0x01), %dl
-	call _sys_set_cursor
+	mov %dl, (cursor)
+	mov %dl, (cursor+0x01)
+	pop %bx # [s.1] mem
+	# }}}
 
-	mov $raw_buf, %si
-	mov (%si), %cx # buf.len
-	add $0x02, %si # skip buf.len
-	add %cx, %si # last buf.data
-
-.clear__lp:
-	# {end} (buf.len == 0)
-	test %cx, %cx
-	jz .clear__end
-
-	push %cx # [s.2] buf.len
-	call _sys_get_cursor
-	sub $0x01, %dl # cursor.x
-	call _sys_set_cursor
-
-	call outsp
-	call _sys_set_cursor
-	pop %cx # [s.2] buf.len
-
-	xor %al, %al
-	mov %al, (%si)
-
-	sub $0x01, %si
-	sub $0x01, %cx
-	jmp .clear__lp
-
-.clear__end:
-	# zero len
-	xor %ax, %ax
-	mov %ax, (raw_buf)
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
 
 .line:
-	pop %bx # [s.1] mem
-
 	# note
 	# lines_c - hist_stack = target_line
 	# &file_lines + 2 = line_size

@@ -34,11 +34,13 @@ _sys_set_cursor:
 # _sys_scroll_up()
 # <req> dh = end_y
 # <req> dl = end_x
+# <req> ch = start_y
+# <req> cl = start_x
 _sys_scroll_up:
 	mov $VID_SCROLL_UP, %ah
 	xor %al, %al # VID_SCROLL_FULL
 	mov $VID_SCROLL_COLOR_ATTR, %bh
-	xor %cx, %cx # VID_SCROLL_START_Y, VID_SCROLL_START_X
+	#xor %cx, %cx # VID_SCROLL_START_Y, VID_SCROLL_START_X
 	int $INT_VID
 	ret
 

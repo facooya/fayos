@@ -18,6 +18,7 @@ clear_disp:
 	call _sys_get_mode
 	mov %ah, %dl # vid_end_x
 
+	xor %cx, %cx
 	call _sys_scroll_up
 
 	xor %dx, %dx # cursor(0,0)

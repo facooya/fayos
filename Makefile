@@ -31,6 +31,7 @@ kernel/disk/dap_utils.s \
 kernel/disk/set_dap_blk_lba.s \
 \
 kernel/disp/clear_disp.s \
+kernel/disp/clear_line_disp.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \
