@@ -98,7 +98,6 @@ shell/cmd/dir/rmdir.s \
 \
 lib/err.s \
 lib/re.s \
-lib/vid.s \
 \
 lib/dir/get_bottom_dir.s \
 lib/dir/rm_dir.s \

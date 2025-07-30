@@ -27,7 +27,6 @@
 - external read disk and inode -> lookup\_dentry
 
 ## Kernel
-- display clear/update
 - cursor.max inc/dec
 - cursor.x left/right
 

@@ -75,11 +75,7 @@ _key_up:
 	call outs
 	add $0x02, %sp
 
-	push %bx # [s.1] mem
-	call _sys_get_cursor
-	mov %dl, (cursor)
-	mov %dl, (cursor+0x01)
-	pop %bx # [s.1] mem
+	call init_cursor
 	# }}}
 
 	push $raw_buf
