@@ -12,7 +12,7 @@
 clear_line_disp:
 	push %bx
 
-	call _sys_get_cursor
+	call get_cursor
 	# dx = current_pos
 
 	call _sys_get_mode
@@ -23,7 +23,7 @@ clear_line_disp:
 	call _sys_scroll_up
 
 	xor %dl, %dl # end_x
-	call _sys_set_cursor
+	call set_cursor
 
 	pop %bx
 	ret

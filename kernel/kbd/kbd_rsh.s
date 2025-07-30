@@ -58,7 +58,7 @@ kbd_rsh:
 	sub $0x01, %di
 	mov %ah, (%di) # raw.data
 
-	call _sys_get_cursor
+	call get_cursor
 
 	push %dx # cursor.pos
 	push %di # raw.data
@@ -68,7 +68,7 @@ kbd_rsh:
 
 	# restore cursor.pos
 	add $0x01, %dl # cursor.x
-	call _sys_set_cursor
+	call set_cursor
 
 	pop %di
 	ret

@@ -12,7 +12,26 @@ cursor:
 
 .section .text
 .code16
+.global get_cursor
+.global set_cursor
 .global init_cursor
+
+# get_cursor()
+# <ret> cx = scan_line
+# <ret> dx = current_pos
+get_cursor:
+	push %bx
+	call _sys_get_cursor
+	pop %bx
+	ret
+
+# set_cursor()
+# <req> dx = pos
+set_cursor:
+	push %bx
+	call _sys_set_cursor
+	pop %bx
+	ret
 
 # init_cursor()
 init_cursor:

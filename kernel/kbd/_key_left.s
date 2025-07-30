@@ -10,7 +10,7 @@
 
 # _key_left()
 _key_left:
-	call _sys_get_cursor
+	call get_cursor
 
 	# {end.done} (cursor.x == cursor.min)
 	cmp (cursor), %dl
@@ -18,7 +18,7 @@ _key_left:
 
 	# left cursor
 	sub $0x01, %dl # cursor.x
-	call _sys_set_cursor
+	call set_cursor
 
 	# ptr
 	sub $0x01, %si # raw.data

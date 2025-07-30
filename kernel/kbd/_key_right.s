@@ -10,7 +10,7 @@
 
 # _key_right()
 _key_right:
-	call _sys_get_cursor
+	call get_cursor
 
 	# {end.done} (cursor.x == cursor.max)
 	cmp (cursor+0x01), %dl
@@ -18,7 +18,7 @@ _key_right:
 
 	# right cursor
 	add $0x01, %dl # cursor.x
-	call _sys_set_cursor
+	call set_cursor
 
 	# ptr
 	add $0x01, %si # raw.data
