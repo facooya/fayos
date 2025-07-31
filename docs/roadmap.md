@@ -26,10 +26,6 @@
 - kernel/sys/ -> kernel/ -> fs/, shell/, lib/
 - external read disk and inode -> lookup\_dentry
 
-## Kernel
-- cursor.max inc/dec
-- cursor.x left/right
-
 ## Shell
 - history stack
 

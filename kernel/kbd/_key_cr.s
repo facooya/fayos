@@ -16,18 +16,14 @@ _key_cr:
 	call outs
 	add $0x02, %sp
 
-	# reset max cursor
-	mov (cursor), %al # cursor.min
-	mov %al, (cursor+0x01) # cursor.max
+	call init_cursor
 
 	# {init.task}
 	push $raw_buf
 	call clear_buf
 	add $0x02, %sp
 
-	xor %ax, %ax
 	mov $raw_buf, %si
-	mov %ax, (%si) # raw.len
 	add $0x02, %si # skip len
 
 	# zero stack

@@ -16,12 +16,12 @@ _key_bs:
 	je .done
 
 	# {{{ pre-update
-	# update cursor max
+	# dec cursor max
 	mov (cursor+0x01), %al # cursor.max
 	sub $0x01, %al
 	mov %al, (cursor+0x01)
 
-	# update raw_buf
+	# dec raw_buf
 	sub $0x01, %si # raw.data
 	mov (raw_buf), %ax # raw.len
 	sub $0x01, %ax

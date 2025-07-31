@@ -34,6 +34,7 @@ _key_up:
 	test %ax, %ax
 	jz .done
 
+	# {{{ read file
 	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_inum)
 	mov DE_INUM_OFF+0x02(%bx), %ax
@@ -52,6 +53,7 @@ _key_up:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	# }}}
 
 	# {{{ HMI
 	push $inode

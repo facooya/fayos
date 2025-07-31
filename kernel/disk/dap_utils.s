@@ -7,7 +7,7 @@
 .section .text
 .code16
 .global set_dap_lba
-.global src_set_dap_lba
+.global set_src_dap_lba
 
 # set_dap_lba(lba_hi, lba_lo)
 set_dap_lba:
@@ -20,13 +20,13 @@ set_dap_lba:
 	mov %ax, 0x0A(%si)
 	mov 0x06(%bp), %ax
 	mov %ax, 0x08(%si)
-	
+
 	pop %si
 	pop %bp
 	ret
 
-# src_set_dap_lba(&dap, lba_hi, lba_lo)
-src_set_dap_lba:
+# set_src_dap_lba(&dap, lba_hi, lba_lo)
+set_src_dap_lba:
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -36,7 +36,7 @@ src_set_dap_lba:
 	mov %ax, 0x0A(%si)
 	mov 0x08(%bp), %ax
 	mov %ax, 0x08(%si)
-	
+
 	pop %si
 	pop %bp
 	ret
