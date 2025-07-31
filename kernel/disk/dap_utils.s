@@ -8,6 +8,7 @@
 .code16
 .global set_dap_lba
 .global set_src_dap_lba
+.global set_dap_mem
 
 # set_dap_lba(lba_hi, lba_lo)
 set_dap_lba:
@@ -39,4 +40,16 @@ set_src_dap_lba:
 
 	pop %si
 	pop %bp
+	ret
+
+# set_dap_mem()
+set_dap_mem:
+	push %si
+
+	mov $dap, %si
+	call alloc_mem
+	mov %ax, 0x04(%si)
+	mov %dx, 0x06(%si)
+
+	pop %si
 	ret

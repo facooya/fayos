@@ -30,6 +30,9 @@ kernel/disk/dap.s \
 kernel/disk/dap_utils.s \
 kernel/disk/set_dap_blk_lba.s \
 \
+kernel/mem/mem.s \
+kernel/mem/alloc_mem.s \
+\
 kernel/disp/clear_disp.s \
 kernel/disp/clear_line_disp.s \
 \
