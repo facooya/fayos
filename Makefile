@@ -32,6 +32,7 @@ kernel/disk/set_dap_blk_lba.s \
 \
 kernel/mem/mem.s \
 kernel/mem/alloc_mem.s \
+kernel/mem/free_mem.s \
 \
 kernel/disp/clear_disp.s \
 kernel/disp/clear_line_disp.s \
@@ -85,6 +86,7 @@ shell/exec/exec_redir.s \
 \
 shell/cmd/cmd_map.s \
 \
+shell/cmd/sys/test.s \
 shell/cmd/sys/echo.s \
 shell/cmd/sys/help.s \
 shell/cmd/sys/clear.s \

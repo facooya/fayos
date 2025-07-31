@@ -9,6 +9,8 @@
 
 cmd_map:
 	# sys
+	.word cmd_test
+	.asciz "test"
 	.word cmd_clear
 	.asciz "clear"
 	.word cmd_echo
