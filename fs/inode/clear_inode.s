@@ -44,8 +44,6 @@ clear_inode:
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
-	xor %ax, %ax
-	mov %ax, %ds
 	# } push bitnum
 
 	# { clear block bit
@@ -53,6 +51,7 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $bbnum
 	push %bx
@@ -69,6 +68,7 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	mov 0x04(%bp), %si
 	mov (%si), %ax
@@ -82,6 +82,9 @@ clear_inode:
 	call write_disk
 	add $0x02, %sp
 	# }}}
+
+	xor %ax, %ax
+	mov %ax, %ds
 
 	pop %bx
 	pop %si

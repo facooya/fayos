@@ -46,8 +46,9 @@ set_src_dap_lba:
 set_dap_mem:
 	push %si
 
-	mov $dap, %si
 	call alloc_mem
+
+	mov $dap, %si
 	mov %ax, 0x04(%si)
 	mov %dx, 0x06(%si)
 

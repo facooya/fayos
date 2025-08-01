@@ -37,6 +37,8 @@ lookup_dentry:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
+	push %ax # offset
 	# }}}
 
 	# {pre}
@@ -87,7 +89,9 @@ lookup_dentry:
 	mov DE_REC_LEN_OFF(%bx), %cx
 	add %cx, %bx
 	mov %bx, %cx
-	sub $0x8000, %cx
+
+	mov 0x0A(%bp), %ax # offset
+	sub %ax, %cx
 
 	# {end.done.nm} (cpy_mem >= file_size)
 	cmp %ax, %cx
@@ -106,6 +110,7 @@ lookup_dentry:
 	jmp .epil
 
 .epil:
+	add $0x02, %sp # offset
 	pop %bx
 	pop %di
 	pop %si

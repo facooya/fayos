@@ -23,6 +23,7 @@ proc_super:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	# {{{ check superblock
 	# {task} (disk_magic_low != magic_low)
@@ -90,6 +91,9 @@ proc_super:
 
 # {DONE}
 .done:
+	xor %ax, %ax
+	mov %ax, %ds
+
 	push $.kmsg_ok
 	call outs
 	add $0x02, %sp

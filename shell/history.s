@@ -110,6 +110,7 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
+	mov %dx, %ds
 	pop %ax # [s.2] file_size
 	add %ax, %bx
 	push %ax # [s.3] file_size
@@ -165,6 +166,8 @@ history:
 	add $0x04, %sp
 	# }}}
 
+	xor %ax, %ax
+	mov %ax, %ds
 	jmp .done
 
 .done:

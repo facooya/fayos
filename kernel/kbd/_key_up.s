@@ -53,6 +53,7 @@ _key_up:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 	# }}}
 
 	# {{{ HMI
@@ -170,6 +171,9 @@ _key_up:
 	mov %ax, (hist_stack)
 
 .done:
+	xor %ax, %ax
+	mov %ax, %ds
+
 	pop %bx
 	pop %di
 	ret

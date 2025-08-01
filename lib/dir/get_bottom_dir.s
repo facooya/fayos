@@ -43,6 +43,7 @@ get_bottom_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	add $0x18, %bx
 	mov $0x18, %cx # rm_rec_len++
@@ -105,6 +106,7 @@ get_bottom_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	pop %cx # rm_rec_len++
 	pop %dx # file_size--
@@ -131,6 +133,9 @@ get_bottom_dir:
 	jmp .epil
 
 .epil:
+	xor %ax, %ax
+	mov %ax, %ds
+
 	pop %bx
 	pop %di
 	pop %si

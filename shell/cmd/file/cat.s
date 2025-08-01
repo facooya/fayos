@@ -79,6 +79,7 @@ cmd_cat:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	# putns
 	pop %ax # file size
@@ -100,6 +101,7 @@ cmd_cat:
 # {DONE}
 .done:
 	xor %ax, %ax
+	mov %ax, %ds
 	jmp .epil
 
 .exit:

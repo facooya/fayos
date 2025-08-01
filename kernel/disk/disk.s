@@ -10,8 +10,7 @@
 .global write_disk
 
 # read_disk(&dap)
-# <ret> ax = offset
-# <ret> dx = segment
+# <ret> dx:ax = segment:offset
 read_disk:
 	push %bp
 	mov %sp, %bp
@@ -26,6 +25,7 @@ read_disk:
 	jmp .done
 
 # write_disk(&dap)
+# <ret> dx:ax = segment:offset
 write_disk:
 	push %bp
 	mov %sp, %bp

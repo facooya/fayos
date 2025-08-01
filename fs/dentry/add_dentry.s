@@ -37,6 +37,7 @@ add_dentry:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
@@ -95,6 +96,9 @@ add_dentry:
 	push $dap
 	call write_disk
 	add $0x02, %sp
+
+	xor %ax, %ax
+	mov %ax, %ds
 
 	# {end.done}
 	pop %ax # rec_len

@@ -17,6 +17,7 @@ _super_set_bitmap:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $bbnum
 	push %bx
@@ -37,6 +38,7 @@ _super_set_bitmap:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $ibnum
 	push %bx
@@ -46,6 +48,9 @@ _super_set_bitmap:
 	push $dap_ib
 	call write_disk
 	add $0x02, %sp
+
+	xor %ax, %ax
+	mov %ax, %ds
 
 	pop %bx
 	# }}}

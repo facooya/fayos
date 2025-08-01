@@ -93,6 +93,7 @@ cmd_ls:
 .done:
 	call putnl
 	xor %ax, %ax
+	mov %ax, %ds
 	jmp .epli
 
 .epli:

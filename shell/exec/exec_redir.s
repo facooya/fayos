@@ -76,6 +76,7 @@ exec_redir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
+	mov %dx, %ds
 	mov %ax, %dx # backup mem
 
 	mov $inode, %si
@@ -134,6 +135,7 @@ exec_redir:
 
 	# {end.done}
 	xor %ax, %ax
+	mov %ax, %ds
 	jmp .done
 
 # {DONE}

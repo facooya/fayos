@@ -45,6 +45,9 @@ read_inode:
 	mov I_BLK_0_OFF+0x02(%bx), %ax
 	mov %ax, I_BLK_0_OFF+0x02(%si)
 
+	xor %ax, %ax
+	mov %ax, %ds
+
 	pop %bx
 	pop %si
 	pop %bp

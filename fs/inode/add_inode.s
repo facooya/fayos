@@ -19,6 +19,7 @@ add_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $bbnum
 	push %bx
@@ -31,6 +32,7 @@ add_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $ibnum
 	push %bx
@@ -63,8 +65,6 @@ add_inode:
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
-	xor %ax, %ax
-	mov %ax, %ds
 	# }}}
 
 	# {{{ set inum bit
@@ -72,6 +72,7 @@ add_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $ibnum
 	push %bx
@@ -88,6 +89,7 @@ add_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 
 	push $bbnum
 	push %bx
@@ -98,6 +100,9 @@ add_inode:
 	call write_disk
 	add $0x02, %sp
 	# }}}
+
+	xor %ax, %ax
+	mov %ax, %ds
 
 	pop %bx
 	ret

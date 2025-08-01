@@ -44,6 +44,7 @@ update_inode:
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
+
 	xor %ax, %ax
 	mov %ax, %ds
 

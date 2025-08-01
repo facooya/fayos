@@ -42,6 +42,8 @@ rm_dir:
 	push $dap
 	call read_disk
 	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
 
 	pop %dx
 	mov $0x18, %cx # rm_rec_len++
@@ -91,6 +93,7 @@ rm_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
+	mov %dx, %ds
 	pop %dx
 	pop %cx
 
@@ -98,6 +101,8 @@ rm_dir:
 	jmp .clear__lp
 
 .clear__end:
+	xor %ax, %ax
+	mov %ax, %ds
 
 # {DONE}
 .done:
