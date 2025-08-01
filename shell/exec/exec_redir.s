@@ -33,17 +33,39 @@ exec_redir:
 
 # {TASK}
 .type__write:
+	push %cx
+	push $inode
+	push $inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+	pop %cx
+
 	# {{{ lookup dentry
 	push %si # name
 	push %cx # name_len
-	push $inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax # file_size
+	push %bx # start_off
 	call lookup_dentry
-	add $0x06, %sp
-	mov %ax, %bx
+	add $0x08, %sp
 
-	# {err} (lookup_dentry == no_match)
-	test %ax, %ax
-	jz .err_file_no
+	# {err} (lookup_dentry() == no_match)
+	cmp $0x01, %ax
+	je .err_file_no
+
+	add %ax, %bx
+	# }}}
 
 	# {err} (file_type != file)
 	mov DE_FILE_TYPE_OFF(%bx), %al
@@ -52,7 +74,6 @@ exec_redir:
 
 	# {task}
 	jmp .run
-	# }}}
 
 # {TASK}
 .run:

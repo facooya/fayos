@@ -5,17 +5,17 @@
 # Lookup directory entry
 
 .include "fayfs/dentry.s"
-.include "fayfs/inode.s"
 .section .text
 .code16
 .global lookup_dentry
 
 # lookup_dentry(
-# *inum
+# *start_off
+# file_size
 # name_len,
 # *name
 # )
-# <ret> ax = not_match:0, match:memory
+# <ret> ax = not_match:1, match:offset
 lookup_dentry:
 	push %bp
 	mov %sp, %bp
@@ -23,39 +23,23 @@ lookup_dentry:
 	push %di
 	push %bx
 
-	# {{{ read block
-	push $inode
-	push 0x04(%bp)
-	call read_inode
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
-
-	push $dap
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %ds
-	push %ax # offset
-	# }}}
-
-	# {pre}
-	mov 0x06(%bp), %dx # name_len
-	mov 0x08(%bp), %si # *name
+	# {init}
+	mov 0x04(%bp), %bx # *start_off
+	mov 0x06(%bp), %cx # file_size
+	mov 0x08(%bp), %dx # name_len
+	mov 0x0A(%bp), %si # *name
 
 .lp:
-	# {{{ len compare
-	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl # dst_name_len
+	# {end.done.nm} (file_size <= 0)
+	cmp $0x00, %cx
+	jle .done__nm
 
-	# {end.done.nm} (dst_name_len == null)
-	test %cx, %cx
-	jz .done__nm
+	# {{{
+	xor %ax, %ax
+	mov DE_NAME_LEN_OFF(%bx), %al # dst_name_len
 
 	# {lp.step} (src_name_len != dst_name_len)
-	cmp %cx, %dx
+	cmp %ax, %dx
 	jne .lp__step
 
 	# {lp.step} (inum == 0)
@@ -69,13 +53,17 @@ lookup_dentry:
 	mov %bx, %di
 	add $DE_NAME_OFF, %di # dst_name
 
+	push %cx
 	push %dx
-	push %cx # dst_name_len
+	xor %ax, %ax
+	mov DE_NAME_LEN_OFF(%bx), %al
+	push %ax # dst_name_len
 	push %di # dst_name
 	push %si # src_name
 	call strncmp
 	add $0x06, %sp
 	pop %dx
+	pop %cx
 
 	# {end.done.m} (strncmp == true)
 	test %ax, %ax
@@ -83,19 +71,9 @@ lookup_dentry:
 	# }}}
 
 .lp__step:
-	mov $inode, %di
-	mov I_FILE_SIZE_OFF(%di), %ax
-
-	mov DE_REC_LEN_OFF(%bx), %cx
-	add %cx, %bx
-	mov %bx, %cx
-
-	mov 0x0A(%bp), %ax # offset
-	sub %ax, %cx
-
-	# {end.done.nm} (cpy_mem >= file_size)
-	cmp %ax, %cx
-	jge .done__nm
+	mov DE_REC_LEN_OFF(%bx), %ax
+	add %ax, %bx
+	sub %ax, %cx # file_size
 
 	# {lp}
 	jmp .lp
@@ -103,14 +81,15 @@ lookup_dentry:
 # {DONE}
 .done__m:
 	mov %bx, %ax
+	mov 0x04(%bp), %cx # s_off
+	sub %cx, %ax
 	jmp .epil
 
 .done__nm:
-	xor %ax, %ax
+	mov $0x01, %ax
 	jmp .epil
 
 .epil:
-	add $0x02, %sp # offset
 	pop %bx
 	pop %di
 	pop %si

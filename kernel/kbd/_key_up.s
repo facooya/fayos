@@ -18,6 +18,21 @@ _key_up:
 	push %bx
 	push %di
 
+	push $inode
+	push $root_inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+
 	mov $de_hist, %di
 	xor %cx, %cx
 	mov (%di), %ax
@@ -25,14 +40,18 @@ _key_up:
 	add $0x02, %di
 	push %di
 	push %cx
-	push $root_inum
+	mov $inode, %di
+	mov I_FILE_SIZE_OFF(%di), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
-	mov %ax, %bx
+	add $0x08, %sp
 
-	# {end.done} (lookup_dentry == no_match)
-	test %ax, %ax
-	jz .done
+	# {end.done} (lookup_dentry() == no_match)
+	cmp $0x01, %ax
+	je .done
+
+	add %ax, %bx
 
 	# {{{ read file
 	mov DE_INUM_OFF(%bx), %ax

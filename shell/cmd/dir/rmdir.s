@@ -28,16 +28,36 @@ cmd_rmdir:
 	add $0x02, %sp
 	mov %ax, %cx
 
+	push %cx
+	push $inode
+	push $inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+	pop %cx
+
 	push %si # src_name
 	push %cx # src_name_len
-	push $inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
-	mov %ax, %bx # set mem
+	add $0x08, %sp
+	add %ax, %bx # set mem
 
-	# {err} (lookup_dentry == no_match)
-	test %ax, %ax
-	jz .err_dir_no
+	# {err} (lookup_dentry() == no_match)
+	cmp $0x01, %ax
+	je .err_dir_no
 
 	# {err} (file_type != dir)
 	mov DE_FILE_TYPE_OFF(%bx), %al
@@ -89,12 +109,32 @@ cmd_rmdir:
 	add $0x02, %sp
 	mov %ax, %cx
 
+	push %cx
+	push $inode
+	push $inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+	pop %cx
+
 	push %si # src_name
 	push %cx # src_name_len
-	push $inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
-	mov %ax, %bx # set mem
+	add $0x08, %sp
+	add %ax, %bx # set mem
 
 	xor %ax, %ax
 	mov %ax, DE_INUM_OFF(%bx)

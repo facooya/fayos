@@ -5,6 +5,7 @@
 # Command change directory
 
 .include "fayfs/dentry.s"
+.include "fayfs/inode.s"
 .section .text
 .code16
 .global cmd_cd
@@ -27,18 +28,39 @@ cmd_cd:
 	add $0x02, %sp
 	mov %ax, %cx
 
+	push %cx
+	push $inode
+	push $inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+	pop %cx
+
 	push %si # src_name
 	push %cx # src_name_len
-	push $inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
+	add $0x08, %sp
 
-	# {err} (lookup_dentry == no_match)
-	test %ax, %ax
-	jz .err_dir_no
+	# {err} (lookup_dentry() == no_match)
+	cmp $0x01, %ax
+	je .err_dir_no
+
+	add %ax, %bx
 
 	# {task}
-	mov %ax, %bx
 	jmp .run
 	# }}}
 

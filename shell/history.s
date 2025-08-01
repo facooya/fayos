@@ -23,6 +23,21 @@ history:
 	push %si
 	push %bx
 
+	push $inode
+	push $root_inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+
 	mov $de_hist, %si
 	xor %cx, %cx
 	mov (%si), %ax
@@ -30,13 +45,18 @@ history:
 	add $0x02, %si
 	push %si
 	push %cx
-	push $root_inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
+	add $0x08, %sp
 
-	# {task} (lookup_dentry == 0)
-	test %ax, %ax
-	jz .create
+	# {task} (lookup_dentry == no_match)
+	cmp $0x01, %ax
+	je .create
+
+	add %ax, %bx
 
 	jmp .save
 
@@ -76,6 +96,21 @@ history:
 	jmp .save
 
 .save:
+	push $inode
+	push $root_inum
+	call read_inode
+	add $0x04, %sp
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %ds
+
 	mov $de_hist, %si
 	xor %cx, %cx
 	mov (%si), %ax
@@ -83,10 +118,13 @@ history:
 	add $0x02, %si
 	push %si
 	push %cx
-	push $root_inum
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
 	call lookup_dentry
-	add $0x06, %sp
-	mov %ax, %bx
+	add $0x08, %sp
+	add %ax, %bx
 
 	mov DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_inum)
