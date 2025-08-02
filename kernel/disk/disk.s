@@ -17,8 +17,6 @@ read_disk:
 	push %si
 
 	mov 0x04(%bp), %si
-	mov 0x06(%si), %ax
-	mov %ax, %ds
 	call _sys_read_disk
 	jc .err_disk_io
 
@@ -32,8 +30,6 @@ write_disk:
 	push %si
 
 	mov 0x04(%bp), %si
-	mov 0x06(%si), %ax
-	mov %ax, %ds
 	call _sys_write_disk
 	jc .err_disk_io
 
@@ -41,14 +37,10 @@ write_disk:
 
 # {DONE}
 .exit:
-	xor %ax, %ax
-	mov %ax, %ds
 	mov $0x01, %ax
 	jmp .epil
 
 .done:
-	xor %ax, %ax
-	mov %ax, %ds
 	mov 0x04(%si), %ax
 	mov 0x06(%si), %dx
 	jmp .epil

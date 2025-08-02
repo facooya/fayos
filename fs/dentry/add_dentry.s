@@ -97,9 +97,6 @@ add_dentry:
 	call write_disk
 	add $0x02, %sp
 
-	xor %ax, %ax
-	mov %ax, %ds
-
 	# {end.done}
 	pop %ax # rec_len
 	jmp .done

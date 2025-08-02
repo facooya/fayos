@@ -48,9 +48,9 @@ set_dap_mem:
 
 	call alloc_mem
 
-	mov $dap, %si
-	mov %ax, 0x04(%si)
-	mov %dx, 0x06(%si)
+	mov $dap_es, %si
+	mov %ax, 0x04(%si) # offset
+	mov %dx, 0x06(%si) # segment
 
 	pop %si
 	ret

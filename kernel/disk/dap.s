@@ -7,6 +7,7 @@
 .include "fayfs/super.s"
 .include "dap.s"
 .global dap
+.global dap_es
 .global dap_super
 .global dap_bb
 .global dap_ib
@@ -18,6 +19,17 @@ dap:
 	.byte DAP_RESV
 	.word DAP_SECTOR_COUNT
 	.word 0x8000
+	.word 0x00
+	.word 0x00
+	.word 0x00
+	.word 0x00
+	.word 0x00
+
+dap_es:
+	.byte DAP_SIZE
+	.byte DAP_RESV
+	.word DAP_SECTOR_COUNT
+	.word 0x00
 	.word 0x00
 	.word 0x00
 	.word 0x00
