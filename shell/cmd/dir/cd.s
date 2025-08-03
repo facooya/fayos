@@ -12,6 +12,7 @@
 
 # cmd_cd()
 cmd_cd:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -42,7 +43,7 @@ cmd_cd:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -51,8 +52,9 @@ cmd_cd:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
@@ -67,14 +69,14 @@ cmd_cd:
 # {TASK}
 .run:
 	# {err} (file_type != dir)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
 
 	# get dst inode num
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	# get i blk
@@ -96,9 +98,10 @@ cmd_cd:
 	jmp .epil
 
 .epil:
-	pop %si
-	pop %di
 	pop %bx
+	pop %di
+	pop %si
+	pop %es
 	ret
 
 # {ERR}

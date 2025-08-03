@@ -12,6 +12,7 @@
 
 # cmd_touch()
 cmd_touch:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -42,7 +43,7 @@ cmd_touch:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -51,8 +52,9 @@ cmd_touch:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() != no_match)
 	cmp $0x01, %ax
@@ -120,6 +122,7 @@ cmd_touch:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

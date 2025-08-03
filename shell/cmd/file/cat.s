@@ -12,6 +12,7 @@
 
 # cmd_cat()
 cmd_cat:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -28,7 +29,7 @@ cmd_cat:
 	add $0x02, %sp
 	mov %ax, %cx
 
-	push %cx
+	push %cx # s.1 len
 	push $inode
 	push $inum
 	call read_inode
@@ -42,8 +43,8 @@ cmd_cat:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
-	pop %cx
+	mov %dx, %es
+	pop %cx # s.1 len
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -51,8 +52,9 @@ cmd_cat:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
@@ -66,21 +68,21 @@ cmd_cat:
 
 .run:
 	# {err} (file_type != file)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 
 	# save inum
 	mov (inum), %ax
-	push %ax
+	push %ax # s.1 inum_lo
 	mov (inum+0x02), %ax
-	push %ax
-	push %bx
+	push %ax # s.2 inum_hi
+	push %bx # s.3 off
 
 	# set inum
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	push $inode
@@ -90,7 +92,7 @@ cmd_cat:
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
+	push %ax # s.4 file_size
 
 	push $inode
 	call set_dap_blk_lba
@@ -100,20 +102,20 @@ cmd_cat:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	# putns
-	pop %ax # file size
+	pop %ax # s.4 file_size
 	push %ax
 	push %bx
 	call putns
 	add $0x04, %sp
 
 	# restore
-	pop %bx
-	pop %ax
+	pop %bx # s.3 off
+	pop %ax # s.2 inum_hi
 	mov %ax, (inum+0x02)
-	pop %ax
+	pop %ax # s.1 inum_lo
 	mov %ax, (inum)
 
 	# {end.done}
@@ -133,6 +135,7 @@ cmd_cat:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

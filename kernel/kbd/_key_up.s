@@ -15,6 +15,7 @@
 # <req> *si = raw_buf
 # <ret> raw_buf
 _key_up:
+	push %es
 	push %bx
 	push %di
 
@@ -31,7 +32,7 @@ _key_up:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	mov $de_hist, %di
 	xor %cx, %cx
@@ -44,8 +45,9 @@ _key_up:
 	mov I_FILE_SIZE_OFF(%di), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {end.done} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
@@ -54,9 +56,9 @@ _key_up:
 	add %ax, %bx
 
 	# {{{ read file
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (tmp_inum+0x02)
 
 	push $inode
@@ -72,7 +74,7 @@ _key_up:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	# }}}
 
 	# {{{ HMI
@@ -145,7 +147,7 @@ _key_up:
 
 .raw__lp:
 	# {end} (hist == cr)
-	mov (%bx), %al
+	mov %es:(%bx), %al
 	cmp $CHR_CR, %al
 	je .raw__end
 
@@ -190,9 +192,7 @@ _key_up:
 	mov %ax, (hist_stack)
 
 .done:
-	xor %ax, %ax
-	mov %ax, %ds
-
 	pop %bx
 	pop %di
+	pop %es
 	ret

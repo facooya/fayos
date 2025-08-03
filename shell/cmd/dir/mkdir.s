@@ -12,6 +12,7 @@
 
 # cmd_mkdir()
 cmd_mkdir:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -42,7 +43,7 @@ cmd_mkdir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -50,9 +51,10 @@ cmd_mkdir:
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax # file_size
-	push %bx # start_off
+	push %bx # *off
+	push %es # *seg
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() != 1)
 	cmp $0x01, %ax
@@ -176,6 +178,7 @@ cmd_mkdir:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

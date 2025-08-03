@@ -12,6 +12,7 @@
 
 # cmd_rm()
 cmd_rm:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -42,7 +43,7 @@ cmd_rm:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -51,8 +52,9 @@ cmd_rm:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
@@ -67,20 +69,20 @@ cmd_rm:
 # {TASK}
 .run:
 	# {err} (file_type != file)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 
 	# {{{
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (clear_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (clear_inum+0x02)
 
 	# clear inum
 	xor %ax, %ax
-	mov %ax, DE_INUM_OFF(%bx)
-	mov %ax, DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_INUM_OFF(%bx)
+	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
 
 	# write
 	push $dap
@@ -108,6 +110,7 @@ cmd_rm:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

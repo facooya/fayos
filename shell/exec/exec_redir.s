@@ -12,6 +12,7 @@
 
 # exec_redir()
 exec_redir:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -47,7 +48,7 @@ exec_redir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	# {{{ lookup dentry
@@ -57,8 +58,9 @@ exec_redir:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax # file_size
 	push %bx # start_off
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {err} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
@@ -68,7 +70,7 @@ exec_redir:
 	# }}}
 
 	# {err} (file_type != file)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 
@@ -78,9 +80,9 @@ exec_redir:
 # {TASK}
 .run:
 	# get dst i num
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (inum+0x02)
 
 	# read i node
@@ -97,8 +99,8 @@ exec_redir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
-	mov %dx, %ds
-	mov %ax, %dx # backup mem
+	mov %dx, %es
+	push %bx # s.1
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
@@ -109,14 +111,14 @@ exec_redir:
 	cmp $0x00, %cx
 	jle .run__clear_end
 
-	mov %ax, (%bx)
+	mov %ax, %es:(%bx)
 
 	add $0x02, %bx
 	sub $0x02, %cx
 	jmp .run__clear_lp
 
 .run__clear_end:
-	mov %dx, %bx # set mem
+	pop %bx # s.1
 	xor %dx, %dx # file_size
 	mov $write_buf, %si
 	mov (%si), %cx # buf.len
@@ -129,7 +131,7 @@ exec_redir:
 	test %cx, %cx
 	jz .run__write_end
 
-	mov %al, (%bx)
+	mov %al, %es:(%bx)
 
 	# {lp}
 	add $0x01, %si # chr
@@ -155,8 +157,6 @@ exec_redir:
 	add $0x04, %sp
 
 	# {end.done}
-	xor %ax, %ax
-	mov %ax, %ds
 	jmp .done
 
 # {DONE}
@@ -168,6 +168,7 @@ exec_redir:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

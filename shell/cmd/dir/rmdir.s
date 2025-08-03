@@ -12,6 +12,7 @@
 
 # cmd_rmdir()
 cmd_rmdir:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -42,7 +43,7 @@ cmd_rmdir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -51,8 +52,9 @@ cmd_rmdir:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 	add %ax, %bx # set mem
 
 	# {err} (lookup_dentry() == no_match)
@@ -60,7 +62,7 @@ cmd_rmdir:
 	je .err_dir_no
 
 	# {err} (file_type != dir)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
 
@@ -68,9 +70,9 @@ cmd_rmdir:
 	jmp .run
 
 .run:
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (rmdir_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (rmdir_inum+0x02)
 
 .run__lp:
@@ -123,7 +125,7 @@ cmd_rmdir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %cx
 
 	push %si # src_name
@@ -132,13 +134,14 @@ cmd_rmdir:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 	add %ax, %bx # set mem
 
 	xor %ax, %ax
-	mov %ax, DE_INUM_OFF(%bx)
-	mov %ax, DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_INUM_OFF(%bx)
+	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
 	
 	push $dap
 	call write_disk
@@ -164,6 +167,7 @@ cmd_rmdir:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret
 
 # {ERR}

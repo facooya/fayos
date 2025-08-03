@@ -20,6 +20,7 @@ hist_stack: .word 0x00
 # history()
 # <req> raw_buf
 history:
+	push %es
 	push %si
 	push %bx
 
@@ -36,7 +37,7 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	mov $de_hist, %si
 	xor %cx, %cx
@@ -49,8 +50,9 @@ history:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 
 	# {task} (lookup_dentry == no_match)
 	cmp $0x01, %ax
@@ -109,7 +111,7 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	mov $de_hist, %si
 	xor %cx, %cx
@@ -122,13 +124,14 @@ history:
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
 	push %bx
+	push %es
 	call lookup_dentry
-	add $0x08, %sp
+	add $0x0A, %sp
 	add %ax, %bx
 
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (tmp_inum+0x02)
 
 	push $inode
@@ -148,7 +151,7 @@ history:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx # mem
-	mov %dx, %ds
+	mov %dx, %es
 	pop %ax # [s.2] file_size
 	add %ax, %bx
 	push %ax # [s.3] file_size
@@ -166,7 +169,7 @@ history:
 	test %cx, %cx
 	jz .append__end
 
-	mov %al, (%bx)
+	mov %al, %es:(%bx)
 
 	# {lp}
 	add $0x01, %si # buf.data
@@ -176,8 +179,10 @@ history:
 
 .append__end:
 	pop %cx # [s.4] buf.len
-	mov $CHR_CR, (%bx)
-	mov $CHR_LF, 0x01(%bx)
+	mov $CHR_CR, %al
+	mov %al, %es:(%bx)
+	mov $CHR_LF, %al
+	mov %al, %es:0x01(%bx)
 	add $0x02, %bx # mem
 	add $0x02, %cx # his.len
 	push %cx # [s.5] his.len
@@ -204,11 +209,10 @@ history:
 	add $0x04, %sp
 	# }}}
 
-	xor %ax, %ax
-	mov %ax, %ds
 	jmp .done
 
 .done:
 	pop %bx
 	pop %si
+	pop %es
 	ret
