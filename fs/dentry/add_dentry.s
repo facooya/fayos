@@ -20,6 +20,7 @@
 add_dentry:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -37,7 +38,7 @@ add_dentry:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
@@ -51,21 +52,21 @@ add_dentry:
 	# write inum
 	mov 0x06(%bp), %si
 	mov (%si), %ax # dst_lo
-	mov %ax, DE_INUM_OFF(%bx)
+	mov %ax, %es:DE_INUM_OFF(%bx)
 	mov 0x02(%si), %ax # dst_hi
-	mov %ax, DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
 
 	# write info
 	mov 0x08(%bp), %dx # dh:dl = file_type:name_len
-	mov %dh, DE_FILE_TYPE_OFF(%bx)
-	mov %dl, DE_NAME_LEN_OFF(%bx)
+	mov %dh, %es:DE_FILE_TYPE_OFF(%bx)
+	mov %dl, %es:DE_NAME_LEN_OFF(%bx)
 
 	# write rec_size
 	xor %cx, %cx
 	mov %dl, %cl
 	add $0x0B, %cx # fix (8), align 4 (3)
 	and $0xFFFC, %cx # mask: 0b1100
-	mov %cx, DE_REC_LEN_OFF(%bx)
+	mov %cx, %es:DE_REC_LEN_OFF(%bx)
 	push %cx
 
 	# dst name
@@ -83,7 +84,7 @@ add_dentry:
 
 	# cpy
 	mov (%si), %al
-	mov %al, (%di)
+	mov %al, %es:(%di)
 
 	# {lp}
 	add $0x01, %si
@@ -106,5 +107,6 @@ add_dentry:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

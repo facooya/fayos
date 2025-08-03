@@ -16,6 +16,7 @@
 update_inode:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -23,7 +24,7 @@ update_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	xor %dx, %dx
 	mov 0x04(%bp), %si # *inum
@@ -34,21 +35,19 @@ update_inode:
 
 	mov 0x06(%bp), %si # *inode
 	mov I_FILE_SIZE_OFF(%si), %ax
-	mov %ax, I_FILE_SIZE_OFF(%bx)
+	mov %ax, %es:I_FILE_SIZE_OFF(%bx)
 
 	mov I_BLK_0_OFF(%si), %ax
-	mov %ax, I_BLK_0_OFF(%bx)
+	mov %ax, %es:I_BLK_0_OFF(%bx)
 	mov I_BLK_0_OFF+0x02(%si), %ax
-	mov %ax, I_BLK_0_OFF+0x02(%bx)
+	mov %ax, %es:I_BLK_0_OFF+0x02(%bx)
 
 	push $dap_it
 	call write_disk
 	add $0x02, %sp
 
-	xor %ax, %ax
-	mov %ax, %ds
-
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

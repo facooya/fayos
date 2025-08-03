@@ -11,25 +11,25 @@
 
 # _super_set_lba()
 _super_set_lba:
-	mov BB_LBA_OFF(%bx), %ax
+	mov %es:BB_LBA_OFF(%bx), %ax
 	push %ax
-	mov BB_LBA_OFF+0x02(%bx), %ax
+	mov %es:BB_LBA_OFF+0x02(%bx), %ax
 	push %ax
 	push $dap_bb
 	call set_src_dap_lba
 	add $0x06, %sp
 
-	mov IB_LBA_OFF(%bx), %ax
+	mov %es:IB_LBA_OFF(%bx), %ax
 	push %ax
-	mov IB_LBA_OFF+0x02(%bx), %ax
+	mov %es:IB_LBA_OFF+0x02(%bx), %ax
 	push %ax
 	push $dap_ib
 	call set_src_dap_lba
 	add $0x06, %sp
 
-	mov IT_LBA_OFF(%bx), %ax
+	mov %es:IT_LBA_OFF(%bx), %ax
 	push %ax
-	mov IT_LBA_OFF+0x02(%bx), %ax
+	mov %es:IT_LBA_OFF+0x02(%bx), %ax
 	push %ax
 	push $dap_it
 	call set_src_dap_lba

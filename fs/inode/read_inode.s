@@ -16,6 +16,7 @@
 read_inode:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -23,7 +24,7 @@ read_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	# calc inum
 	xor %dx, %dx
@@ -36,19 +37,17 @@ read_inode:
 	mov 0x06(%bp), %si # *inode
 
 	# set i_file_size
-	mov I_FILE_SIZE_OFF(%bx), %ax
+	mov %es:I_FILE_SIZE_OFF(%bx), %ax
 	mov %ax, I_FILE_SIZE_OFF(%si)
 
 	# set i_blk
-	mov I_BLK_0_OFF(%bx), %ax
+	mov %es:I_BLK_0_OFF(%bx), %ax
 	mov %ax, I_BLK_0_OFF(%si)
-	mov I_BLK_0_OFF+0x02(%bx), %ax
+	mov %es:I_BLK_0_OFF+0x02(%bx), %ax
 	mov %ax, I_BLK_0_OFF+0x02(%si)
-
-	xor %ax, %ax
-	mov %ax, %ds
 
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

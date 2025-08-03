@@ -13,6 +13,7 @@
 clear_inode:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -21,7 +22,7 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	# calc inode # TODO: low, high
 	xor %dx, %dx
@@ -32,14 +33,14 @@ clear_inode:
 	add %ax, %bx # set mem
 
 	# clear_bit(mem, bitnum)
-	mov I_BLK_0_OFF(%bx), %ax
+	mov %es:I_BLK_0_OFF(%bx), %ax
 	mov %ax, (bbnum)
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
-	mov %ax, I_FILE_SIZE_OFF(%bx)
-	mov %ax, I_BLK_0_OFF(%bx)
-	mov %ax, I_BLK_0_OFF+0x02(%bx)
+	mov %ax, %es:I_FILE_SIZE_OFF(%bx)
+	mov %ax, %es:I_BLK_0_OFF(%bx)
+	mov %ax, %es:I_BLK_0_OFF+0x02(%bx)
 
 	push $dap_it
 	call write_disk
@@ -51,12 +52,13 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	push $bbnum
 	push %bx
+	push %es
 	call clear_bit
-	add $0x04, %sp
+	add $0x06, %sp
 
 	push $dap_bb
 	call write_disk
@@ -68,25 +70,24 @@ clear_inode:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	mov 0x04(%bp), %si
 	mov (%si), %ax
 	mov %ax, (ibnum)
 	push $ibnum
 	push %bx
+	push %es
 	call clear_bit
-	add $0x04, %sp
+	add $0x06, %sp
 
 	push $dap_ib
 	call write_disk
 	add $0x02, %sp
 	# }}}
 
-	xor %ax, %ax
-	mov %ax, %ds
-
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

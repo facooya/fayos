@@ -11,6 +11,10 @@
 
 # cmd_test()
 cmd_test:
+	push %si
+	push %di
+	push %bx
+
 	push $inode
 	push $root_inum
 	call read_inode
@@ -38,8 +42,8 @@ cmd_test:
 	mov %ax, %bx
 	mov %dx, %es
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
+	mov $inode, %di
+	mov I_FILE_SIZE_OFF(%di), %ax
 	add %ax, %bx
 
 	mov $'F', %al
@@ -51,4 +55,8 @@ cmd_test:
 	call write_disk
 	add $0x02, %sp
 	pop %es # s.1
+
+	pop %bx
+	pop %di
+	pop %si
 	ret

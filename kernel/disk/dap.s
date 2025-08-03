@@ -48,13 +48,13 @@ dap_super:
 	.word 0x00
 	.word 0x00
 
-# Mutable by superblock
+# Mutable LBA by superblock
 dap_bb:
 	.byte DAP_SIZE
 	.byte DAP_RESV
 	.word DAP_SECTOR_COUNT
-	.word 0x8000
 	.word 0x00
+	.word 0x1000
 	.word 0x00
 	.word 0x00
 	.word 0x00
@@ -64,8 +64,8 @@ dap_ib:
 	.byte DAP_SIZE
 	.byte DAP_RESV
 	.word DAP_SECTOR_COUNT
-	.word 0x8000
-	.word 0x00
+	.word 0x1000
+	.word 0x1000
 	.word 0x00
 	.word 0x00
 	.word 0x00
@@ -75,8 +75,8 @@ dap_it:
 	.byte DAP_SIZE
 	.byte DAP_RESV
 	.word DAP_SECTOR_COUNT
-	.word 0x8000
-	.word 0x00
+	.word 0x2000
+	.word 0x1000
 	.word 0x00
 	.word 0x00
 	.word 0x00

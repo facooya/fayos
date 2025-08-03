@@ -16,6 +16,7 @@
 
 # proc_super()
 proc_super:
+	push %es
 	push %si
 	push %bx
 
@@ -23,16 +24,16 @@ proc_super:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	# {{{ check superblock
 	# {task} (disk_magic_low != magic_low)
-	mov S_MAG_OFF(%bx), %ax
+	mov %es:S_MAG_OFF(%bx), %ax
 	cmp $(S_MAG&0xFFFF), %ax
 	jne .run_make
 
 	# {task} (disk_magic_high != magic_high)
-	mov S_MAG_OFF+0x02(%bx), %ax
+	mov %es:S_MAG_OFF+0x02(%bx), %ax
 	cmp $(S_MAG>>0x10), %ax
 	jne .run_make
 
@@ -91,13 +92,11 @@ proc_super:
 
 # {DONE}
 .done:
-	xor %ax, %ax
-	mov %ax, %ds
-
 	push $.kmsg_ok
 	call outs
 	add $0x02, %sp
 
 	pop %bx
 	pop %si
+	pop %es
 	ret

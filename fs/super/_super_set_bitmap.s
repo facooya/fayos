@@ -10,6 +10,8 @@
 
 # _super_set_bitmap()
 _super_set_bitmap:
+	push %es
+
 	# {{{
 	push %bx
 
@@ -17,12 +19,13 @@ _super_set_bitmap:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	push $bbnum
 	push %bx
+	push %es
 	call set_bit
-	add $0x04, %sp
+	add $0x06, %sp
 
 	push $dap_bb
 	call write_disk
@@ -38,20 +41,20 @@ _super_set_bitmap:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	push $ibnum
 	push %bx
+	push %es
 	call set_bit
-	add $0x04, %sp
+	add $0x06, %sp
 
 	push $dap_ib
 	call write_disk
 	add $0x02, %sp
 
-	xor %ax, %ax
-	mov %ax, %ds
-
 	pop %bx
 	# }}}
+
+	pop %es
 	ret
