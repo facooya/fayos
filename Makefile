@@ -113,6 +113,7 @@ lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \
 \
+lib/fptr/fptrlen.s \
 lib/fptr/fptrncmp.s \
 \
 lib/str/putf.s \
@@ -120,7 +121,6 @@ lib/str/putns.s \
 lib/str/puts.s \
 lib/str/put_utils.s \
 lib/str/split.s \
-lib/str/str.s \
 lib/str/trim.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)

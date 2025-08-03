@@ -24,10 +24,19 @@ cmd_cd:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	push %si # arg
-	call strlen
-	add $0x02, %sp
+	# {{ fptr len
+	push %es
+	xor %ax, %ax
+	mov %ax, %es
+
+	push %si
+	push %es
+	call fptrlen
+	add $0x04, %sp
+
 	mov %ax, %cx
+	pop %es
+	# }}
 
 	push %cx
 	push $inode

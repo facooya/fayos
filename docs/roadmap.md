@@ -22,9 +22,6 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
-- disk use segment
-- kernel/sys/ -> kernel/ -> fs/, shell/, lib/
-- external read disk and inode -> lookup\_dentry
 
 ## Shell
 - history stack

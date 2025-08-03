@@ -31,11 +31,19 @@ cmd_help:
 	call puts
 	add $0x02, %sp
 
-	# strlen(cmd_str)
+	# {{{ fptr len
+	push %es
+	xor %ax, %ax
+	mov %ax, %es
+
 	push %si
-	call strlen
-	add $0x02, %sp
+	push %es
+	call fptrlen
+	add $0x04, %sp
+
 	add %ax, %si
+	pop %es
+	# }}}
 
 	call putnl
 

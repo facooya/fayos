@@ -23,18 +23,23 @@ kbd_rsh:
 	mov %si, %di # raw.data
 	sub $0x01, %di # restore origin
 
-	# {{{
+	# {{{ fptr len
 	push %ax
+	push %es
 
-	# strlen(&str)
+	xor %ax, %ax
+	mov %ax, %es
+
 	push %di
-	call strlen
-	add $0x02, %sp
+	push %es
+	call fptrlen
+	add $0x04, %sp
 
-	mov %ax, %cx # str.len
+	mov %ax, %cx # len
 	add %ax, %di # raw.data.end
 	sub $0x01, %di # raw.data.last
 
+	pop %es
 	pop %ax
 	# }}}
 

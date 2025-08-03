@@ -20,12 +20,21 @@ kbd_lsh:
 	mov %si, %di # raw.data
 	add $0x01, %di
 
-	# strlen(&str)
-	# <ret> ax = len
-	push %di # raw.data
-	call strlen
-	add $0x02, %sp
-	mov %ax, %cx # str.len
+	# {{{ fptr len
+	push %es
+
+	xor %ax, %ax
+	mov %ax, %es
+
+	push %di
+	push %es
+	call fptrlen
+	add $0x04, %sp
+
+	pop %es
+
+	mov %ax, %cx # len
+	# }}}
 
 .lsh__lp: # [d_lsh.1]
 	# left shift
