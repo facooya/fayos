@@ -19,7 +19,7 @@ dap:
 	.byte DAP_RESV
 	.word DAP_SECTOR_COUNT
 	.word 0x8000
-	.word 0x00
+	.word 0x1000
 	.word 0x00
 	.word 0x00
 	.word 0x00

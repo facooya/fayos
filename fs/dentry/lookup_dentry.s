@@ -32,6 +32,7 @@ lookup_dentry:
 	mov 0x08(%bp), %cx # file_size
 	mov 0x0A(%bp), %dx # name_len
 	mov 0x0C(%bp), %si # *name
+	# TODO: *name_seg, *name_off
 
 .lp:
 	# {end.done.nm} (file_size <= 0)
@@ -53,20 +54,27 @@ lookup_dentry:
 	jz .lp__step
 	# }}}
 
-	# {{{ str compare
+	# {{{ fptr n compare
 	mov %bx, %di
 	add $DE_NAME_OFF, %di # dst_name
 
-	# FIXME!!!: Extra segment
 	push %cx
 	push %dx
+	push %es
+
 	xor %ax, %ax
 	mov %es:DE_NAME_LEN_OFF(%bx), %al
-	push %ax # dst_name_len
-	push %di # dst_name
-	push %si # src_name
-	call strncmp
-	add $0x06, %sp
+	push %ax # dst_len
+	push %di # *dst_off
+	push %es # *dst_seg
+	push %si # *src_off
+	xor %ax, %ax # TODO: *name_seg
+	mov %ax, %es
+	push %es # *src_seg
+	call fptrncmp
+	add $0x0A, %sp
+
+	pop %es
 	pop %dx
 	pop %cx
 
