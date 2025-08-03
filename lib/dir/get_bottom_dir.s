@@ -15,6 +15,7 @@
 get_bottom_dir:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -43,7 +44,7 @@ get_bottom_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	add $0x18, %bx
 	mov $0x18, %cx # rm_rec_len++
@@ -56,18 +57,18 @@ get_bottom_dir:
 
 .find__lp:
 	# {step} (inum == 0)
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_INUM_OFF+0x02(%bx), %ax
 	jz .find__lp_step
 
 	# (file_type == dir)
-	mov DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	je .find__chk
 
 .find__lp_step:
-	mov DE_REC_LEN_OFF(%bx), %ax
+	mov %es:DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
 
 	add %ax, %cx # rm_rec_len++
@@ -84,9 +85,9 @@ get_bottom_dir:
 	push %dx
 	push %cx
 
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (tmp_dir_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (tmp_dir_inum+0x02)
 
 	push $tmp_inode
@@ -106,7 +107,7 @@ get_bottom_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	pop %cx # rm_rec_len++
 	pop %dx # file_size--
@@ -133,11 +134,9 @@ get_bottom_dir:
 	jmp .epil
 
 .epil:
-	xor %ax, %ax
-	mov %ax, %ds
-
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

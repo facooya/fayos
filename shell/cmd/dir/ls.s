@@ -12,6 +12,7 @@
 
 # cmd_ls()
 cmd_ls:
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -34,7 +35,7 @@ cmd_ls:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	# }}}
 
 	# {task}
@@ -45,9 +46,9 @@ cmd_ls:
 .run:
 .run__lp:
 	# {chk} (inum == 0)
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_INUM_OFF+0x02(%bx), %ax
 	jz .run__lp_step
 
 	# set name ptr
@@ -56,7 +57,7 @@ cmd_ls:
 
 	# get name len
 	xor %cx, %cx
-	mov DE_NAME_LEN_OFF(%bx), %cl
+	mov %es:DE_NAME_LEN_OFF(%bx), %cl
 
 .run__name_lp:
 	# {end} (name_len == 0)
@@ -64,7 +65,7 @@ cmd_ls:
 	jz .run__name_end
 
 	# copy
-	mov (%si), %al
+	mov %es:(%si), %al
 	call putc
 
 	# {lp}
@@ -78,7 +79,7 @@ cmd_ls:
 
 .run__lp_step:
 	# add rec_len
-	mov DE_REC_LEN_OFF(%bx), %ax
+	mov %es:DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %bx
 	sub %ax, %dx # file_size--
 
@@ -93,11 +94,11 @@ cmd_ls:
 .done:
 	call putnl
 	xor %ax, %ax
-	mov %ax, %ds
 	jmp .epli
 
 .epli:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	ret

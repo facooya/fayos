@@ -36,8 +36,6 @@ _sys_write_disk:
 # <ret> cf
 _sys_read_disk_param:
 	clc
-	xor %ax, %ax
-	mov %ax, %ds
 	mov $DISK_READ_PARAM_BUF_SIZE, %ax
 	mov %ax, (%si)
 	mov $DISK_READ_PARAM, %ah

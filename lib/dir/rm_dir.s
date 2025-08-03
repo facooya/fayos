@@ -14,6 +14,7 @@
 rm_dir:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -43,29 +44,29 @@ rm_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 
 	pop %dx
 	mov $0x18, %cx # rm_rec_len++
 	sub $0x18, %dx # file_size--
 
 .clear__lp:
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	test %ax, %ax
-	or DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_INUM_OFF+0x02(%bx), %ax
 	jz .clear__lp_step
 
 	push %cx
 	push %dx
 
-	mov DE_INUM_OFF(%bx), %ax
+	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (clear_inum)
-	mov DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (clear_inum+0x02)
 
 	xor %ax, %ax
-	mov %ax, DE_INUM_OFF(%bx)
-	mov %ax, DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_INUM_OFF(%bx)
+	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
 
 	push $dap
 	call write_disk
@@ -79,7 +80,7 @@ rm_dir:
 	pop %cx
 
 .clear__lp_step:
-	mov DE_REC_LEN_OFF(%bx), %ax
+	mov %es:DE_REC_LEN_OFF(%bx), %ax
 	add %ax, %cx # rm_rec_len++
 	sub %ax, %dx # file_size--
 
@@ -93,7 +94,7 @@ rm_dir:
 	call read_disk
 	add $0x02, %sp
 	mov %ax, %bx
-	mov %dx, %ds
+	mov %dx, %es
 	pop %dx
 	pop %cx
 
@@ -101,8 +102,6 @@ rm_dir:
 	jmp .clear__lp
 
 .clear__end:
-	xor %ax, %ax
-	mov %ax, %ds
 
 # {DONE}
 .done:
@@ -117,5 +116,6 @@ rm_dir:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

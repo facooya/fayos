@@ -124,7 +124,6 @@ cmd_cat:
 # {DONE}
 .done:
 	xor %ax, %ax
-	mov %ax, %ds
 	jmp .epil
 
 .exit:
