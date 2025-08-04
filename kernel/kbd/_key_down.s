@@ -8,6 +8,6 @@
 .code16
 .global _key_down
 
-# _key_down()
+# _key_down
 _key_down:
 	ret

@@ -15,16 +15,19 @@ file_lines: .zero 0x100
 .code16
 .global parse_file_lines
 
-# parse_file_lines(*mem, *inode)
+# parse_file_lines(*seg, *off, *inode)
 parse_file_lines:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
-	mov 0x06(%bp), %si
+	mov 0x04(%bp), %ax
+	mov %ax, %es
+	mov 0x06(%bp), %bx
+	mov 0x08(%bp), %si
 	mov I_FILE_SIZE_OFF(%si), %dx
-	mov 0x04(%bp), %bx
 
 	mov $file_lines, %si
 	xor %ax, %ax
@@ -38,7 +41,7 @@ parse_file_lines:
 	jz .end
 
 	# {line} (chr == CR)
-	mov (%bx), %al
+	mov %es:(%bx), %al
 	cmp $CHR_CR, %al
 	je .line
 
@@ -68,5 +71,6 @@ parse_file_lines:
 .end:
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

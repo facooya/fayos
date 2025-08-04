@@ -8,7 +8,7 @@
 .code16
 .global _key_bs
 
-# _key_bs()
+# _key_bs
 _key_bs:
 	# {end.done} (cursor.x == cursor.min)
 	call get_cursor

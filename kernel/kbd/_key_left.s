@@ -8,7 +8,7 @@
 .code16
 .global _key_left
 
-# _key_left()
+# _key_left
 _key_left:
 	call get_cursor
 

@@ -10,8 +10,8 @@
 .global _sys_read_key
 
 # _sys_read_key()
-# <RET>
-# ah = scan_code
+# <ret>
+# ax = scan_code
 # al = ascii_code
 _sys_read_key:
 	xor %ax, %ax

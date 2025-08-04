@@ -8,7 +8,7 @@
 .code16
 .global _key_cr
 
-# _key_cr()
+# _key_cr
 _key_cr:
 	call exec_cmd
 

@@ -11,7 +11,7 @@
 .code16
 .global _key_up
 
-# _key_up()
+# _key_up
 # <req> *si = raw_buf
 # <ret> raw_buf
 _key_up:
@@ -49,9 +49,9 @@ _key_up:
 	call lookup_dentry
 	add $0x0A, %sp
 
-	# {end.done} (lookup_dentry() == no_match)
+	# {end.done.pass} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
-	je .done
+	je .done__pass
 
 	add %ax, %bx
 
@@ -78,33 +78,40 @@ _key_up:
 	# }}}
 
 	# {{{ HMI
+	push %es
 	push $inode
 	push %bx
+	push %es
 	call parse_file_lines
-	add $0x04, %sp
+	add $0x06, %sp
+	pop %es
 
 	mov $file_lines, %si
 	mov (%si), %cx # lines_c
-	sub (hist_stack), %cx # target_line
+	mov (hist_stack), %ax
+	sub %ax, %cx # target_line
 
-	# {err.hmi} (target_line <= 0)
+	# {err.done.pass} (target_line <= 0)
 	cmp $0x00, %cx
-	jle .done
+	jle .done__pass
 	# }}}
 
-	# {{{ clear line
+	# {{{ clear
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
+	push $write_buf
+	call clear_buf
+	add $0x02, %sp
+
 	call clear_line_disp
-	
+
 	push $kernel_prompt
 	call outs
 	add $0x02, %sp
 
 	call init_cursor
 	# }}}
-
-	push $raw_buf
-	call clear_buf
-	add $0x02, %sp
 
 .line:
 	# note
@@ -162,6 +169,7 @@ _key_up:
 	mov $raw_buf, %si
 	mov %cx, (%si) # save buf.len
 
+# out display
 .disp:
 	mov $raw_buf, %si
 	mov (%si), %cx # buf.len
@@ -190,9 +198,20 @@ _key_up:
 	mov (hist_stack), %ax
 	add $0x01, %ax
 	mov %ax, (hist_stack)
+	jmp .done
+
+.done__pass:
+	push $raw_buf
+	call clear_buf
+	add $0x02, %sp
+	push $write_buf
+	call clear_buf
+	add $0x02, %sp
+	jmp .epil
 
 .done:
+.epil:
 	pop %bx
 	pop %di
 	pop %es
-	ret
+	ret # return kbd_main()
