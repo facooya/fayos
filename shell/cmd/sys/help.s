@@ -31,14 +31,14 @@ cmd_help:
 	call puts
 	add $0x02, %sp
 
-	# {{{ fptr len
+	# {{{ len
 	push %es
 	xor %ax, %ax
 	mov %ax, %es
 
 	push %si
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	add %ax, %si

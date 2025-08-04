@@ -54,7 +54,7 @@ lookup_dentry:
 	jz .lp__step
 	# }}}
 
-	# {{{ fptr n compare
+	# {{{ compare
 	mov %bx, %di
 	add $DE_NAME_OFF, %di # dst_name
 
@@ -71,14 +71,14 @@ lookup_dentry:
 	xor %ax, %ax # TODO: *name_seg
 	mov %ax, %es
 	push %es # *src_seg
-	call fptrncmp
+	call memcmp
 	add $0x0A, %sp
 
 	pop %es
 	pop %dx
 	pop %cx
 
-	# {end.done.m} (strncmp == true)
+	# {end.done.m} (memcmp() == true)
 	test %ax, %ax
 	jz .done__m
 	# }}}

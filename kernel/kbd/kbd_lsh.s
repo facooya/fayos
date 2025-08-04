@@ -20,7 +20,7 @@ kbd_lsh:
 	mov %si, %di # raw.data
 	add $0x01, %di
 
-	# {{{ fptr len
+	# {{{ len
 	push %es
 
 	xor %ax, %ax
@@ -28,7 +28,7 @@ kbd_lsh:
 
 	push %di
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	pop %es

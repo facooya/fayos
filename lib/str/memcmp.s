@@ -2,13 +2,13 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Far pointer number of bytes compare
+# Memory compare
 
 .section .text
 .code16
-.global fptrncmp
+.global memcmp
 
-# fptrncmp(
+# memcmp(
 # *src_seg
 # *src_off
 # *dst_seg
@@ -16,7 +16,7 @@
 # number
 # )
 # <ret> ax = 0:true, 1:false
-fptrncmp:
+memcmp:
 	push %bp
 	mov %sp, %bp
 	push %es

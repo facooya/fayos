@@ -23,7 +23,7 @@ kbd_rsh:
 	mov %si, %di # raw.data
 	sub $0x01, %di # restore origin
 
-	# {{{ fptr len
+	# {{{ len
 	push %ax
 	push %es
 
@@ -32,7 +32,7 @@ kbd_rsh:
 
 	push %di
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	mov %ax, %cx # len

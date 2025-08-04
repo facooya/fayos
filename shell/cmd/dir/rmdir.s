@@ -24,14 +24,14 @@ cmd_rmdir:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	# {{ fptr len
+	# {{ len
 	push %es
 	xor %ax, %ax
 	mov %ax, %es
 
 	push %si
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	mov %ax, %cx
@@ -122,7 +122,7 @@ cmd_rmdir:
 
 	push %si
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	mov %ax, %cx

@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Far pointer null terminate length
+# String length
 
 .section .text
 .code16
-.global fptrlen
+.global strlen
 
-# fptrlen(*seg, *off)
-# <ret> ax = len
-fptrlen:
+# strlen(*seg, *off)
+# <ret> ax = length
+strlen:
 	push %bp
 	mov %sp, %bp
 	push %es

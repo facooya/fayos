@@ -29,7 +29,7 @@ exec_cmd:
 # si:bx = (argv[0]) chr:len
 # di:cx = (map) chr:len
 .map:
-	# {{{ fptr len
+	# {{{ len
 	mov $raw_buf, %si
 	add $0x02, %si # *buf_data
 
@@ -39,7 +39,7 @@ exec_cmd:
 
 	push %si
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	mov %ax, %bx # cmd_len
@@ -51,14 +51,14 @@ exec_cmd:
 	add $0x02, %di # map_chr
 
 .map__lp:
-	# {{{ fptr len
+	# {{{ len
 	push %es
 	xor %ax, %ax
 	mov %ax, %es
 
 	push %di
 	push %es
-	call fptrlen
+	call strlen
 	add $0x04, %sp
 
 	mov %ax, %cx # map_chr_len
@@ -83,7 +83,7 @@ exec_cmd:
 	jmp .map__lp
 
 .map__chk:
-	# {{{ fptr n cmp
+	# {{{ n cmp
 	push %cx # s.1 map_chr_len
 	push %es # s.2
 
@@ -95,14 +95,14 @@ exec_cmd:
 	push %es
 	push %si
 	push %es
-	call fptrncmp
+	call memcmp
 	add $0x0A, %sp
 
 	pop %es # s.2
 	pop %cx # s.1 map_chr_len
 	# }}}
 
-	# {end} (fptrncmp() == true)
+	# {end} (memcmp() == true)
 	test %ax, %ax
 	jz .map__end
 
