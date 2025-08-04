@@ -101,7 +101,6 @@ shell/cmd/dir/mkdir.s \
 shell/cmd/dir/rmdir.s \
 \
 \
-lib/err.s \
 lib/re.s \
 \
 lib/dir/get_bottom_dir.s \

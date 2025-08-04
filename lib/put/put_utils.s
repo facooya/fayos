@@ -12,8 +12,7 @@
 .global putsp
 
 # putc()
-# <REQ>
-# al = chr
+# <req> al = chr
 putc:
 	push %si
 	push %bx
