@@ -114,11 +114,12 @@ cmd_cat:
 	mov %dx, %es
 
 	# putns
-	pop %ax # s.4 file_size
-	push %ax
+	pop %cx # s.4 file_size
+	push %cx
 	push %bx
+	push %es
 	call putns
-	add $0x04, %sp
+	add $0x06, %sp
 
 	# restore
 	pop %bx # s.3 off

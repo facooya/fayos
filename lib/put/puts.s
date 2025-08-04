@@ -8,16 +8,19 @@
 .code16
 .global puts
 
-# puts(&str)
+# puts(*seg, *off)
 puts:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
 
 	# {init}
-	mov 0x04(%bp), %si # &str
+	mov 0x04(%bp), %ax
+	mov %ax, %es
+	mov 0x06(%bp), %si # str
 	mov $write_buf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
@@ -25,7 +28,7 @@ puts:
 
 .lp:
 	# {end.done} (str == null)
-	mov (%si), %al
+	mov %es:(%si), %al
 	test %al, %al
 	jz .done
 
@@ -46,5 +49,6 @@ puts:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

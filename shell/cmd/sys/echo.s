@@ -148,17 +148,27 @@ cmd_echo:
 	bt $0x00, %bx
 	jc .run__exec_e
 
+	push %es
+	xor %ax, %ax
+	mov %ax, %es
 	push %si
+	push %es
 	call puts
-	add $0x02, %sp
+	add $0x04, %sp
+	pop %es
 
 	# {step}
 	jmp .run__chk
 
 .run__exec_e:
+	push %es
+	xor %ax, %ax
+	mov %ax, %es
 	push %si
+	push %es
 	call putf
-	add $0x02, %sp
+	add $0x04, %sp
+	pop %es
 
 .run__chk:
 	sub $0x01, %cx # argc

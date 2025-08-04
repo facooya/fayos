@@ -8,17 +8,20 @@
 .code16
 .global putns
 
-# putns(*str, n)
+# putns(*seg, *off, n)
 putns:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
 
 	# {init}
-	mov 0x04(%bp), %si # *str
-	mov 0x06(%bp), %cx # n
+	mov 0x04(%bp), %ax
+	mov %ax, %es
+	mov 0x06(%bp), %si # str
+	mov 0x08(%bp), %cx # n
 	mov $write_buf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
@@ -30,7 +33,7 @@ putns:
 	jz .done
 
 	# copy in write_buffer
-	mov (%si), %al
+	mov %es:(%si), %al
 	mov %al, (%di)
 
 	# {lp}
@@ -48,5 +51,6 @@ putns:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

@@ -9,16 +9,19 @@
 .code16
 .global putf
 
-# putf(&str)
+# putf(*seg, *off)
 putf:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
 
 	# {init}
-	mov 0x04(%bp), %si # &str
+	mov 0x04(%bp), %ax
+	mov %ax, %es
+	mov 0x06(%bp), %si # str
 	mov $write_buf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
@@ -26,7 +29,7 @@ putf:
 
 .lp:
 	# {end.done} (str == null)
-	mov (%si), %al
+	mov %es:(%si), %al
 	test %al, %al
 	jz .end
 
@@ -44,7 +47,7 @@ putf:
 	jmp .lp
 
 .hdl__bsl:
-	mov 0x01(%si), %al
+	mov %es:0x01(%si), %al
 
 	# {end} (chr == null)
 	test %al, %al
@@ -90,5 +93,6 @@ putf:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret
