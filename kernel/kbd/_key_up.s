@@ -81,7 +81,7 @@ _key_up:
 	push $inode
 	push %bx
 	push %es
-	call parse_file_lines
+	call fparse_lines
 	add $0x06, %sp
 
 	mov $file_lines, %di

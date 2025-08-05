@@ -106,7 +106,7 @@ lib/re.s \
 lib/dir/get_bottom_dir.s \
 lib/dir/rm_dir.s \
 \
-lib/file/parse_file_lines.s \
+lib/file/fparse_lines.s \
 \
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \

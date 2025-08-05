@@ -13,10 +13,10 @@ file_lines: .zero 0x100
 
 .section .text
 .code16
-.global parse_file_lines
+.global fparse_lines
 
-# parse_file_lines(*seg, *off, *inode)
-parse_file_lines:
+# fparse_lines(*seg, *off, *inode)
+fparse_lines:
 	push %bp
 	mov %sp, %bp
 	push %es
