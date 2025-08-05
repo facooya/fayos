@@ -16,8 +16,8 @@
 # <ret> raw_buf
 _key_up:
 	push %es
-	push %bx
 	push %di
+	push %bx
 
 	push $inode
 	push $root_inum
@@ -78,16 +78,14 @@ _key_up:
 	# }}}
 
 	# {{{ HMI
-	push %es
 	push $inode
 	push %bx
 	push %es
 	call parse_file_lines
 	add $0x06, %sp
-	pop %es
 
-	mov $file_lines, %si
-	mov (%si), %cx # lines_c
+	mov $file_lines, %di
+	mov (%di), %cx # lines_c
 	mov (hist_stack), %ax
 	sub %ax, %cx # target_line
 
@@ -98,9 +96,6 @@ _key_up:
 
 	# {{{ clear
 	push $raw_buf
-	call clear_buf
-	add $0x02, %sp
-	push $write_buf
 	call clear_buf
 	add $0x02, %sp
 
@@ -118,17 +113,17 @@ _key_up:
 	# lines_c - hist_stack = target_line
 	# &file_lines + 2 = line_size
 	# &line_size + (target_line * 2) = target_line_size
-	mov $file_lines, %si
-	mov (%si), %cx # lines_c
-	add $0x02, %si
+	mov $file_lines, %di
+	mov (%di), %cx # lines_c
+	add $0x02, %di
 	sub (hist_stack), %cx # target_line
 
-	add %cx, %si
-	add %cx, %si
-	mov (%si), %dx # target_line_size
+	add %cx, %di
+	add %cx, %di
+	mov (%di), %dx # target_line_size
 
-	mov $file_lines, %si
-	add $0x02, %si # skip lines_c
+	mov $file_lines, %di
+	add $0x02, %di # skip lines_c
 	sub $0x01, %cx
 
 .line__lp:
@@ -136,12 +131,12 @@ _key_up:
 	test %cx, %cx
 	jz .line__end
 
-	mov (%si), %ax
+	mov (%di), %ax
 	add %ax, %bx
 	add $0x02, %bx # skip cr,lf
 
 	# {lp}
-	add $0x02, %si
+	add $0x02, %di
 	sub $0x01, %cx
 	jmp .line__lp
 
@@ -201,12 +196,6 @@ _key_up:
 	jmp .done
 
 .done__pass:
-	push $raw_buf
-	call clear_buf
-	add $0x02, %sp
-	push $write_buf
-	call clear_buf
-	add $0x02, %sp
 	jmp .epil
 
 .done:
