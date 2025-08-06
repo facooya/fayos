@@ -11,7 +11,10 @@
 # TODO: history/cache.s
 .section .data
 .global hist_stack
+.global hist_data
 hist_stack: .word 0x00
+hist_data: .word 0x00
+# 0:default, 1:up_key, 2:down_key
 
 .section .text
 .code16

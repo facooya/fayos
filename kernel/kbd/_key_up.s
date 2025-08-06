@@ -116,7 +116,8 @@ _key_up:
 	mov $file_lines, %di
 	mov (%di), %cx # lines_c
 	add $0x02, %di
-	sub (hist_stack), %cx # target_line
+	mov (hist_stack), %ax
+	sub %ax, %cx # target_line
 
 	add %cx, %di
 	add %cx, %di
@@ -189,9 +190,8 @@ _key_up:
 	jmp .disp__lp
 
 .disp__end:
-	# inc stack
 	mov (hist_stack), %ax
-	add $0x01, %ax
+	add $0x01, %ax # pre-update
 	mov %ax, (hist_stack)
 	jmp .done
 

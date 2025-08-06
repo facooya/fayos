@@ -16,6 +16,7 @@ file_lines: .zero 0x100
 .global fparse_lines
 
 # fparse_lines(*seg, *off, *inode)
+# <ret> file_lines
 fparse_lines:
 	push %bp
 	mov %sp, %bp

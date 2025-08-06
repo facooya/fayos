@@ -1,6 +1,5 @@
 # Roadmap
 ## Feature
-- History: up down - raw history
 - Tab: autocomplete file or dir
 - Path: Directory path
 - ls: colorful file or dir, add option
@@ -23,9 +22,7 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
-
-## Shell
-- history stack
+- Don't save history is null or space
 
 ## Library
 - file open?/append/create
