@@ -19,6 +19,22 @@ _key_down:
 	push %di
 	push %bx
 
+	# {{{ hist data
+	mov (hist_data), %ax
+	test %ax, %ax
+	jz .done__pass
+
+	cmp $0x02, %ax
+	je .hist_stack_pass
+
+	mov (hist_stack), %ax
+	sub $0x02, %ax
+	mov %ax, (hist_stack)
+
+.hist_stack_pass:
+	# }}}
+
+	# {{{
 	push $inode
 	push $root_inum
 	call read_inode
@@ -33,7 +49,9 @@ _key_down:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
+	# }}}
 
+	# {{{
 	mov $de_hist, %di
 	xor %cx, %cx
 	mov (%di), %ax
@@ -54,6 +72,7 @@ _key_down:
 	je .done__pass
 
 	add %ax, %bx
+	# }}}
 
 	# {{{ read file
 	mov %es:DE_INUM_OFF(%bx), %ax
@@ -101,10 +120,7 @@ _key_down:
 	add $0x02, %di
 	mov (hist_stack), %ax
 	sub %ax, %cx # target_line
-
-	# {err.done.pass} (target_line <= 0)
-	cmp $0x00, %cx
-	jle .done__pass
+	sub $0x01, %cx # target_line_i
 
 	add %cx, %di
 	add %cx, %di
@@ -112,7 +128,6 @@ _key_down:
 
 	mov $file_lines, %di
 	add $0x02, %di # skip lines_c
-	sub $0x01, %cx
 
 .line__lp:
 	# {end} (target_line == 0)
@@ -132,33 +147,31 @@ _key_down:
 
 .raw:
 	mov $raw_buf, %si
+	mov %dx, (%si)
 	add $0x02, %si # skip buf.len
-	xor %cx, %cx # size
 
 .raw__lp:
-	# {end} (hist == cr)
-	mov %es:(%bx), %al
-	cmp $CHR_CR, %al
-	je .raw__end
+	# {end} (size == 0)
+	test %dx, %dx
+	jz .raw__end
 
+	mov %es:(%bx), %al
 	mov %al, (%si)
 
 	add $0x01, %si # buf.data
 	add $0x01, %bx # mem
-	add $0x01, %cx # size
+	sub $0x01, %dx # size
 	jmp .raw__lp
 
 .raw__end:
-	mov $raw_buf, %si
-	mov %cx, (%si) # save buf.len
 
 # out display
 .disp:
 	mov $raw_buf, %si
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
-	push %cx
 
+	push %cx
 	mov (cursor), %al # cursor.min
 	add %al, %cl
 	mov %cl, (cursor+0x01) # update cursor.max
@@ -177,11 +190,16 @@ _key_down:
 	jmp .disp__lp
 
 .disp__end:
+	mov $0x02, %ax
+	mov %ax, (hist_data)
+
 	mov (hist_stack), %ax
 	test %ax, %ax
 	jz .done
+
 	sub $0x01, %ax
 	mov %ax, (hist_stack)
+
 	jmp .done
 
 .done__pass:
