@@ -119,6 +119,11 @@ _key_up:
 	# }}}
 
 	# {{{ clear
+	#push $tmp_buf
+	#push $raw_buf
+	#call bufcpy
+	#add $0x04, %sp
+
 	push $raw_buf 
 	call clear_buf
 	add $0x02, %sp
