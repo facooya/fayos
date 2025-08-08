@@ -9,11 +9,11 @@
 .global memcpy
 
 # memcpy(
-# *dst_seg
-# *dst_off
+# *dest_seg
+# *dest_off
 # *src_seg
 # *src_off
-# number
+# num
 # )
 memcpy:
 	push %bp
@@ -24,8 +24,8 @@ memcpy:
 
 	# init
 	mov 0x0A(%bp), %si # *src_off
-	mov 0x06(%bp), %di # *dst_off
-	mov 0x0C(%bp), %cx # number
+	mov 0x06(%bp), %di # *dest_off
+	mov 0x0C(%bp), %cx # num
 
 .lp:
 	# {{{ cpy
@@ -38,7 +38,7 @@ memcpy:
 	mov %dl, %es:(%di)
 	# }}}
 
-	# {end} (size == 0)
+	# {end} (num == 0)
 	test %cx, %cx
 	jz .done
 
