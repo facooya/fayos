@@ -119,8 +119,8 @@ _key_up:
 	# }}}
 
 	# {{{ clear
-	push $raw_buf 
-	call clear_buf
+	push $raw_buf
+	call bufzero
 	add $0x02, %sp
 
 	call clear_line_disp

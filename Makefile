@@ -43,6 +43,7 @@ kernel/io/outs.s \
 kernel/io/out_utils.s \
 \
 kernel/lib/bufcpy.s \
+kernel/lib/bufzero.s \
 \
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_cursor.s \

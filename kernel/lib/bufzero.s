@@ -2,47 +2,38 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Buffer copy
+# Buffer set zero
 
 .section .text
 .code16
-.global bufcpy
+.global bufzero
 
-# bufcpy(
-# *dest_buf,
-# *src_buf
+# bufzero(
+# *buf
 # )
 # <req>
 # struct buf {
 # uint16_t len;
 # uint8_t data[];
 # };
-bufcpy:
+bufzero:
 	push %bp
 	mov %sp, %bp
 	push %si
-	push %di
 
 	# init
-	mov 0x06(%bp), %si
-	mov 0x04(%bp), %di
+	mov 0x04(%bp), %si
 	mov (%si), %cx
-
-	# skip len
 	add $0x02, %si
-	add $0x02, %di
 
-	xor %ax, %ax # seg
+	xor %ax, %ax
 	push %cx
+	push %ax
 	push %si
 	push %ax
-	push %di
-	push %ax
-	call memcpy
-	add $0x0A, %sp
+	call memset
+	add $0x08, %sp
 
-.done:
-	pop %di
 	pop %si
 	pop %bp
 	ret
