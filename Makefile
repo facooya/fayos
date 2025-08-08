@@ -42,6 +42,8 @@ kernel/io/cursor.s \
 kernel/io/outs.s \
 kernel/io/out_utils.s \
 \
+kernel/lib/bufcpy.s \
+\
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_cursor.s \
 kernel/dbg/dbg_buf.s \
@@ -118,6 +120,8 @@ lib/put/putns.s \
 lib/put/put_utils.s \
 \
 lib/str/memcmp.s \
+lib/str/memcpy.s \
+lib/str/memset.s \
 lib/str/strlen.s
 
 OBJS = $(SRCS:%.s=$(BUILD)/%.o)

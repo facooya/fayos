@@ -9,10 +9,10 @@
 .global memcpy
 
 # memcpy(
-# *dest_seg
-# *dest_off
-# *src_seg
-# *src_off
+# *dest_seg,
+# *dest_off,
+# *src_seg,
+# *src_off,
 # num
 # )
 memcpy:
