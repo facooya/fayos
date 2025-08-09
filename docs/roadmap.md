@@ -22,8 +22,6 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
-- Don't save history is null or space
-- dest first src last
 
 ## Library
 - file open?/append/create

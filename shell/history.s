@@ -62,7 +62,6 @@ history:
 	je .create
 
 	add %ax, %bx
-
 	jmp .save
 
 .create:

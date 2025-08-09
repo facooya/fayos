@@ -10,6 +10,7 @@
 # optc [2-byte]
 # argv [2-byte]-[156-byte]
 
+.include "chr.s"
 .section .data
 .global args
 
@@ -25,6 +26,29 @@ args: .zero 0x100
 proc_args:
 	push %si
 
+	mov $raw_buf, %si
+	mov (%si), %cx
+	add $0x02, %si
+
+	test %cx, %cx
+	jz .exit
+
+.raw__lp:
+	# {end.done} (len == 0)
+	test %cx, %cx
+	jz .exit
+
+	# {end} (*data != sp)
+	mov (%si), %al
+	cmp $CHR_SP, %al
+	jne .raw__end
+
+	# {lp}
+	add $0x01, %si
+	sub $0x01, %cx
+	jmp .raw__lp
+
+.raw__end:
 	call history
 	call ._zero
 

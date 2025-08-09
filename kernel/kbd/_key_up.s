@@ -25,7 +25,7 @@ _key_up:
 	jne .hist_stack_pass
 
 	mov (hist_stack), %ax
-	add $0x01, %ax
+	add $0x02, %ax
 	mov %ax, (hist_stack)
 
 .hist_stack_pass:
@@ -221,6 +221,11 @@ _key_up:
 	mov %ax, (hist_data)
 
 	mov (hist_stack), %ax
+	mov $file_lines, %si
+	mov (%si), %cx
+	cmp %ax, %cx
+	je .done
+
 	add $0x01, %ax
 	mov %ax, (hist_stack)
 
