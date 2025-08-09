@@ -24,6 +24,8 @@ bufzero:
 	# init
 	mov 0x04(%bp), %si
 	mov (%si), %cx
+	xor %ax, %ax
+	mov %ax, (%si)
 	add $0x02, %si
 
 	xor %ax, %ax

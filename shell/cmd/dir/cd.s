@@ -82,7 +82,7 @@ cmd_cd:
 	cmp $0x40, %al
 	jne .err_dir_type
 
-	# get dst inode num
+	# get dest inode num
 	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
 	mov %es:DE_INUM_OFF+0x02(%bx), %ax

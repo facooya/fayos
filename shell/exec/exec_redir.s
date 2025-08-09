@@ -79,7 +79,7 @@ exec_redir:
 
 # {TASK}
 .run:
-	# get dst i num
+	# get dest i num
 	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
 	mov %es:DE_INUM_OFF+0x02(%bx), %ax

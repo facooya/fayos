@@ -91,9 +91,9 @@ exec_cmd:
 	mov %ax, %es
 
 	push %cx
-	push %di
-	push %es
 	push %si
+	push %es
+	push %di
 	push %es
 	call memcmp
 	add $0x0A, %sp
@@ -156,7 +156,7 @@ exec_cmd:
 # {DONE}
 .done:
 	push $write_buf
-	call clear_buf
+	call bufzero
 	add $0x02, %sp
 
 	pop %bx

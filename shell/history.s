@@ -74,8 +74,8 @@ history:
 	add $0x02, %si
 	push %si # name
 	push %cx # info
-	push $tmp_inum # dst
 	push $root_inum # src
+	push $tmp_inum # dest
 	call add_dentry
 	add $0x08, %sp
 	push %ax # [s.1] dentry_size

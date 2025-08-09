@@ -9,11 +9,11 @@
 .global memcmp
 
 # memcmp(
+# *dest_seg
+# *dest_off
 # *src_seg
 # *src_off
-# *dst_seg
-# *dst_off
-# number
+# num
 # )
 # <ret> ax = 0:true, 1:false
 memcmp:
@@ -24,29 +24,28 @@ memcmp:
 	push %di
 
 	# init
-	mov 0x06(%bp), %si # *src_off
-	mov 0x0A(%bp), %di # *dst_off
-	mov 0x0C(%bp), %cx # number
+	mov 0x0A(%bp), %si # *src_off
+	mov 0x06(%bp), %di # *dest_off
+	mov 0x0C(%bp), %cx # num
 
 .lp:
-	# load
-	mov 0x04(%bp), %ax
+	mov 0x08(%bp), %ax
 	mov %ax, %es
 	mov %es:(%si), %dh # *src
 
-	mov 0x08(%bp), %ax
+	mov 0x04(%bp), %ax
 	mov %ax, %es
-	mov %es:(%di), %dl # *dst
+	mov %es:(%di), %dl # *dest
 
-	# cond: 0 ? e
+	# {end.e} (num == 0)
 	test %cx, %cx
 	jz .e
 
-	# cond: != ? ne
+	# {end.ne} (*src != *dest)
 	cmp %dh, %dl
 	jne .ne
 
-	# step
+	# {lp}
 	add $0x01, %si
 	add $0x01, %di
 	sub $0x01, %cx

@@ -101,8 +101,8 @@ cmd_touch:
 	mov %al, %cl # (info) name_len
 	push %si # name
 	push %cx # info
-	push $tmp_inum
 	push $inum
+	push $tmp_inum
 	call add_dentry
 	add $0x08, %sp
 	push %ax

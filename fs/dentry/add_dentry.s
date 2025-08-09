@@ -11,8 +11,8 @@
 .global add_dentry
 
 # add_dentry(
+# *dest_inum,
 # *src_inum,
-# *dst_inum,
 # info,
 # *name
 # )
@@ -26,7 +26,7 @@ add_dentry:
 	push %bx
 
 	push $inode
-	push 0x04(%bp)
+	push 0x06(%bp)
 	call read_inode
 	add $0x04, %sp
 
@@ -50,10 +50,10 @@ add_dentry:
 # {TASK}
 .write:
 	# write inum
-	mov 0x06(%bp), %si
-	mov (%si), %ax # dst_lo
+	mov 0x04(%bp), %si
+	mov (%si), %ax # dest_lo
 	mov %ax, %es:DE_INUM_OFF(%bx)
-	mov 0x02(%si), %ax # dst_hi
+	mov 0x02(%si), %ax # dest_hi
 	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
 
 	# write info
@@ -69,7 +69,7 @@ add_dentry:
 	mov %cx, %es:DE_REC_LEN_OFF(%bx)
 	push %cx
 
-	# dst name
+	# dest name
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
 

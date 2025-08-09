@@ -20,7 +20,7 @@ _key_cr:
 
 	# {init.task}
 	push $raw_buf
-	call clear_buf
+	call bufzero
 	add $0x02, %sp
 
 	mov $raw_buf, %si

@@ -45,7 +45,7 @@ proc_args:
 .exit:
 	# {zero}
 	push $raw_buf
-	call clear_buf
+	call bufzero
 	add $0x02, %sp
 	call ._zero
 
@@ -62,7 +62,7 @@ proc_args:
 
 ._zero:
 	push $tmp_buf
-	call clear_buf
+	call bufzero
 	add $0x02, %sp
 
 	call clear_redir_buf

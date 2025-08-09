@@ -98,7 +98,7 @@ _key_down:
 
 	# {{{ clear
 	push $raw_buf
-	call clear_buf
+	call bufzero
 	add $0x02, %sp
 
 	call clear_line_disp

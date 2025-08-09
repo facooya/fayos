@@ -41,9 +41,9 @@ lookup_dentry:
 
 	# {{{
 	xor %ax, %ax
-	mov %es:DE_NAME_LEN_OFF(%bx), %al # dst_name_len
+	mov %es:DE_NAME_LEN_OFF(%bx), %al # dest_name_len
 
-	# {lp.step} (src_name_len != dst_name_len)
+	# {lp.step} (src_name_len != dest_name_len)
 	cmp %ax, %dx
 	jne .lp__step
 
@@ -56,7 +56,7 @@ lookup_dentry:
 
 	# {{{ compare
 	mov %bx, %di
-	add $DE_NAME_OFF, %di # dst_name
+	add $DE_NAME_OFF, %di # dest_name
 
 	push %cx
 	push %dx
@@ -64,13 +64,12 @@ lookup_dentry:
 
 	xor %ax, %ax
 	mov %es:DE_NAME_LEN_OFF(%bx), %al
-	push %ax # dst_len
-	push %di # *dst_off
-	push %es # *dst_seg
+	push %ax # size
 	push %si # *src_off
 	xor %ax, %ax # TODO: *name_seg
-	mov %ax, %es
-	push %es # *src_seg
+	push %ax # *src_seg
+	push %di # *dest_off
+	push %es # *dest_seg
 	call memcmp
 	add $0x0A, %sp
 

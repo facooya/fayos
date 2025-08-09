@@ -102,8 +102,8 @@ cmd_mkdir:
 	mov $0x40, %ch
 	push %si
 	push %cx
-	push $tmp_inum
 	push $inum
+	push $tmp_inum
 	call add_dentry
 	add $0x08, %sp
 	push %ax
@@ -157,8 +157,8 @@ cmd_mkdir:
 	mov 0x02(%si), %cx
 	push %si
 	push %cx
-	push $inum
 	push $tmp_inum
+	push $inum
 	call add_dentry
 	add $0x08, %sp
 	push %ax
