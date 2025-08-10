@@ -110,44 +110,12 @@ _key_down:
 	call init_cursor
 	# }}}
 
-.line:
-	# note
-	# lines_c - hist_stack = target_line
-	# &file_lines + 2 = line_size
-	# &line_size + (target_line * 2) = target_line_size
-	mov $file_lines, %di
-	mov (%di), %cx # lines_c
-	add $0x02, %di
-	mov (hist_stack), %ax
-	sub %ax, %cx # target_line
-	sub $0x01, %cx # target_line_i
-
-	add %cx, %di
-	add %cx, %di
-	mov (%di), %dx # target_line_size
-
-	mov $file_lines, %di
-	add $0x02, %di # skip lines_c
-
-.line__lp:
-	# {end} (target_line == 0)
-	test %cx, %cx
-	jz .line__end
-
-	mov (%di), %ax
-	add %ax, %bx
-	add $0x02, %bx # skip cr,lf
-
-	# {lp}
-	add $0x02, %di
-	sub $0x01, %cx
-	jmp .line__lp
-
-.line__end:
+	call hist_line
+	mov %ax, %bx
 
 .raw:
 	mov $raw_buf, %si
-	mov %dx, (%si)
+	mov %dx, (%si) # hist_line_size
 	add $0x02, %si # skip buf.len
 
 .raw__lp:
@@ -199,7 +167,6 @@ _key_down:
 
 	sub $0x01, %ax
 	mov %ax, (hist_stack)
-
 	jmp .done
 
 .done__pass:
