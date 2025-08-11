@@ -132,61 +132,14 @@ _key_up:
 	call init_cursor
 	# }}}
 
-	call hist_line
-	mov %ax, %bx
+	call _kbd_hist_line
 
-.raw:
-	mov $raw_buf, %si
-	mov %dx, (%si) # hist_line_size
-	add $0x02, %si # skip buf.len
-
-.raw__lp:
-	# {end} (size == 0)
-	test %dx, %dx
-	jz .raw__end
-
-	mov %es:(%bx), %al
-	mov %al, (%si)
-
-	# {lp}
-	add $0x01, %si # buf.data
-	add $0x01, %bx # mem
-	sub $0x01, %dx # size
-	jmp .raw__lp
-
-.raw__end:
-
-# out display
-.disp:
-	mov $raw_buf, %si
-	mov (%si), %cx # buf.len
-	add $0x02, %si # skip len
-
-	push %cx
-	mov (cursor), %al # cursor.min
-	add %al, %cl
-	mov %cl, (cursor+0x01) # update cursor.max
-	pop %cx
-
-.disp__lp:
-	# {end} (buf.len == 0)
-	mov (%si), %al
-	test %cx, %cx
-	jz .disp__end
-
-	call outc
-
-	add $0x01, %si
-	sub $0x01, %cx
-	jmp .disp__lp
-
-.disp__end:
 	mov $0x01, %ax
 	mov %ax, (hist_data)
 
 	mov (hist_stack), %ax
-	mov $file_lines, %si
-	mov (%si), %cx
+	mov $file_lines, %di
+	mov (%di), %cx
 	cmp %ax, %cx
 	je .done
 

@@ -24,6 +24,7 @@ kernel/kbd/_key_down.s \
 kernel/kbd/_key_left.s \
 kernel/kbd/_key_right.s \
 kernel/kbd/_key_up.s \
+kernel/kbd/_kbd_hist_line.s \
 \
 kernel/disk/disk.s \
 kernel/disk/dap.s \
@@ -44,7 +45,6 @@ kernel/io/out_utils.s \
 \
 kernel/lib/bufcpy.s \
 kernel/lib/bufzero.s \
-kernel/lib/hist_line.s \
 \
 kernel/dbg/dbg_args.s \
 kernel/dbg/dbg_cursor.s \
