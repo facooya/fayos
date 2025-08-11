@@ -20,15 +20,17 @@ _key_down:
 	push %bx
 
 	# {{{ hist data
+	# {end} (hd == cr)
 	mov (hist_data), %ax
 	test %ax, %ax
 	jz .done__pass
 
+	# {skip} (hd == down)
 	cmp $0x02, %ax
 	je .hist_stack_pass
 
 	mov (hist_stack), %ax
-	sub $0x02, %ax
+	sub $0x01, %ax
 	mov %ax, (hist_stack)
 
 .hist_stack_pass:
@@ -112,21 +114,30 @@ _key_down:
 
 	call _kbd_hist_line
 
+	# {{{ last
 	mov $0x02, %ax
 	mov %ax, (hist_data)
 
+	# {done.last} (hs == 0)
 	mov (hist_stack), %ax
 	test %ax, %ax
-	jz .done
+	jz .done__last
 
 	sub $0x01, %ax
 	mov %ax, (hist_stack)
+	# }}}
+
 	jmp .done
 
 .done__pass:
 	jmp .epil
 
+.done__last:
+	jmp .epil
+
 .done:
+	jmp .epil
+
 .epil:
 	pop %bx
 	pop %di

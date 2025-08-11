@@ -20,12 +20,13 @@ _key_up:
 	push %bx
 
 	# {{{ hist data
+	# {skip} (hd != down)
 	mov (hist_data), %ax
 	cmp $0x02, %ax
 	jne .hist_stack_pass
 
 	mov (hist_stack), %ax
-	add $0x02, %ax
+	add $0x01, %ax
 	mov %ax, (hist_stack)
 
 .hist_stack_pass:
@@ -134,24 +135,33 @@ _key_up:
 
 	call _kbd_hist_line
 
+	# {{{ last
 	mov $0x01, %ax
 	mov %ax, (hist_data)
 
+	# {done.last} (hs == (flc-1))
 	mov (hist_stack), %ax
 	mov $file_lines, %di
-	mov (%di), %cx
+	mov (%di), %cx # flc
+	sub $0x01, %cx
 	cmp %ax, %cx
-	je .done
+	je .done__last
 
 	add $0x01, %ax
 	mov %ax, (hist_stack)
+	# }}}
 
 	jmp .done
 
 .done__pass:
 	jmp .epil
 
+.done__last:
+	jmp .epil
+
 .done:
+	jmp .epil
+
 .epil:
 	pop %bx
 	pop %di
