@@ -26,27 +26,55 @@ _key_down:
 	jz .done__pass
 
 	# {skip} (hd == down)
-	cmp $0x02, %ax
-	je .hist_stack_pass_2
-
-	# {hist_buf} (hd == 3)
-	cmp $0x03, %ax
+	cmp $0x0200, %ax
 	je .hist_stack_pass
 
-	# {done} (hd == 4)
-	cmp $0x04, %ax
+	# {set} (hd == last_flag)
+	cmp $0x0202, %ax
+	je .set_hist_buf
+
+	# {done} (hd == hist_buf)
+	cmp $0x0203, %ax
 	je .done
 
+	cmp $0x0101, %ax
+	je .key_mid_up
+
+	cmp $0x0103, %ax
+	je .set_hist_buf_up
+
+	cmp $0x01, %ah
+	je .key_up
+
+	jmp .hist_stack_pass
+
+.key_up:
 	mov (hist_stack), %ax
 	sub $0x01, %ax
 	mov %ax, (hist_stack)
-	jmp .hist_stack_pass_2
+	jmp .hist_stack_pass
 
-.hist_stack_pass:
+.key_mid_up:
 	mov (hist_stack), %ax
-	test %ax, %ax
-	jnz .hist_stack_pass_2
+	sub $0x02, %ax
 
+	cmp $0x00, %ax
+	jl .key_mid_up_zero
+
+	mov %ax, (hist_stack)
+	jmp .hist_stack_pass
+
+.key_mid_up_zero:
+	xor %ax, %ax
+	mov %ax, (hist_stack)
+	jmp .hist_stack_pass
+
+.set_hist_buf_up:
+	xor %ax, %ax
+	mov %ax, (hist_stack)
+	jmp .set_hist_buf
+
+.set_hist_buf:
 	push $raw_buf
 	call bufzero
 	add $0x02, %sp
@@ -88,11 +116,13 @@ _key_down:
 	jmp .disp__lp
 
 .disp__end:
-	mov $0x04, %ax
+	mov (hist_data), %ax
+	mov $0x02, %ah
+	mov $0x03, %al
 	mov %ax, (hist_data)
 	jmp .done
 
-.hist_stack_pass_2:
+.hist_stack_pass:
 	# }}}
 
 	# {{{
@@ -174,7 +204,8 @@ _key_down:
 	call _kbd_hist_line
 
 	# {{{ last
-	mov $0x02, %ax
+	xor %ax, %ax
+	mov $0x02, %ah
 	mov %ax, (hist_data)
 
 	# {done.last} (hs == 0)
@@ -186,13 +217,19 @@ _key_down:
 	mov %ax, (hist_stack)
 	# }}}
 
+	# mid
+	mov (hist_data), %ax
+	mov $0x01, %al
+	mov %ax, (hist_data)
+
 	jmp .done
 
 .done__pass:
 	jmp .epil
 
 .done__last:
-	mov $0x03, %ax
+	mov (hist_data), %ax
+	mov $0x02, %al
 	mov %ax, (hist_data)
 	jmp .epil
 

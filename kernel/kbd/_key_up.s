@@ -20,14 +20,39 @@ _key_up:
 	push %bx
 
 	# {{{ hist data
-	# {skip} (hd != down)
+	# {skip} (hd == up)
 	mov (hist_data), %ax
-	cmp $0x02, %ax
-	jne .hist_stack_pass
+	cmp $0x01, %ah
+	je .hist_stack_pass
 
+	# { key down
+	cmp $0x0201, %ax
+	je .key_mid_down
+
+	# hist_buf
+	cmp $0x0203, %ax
+	je .hist_stack_pass
+
+	cmp $0x0200, %ax
+	je .key_down
+
+	cmp $0x0202, %ax
+	je .key_down
+
+	jmp .hist_stack_pass
+
+.key_down:
 	mov (hist_stack), %ax
 	add $0x01, %ax
 	mov %ax, (hist_stack)
+	jmp .hist_stack_pass
+
+.key_mid_down:
+	mov (hist_stack), %ax
+	add $0x02, %ax
+	mov %ax, (hist_stack)
+	jmp .hist_stack_pass
+	# }
 
 .hist_stack_pass:
 	# }}}
@@ -125,7 +150,7 @@ _key_up:
 
 	# {err.done.pass} (target_line <= 0)
 	cmp $0x00, %cx
-	jle .done__pass
+	jle .done__over_line
 	# }}}
 
 	# {{{ clear
@@ -145,7 +170,8 @@ _key_up:
 	call _kbd_hist_line
 
 	# {{{ last
-	mov $0x01, %ax
+	xor %ax, %ax
+	mov $0x01, %ah
 	mov %ax, (hist_data)
 
 	# {done.last} (hs == (flc-1))
@@ -160,12 +186,33 @@ _key_up:
 	mov %ax, (hist_stack)
 	# }}}
 
+	cmp $0x01, %ax
+	je .fst_hist_buf
+
+	# mid
+	mov (hist_data), %ax
+	mov $0x01, %al
+	mov %ax, (hist_data)
 	jmp .done
 
-.done__pass:
+.fst_hist_buf:
+	mov (hist_data), %ax
+	mov $0x03, %al
+	mov %ax, (hist_data)
+	jmp .done
+
+.done__over_line:
+	xor %ax, %ax
+	mov $0x01, %ah
+	mov %ax, (hist_data)
 	jmp .epil
 
+.done__pass:
+
 .done__last:
+	mov (hist_data), %ax
+	mov $0x02, %al
+	mov %ax, (hist_data)
 	jmp .epil
 
 .done:
