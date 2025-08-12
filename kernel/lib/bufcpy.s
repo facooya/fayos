@@ -26,7 +26,10 @@ bufcpy:
 	# init
 	mov 0x06(%bp), %si
 	mov 0x04(%bp), %di
+
+	# cpy len
 	mov (%si), %cx
+	mov %cx, (%di)
 
 	# skip len
 	add $0x02, %si

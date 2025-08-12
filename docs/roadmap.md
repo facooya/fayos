@@ -22,7 +22,6 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
-- current history save tmp buf
 
 ## Library
 - file open?/append/create

@@ -108,6 +108,15 @@ _key_up:
 	call fparse_lines
 	add $0x06, %sp
 
+	push $hist_buf
+	call bufzero
+	add $0x02, %sp
+
+	push $raw_buf
+	push $hist_buf
+	call bufcpy
+	add $0x04, %sp
+
 ._fparse_lines__end:
 	mov $file_lines, %di
 	mov (%di), %cx # lines_c

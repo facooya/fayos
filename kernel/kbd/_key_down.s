@@ -27,13 +27,72 @@ _key_down:
 
 	# {skip} (hd == down)
 	cmp $0x02, %ax
+	je .hist_stack_pass_2
+
+	# {hist_buf} (hd == 3)
+	cmp $0x03, %ax
 	je .hist_stack_pass
+
+	# {done} (hd == 4)
+	cmp $0x04, %ax
+	je .done
 
 	mov (hist_stack), %ax
 	sub $0x01, %ax
 	mov %ax, (hist_stack)
+	jmp .hist_stack_pass_2
 
 .hist_stack_pass:
+	mov (hist_stack), %ax
+	test %ax, %ax
+	jnz .hist_stack_pass_2
+
+	push $raw_buf
+	call bufzero
+	add $0x02, %sp
+
+	push $hist_buf
+	push $raw_buf
+	call bufcpy
+	add $0x04, %sp
+
+	call clear_line_disp
+
+	push $kernel_prompt
+	call outs
+	add $0x02, %sp
+
+	call init_cursor
+
+.disp:
+	mov $raw_buf, %si
+	mov (%si), %cx # buf.len
+	add $0x02, %si # skip len
+
+	push %cx
+	mov (cursor), %al # cursor.min
+	add %al, %cl
+	mov %cl, (cursor+0x01) # update cursor.max
+	pop %cx
+
+.disp__lp:
+	# {end} (buf.len == 0)
+	mov (%si), %al
+	test %cx, %cx
+	jz .disp__end
+
+	call outc
+
+	add $0x01, %si
+	sub $0x01, %cx
+	jmp .disp__lp
+
+.disp__end:
+	mov $0x04, %ax
+	mov %ax, (hist_data)
+	jmp .done
+
+.hist_stack_pass_2:
 	# }}}
 
 	# {{{
@@ -133,6 +192,8 @@ _key_down:
 	jmp .epil
 
 .done__last:
+	mov $0x03, %ax
+	mov %ax, (hist_data)
 	jmp .epil
 
 .done:
