@@ -1,7 +1,10 @@
 # Roadmap
+## WIP
+- Path: Directory path
+
 ## Feature
 - Tab: autocomplete file or dir
-- Path: Directory path
+- Path: Directory path **[WIP]**
 - ls: colorful file or dir, add option
 - Time
 - Color

@@ -6,7 +6,6 @@
 
 .include "chr.s"
 .section .data
-.ps1_path: .zero 0x100
 .ps1_name: .asciz "fayos"
 
 .section .text
@@ -39,12 +38,18 @@ build_ps1:
 	mov %al, (%di)
 	add $0x01, %di
 
-	mov $CHR_SL, %al
-	mov %al, (%di)
-	add $0x01, %di
+	mov $path, %si
 
 .path__lp:
-	# jmp .path__lp
+	mov (%si), %al
+	test %al, %al
+	jz .path__end
+
+	mov %al, (%di)
+
+	add $0x01, %si
+	add $0x01, %di
+	jmp .path__lp
 
 .path__end:
 	mov $CHR_HS, %al

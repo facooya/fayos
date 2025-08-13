@@ -88,6 +88,10 @@ shell/args/parse_args.s \
 shell/exec/exec_cmd.s \
 shell/exec/exec_redir.s \
 \
+shell/prompt/path.s \
+shell/prompt/add_path.s \
+shell/prompt/sub_path.s \
+shell/prompt/path_utils.s \
 shell/prompt/prompt.s \
 shell/prompt/build_ps1.s \
 \

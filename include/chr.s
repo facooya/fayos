@@ -18,7 +18,7 @@
 .equ CHR_SL, 0x2F # slash
 
 .equ CHR_ZERO, 0x30
-.equ CHR_COL, 0x3A # Colon
+.equ CHR_COL, 0x3A # colon
 .equ CHR_LT, 0x3C # less than
 .equ CHR_EQ, 0x3D # equal
 .equ CHR_GT, 0x3E # greater than
