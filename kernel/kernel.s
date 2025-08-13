@@ -5,8 +5,6 @@
 # Fayos kernel
 
 .section .data
-.global kernel_prompt
-kernel_prompt: .asciz "fayos:/# "
 .kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
 
 .section .text
@@ -23,7 +21,9 @@ _start:
 
 	call outnl
 
-	push $kernel_prompt
+	call build_ps1
+
+	push $ps1
 	call outs
 	add $0x02, %sp
 

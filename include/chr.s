@@ -10,9 +10,12 @@
 
 .equ CHR_SP, 0x20 # space
 .equ CHR_QT, 0x22 # quote, double quote
+.equ CHR_HS, 0x23 # hash
+.equ CHR_DL, 0x24 # dollar
 .equ CHR_AP, 0x27 # apostrophe, single quote
 .equ CHR_HY, 0x2D # hyphen, minus, dash
 .equ CHR_PRD, 0x2E # period, dot
+.equ CHR_SL, 0x2F # slash
 
 .equ CHR_ZERO, 0x30
 .equ CHR_COL, 0x3A # Colon

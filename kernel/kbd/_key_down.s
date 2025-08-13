@@ -86,7 +86,7 @@ _key_down:
 
 	call clear_line_disp
 
-	push $kernel_prompt
+	push $ps1
 	call outs
 	add $0x02, %sp
 
@@ -194,7 +194,7 @@ _key_down:
 
 	call clear_line_disp
 
-	push $kernel_prompt
+	push $ps1
 	call outs
 	add $0x02, %sp
 

@@ -12,7 +12,7 @@
 _key_cr:
 	call exec_cmd
 
-	push $kernel_prompt
+	push $ps1
 	call outs
 	add $0x02, %sp
 

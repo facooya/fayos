@@ -88,6 +88,9 @@ shell/args/parse_args.s \
 shell/exec/exec_cmd.s \
 shell/exec/exec_redir.s \
 \
+shell/prompt/prompt.s \
+shell/prompt/build_ps1.s \
+\
 shell/cmd/cmd_map.s \
 \
 shell/cmd/sys/test.s \
