@@ -68,7 +68,6 @@ cmd_cd:
 	# {err} (lookup_dentry() == no_match)
 	cmp $0x01, %ax
 	je .err_dir_no
-
 	add %ax, %bx
 
 	# {task}
@@ -81,6 +80,40 @@ cmd_cd:
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
+
+	# {{{ prompt
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+	mov (%si), %ax
+	cmp $0x2E2E, %ax
+	je .run__sub
+
+	cmp $0x002E, %ax
+	je .run__pass
+
+	# add
+	xor %ax, %ax
+	mov %es:DE_NAME_LEN_OFF(%bx), %al
+	push %ax
+	mov %bx, %si
+	add $DE_NAME_OFF, %si
+	push %si
+	push %es
+	call add_path
+	add $0x06, %sp
+	jmp .run__ps1
+
+.run__sub:
+	call sub_path
+
+.run__ps1:
+	call build_ps1
+
+.run__pass:
+	# }}}
 
 	# get dest inode num
 	mov %es:DE_INUM_OFF(%bx), %ax

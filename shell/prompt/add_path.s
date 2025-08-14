@@ -9,14 +9,16 @@
 .code16
 .global add_path
 
-# add_path(*dir_name)
+# add_path(*seg, *off, num)
 add_path:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 
-	mov 0x04(%bp), %si
+	mov 0x04(%bp), %es
+	mov 0x06(%bp), %si
 	mov $path, %di
 
 	push %di
@@ -26,34 +28,36 @@ add_path:
 	add $0x04, %sp
 	add %ax, %di
 
-	# {lp} (*(path--) = SL)
+	# {pass} (*(path--) == SL)
 	mov -0x01(%di), %al
 	cmp $CHR_SL, %al
-	je .lp
+	je .pass
 
 	mov $CHR_SL, %al
 	mov %al, (%di)
 	add $0x01, %di
 
-.lp:
-	# {end} (chr == null)
-	mov (%si), %al
-	test %al, %al
-	jz .end
+.pass:
+	# mem cpy
+	mov 0x08(%bp), %cx # num
+	push %cx
+	push %si
+	push %es
+	push %di
+	xor %ax, %ax
+	push %ax
+	call memcpy
+	add $0x0A, %sp
 
-	mov %al, (%di)
-
-	# {lp}
-	add $0x01, %si
-	add $0x01, %di
-	jmp .lp
-
-.end:
+	# store last null
+	mov 0x08(%bp), %ax
+	add %ax, %di
 	xor %ax, %ax
 	mov %al, (%di)
 	add $0x01, %di
 
 	pop %di
 	pop %si
+	pop %es
 	pop %bp
 	ret

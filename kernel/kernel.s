@@ -6,7 +6,6 @@
 
 .section .data
 .kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
-.test_path: .asciz "test_path"
 
 .section .text
 .code16
@@ -23,16 +22,6 @@ _start:
 	call outnl
 
 	call root_path
-
-	push $.test_path
-	call add_path
-	add $0x02, %sp
-
-	push $.test_path
-	call add_path
-	add $0x02, %sp
-
-	call sub_path
 
 	call build_ps1
 

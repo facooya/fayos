@@ -20,6 +20,22 @@ build_ps1:
 	mov $.ps1_name, %si
 	mov $ps1, %di
 
+.zero__lp:
+	# {end} (*ps1[i] == null)
+	mov (%di), %al
+	test %al, %al
+	jz .zero__end
+
+	xor %al, %al
+	mov %al, (%di)
+
+	# {lp}
+	add $0x01, %di
+	jmp .zero__lp
+
+.zero__end:
+	mov $ps1, %di
+
 .name__lp:
 	# {end} (chr == null)
 	mov (%si), %al
