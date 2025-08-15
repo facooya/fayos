@@ -6,4 +6,7 @@
 
 .section .data
 .global path
+.global paths
+
 path: .zero 0x100
+paths: .zero 0x100

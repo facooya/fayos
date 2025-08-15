@@ -79,6 +79,7 @@ fs/bit/set_bit.s \
 \
 fs/path/path.s \
 fs/path/read_path.s \
+fs/path/tok_path.s \
 \
 \
 shell/history.s \

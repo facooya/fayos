@@ -10,12 +10,14 @@
 .global tmp_buf
 .global redir_buf
 .global write_buf
+.global path_buf
 
 raw_buf: .zero 0x400
 hist_buf: .zero 0x400
 tmp_buf: .zero 0x400
 redir_buf: .zero 0x200
 write_buf: .zero 0x400
+path_buf: .zero 0x100
 
 .section .text
 .code16
