@@ -4,6 +4,7 @@
 #
 # Command touch - create file
 
+.include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
 .section .text
@@ -24,6 +25,19 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	jne .path_pass
+
+	# TODO: add relative path
+	push %si
+	call read_path
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %es
+	jmp .path
+
+.path_pass:
 	# {{ len
 	push %es
 	xor %ax, %ax
@@ -55,6 +69,7 @@ cmd_touch:
 	mov %dx, %es
 	pop %cx
 
+.path:
 	push %si # src_name
 	push %cx # src_name_len
 	mov $inode, %si

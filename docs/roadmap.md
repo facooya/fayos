@@ -1,10 +1,9 @@
 # Roadmap
 ## WIP
-- Path: Directory path
+- support path argument - touch, cat, rm, ls, cd, rmdir, mkdir
 
 ## Feature
 - Tab: autocomplete file or dir
-- Path: Directory path **[WIP]**
 - ls: colorful file or dir, add option
 - Time
 - Color
@@ -20,7 +19,8 @@
 - find
 
 ## TODO
-- support multi arguments - touch, mkdir, rm, ...
+- support path argument - touch, cat, rm, ls, cd, rmdir, mkdir **[WIP]**
+- support multi arguments - touch, mkdir, rm, rmdir
 - lookup dentry size optimize
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all

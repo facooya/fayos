@@ -77,6 +77,9 @@ fs/bit/alloc_bit.s \
 fs/bit/clear_bit.s \
 fs/bit/set_bit.s \
 \
+fs/path/path.s \
+fs/path/read_path.s \
+\
 \
 shell/history.s \
 \
@@ -88,7 +91,6 @@ shell/args/parse_args.s \
 shell/exec/exec_cmd.s \
 shell/exec/exec_redir.s \
 \
-shell/prompt/path.s \
 shell/prompt/add_path.s \
 shell/prompt/sub_path.s \
 shell/prompt/path_utils.s \
