@@ -15,6 +15,10 @@ tok_path:
 	push %si
 	push %di
 
+	push $path_buf
+	call bufzero
+	add $0x02, %sp
+
 	# {init.lp}
 	mov $path, %si
 	mov $path_buf, %di
@@ -30,10 +34,8 @@ tok_path:
 	# store slash
 	mov $CHR_SL, %al
 	mov %al, (%di)
-	xor %al, %al
-	mov %al, 0x01(%di)
-	add $0x02, %di
-	add $0x02, %cx
+	add $0x01, %di
+	add $0x01, %cx
 	add $0x01, %si
 
 .lp:

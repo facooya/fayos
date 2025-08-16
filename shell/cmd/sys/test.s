@@ -15,12 +15,9 @@ cmd_test:
 	push %di
 	push %bx
 
-	push $path
-	call outs
-	add $0x02, %sp
-
 	call tok_path
 	call build_paths
+	call dbg_paths
 
 	push $path_buf
 	call dbg_buf

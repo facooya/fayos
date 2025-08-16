@@ -47,6 +47,7 @@ kernel/lib/bufcpy.s \
 kernel/lib/bufzero.s \
 \
 kernel/dbg/dbg_args.s \
+kernel/dbg/dbg_paths.s \
 kernel/dbg/dbg_cursor.s \
 kernel/dbg/dbg_buf.s \
 kernel/dbg/dbg_trace.s \

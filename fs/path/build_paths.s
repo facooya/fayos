@@ -53,6 +53,7 @@ build_paths:
 	jmp .lp
 
 .end:
+	sub $0x01, %cx
 	mov %cx, (paths)
 	jmp .done
 
