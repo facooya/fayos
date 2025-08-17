@@ -24,8 +24,7 @@ read_path:
 	mov %si, %di
 	xor %cx, %cx
 
-	# HACK: root inum
-	mov $0x01, %ax
+	mov (root_inum), %ax
 	mov %ax, (path_inum)
 
 .len__lp:

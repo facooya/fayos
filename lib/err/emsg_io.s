@@ -20,6 +20,7 @@
 .global emsg_dir_dup
 
 .global emsg_name_dup
+.global emsg_inv_path
 
 emsg_disk_io: .asciz "Disk IO error."
 
@@ -36,3 +37,4 @@ emsg_dir_type: .asciz "Not a directory."
 emsg_dir_dup: .asciz "Directory already exists."
 
 emsg_name_dup: .asciz "Name already exists."
+emsg_inv_path: .asciz "Invalid path."

@@ -29,6 +29,20 @@ cmd_touch:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
+	# {{{ TODO
+	#push %si
+	#call proc_path
+	#add $0x02, %sp
+#
+	## (proc_path() == 1) {err}
+	#cmp $0x01, %ax
+	#je .err_inv_path
+#
+	#mov %ax, %bx
+	#mov %dx, %es
+	#jmp .path
+	# }}}
+
 	# TODO: add relative path
 	push %si
 	call read_path
@@ -161,6 +175,10 @@ cmd_touch:
 # {ERR}
 .err_name_dup:
 	push $emsg_name_dup
+	jmp .err_hdl
+
+.err_inv_path:
+	push $emsg_inv_path
 	jmp .err_hdl
 
 .err_hdl:

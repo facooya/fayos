@@ -15,8 +15,16 @@ cmd_test:
 	push %di
 	push %bx
 
-	call tok_path
-	call build_paths
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+
+	push %si
+	call proc_path
+	add $0x02, %sp
+
 	call dbg_paths
 
 	push $path_buf

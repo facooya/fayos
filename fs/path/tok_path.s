@@ -9,9 +9,11 @@
 .code16
 .global tok_path
 
-# tok_paths()
+# tok_paths(*path)
 # <ret> ax = 0:true
 tok_path:
+	push %bp
+	mov %sp, %bp
 	push %si
 	push %di
 
@@ -20,7 +22,7 @@ tok_path:
 	add $0x02, %sp
 
 	# {init.lp}
-	mov $path, %si
+	mov 0x04(%bp), %si
 	mov $path_buf, %di
 	add $0x02, %di # skip len
 	xor %cx, %cx # buf len
@@ -31,12 +33,19 @@ tok_path:
 	jne .lp
 
 	# TODO: relative path
-	# store slash
+	# first slash
 	mov $CHR_SL, %al
 	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
+	xor %al, %al
+	mov %al, 0x01(%di)
+	add $0x02, %di
+	add $0x02, %cx
 	add $0x01, %si
+
+	# (*path[1] == null) ? {end.pre}
+	mov (%si), %al
+	test %al, %al
+	jz .end__pre
 
 .lp:
 	# (*path[i] == null) ? {end}
@@ -75,6 +84,7 @@ tok_path:
 	add $0x01, %di
 	add $0x01, %cx
 
+.end__pre:
 	mov $path_buf, %di
 	mov %cx, (%di)
 
@@ -88,4 +98,5 @@ tok_path:
 .epil:
 	pop %di
 	pop %si
+	pop %bp
 	ret
