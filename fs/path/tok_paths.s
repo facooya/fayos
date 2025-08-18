@@ -2,16 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Tokenize path and save to path_buf
+# Tokenize for paths
 
 .include "chr.s"
 .section .text
 .code16
-.global tok_path
+.global tok_paths
 
-# tok_paths(*path)
+# tok_paths(*path_str)
 # <ret> ax = 0:true
-tok_path:
+# <ret> path_buf
+tok_paths:
 	push %bp
 	mov %sp, %bp
 	push %si

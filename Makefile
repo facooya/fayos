@@ -79,8 +79,8 @@ fs/bit/clear_bit.s \
 fs/bit/set_bit.s \
 \
 fs/path/path.s \
-fs/path/read_path.s \
-fs/path/tok_path.s \
+fs/path/read_paths.s \
+fs/path/tok_paths.s \
 fs/path/build_paths.s \
 \
 \

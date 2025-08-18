@@ -22,13 +22,17 @@ cmd_test:
 	add %ax, %si # raw_buf[argv[1]]
 
 	push %si
-	call proc_path
+	call proc_paths
 	add $0x02, %sp
 
 	call dbg_paths
 
 	push $path_buf
 	call dbg_buf
+	add $0x02, %sp
+
+	push $path_inum
+	call dbg_num
 	add $0x02, %sp
 
 	pop %bx

@@ -13,10 +13,10 @@ paths: .zero 0x100
 
 .section .text
 .code16
-.global proc_path
+.global proc_paths
 
-# proc_path(*path)
-proc_path:
+# proc_paths(*path_str)
+proc_paths:
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -24,15 +24,14 @@ proc_path:
 	mov 0x04(%bp), %si
 
 	push %si
-	call tok_path
+	call tok_paths
 	add $0x02, %sp
 
 	call build_paths
 
 	# <ret> ax, dx
-	#call read_path
+	call read_paths
 
-.epil:
 	pop %si
 	pop %bp
 	ret

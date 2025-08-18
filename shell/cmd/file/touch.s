@@ -31,7 +31,7 @@ cmd_touch:
 
 	# {{{ TODO
 	#push %si
-	#call proc_path
+	#call proc_paths
 	#add $0x02, %sp
 #
 	## (proc_path() == 1) {err}
@@ -43,12 +43,6 @@ cmd_touch:
 	#jmp .path
 	# }}}
 
-	# TODO: add relative path
-	push %si
-	call read_path
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
 	jmp .path
 
 .path_pass:
