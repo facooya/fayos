@@ -21,8 +21,7 @@ _start:
 
 	call outnl
 
-	call root_path
-
+	call init_ps1
 	call build_ps1
 
 	push $ps1

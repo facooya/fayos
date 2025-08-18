@@ -7,10 +7,10 @@
 .include "chr.s"
 .section .text
 .code16
-.global add_path
+.global add_ps1_path
 
-# add_path(*seg, *off, num)
-add_path:
+# add_ps1_path(*seg, *off, num)
+add_ps1_path:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -19,7 +19,7 @@ add_path:
 
 	mov 0x04(%bp), %es
 	mov 0x06(%bp), %si
-	mov $path, %di
+	mov $ps1_path, %di
 
 	push %di
 	xor %ax, %ax
@@ -28,7 +28,7 @@ add_path:
 	add $0x04, %sp
 	add %ax, %di
 
-	# {pass} (*(path--) == SL)
+	# {pass} (*(ps1_path--) == SL)
 	mov -0x01(%di), %al
 	cmp $CHR_SL, %al
 	je .pass

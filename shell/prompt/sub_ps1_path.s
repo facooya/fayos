@@ -7,14 +7,14 @@
 .include "chr.s"
 .section .text
 .code16
-.global sub_path
+.global sub_ps1_path
 
-# sub_path()
-sub_path:
+# sub_ps1_path()
+sub_ps1_path:
 	push %si
 	push %di
 
-	mov $path, %si
+	mov $ps1_path, %si
 	
 	push %si
 	xor %ax, %ax
@@ -39,7 +39,7 @@ sub_path:
 	jmp .lp
 
 .end:
-	mov $path, %di
+	mov $ps1_path, %di
 	push %di
 	xor %ax, %ax
 	push %ax

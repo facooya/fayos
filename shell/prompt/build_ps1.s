@@ -5,9 +5,6 @@
 # Build prompt string
 
 .include "chr.s"
-.section .data
-.ps1_name: .asciz "fayos"
-
 .section .text
 .code16
 .global build_ps1
@@ -17,7 +14,7 @@ build_ps1:
 	push %si
 	push %di
 
-	mov $.ps1_name, %si
+	mov $ps1_name, %si
 	mov $ps1, %di
 
 .zero__lp:
@@ -54,7 +51,7 @@ build_ps1:
 	mov %al, (%di)
 	add $0x01, %di
 
-	mov $path, %si
+	mov $ps1_path, %si
 
 .path__lp:
 	mov (%si), %al

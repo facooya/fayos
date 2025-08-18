@@ -94,11 +94,11 @@ shell/args/parse_args.s \
 shell/exec/exec_cmd.s \
 shell/exec/exec_redir.s \
 \
-shell/prompt/add_path.s \
-shell/prompt/sub_path.s \
-shell/prompt/path_utils.s \
-shell/prompt/prompt.s \
+shell/prompt/add_ps1_path.s \
+shell/prompt/sub_ps1_path.s \
 shell/prompt/build_ps1.s \
+shell/prompt/init_ps1.s \
+shell/prompt/prompt.s \
 \
 shell/cmd/cmd_map.s \
 \

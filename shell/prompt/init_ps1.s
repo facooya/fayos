@@ -2,18 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Path utilities
+# Initial prompt-string-1 path
 
 .include "chr.s"
 .section .text
 .code16
-.global root_path
+.global init_ps1
 
-# root_path()
-root_path:
+# init_ps1()
+init_ps1:
 	push %di
 
-	mov $path, %di
+	mov $ps1_path, %di
 	mov $CHR_SL, %al
 	mov %al, (%di)
 	add $0x01, %di

@@ -102,12 +102,12 @@ cmd_cd:
 	add $DE_NAME_OFF, %si
 	push %si
 	push %es
-	call add_path
+	call add_ps1_path
 	add $0x06, %sp
 	jmp .run__ps1
 
 .run__sub:
-	call sub_path
+	call sub_ps1_path
 
 .run__ps1:
 	call build_ps1
