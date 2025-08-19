@@ -30,20 +30,85 @@ cmd_touch:
 	jne .path_pass
 
 	# {{{ TODO
-	#push %si
-	#call proc_paths
-	#add $0x02, %sp
-#
-	## (proc_path() == 1) {err}
-	#cmp $0x01, %ax
-	#je .err_inv_path
-#
-	#mov %ax, %bx
-	#mov %dx, %es
-	#jmp .path
+	push %si
+	call proc_paths
+	add $0x02, %sp
+
+	# (proc_path() == 1) {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+
+	mov %ax, %bx
+	mov %dx, %es
+
+	mov (path_inum), %ax
+	mov %ax, (tmp_inum)
+	mov (path_inum+0x02), %ax
+	mov %ax, (tmp_inum+0x02)
+
+	cmp $0x02, %cx
+	jne .run
 	# }}}
 
-	jmp .path
+	# {{{ refer path
+	call add_inode
+
+	# {{{ add dentry
+	mov $args, %si
+	mov 0x06(%si), %ax
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	mov $paths, %si
+	mov (%si), %cx # pathc
+	add $0x02, %si
+	add %cx, %si
+	add %cx, %si
+	sub $0x02, %si # pathv[last]
+
+	mov (%si), %ax
+	mov $path_buf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	# {{ len
+	xor %ax, %ax
+	push %si
+	push %ax
+	call strlen
+	add $0x04, %sp
+	# ax = len
+	# }}
+
+	mov $0x80, %ch # (info) file_type
+	mov %al, %cl # (info) name_len
+	push %si # name
+	push %cx # info
+	push $path_inum
+	push $tmp_inum
+	call add_dentry
+	add $0x08, %sp
+	push %ax
+	# }}}
+
+	push $inode
+	push $path_inum
+	call read_inode
+	add $0x04, %sp
+
+	pop %ax
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %cx
+	add %cx, %ax
+	mov %ax, I_FILE_SIZE_OFF(%si)
+
+	push $inode
+	push $path_inum
+	call update_inode
+	add $0x04, %sp
+	jmp .done
+	# }}}
 
 .path_pass:
 	# {{ len

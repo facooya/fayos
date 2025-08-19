@@ -14,7 +14,7 @@
 # read_paths()
 # <req> paths
 # <ret> dx:ax = seg:off
-# <err> ax = 1
+# <ret> ax = exit:1, last:2
 # <info>
 # si = paths
 # di = path_buf
@@ -97,7 +97,7 @@ read_paths:
 	# (lookup_dentry() == no_match)
 	# ? {err} : off += ret
 	cmp $0x01, %ax
-	je .err_inv_path
+	je .chk__err
 	add %ax, %bx
 	# }}}
 
@@ -111,10 +111,23 @@ read_paths:
 	sub $0x01, %cx
 	jmp .lp
 
+.chk__err:
+	sub $0x01, %cx
+	test %cx, %cx
+	jz .done__last
+
+	jmp .err_inv_path
+
 # {DONE}
 .done:
 	mov %bx, %ax
 	mov %es, %dx
+	jmp .epil
+
+.done__last:
+	mov %bx, %ax
+	mov %es, %dx
+	mov $0x02, %cx
 	jmp .epil
 
 .exit:
