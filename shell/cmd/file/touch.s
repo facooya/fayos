@@ -62,14 +62,12 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si
 
-	# {{ len
 	xor %ax, %ax
 	push %si
 	push %ax
 	call strlen
 	add $0x04, %sp
 	# ax = len
-	# }}
 
 	mov $0x80, %ch # (info) file_type
 	mov %al, %cl # (info) name_len
@@ -79,7 +77,7 @@ cmd_touch:
 	push $tmp_inum
 	call add_dentry
 	add $0x08, %sp
-	push %ax
+	push %ax # [s.0:reclen]
 	# }}}
 
 	push $inode
@@ -87,7 +85,7 @@ cmd_touch:
 	call read_inode
 	add $0x04, %sp
 
-	pop %ax
+	pop %ax # [s.0:reclen]
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
@@ -100,21 +98,15 @@ cmd_touch:
 	jmp .done
 
 .path_pass:
-	# {{ len
-	push %es
+	# {{{ lookup dentry
 	xor %ax, %ax
-	mov %ax, %es
-
 	push %si
 	push %es
 	call strlen
 	add $0x04, %sp
-
 	mov %ax, %cx
-	pop %es
-	# }}
 
-	push %cx
+	push %cx # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -129,9 +121,8 @@ cmd_touch:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx
+	pop %cx # [s.0:strlen]
 
-.path:
 	push %si # src_name
 	push %cx # src_name_len
 	mov $inode, %si
@@ -142,11 +133,10 @@ cmd_touch:
 	call lookup_dentry
 	add $0x0A, %sp
 
-	# {err} (lookup_dentry() != no_match)
+	# (lookup_dentry() != no_match)
+	# ? {err} : {run}
 	cmp $0x01, %ax
 	jnz .err_name_dup
-
-	# {task}
 	jmp .run
 	# }}}
 
@@ -161,18 +151,11 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si
 
-	# {{ len
-	push %es
 	xor %ax, %ax
-	mov %ax, %es
-
 	push %si
-	push %es
+	push %ax
 	call strlen
 	add $0x04, %sp
-	pop %es
-	# ax = len
-	# }}
 
 	mov $0x80, %ch # (info) file_type
 	mov %al, %cl # (info) name_len

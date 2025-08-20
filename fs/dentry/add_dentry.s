@@ -17,6 +17,7 @@
 # *name
 # )
 # <req> info = file_type:name_len
+# <ret> ax = reclen
 add_dentry:
 	push %bp
 	mov %sp, %bp

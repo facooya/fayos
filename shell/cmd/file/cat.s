@@ -4,6 +4,7 @@
 #
 # Command concatenate - show file data
 
+.include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
 .section .text
@@ -17,28 +18,78 @@ cmd_cat:
 	push %di
 	push %bx
 
-	# {{{ lookup dentry
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	# {{ len
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
+	# (path_buf[0] != slash) ? {pass}
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	jne .path_pass
 
+	# {{{ proc paths
 	push %si
+	call proc_paths
+	add $0x02, %sp
+
+	# (proc_path() == 1) ? {err}
+	cmp $0x01, %cx
+	je .err_inv_path
+
+	# (proc_path() == 2) ? {err}
+	cmp $0x02, %cx
+	je .err_file_no
+
+	mov %ax, %bx
+	mov %dx, %es
+	# }}}
+
+	# (file_type != file) ? {err}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x80, %al
+	jne .err_file_type
+
+	push $inode
+	push $path_inum
+	call read_inode
+	add $0x04, %sp
+
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax # [s.3:fsize]
+
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %es
+
+	# putns
+	pop %cx # [s.3:fsize]
+	push %cx
+	push %bx
 	push %es
+	call putns
+	add $0x06, %sp
+
+	# {end.done}
+	jmp .done
+
+.path_pass:
+	# {{{ lookup dentry
+	xor %ax, %ax
+	push %si
+	push %ax
 	call strlen
 	add $0x04, %sp
 
-	mov %ax, %cx
-	pop %es
-	# }}
-
-	push %cx # s.1 len
+	push %cx # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -53,7 +104,7 @@ cmd_cat:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx # s.1 len
+	pop %cx # [s.0:strlen]
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -65,13 +116,11 @@ cmd_cat:
 	call lookup_dentry
 	add $0x0A, %sp
 
-	# {err} (lookup_dentry() == no_match)
+	# (lookup_dentry() == no_match)
+	# ? {err} : off+=ax;{run}
 	cmp $0x01, %ax
 	je .err_file_no
-
 	add %ax, %bx
-
-	# {task}
 	jmp .run
 	# }}}
 
@@ -148,6 +197,10 @@ cmd_cat:
 	ret
 
 # {ERR}
+.err_inv_path:
+	push $emsg_inv_path
+	jmp .err_hdl
+
 .err_file_no:
 	push $emsg_file_no
 	jmp .err_hdl
