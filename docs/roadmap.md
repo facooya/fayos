@@ -1,6 +1,7 @@
 # Roadmap
 ## WIP
-- support path argument - ls, cd, rmdir, mkdir
+- support path argument - cd, rmdir, mkdir
+- ls - path and argument
 
 ## Feature
 - Tab: autocomplete file or dir
