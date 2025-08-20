@@ -89,7 +89,7 @@ cmd_cat:
 	call strlen
 	add $0x04, %sp
 
-	push %cx # [s.0:strlen]
+	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
