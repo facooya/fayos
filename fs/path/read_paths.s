@@ -14,7 +14,7 @@
 # read_paths()
 # <req> paths
 # <ret> dx:ax = seg:off
-# <ret> ax = exit:1, last:2
+# <ret> cx = done:0, exit:1, ne_last:2
 # <info>
 # si = paths
 # di = path_buf
@@ -120,6 +120,7 @@ read_paths:
 
 # {DONE}
 .done:
+	xor %cx, %cx
 	mov %bx, %ax
 	mov %es, %dx
 	jmp .epil
@@ -131,7 +132,9 @@ read_paths:
 	jmp .epil
 
 .exit:
-	mov $0x01, %ax
+	xor %ax, %ax
+	xor %dx, %dx
+	mov $0x01, %cx
 	jmp .epil
 
 .epil:

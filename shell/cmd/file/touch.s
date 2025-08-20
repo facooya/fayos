@@ -18,48 +18,38 @@ cmd_touch:
 	push %di
 	push %bx
 
-	# {{{ lookup dentry
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
+	# (path_buf[0] != slash) ? {pass}
 	mov (%si), %al
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ TODO
+	# {{{ proc paths
 	push %si
 	call proc_paths
 	add $0x02, %sp
 
-	# (proc_path() == 1) {err}
-	cmp $0x01, %ax
+	# (proc_path() == 1) ? {err}
+	cmp $0x01, %cx
 	je .err_inv_path
+
+	# (proc_path() != 2) ? {err}
+	cmp $0x02, %cx
+	jne .err_name_dup
 
 	mov %ax, %bx
 	mov %dx, %es
-
-	mov (path_inum), %ax
-	mov %ax, (tmp_inum)
-	mov (path_inum+0x02), %ax
-	mov %ax, (tmp_inum+0x02)
-
-	cmp $0x02, %cx
-	jne .run
 	# }}}
 
-	# {{{ refer path
+	# <ret> tmp_inum
 	call add_inode
 
 	# {{{ add dentry
-	mov $args, %si
-	mov 0x06(%si), %ax
-	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si
-
 	mov $paths, %si
 	mov (%si), %cx # pathc
 	add $0x02, %si
@@ -108,7 +98,6 @@ cmd_touch:
 	call update_inode
 	add $0x04, %sp
 	jmp .done
-	# }}}
 
 .path_pass:
 	# {{ len

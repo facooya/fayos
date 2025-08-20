@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- support path argument - touch, cat, rm, ls, cd, rmdir, mkdir
+- support path argument - cat, rm, ls, cd, rmdir, mkdir
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -9,6 +9,7 @@
 - Color
 - Debug runtime
 - Comment
+- Using allocate memory and free - inode, dap, inum, ...
 
 ## Command
 - cp
@@ -19,7 +20,7 @@
 - find
 
 ## TODO
-- support path argument - touch, cat, rm, ls, cd, rmdir, mkdir **[WIP]**
+- support path argument - cat, rm, ls, cd, rmdir, mkdir **[WIP]**
 - support multi arguments - touch, mkdir, rm, rmdir
 - lookup dentry size optimize
 - redir append mode, insert mode
