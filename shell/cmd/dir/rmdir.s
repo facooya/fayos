@@ -4,6 +4,7 @@
 #
 # Command remove directory
 
+.include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
 .section .text
@@ -17,28 +18,41 @@ cmd_rmdir:
 	push %di
 	push %bx
 
-	# {{{ lookup dentry
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	# {{ len
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
+	# (path_buf[0] != slash) ? {pass}
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	jne .path_pass
 
+	# {{{ proc paths
 	push %si
-	push %es
+	call proc_paths
+	add $0x02, %sp
+
+	# (proc_paths() == done) ? {err}
+	test %cx, %cx
+	jnz .err_inv_path
+
+	mov %ax, %bx
+	mov %dx, %es
+	# }}}
+
+	jmp .chk_err
+
+.path_pass:
+	# {{{ lookup dentry
+	xor %ax, %ax
+	push %si
+	push %ax
 	call strlen
 	add $0x04, %sp
 
-	mov %ax, %cx
-	pop %es
-	# }}
-
-	push %cx
+	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -53,7 +67,7 @@ cmd_rmdir:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx
+	pop %cx # [s.0:strlen]
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -66,16 +80,16 @@ cmd_rmdir:
 	add $0x0A, %sp
 	add %ax, %bx # set mem
 
-	# {err} (lookup_dentry() == no_match)
+	# (lookup_dentry() == no_match) ? {err}
 	cmp $0x01, %ax
 	je .err_dir_no
+	# }}}
 
-	# {err} (file_type != dir)
+.chk_err:
+	# (file_type != dir) ? {err} : {run}
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
-
-	# {task}
 	jmp .run
 
 .run:
@@ -115,21 +129,13 @@ cmd_rmdir:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	# {{
-	push %es
 	xor %ax, %ax
-	mov %ax, %es
-
 	push %si
-	push %es
+	push %ax
 	call strlen
 	add $0x04, %sp
 
-	mov %ax, %cx
-	pop %es
-	# }}
-
-	push %cx
+	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -144,7 +150,7 @@ cmd_rmdir:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx
+	pop %cx # [s.0:strlen]
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -189,6 +195,10 @@ cmd_rmdir:
 	ret
 
 # {ERR}
+.err_inv_path:
+	push $emsg_inv_path
+	jmp .err_hdl
+
 .err_dir_no:
 	push $emsg_dir_no
 	jmp .err_hdl
