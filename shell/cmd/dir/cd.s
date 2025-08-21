@@ -4,6 +4,7 @@
 #
 # Command change directory
 
+.include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
 .section .text
@@ -17,28 +18,40 @@ cmd_cd:
 	push %di
 	push %bx
 
-	# {{{ lookup dentry
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
-	# {{ len
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
+	# (path_buf[0] != slash) ? {pass}
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	jne .path_pass
 
+	# {{{ proc paths
 	push %si
-	push %es
+	call proc_paths
+	add $0x02, %sp
+
+	# (proc_paths() != done) ? {err}
+	test %cx, %cx
+	jnz .err_inv_path
+
+	mov %ax, %bx
+	mov %dx, %es
+	# }}}
+	jmp .run
+
+.path_pass:
+	# {{{ lookup dentry
+	xor %ax, %ax
+	push %si
+	push %ax
 	call strlen
 	add $0x04, %sp
 
-	mov %ax, %cx
-	pop %es
-	# }}
-
-	push %cx
+	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -53,7 +66,7 @@ cmd_cd:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx
+	pop %cx # [s.0:strlen]
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -65,12 +78,11 @@ cmd_cd:
 	call lookup_dentry
 	add $0x0A, %sp
 
-	# {err} (lookup_dentry() == no_match)
+	# (lookup_dentry() == no_match)
+	# ? {err} : off+=ax;{run}
 	cmp $0x01, %ax
 	je .err_dir_no
 	add %ax, %bx
-
-	# {task}
 	jmp .run
 	# }}}
 
@@ -147,6 +159,10 @@ cmd_cd:
 	ret
 
 # {ERR}
+.err_inv_path:
+	push $emsg_inv_path
+	jmp .err_hdl
+
 .err_dir_no:
 	push $emsg_dir_no
 	jmp .err_hdl

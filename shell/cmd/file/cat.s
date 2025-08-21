@@ -34,11 +34,11 @@ cmd_cat:
 	call proc_paths
 	add $0x02, %sp
 
-	# (proc_path() == 1) ? {err}
+	# (proc_paths() == 1) ? {err}
 	cmp $0x01, %cx
 	je .err_inv_path
 
-	# (proc_path() == 2) ? {err}
+	# (proc_paths() == 2) ? {err}
 	cmp $0x02, %cx
 	je .err_file_no
 
