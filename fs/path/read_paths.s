@@ -101,10 +101,33 @@ read_paths:
 	add %ax, %bx
 	# }}}
 
+	push %cx
+	sub $0x02, %cx
+	test %cx, %cx
+	jz .save__parent_path_inum
+	pop %cx
+
 	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (path_inum)
 	mov %es:DE_INUM_OFF+0x02(%bx), %ax
 	mov %ax, (path_inum+0x02)
+
+	# {lp}
+	add $0x02, %si
+	sub $0x01, %cx
+	jmp .lp
+
+.save__parent_path_inum:
+	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %ax, (path_inum)
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %ax, (path_inum+0x02)
+
+	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %ax, (parent_path_inum)
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %ax, (parent_path_inum+0x02)
+	pop %cx
 
 	# {lp}
 	add $0x02, %si

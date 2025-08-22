@@ -16,6 +16,7 @@
 .global rmdir_inum
 .global clear_inum
 .global path_inum
+.global parent_path_inum
 
 .global bbnum
 .global ibnum
@@ -34,6 +35,7 @@ tmp_dir_inum: .long 0x00
 rmdir_inum: .long 0x00
 clear_inum: .long 0x00
 path_inum: .long 0x00
+parent_path_inum: .long 0x00
 
 bbnum: .long 0x00
 ibnum: .long 0x00

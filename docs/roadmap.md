@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- support path argument - mkdir
 - ls - path and argument
 
 ## Feature

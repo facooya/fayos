@@ -34,7 +34,7 @@ cmd_rmdir:
 	call proc_paths
 	add $0x02, %sp
 
-	# (proc_paths() == done) ? {err}
+	# (proc_paths() != done) ? {err}
 	test %cx, %cx
 	jnz .err_inv_path
 
@@ -42,7 +42,49 @@ cmd_rmdir:
 	mov %dx, %es
 	# }}}
 
-	jmp .chk_err
+	# (file_type != dir) ? {err} : {run.lp}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x40, %al
+	jne .err_dir_type
+
+	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %ax, (rmdir_inum)
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %ax, (rmdir_inum+0x02)
+
+.run__lp_p:
+	push $rmdir_inum
+	call get_bottom_dir
+	add $0x02, %sp
+	# <ret> tmp_inum
+
+	push $tmp_inum
+	call rm_dir
+	add $0x02, %sp
+
+	# {lp} (rmdir_inum != tmp_inum)
+	mov (tmp_inum), %ax
+	mov (rmdir_inum), %dx
+	cmp %ax, %dx
+	jne .run__lp_p
+	mov (tmp_inum+0x02), %ax
+	mov (rmdir_inum+0x02), %dx
+	cmp %ax, %dx
+	jne .run__lp_p
+
+	mov $paths, %si
+	mov (%si), %cx # pathc
+	add $0x02, %si
+	add %cx, %si
+	add %cx, %si
+	sub $0x02, %si # pathv[last]
+
+	mov (%si), %ax
+	mov $path_buf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	jmp .run__end_path
 
 .path_pass:
 	# {{{ lookup dentry
@@ -129,6 +171,12 @@ cmd_rmdir:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 
+	mov (inum), %ax
+	mov %ax, (parent_path_inum)
+	mov (inum+0x02), %ax
+	mov %ax, (parent_path_inum+0x02)
+
+.run__end_path:
 	xor %ax, %ax
 	push %si
 	push %ax
@@ -137,7 +185,7 @@ cmd_rmdir:
 
 	push %ax # [s.0:strlen]
 	push $inode
-	push $inum
+	push $parent_path_inum
 	call read_inode
 	add $0x04, %sp
 
@@ -163,10 +211,14 @@ cmd_rmdir:
 	add $0x0A, %sp
 	add %ax, %bx # set mem
 
+	# (lookup_dentry() == false) ? {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+
 	xor %ax, %ax
 	mov %ax, %es:DE_INUM_OFF(%bx)
 	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
-	
+
 	push $dap
 	call write_disk
 	add $0x02, %sp
