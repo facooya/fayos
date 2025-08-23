@@ -41,6 +41,7 @@ cmd_cd:
 	mov %ax, %bx
 	mov %dx, %es
 	# }}}
+	call build_ps1_path
 	jmp .run
 
 .path_pass:
@@ -68,6 +69,7 @@ cmd_cd:
 	mov %dx, %es
 	pop %cx # [s.0:strlen]
 
+	push %cx # [s.0:strlen]
 	push %si # src_name
 	push %cx # src_name_len
 	mov $inode, %si
@@ -77,14 +79,47 @@ cmd_cd:
 	push %es
 	call lookup_dentry
 	add $0x0A, %sp
+	pop %cx # [s.0:strlen]
 
 	# (lookup_dentry() == no_match)
 	# ? {err} : off+=ax;{run}
 	cmp $0x01, %ax
 	je .err_dir_no
 	add %ax, %bx
-	jmp .run
 	# }}}
+
+
+	# {{{ add ps1 path
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+
+	# (arg == dots) ? {sub}
+	mov (%si), %ax
+	cmp $0x2E2E, %ax
+	je .run__sub
+
+	# (arg == dot) ? {pass}
+	cmp $0x002E, %ax
+	je .run__pass
+
+	push %si
+	xor %ax, %ax
+	push %ax
+	call strlen
+	add $0x04, %sp
+
+	push %ax
+	push %si
+	xor %ax, %ax
+	push %ax
+	call add_ps1_path
+	add $0x06, %sp
+	# }}}
+
+	jmp .run
 
 # {TASK}
 .run:
@@ -113,7 +148,6 @@ cmd_cd:
 	jmp .run__pass
 
 .run__ps1:
-	call build_ps1_path
 	call build_ps1
 
 .run__pass:

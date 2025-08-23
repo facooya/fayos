@@ -94,6 +94,7 @@ shell/args/parse_args.s \
 shell/exec/exec_cmd.s \
 shell/exec/exec_redir.s \
 \
+shell/prompt/add_ps1_path.s \
 shell/prompt/sub_ps1_path.s \
 shell/prompt/build_ps1_path.s \
 shell/prompt/build_ps1.s \
