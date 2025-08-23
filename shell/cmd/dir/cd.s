@@ -88,7 +88,7 @@ cmd_cd:
 
 # {TASK}
 .run:
-	# {err} (file_type != dir)
+	# (file_type != dir) ? {err}
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
@@ -105,23 +105,15 @@ cmd_cd:
 
 	cmp $0x002E, %ax
 	je .run__pass
-
-	# add
-	xor %ax, %ax
-	mov %es:DE_NAME_LEN_OFF(%bx), %al
-	push %ax
-	mov %bx, %si
-	add $DE_NAME_OFF, %si
-	push %si
-	push %es
-	call add_ps1_path
-	add $0x06, %sp
 	jmp .run__ps1
 
 .run__sub:
 	call sub_ps1_path
+	call build_ps1
+	jmp .run__pass
 
 .run__ps1:
+	call build_ps1_path
 	call build_ps1
 
 .run__pass:

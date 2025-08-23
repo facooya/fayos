@@ -20,7 +20,6 @@
 - find
 
 ## TODO
-- support path argument - cat, rm, ls, cd, rmdir, mkdir **[WIP]**
 - support relative path
 - support multi arguments - touch, mkdir, rm, rmdir
 - lookup dentry size optimize
