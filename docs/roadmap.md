@@ -1,7 +1,6 @@
 # Roadmap
 ## WIP
 - root only - cd, ...
-- path system - redirection
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -19,6 +18,9 @@
 - read
 - grep
 - find
+
+## Function
+- read\_block(\*dap, \*inode, \*inum) \<ret\> dx:ax = seg:off, cx = return code
 
 ## TODO
 - support relative path

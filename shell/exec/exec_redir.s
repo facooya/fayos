@@ -4,6 +4,7 @@
 #
 # Execute redirection
 
+.include "chr.s"
 .include "fayfs/dentry.s"
 .include "fayfs/inode.s"
 .section .text
@@ -23,18 +24,40 @@ exec_redir:
 	add $0x02, %si
 
 	xor %cx, %cx
-	mov %al, %cl # len
+	mov %al, %cl # buf.len
 
-	# {task} (redir_type == 1)
+	# (redir_type == 1) ? {type.write} : {err}
 	cmp $0x01, %ah # type
 	je .type__write
-
-	# {end.err}
 	jmp .err_redir_type
 
 # {TASK}
 .type__write:
-	push %cx
+	# (path_buf[0] != slash) ? {pass}
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	jne .path_pass
+
+	# {{{ proc paths
+	push %si
+	call proc_paths
+	add $0x02, %sp
+
+	# (proc_paths() != done) ? {err}
+	test %cx, %cx
+	jnz .err_inv_path
+
+	mov %ax, %bx
+	mov %dx, %es
+	# }}}
+
+	# (file_type != file) ? {err} : {run}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x80, %al
+	jne .err_file_type
+	jmp .run
+
+.path_pass:
 	push $inode
 	push $inum
 	call read_inode
@@ -49,7 +72,13 @@ exec_redir:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx
+
+	mov $redir_buf, %si
+	mov (%si), %ax # type:len
+	add $0x02, %si
+
+	xor %cx, %cx
+	mov %al, %cl # buf.len
 
 	# {{{ lookup dentry
 	push %si # name
@@ -91,6 +120,7 @@ exec_redir:
 	call read_inode
 	add $0x04, %sp
 
+.run__p:
 	push $inode
 	call set_dap_blk_lba
 	add $0x02, %sp
@@ -172,6 +202,10 @@ exec_redir:
 	ret
 
 # {ERR}
+.err_inv_path:
+	push $emsg_inv_path
+	jmp .err_hdl
+
 .err_redir_type:
 	push $emsg_redir_type
 	jmp .err_hdl
