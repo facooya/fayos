@@ -88,7 +88,6 @@ cmd_cd:
 	add %ax, %bx
 	# }}}
 
-
 	# {{{ add ps1 path
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]

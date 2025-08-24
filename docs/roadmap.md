@@ -1,6 +1,7 @@
 # Roadmap
 ## WIP
-- ls - path and argument
+- root only - cd, ...
+- path system - redirection
 
 ## Feature
 - Tab: autocomplete file or dir

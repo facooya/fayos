@@ -54,7 +54,7 @@ cmd_ls:
 
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx
+	push %dx # [s.0:fsize]
 
 	push $inode
 	call set_dap_blk_lba
@@ -68,19 +68,78 @@ cmd_ls:
 	# }}}
 
 	# {task}
-	pop %dx # file_size
+	pop %dx # [s.0:fsize]
 	jmp .run
 
 .path_pass:
-	# {{{
+	# {{{ argc 1
 	push $inode
 	push $inum
 	call read_inode
 	add $0x04, %sp
 
+	push $inode
+	call set_dap_blk_lba
+	add $0x02, %sp
+
+	push $dap
+	call read_disk
+	add $0x02, %sp
+	mov %ax, %bx
+	mov %dx, %es
+
 	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx
+	mov I_FILE_SIZE_OFF(%si), %dx # fsize
+
+	# (argc == 1) ? {run} : lookup_dentry()
+	mov $args, %si
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .run
+	# }}}
+
+	# {{{ lookup dentry
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	xor %ax, %ax
+	push %si # raw_buf[argv[1]]
+	push %ax
+	call strlen
+	add $0x04, %sp
+
+	push %si
+	push %ax
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax
+	push %bx
+	push %es
+	call lookup_dentry
+	add $0x0A, %sp
+
+	cmp $0x01, %ax
+	je .err_dir_no
+	add %ax, %bx
+	# }}}
+
+	# {{{ raw_buf[argv[1]]
+	# (file_type != dir) ? {err}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x40, %al
+	jne .err_dir_type
+
+	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %ax, (tmp_inum)
+	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %ax, (tmp_inum+0x02)
+
+	push $inode
+	push $tmp_inum
+	call read_inode
+	add $0x04, %sp
 
 	push $inode
 	call set_dap_blk_lba
@@ -91,11 +150,11 @@ cmd_ls:
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	# }}}
 
-	# {task}
-	pop %dx # file_size
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %dx # fsize
 	jmp .run
+	# }}}
 
 # {TASK}
 .run:
@@ -169,6 +228,10 @@ cmd_ls:
 
 .err_dir_no:
 	push $emsg_dir_no
+	jmp .err_hdl
+
+.err_dir_type:
+	push $emsg_dir_type
 	jmp .err_hdl
 
 .err_hdl:
