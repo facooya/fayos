@@ -1,7 +1,5 @@
 # Roadmap
 ## WIP
-- root argument - ls
-- root protect - mkdir, rmdir, touch, rm, cat
 
 ## Feature
 - Tab: autocomplete file or dir

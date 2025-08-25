@@ -34,6 +34,16 @@ cmd_mkdir:
 	call proc_paths
 	add $0x02, %sp
 
+	# (pathc == 1) ? {err}
+	push %si # [s.1:raw_buf]
+	push %cx # [s.0:proc_paths()]
+	mov $paths, %si
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .err_dir_root
+	pop %cx # [s.0:proc_paths()]
+	pop %si # [s.1:raw_buf]
+
 	# (proc_paths() == 1) ? {err}
 	cmp $0x01, %cx
 	je .err_inv_path
@@ -311,6 +321,12 @@ cmd_mkdir:
 	ret
 
 # {ERR}
+.err_dir_root:
+	pop %si
+	pop %cx
+	push $emsg_dir_root
+	jmp .err_hdl
+
 .err_inv_path:
 	push $emsg_inv_path
 	jmp .err_hdl

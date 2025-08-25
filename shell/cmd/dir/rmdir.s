@@ -38,6 +38,12 @@ cmd_rmdir:
 	test %cx, %cx
 	jnz .err_inv_path
 
+	# (pathc == 1) ? {err}
+	mov $paths, %si
+	mov (%si), %cx
+	cmp $0x01, %cx
+	je .err_dir_root
+
 	mov %ax, %bx
 	mov %dx, %es
 	# }}}
@@ -247,6 +253,10 @@ cmd_rmdir:
 	ret
 
 # {ERR}
+.err_dir_root:
+	push $emsg_dir_root
+	jmp .err_hdl
+
 .err_inv_path:
 	push $emsg_inv_path
 	jmp .err_hdl
