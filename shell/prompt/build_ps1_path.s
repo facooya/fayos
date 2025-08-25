@@ -23,8 +23,10 @@ build_ps1_path:
 	push %cx # [s.0:pathc]
 	mov $ps1_path, %di
 	push %di
+	xor %ax, %ax
+	push %ax
 	call strlen
-	add $0x02, %sp
+	add $0x04, %sp
 
 	push %ax
 	xor %ax, %ax
@@ -38,7 +40,21 @@ build_ps1_path:
 
 	mov $path_buf, %si
 	add $0x02, %si
-	xor %dx, %dx # buf.len
+
+	# (pathc == 1) ? {root} : {lp}
+	cmp $0x01, %cx
+	je .root
+	jmp .lp
+
+.root:
+	mov $CHR_SL, %al
+	mov %al, (%di)
+	add $0x01, %di
+
+	xor %al, %al
+	mov %al, (%di)
+	add $0x01, %di
+	jmp .done
 
 .lp:
 	# (path_buf[i] == slash) ? {chk}
@@ -55,7 +71,6 @@ build_ps1_path:
 
 	# {lp}
 	add $0x01, %si
-	add $0x01, %dx
 	jmp .lp
 
 .chk__sl:
@@ -70,7 +85,6 @@ build_ps1_path:
 
 	# {lp}
 	add $0x02, %si
-	add $0x01, %dx
 	jmp .lp
 
 .chk__zero:
@@ -85,12 +99,9 @@ build_ps1_path:
 
 	# {lp}
 	add $0x01, %si
-	add $0x01, %dx
 	jmp .lp
 
 .end:
-	mov $path_buf, %si
-	mov %dx, (%si)
 	jmp .done
 
 .done:

@@ -1,6 +1,7 @@
 # Roadmap
 ## WIP
-- root only - cd, ...
+- root argument - ls
+- root protect - mkdir, rmdir, touch, rm, cat
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -25,6 +26,7 @@
 ## TODO
 - support relative path
 - support multi arguments - touch, mkdir, rm, rmdir
+- add require argument error
 - lookup dentry size optimize
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all

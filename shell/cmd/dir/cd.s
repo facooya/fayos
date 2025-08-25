@@ -118,15 +118,14 @@ cmd_cd:
 	add $0x06, %sp
 	# }}}
 
+	# (file_type != dir) ? {err} : {run}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x40, %al
+	jne .err_dir_type
 	jmp .run
 
 # {TASK}
 .run:
-	# (file_type != dir) ? {err}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
-	cmp $0x40, %al
-	jne .err_dir_type
-
 	# {{{ prompt
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
@@ -134,9 +133,12 @@ cmd_cd:
 	add $0x02, %si
 	add %ax, %si # raw_buf[argv[1]]
 	mov (%si), %ax
+
+	# (arg == dots) ? {sub}
 	cmp $0x2E2E, %ax
 	je .run__sub
 
+	# (arg == dot) ? {pass} : {ps1}
 	cmp $0x002E, %ax
 	je .run__pass
 	jmp .run__ps1
