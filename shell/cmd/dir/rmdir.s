@@ -137,6 +137,21 @@ cmd_rmdir:
 	# (lookup_dentry() == no_match) ? {err}
 	cmp $0x01, %ax
 	je .err_dir_no
+
+	mov $args, %si
+	mov 0x06(%si), %ax # argv[1]
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si # raw_buf[argv[1]]
+
+	# (arg == dots) ? {err}
+	mov (%si), %ax
+	cmp $0x2E2E, %ax
+	je .err_inv_arg
+
+	# (arg == dot) ? {err}
+	cmp $0x002E, %ax
+	je .err_inv_arg
 	# }}}
 
 .chk_err:
@@ -259,6 +274,10 @@ cmd_rmdir:
 	ret
 
 # {ERR}
+.err_inv_arg:
+	push $emsg_inv_arg
+	jmp .err_hdl
+
 .err_arg_req:
 	push $emsg_arg_req
 	jmp .err_hdl

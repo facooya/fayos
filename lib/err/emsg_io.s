@@ -22,6 +22,7 @@
 
 .global emsg_name_dup
 .global emsg_inv_path
+.global emsg_inv_arg
 
 emsg_disk_io: .asciz "Disk IO error."
 
@@ -40,3 +41,4 @@ emsg_dir_root: .asciz "Directory is root."
 
 emsg_name_dup: .asciz "Name already exists."
 emsg_inv_path: .asciz "Invalid path."
+emsg_inv_arg: .asciz "Invalid argument."
