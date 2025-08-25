@@ -15,24 +15,10 @@ cmd_test:
 	push %di
 	push %bx
 
-	mov $args, %si
-	mov 0x06(%si), %ax # argv[1]
-	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si # raw_buf[argv[1]]
+	call dbg_args
 
-	push %si
-	call proc_paths
-	add $0x02, %sp
-
-	call dbg_paths
-
-	push $path_buf
+	push $raw_buf
 	call dbg_buf
-	add $0x02, %sp
-
-	push $path_inum
-	call dbg_num
 	add $0x02, %sp
 
 	pop %bx

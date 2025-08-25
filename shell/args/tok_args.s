@@ -45,6 +45,8 @@ tok_args:
 	je .skip_sp
 	cmp $CHR_QT, %al
 	je .tok_qt
+	cmp $CHR_HS, %al
+	je .tok_hs
 	jmp .tok_chr
 
 # {TASK}
@@ -100,6 +102,10 @@ tok_args:
 	cmp $CHR_SP, %al
 	je .skip_sp
 
+	# {task} (raw.data == hash)
+	cmp $CHR_HS, %al
+	je .tok_chr_hs
+
 	# store
 	mov %al, (%di)
 	add $0x01, %di # tmp.data
@@ -110,6 +116,29 @@ tok_args:
 	add $0x01, %si # raw.data
 	sub $0x01, %bx # raw.len
 	jmp .tok_chr__lp
+
+# {TASK}
+.tok_hs:
+	sub $0x01, %cx
+
+.tok_chr_hs:
+	# (raw_buf[i-1] != back_slash) ? {cpy_buf}
+	mov -0x01(%si), %al
+	cmp $CHR_BSL, %al
+	jne .cpy_buf
+
+	# replace
+	sub $0x01, %di
+	sub $0x01, %cx
+	mov $CHR_HS, %al
+	mov %al, (%di)
+	add $0x01, %di
+	add $0x01, %cx
+
+	# {lp.gate}
+	add $0x01, %si
+	sub $0x01, %bx
+	jmp .gate
 
 # {TASK}
 .tok_qt:

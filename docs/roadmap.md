@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- Comment
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -7,7 +8,6 @@
 - Time
 - Color
 - Debug runtime
-- Comment
 - Using allocate memory and free - inode, dap, inum, ...
 
 ## Command
