@@ -19,6 +19,12 @@ cmd_cat:
 	push %bx
 
 	mov $args, %si
+
+	# (argc == 1) ? {err}
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .err_arg_req
+
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
@@ -56,10 +62,6 @@ cmd_cat:
 	call read_inode
 	add $0x04, %sp
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax # [s.3:fsize]
-
 	push $inode
 	call set_dap_blk_lba
 	add $0x02, %sp
@@ -70,8 +72,9 @@ cmd_cat:
 	mov %ax, %bx
 	mov %dx, %es
 
-	# putns
-	pop %cx # [s.3:fsize]
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %cx
+
 	push %cx
 	push %bx
 	push %es
@@ -197,6 +200,10 @@ cmd_cat:
 	ret
 
 # {ERR}
+.err_arg_req:
+	push $emsg_arg_req
+	jmp .err_hdl
+
 .err_inv_path:
 	push $emsg_inv_path
 	jmp .err_hdl

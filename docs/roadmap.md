@@ -24,7 +24,6 @@
 ## TODO
 - support relative path
 - support multi arguments - touch, mkdir, rm, rmdir
-- add require argument error
 - lookup dentry size optimize
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all

@@ -19,6 +19,12 @@ cmd_rmdir:
 	push %bx
 
 	mov $args, %si
+
+	# (argc == 1) ? {err}
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .err_arg_req
+
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
@@ -253,6 +259,10 @@ cmd_rmdir:
 	ret
 
 # {ERR}
+.err_arg_req:
+	push $emsg_arg_req
+	jmp .err_hdl
+
 .err_dir_root:
 	push $emsg_dir_root
 	jmp .err_hdl

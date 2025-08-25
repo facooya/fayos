@@ -19,6 +19,12 @@ cmd_touch:
 	push %bx
 
 	mov $args, %si
+
+	# (argc == 1) ? {err}
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .err_arg_req
+
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
@@ -204,6 +210,10 @@ cmd_touch:
 	ret
 
 # {ERR}
+.err_arg_req:
+	push $emsg_arg_req
+	jmp .err_hdl
+
 .err_name_dup:
 	push $emsg_name_dup
 	jmp .err_hdl
