@@ -4,24 +4,20 @@
 #
 # Command test - temporary debug and test runtime
 
-.include "fayfs/inode.s"
 .section .text
 .code16
 .global cmd_test
 
 # cmd_test()
 cmd_test:
+	mov $args, %si
+	mov 0x06(%si), %ax
+	mov $raw_buf, %si
+	add $0x02, %si
+	add %ax, %si
+
 	push %si
-	push %di
-	push %bx
-
-	call dbg_args
-
-	push $raw_buf
-	call dbg_buf
+	call write
 	add $0x02, %sp
 
-	pop %bx
-	pop %di
-	pop %si
 	ret

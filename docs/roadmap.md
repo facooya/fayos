@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- Comment
+- make interrupt
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -8,7 +8,7 @@
 - Time
 - Color
 - Debug runtime
-- Using allocate memory and free - inode, dap, inum, ...
+- Using allocate memory and free - inode, dap, inum, ... `close()`
 
 ## Command
 - cp
@@ -17,9 +17,13 @@
 - read
 - grep
 - find
+- poweroff
 
 ## Function
-- read\_block(\*dap, \*inode, \*inum) \<ret\> dx:ax = seg:off, cx = return code
+- `fopen()` - file open, append, create
+- `fclose()` - file close
+- `opendir()` - dir open 
+- `closedir()` - dir close
 
 ## TODO
 - support relative path
@@ -28,6 +32,3 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
-
-## Library
-- file open?/append/create

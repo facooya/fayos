@@ -13,6 +13,7 @@ kernel/kernel.s \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
+kernel/sys/write.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
