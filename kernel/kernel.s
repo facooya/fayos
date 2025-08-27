@@ -13,6 +13,10 @@
 
 # _start()
 _start:
+	# interrupt handler
+	mov $interrupt, 0x00C0
+	mov %cs, 0x00C2
+
 	call proc_super
 
 	push $.kmsg_welcome

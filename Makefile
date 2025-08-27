@@ -10,10 +10,13 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 SRCS = \
 kernel/kernel.s \
 \
+int/interrupt.s \
+\
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
 kernel/sys/write.s \
+kernel/sys/get_disp_size.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \

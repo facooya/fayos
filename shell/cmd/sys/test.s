@@ -10,14 +10,15 @@
 
 # cmd_test()
 cmd_test:
-	mov $args, %si
-	mov 0x06(%si), %ax
-	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si
+	int $0x30
 
-	push %si
-	call write
+	call get_disp_size
+
+	push %dx
+	call dbg_reg
 	add $0x02, %sp
 
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
 	ret

@@ -23,6 +23,11 @@ write:
 
 .lp:
 	mov (%si), %al
+	cmp $0x0A, %al
+	je .nl
+	test %al, %al
+	jz .end
+
 	mov %al, %es:(%di)
 	add $0x01, %si
 	add $0x01, %di
@@ -33,8 +38,19 @@ write:
 
 	mov (%si), %al
 	test %al, %al
-	jnz .lp
+	jz .end
+	jmp .lp
 
+.nl:
+	mov %di, %ax
+	and $0x00FF, %ax
+	sub %ax, %di
+	add $0xA0, %di
+
+	add $0x01, %si
+	jmp .lp
+
+.end:
 	pop %bp
 	pop %di
 	pop %si
