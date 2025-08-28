@@ -10,6 +10,7 @@
 
 # cmd_test()
 cmd_test:
-	call off_translate
+	call off_cmd_byte_bit6
 	call kbd_scan_set
+	#call chk_scan_code_set
 	ret

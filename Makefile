@@ -14,6 +14,7 @@ int/interrupt.s \
 int/int_kbd.s \
 \
 drv/kbd/kbd_scan_set.s \
+drv/kbd/off_cmd_byte_bit6.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \

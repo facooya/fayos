@@ -13,8 +13,6 @@
 # KS 0x64
 # kbd_scan_set()
 kbd_scan_set:
-	pusha
-
 	xor %ax, %ax
 
 	# {{{ scan off
@@ -88,35 +86,4 @@ kbd_scan_set:
 	in $0x60, %al
 
 .done:
-	popa
-	ret
-
-off_translate:
-	pusha
-	xor %ax, %ax
-
-	mov $0x20, %al
-	out %al, $0x64
-
-.lp_:
-	in $0x64, %al
-	test $0x02, %al
-	jnz .lp_
-
-	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-
-	and $0xBF, %al
-
-	push %ax
-	mov $0x60, %al
-	out %al, $0x64
-	pop %ax
-
-	out %al, $0x60
-
-	popa
 	ret
