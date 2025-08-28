@@ -16,6 +16,8 @@ _start:
 	# interrupt handler
 	mov $interrupt, 0x00C0
 	mov %cs, 0x00C2
+	mov $int_kbd, 0x00C4
+	mov %cs, 0x00C6
 
 	call proc_super
 

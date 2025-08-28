@@ -11,6 +11,9 @@ SRCS = \
 kernel/kernel.s \
 \
 int/interrupt.s \
+int/int_kbd.s \
+\
+drv/kbd/kbd_scan_set.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \

@@ -10,15 +10,6 @@
 
 # cmd_test()
 cmd_test:
-	int $0x30
-
-	call get_disp_size
-
-	push %dx
-	call dbg_reg
-	add $0x02, %sp
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
+	call off_translate
+	call kbd_scan_set
 	ret
