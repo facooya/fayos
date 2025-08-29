@@ -10,6 +10,6 @@
 
 # cmd_test()
 cmd_test:
-	call off_cmd_byte_bit6
+	call off_conf_byte_bit6
 	call chk_scan_code_set
 	ret

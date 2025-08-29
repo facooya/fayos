@@ -5,7 +5,7 @@
 # Check keyboard scan code set - only using set 2
 
 # command list
-# https://wiki.osdev.org/PS/2_Keyboard
+# https://wiki.osdev.org/PS/2_Keyboard#Commands
 
 .section .text
 .code16
