@@ -13,7 +13,7 @@ kernel/kernel.s \
 int/interrupt.s \
 int/int_kbd.s \
 \
-drv/kbd/kbd_scan_set.s \
+drv/kbd/chk_scan_code_set.s \
 drv/kbd/off_cmd_byte_bit6.s \
 \
 kernel/sys/_sys_disk.s \
