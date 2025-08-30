@@ -12,4 +12,5 @@
 cmd_test:
 	call off_conf_byte_bit6
 	call chk_scan_code_set
+	call read_key
 	ret

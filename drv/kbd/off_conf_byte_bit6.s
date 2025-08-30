@@ -6,7 +6,7 @@
 
 # reference link
 # https://wiki.osdev.org/I8042_PS/2_Controller#PS/2_Controller_Commands
-#https://wiki.osdev.org/I8042_PS/2_Controller#PS/2_Controller_Configuration_Byte
+# https://wiki.osdev.org/I8042_PS/2_Controller#PS/2_Controller_Configuration_Byte
 
 .section .text
 .code16

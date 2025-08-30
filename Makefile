@@ -13,13 +13,15 @@ kernel/kernel.s \
 int/interrupt.s \
 int/int_kbd.s \
 \
+drv/disp/write.s \
 drv/kbd/chk_scan_code_set.s \
 drv/kbd/off_conf_byte_bit6.s \
+drv/kbd/read_key.s \
+drv/kbd/keymap.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
-kernel/sys/write.s \
 kernel/sys/get_disp_size.s \
 \
 kernel/kbd/kbd_main.s \
