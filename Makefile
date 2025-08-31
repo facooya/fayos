@@ -14,6 +14,8 @@ int/interrupt.s \
 int/int_kbd.s \
 \
 drv/disp/write.s \
+drv/disp/outc2.s \
+\
 drv/kbd/chk_scan_code_set.s \
 drv/kbd/off_conf_byte_bit6.s \
 drv/kbd/read_key.s \

@@ -21,16 +21,25 @@ read_key:
 	call ._obf
 	in $0x60, %al
 
-	# (kd == end_key) ? {lp}
+	# (kd == end_key) ? {cont}
 	cmp $0xF0, %al
-	je .lp
+	je .cont
 
-	xor %cx, %cx
-	add %al, %cl
-	add %cx, %di
-
+	# (sc == null) ? {skip} : {outc}
+	add %ax, %di
 	mov (%di), %al
-	call outc
+	test %al, %al
+	jz .skip
+	call outc2
+
+.skip:
+	xor %ax, %ax
+	mov %si, %di
+	jmp .lp
+
+.cont:
+	call ._obf
+	in $0x60, %al
 
 	xor %ax, %ax
 	mov %si, %di

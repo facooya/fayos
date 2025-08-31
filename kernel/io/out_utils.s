@@ -36,4 +36,3 @@ outsp:
 	mov $CHR_SP, %al
 	call _sys_tty_out
 	ret
-
