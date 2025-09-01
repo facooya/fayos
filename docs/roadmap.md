@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- without bios
 - make interrupt
 
 ## Feature
