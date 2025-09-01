@@ -64,5 +64,5 @@ _super_make_root:
 	push $inode
 	push $inum
 	call update_inode
-	add $0x06, %sp
+	add $0x04, %sp
 	ret

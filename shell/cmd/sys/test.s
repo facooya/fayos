@@ -12,5 +12,7 @@
 cmd_test:
 	call off_conf_byte_bit6
 	call chk_scan_code_set
+	call get_cursor2
+	hlt
 	call read_key
 	ret

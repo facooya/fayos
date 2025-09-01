@@ -19,6 +19,7 @@ chk_scan_code_set:
 	xor %ax, %ax
 
 	# {{{ disable scan
+	call ._ibf
 	mov $0xF5, %al
 	out %al, $0x60
 
