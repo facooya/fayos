@@ -17,6 +17,10 @@ read_key:
 	mov %si, %di
 	xor %ax, %ax
 
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
+
 .lp:
 	call ._obf
 	in $0x60, %al
