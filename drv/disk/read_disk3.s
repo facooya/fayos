@@ -9,10 +9,10 @@
 
 .section .text
 .code16
-.global read_disk2
+.global read_disk3
 
-# read_disk2(*dap)
-read_disk2:
+# read_disk3(*dap)
+read_disk3:
 	push %bp
 	mov %sp, %bp
 
@@ -51,14 +51,14 @@ read_disk2:
 	jz .drq__lp
 
 	mov $0x01F0, %dx
-	mov $0x0100, %cx
+	mov $0x10, %cx
 
 .data__lp:
 	# (count == 0) ? {end}
 	test %cx, %cx
 	jz .data__end
 
-	in %dx, %ax
+	in %dx, %al
 
 	push %cx
 	push %dx
@@ -73,7 +73,7 @@ read_disk2:
 	jmp .data__lp
 
 .data__end:
-	call dbg_a
+	call dbg_c
 
 	pop %bp
 	ret

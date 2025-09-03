@@ -24,6 +24,8 @@ drv/kbd/read_key.s \
 drv/kbd/keymap.s \
 \
 drv/disk/read_disk2.s \
+drv/disk/read_disk3.s \
+drv/disk/write_disk2.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_kbd.s \

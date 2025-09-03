@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Read disk
+# Write disk
 
 # reference link
-# https://wiki.osdev.org/ATA_read/write_sectors#Read_in_LBA_mode
+# https://wiki.osdev.org/ATA_read/write_sectors#ATA_write_sectors
 
 .section .text
 .code16
-.global read_disk2
+.global write_disk2
 
-# read_disk2(*dap)
-read_disk2:
+# write_disk2(*dap)
+write_disk2:
 	push %bp
 	mov %sp, %bp
 
@@ -40,9 +40,9 @@ read_disk2:
 	out %al, %dx
 	# }}}
 
-	# read
+	# write
 	mov $0x01F7, %dx
-	mov $0x20, %al
+	mov $0x30, %al
 	out %al, %dx
 
 .drq__lp:
@@ -58,22 +58,22 @@ read_disk2:
 	test %cx, %cx
 	jz .data__end
 
-	in %dx, %ax
-
-	push %cx
-	push %dx
-	push %ax
-	call dbg_reg
-	pop %ax
-	pop %dx
-	pop %cx
+	mov $0x61, %ax
+	out %ax, %dx
 
 	# {lp}
 	sub $0x01, %cx
 	jmp .data__lp
 
 .data__end:
-	call dbg_a
+
+.bsy__lp:
+	mov $0x01F7, %dx
+	in %dx, %al
+	test $0x80, %al
+	jnz .bsy__lp
+
+	call dbg_b
 
 	pop %bp
 	ret
