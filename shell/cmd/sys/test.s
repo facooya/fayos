@@ -15,6 +15,6 @@ cmd_test:
 
 	#call read_key
 	#call read_disk2
-	call write_disk2
-	call read_disk3
+	#call write_disk2
+	#call read_disk3
 	ret

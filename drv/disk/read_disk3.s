@@ -58,7 +58,7 @@ read_disk3:
 	test %cx, %cx
 	jz .data__end
 
-	in %dx, %al
+	in %dx, %ax
 
 	push %cx
 	push %dx

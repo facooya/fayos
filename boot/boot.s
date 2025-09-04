@@ -34,8 +34,93 @@ _start:
 	add $0x02, %sp
 
 	# kernel
-	call .read_kernel_disk
+	#call .read_kernel_disk
+	xor %ax, %ax
+	mov %ax, %es
+	mov $0x1000, %di
+	call .ata_read_kernel_disk
+	mov $0x1000, %di
 	ljmp $0x0000, $0x1000
+
+.ata_read_kernel_disk:
+	push %ax
+	push %bx
+	push %cx
+	push %dx
+
+	# set mode
+	mov $0x01F6, %dx
+	mov $0xE0, %al # 0b11100000
+	out %al, %dx
+
+	# sector count
+	mov $0x01F2, %dx
+	mov $0x30, %al
+	mov $0x30, %bx
+	out %al, %dx
+
+	# {{{ LBA
+	mov $0x01F3, %dx
+	mov $0x10, %al # kernel lba
+	out %al, %dx
+
+	mov $0x01F4, %dx
+	mov $0x00, %al
+	out %al, %dx
+
+	mov $0x01F5, %dx
+	mov $0x00, %al
+	out %al, %dx
+	# }}}
+
+	# read
+	mov $0x01F7, %dx
+	mov $0x20, %al
+	out %al, %dx
+
+.sec__lp:
+	# read
+	mov $0x01F7, %dx
+	#mov $0x20, %al
+	#out %al, %dx
+
+.drq__lp:
+	mov $0x01F7, %dx
+	in %dx, %al
+	test $0x08, %al
+	jz .drq__lp
+
+	mov $0x01F0, %dx
+	mov $0x0100, %cx
+
+.data__lp:
+	# (count == 0) ? {end}
+	test %cx, %cx
+	jz .data__end
+
+	in %dx, %ax
+	mov %ax, %es:(%di)
+
+	# {lp}
+	sub $0x01, %cx
+	add $0x02, %di
+	jmp .data__lp
+
+.data__end:
+	sub $0x01, %bx
+
+	# (sector == 0) ? {done}
+	test %bx, %bx
+	jz .done
+
+	jmp .sec__lp
+
+.done:
+	pop %dx
+	pop %cx
+	pop %bx
+	pop %ax
+	ret
 
 # .read_kernel_disk()
 .read_kernel_disk:
