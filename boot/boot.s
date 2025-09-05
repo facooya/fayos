@@ -24,7 +24,7 @@ _start:
 	# set stack
 	mov $0x7C00, %sp
 
-	call .clear_disp
+	call .clrdisp
 	push $.bmsg_fayos
 	call .outbs
 	add $0x02, %sp
@@ -112,8 +112,8 @@ _start:
 	mov 0x04(%bp), %si
 
 	# vid init
-	mov $0xB000, %dx
-	mov %dx, %es
+	mov $0xB000, %ax
+	mov %ax, %es
 	mov $0x8000, %di
 
 	# {{{ get cursor
@@ -162,9 +162,13 @@ _start:
 	mov %al, %es:(%di)
 	add $0x01, %di
 
-	# {{{ set cursor
+	# {lp}
+	add $0x01, %si
 	add $0x01, %cx # pos
+	jmp .outbs__lp
 
+.outbs__done:
+	# {{{ set cursor
 	mov $0x0E, %al
 	mov $0x03D4, %dx
 	out %al, %dx
@@ -180,49 +184,44 @@ _start:
 	out %al, %dx
 	# }}}
 
-	# {lp}
-	add $0x01, %si
-	jmp .outbs__lp
-
-.outbs__done:
 	pop %es
 	pop %bp
 	ret
 
-# .clear_disp()
-.clear_disp:
-	push %ax
-	push %bx
-	push %cx
-	push %dx
+# .clrdisp()
+.clrdisp:
+	push %es
 
-	# _sys_get_cursor
-	mov $0x03, %ah
-	xor %bh, %bh
-	int $0x10 # dh = scroll_up_end_y
+	# vid init
+	mov $0xB000, %ax
+	mov %ax, %es
+	mov $0x8000, %di
 
-	# _sys_get_mode
-	mov $0x0F, %ah
-	int $0x10
-	mov %ah, %dl # vid_end_x
+	# TODO: get display size
+	mov $0x07D0, %cx
 
-	# _sys_scroll_up
-	mov $0x06, %ah
-	xor %al, %al
-	mov $0x07, %bh
-	xor %cx, %cx
-	int $0x10
+.clrdisp__lp:
+	# (count == 0) ? {end}
+	test %cx, %cx
+	jz .clrdisp__end
 
-	# _sys_set_cursor
-	xor %dx, %dx # cursor(0,0)
-	mov $0x02, %ah
-	xor %bh, %bh
-	int $0x10
+	# clear
+	mov $0x20, %al
+	mov %al, %es:(%di)
+	add $0x01, %di
 
-	pop %dx
-	pop %cx
-	pop %bx
-	pop %ax
+	# conf
+	mov $0x07, %al
+	mov %al, %es:(%di)
+	add $0x01, %di
+
+	# {lp}
+	sub $0x01, %cx
+	jmp .clrdisp__lp
+
+.clrdisp__end:
+	# TODO: set cursor
+	pop %es
 	ret
 
 # bmsg
