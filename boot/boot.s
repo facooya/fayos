@@ -34,6 +34,7 @@ _start:
 	call .read_disk
 	ljmp $0x0000, $0x1000
 
+# {FUNC}
 # kernel - count:0x30, lba:0x10, 0x0000:0x1000
 .read_disk:
 	# set mode
@@ -103,6 +104,7 @@ _start:
 .disk__done:
 	ret
 
+# {FUNC}
 # .outbs(&str) - out boot string
 .outbs:
 	push %bp
@@ -188,6 +190,7 @@ _start:
 	pop %bp
 	ret
 
+# {FUNC}
 # .clrdisp()
 .clrdisp:
 	push %es
@@ -197,8 +200,17 @@ _start:
 	mov %ax, %es
 	mov $0x8000, %di
 
-	# TODO: get display size
-	mov $0x07D0, %cx
+	# {{{ get disp
+	xor %dx, %dx
+	mov $0x0484, %bx
+	mov (%bx), %dl
+
+	mov $0x044A, %bx
+	mov (%bx), %ax
+	# }}}
+
+	mul %dx
+	mov %ax, %cx
 
 .clrdisp__lp:
 	# (count == 0) ? {end}
@@ -220,13 +232,28 @@ _start:
 	jmp .clrdisp__lp
 
 .clrdisp__end:
-	# TODO: set cursor
+	# {{{ set cursor
+	mov $0x0E, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	xor %al, %al
+	out %al, %dx
+
+	mov $0x0F, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	xor %al, %al
+	out %al, %dx
+	# }}}
+
 	pop %es
 	ret
 
-# bmsg
+# {DATA}
 .bmsg_fayos: .asciz "FAYOS\n"
 
-# end
+# {DONE}
 .fill 0x01FE-(.-_start), 0x01, 0x00
 .word 0xAA55
