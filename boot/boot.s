@@ -4,6 +4,7 @@
 #
 # Bootloader
 
+# .include "boot_equ.s"
 .code16
 .global _start
 
@@ -19,35 +20,22 @@ _start:
 	mov %ax, %ss
 	mov %ax, %sp
 	mov %ax, %bp
-	mov %ax, %si
-	mov %ax, %di
-	mov %ax, %bx
-	mov %ax, %cx
-	mov %ax, %dx
 
 	# set stack
 	mov $0x7C00, %sp
 
 	call .clear_disp
 	push $.bmsg_fayos
-	call .out_str
+	call .outbs
 	add $0x02, %sp
 
 	# kernel
-	#call .read_kernel_disk
-	xor %ax, %ax
-	mov %ax, %es
 	mov $0x1000, %di
-	call .ata_read_kernel_disk
-	mov $0x1000, %di
+	call .read_disk
 	ljmp $0x0000, $0x1000
 
-.ata_read_kernel_disk:
-	push %ax
-	push %bx
-	push %cx
-	push %dx
-
+# kernel - count:0x30, lba:0x10, 0x0000:0x1000
+.read_disk:
 	# set mode
 	mov $0x01F6, %dx
 	mov $0xE0, %al # 0b11100000
@@ -77,21 +65,21 @@ _start:
 	mov $0x01F7, %dx
 	mov $0x20, %al
 	out %al, %dx
+	jmp .drq__lp
 
 .sec__lp:
-	# read
 	mov $0x01F7, %dx
-	#mov $0x20, %al
-	#out %al, %dx
 
 .drq__lp:
-	mov $0x01F7, %dx
 	in %dx, %al
 	test $0x08, %al
 	jz .drq__lp
 
+	# TODO: error
+
 	mov $0x01F0, %dx
 	mov $0x0100, %cx
+	sub $0x01, %bx # sector count
 
 .data__lp:
 	# (count == 0) ? {end}
@@ -107,78 +95,97 @@ _start:
 	jmp .data__lp
 
 .data__end:
-	sub $0x01, %bx
-
-	# (sector == 0) ? {done}
+	# (sector == 0) ? {done} : {sec.lp}
 	test %bx, %bx
-	jz .done
-
+	jz .disk__done
 	jmp .sec__lp
 
-.done:
-	pop %dx
-	pop %cx
-	pop %bx
-	pop %ax
+.disk__done:
 	ret
 
-# .read_kernel_disk()
-.read_kernel_disk:
-	push %si
-	push %ax
-	push %dx
-
-	clc
-	mov $0x42, %ah
-	mov $0x80, %dl
-	mov $.dap, %si
-	int $0x13
-	jc .read_kernel_disk__err
-
-	push $.bmsg_kd_ok
-	call .out_str
-	add $0x02, %sp
-
-	pop %dx
-	pop %ax
-	pop %si
-	ret
-
-.read_kernel_disk__err:
-	push $.bmsg_kd_err
-	call .out_str
-	add $0x02, %sp
-
-	pop %dx
-	pop %ax
-	pop %si
-	hlt
-
-# .out_str(&str)
-.out_str:
+# .outbs(&str) - out boot string
+.outbs:
 	push %bp
 	mov %sp, %bp
-	push %si
-	push %ax
+	push %es
 
 	mov 0x04(%bp), %si
-	mov $0x0E, %ah
 
-.out_str__lp:
-	# {end} (chr == null)
+	# vid init
+	mov $0xB000, %dx
+	mov %dx, %es
+	mov $0x8000, %di
+
+	# {{{ get cursor
+	mov $0x0E, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	in %dx, %al
+	mov %al, %ah
+
+	mov $0x0F, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	in %dx, %al
+
+	mov %ax, %cx # pos
+	# }}}
+
+.outbs__lp:
+	# (chr == null) ? {end}
 	mov (%si), %al
 	test %al, %al
-	jz .out_str__end
+	jz .outbs__done
 
-	int $0x10
+	# (chr != newline) ? {out}
+	cmp $0x5C, %al
+	jne .outbs__lp_out
+	mov 0x01(%si), %ah
+	cmp $0x6E, %ah
+	jne .outbs__lp_out
+
+	mov $0x0A, %al
+	mov %al, %es:(%di)
+	add $0x01, %di
+	jmp .outbs__lp_out_skip
+
+.outbs__lp_out:
+	# out
+	mov %al, %es:(%di)
+	add $0x01, %di
+
+.outbs__lp_out_skip:
+	# conf
+	mov $0x07, %al
+	mov %al, %es:(%di)
+	add $0x01, %di
+
+	# {{{ set cursor
+	add $0x01, %cx # pos
+
+	mov $0x0E, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	mov %ch, %al
+	out %al, %dx
+
+	mov $0x0F, %al
+	mov $0x03D4, %dx
+	out %al, %dx
+	mov $0x03D5, %dx
+	mov %cl, %al
+	out %al, %dx
+	# }}}
 
 	# {lp}
 	add $0x01, %si
-	jmp .out_str__lp
+	jmp .outbs__lp
 
-.out_str__end:
-	pop %ax
-	pop %si
+.outbs__done:
+	pop %es
 	pop %bp
 	ret
 
@@ -219,21 +226,7 @@ _start:
 	ret
 
 # bmsg
-.bmsg_fayos: .asciz "\nFAYOS\r\n"
-.bmsg_kd_ok: .asciz "Kernel disk read ok\r\n"
-.bmsg_kd_err: .asciz "kernel disk read error\r\n"
-
-# dap
-.dap:
-	.byte 0x10
-	.byte 0x00
-	.word 0x30
-	.word 0x1000
-	.word 0x0000
-	.word 0x10
-	.word 0x00
-	.word 0x00
-	.word 0x00
+.bmsg_fayos: .asciz "FAYOS\n"
 
 # end
 .fill 0x01FE-(.-_start), 0x01, 0x00
