@@ -28,6 +28,9 @@ _start:
 	push $.bmsg_fayos
 	call .outbs
 	add $0x02, %sp
+	push $.bmsg_a
+	call .outbs
+	add $0x02, %sp
 
 	# kernel
 	mov $0x1000, %di
@@ -114,9 +117,9 @@ _start:
 	mov 0x04(%bp), %si
 
 	# vid init
-	mov $0xB000, %ax
+	mov $0xB800, %ax
 	mov %ax, %es
-	mov $0x8000, %di
+	xor %di, %di
 
 	# {{{ get cursor
 	mov $0x0E, %al
@@ -132,6 +135,10 @@ _start:
 	mov $0x03D5, %dx
 	in %dx, %al
 
+	# skip outc, conf
+	add %ax, %di
+	add %ax, %di
+
 	mov %ax, %cx # pos
 	# }}}
 
@@ -141,24 +148,14 @@ _start:
 	test %al, %al
 	jz .outbs__done
 
-	# (chr != newline) ? {out}
-	cmp $0x5C, %al
-	jne .outbs__lp_out
-	mov 0x01(%si), %ah
-	cmp $0x6E, %ah
-	jne .outbs__lp_out
+	# (chr == newline) ? {newline}
+	cmp $0x0A, %al
+	je .outbs__newline
 
-	mov $0x0A, %al
-	mov %al, %es:(%di)
-	add $0x01, %di
-	jmp .outbs__lp_out_skip
-
-.outbs__lp_out:
 	# out
 	mov %al, %es:(%di)
 	add $0x01, %di
 
-.outbs__lp_out_skip:
 	# conf
 	mov $0x07, %al
 	mov %al, %es:(%di)
@@ -167,6 +164,34 @@ _start:
 	# {lp}
 	add $0x01, %si
 	add $0x01, %cx # pos
+	jmp .outbs__lp
+
+.outbs__newline:
+	# {{{ newline
+	push %cx
+	mov $0x044A, %bx
+	mov (%bx), %cx # col
+
+	xor %dx, %dx
+	mov %di, %ax
+	div %cx
+	sub %dx, %di # init col
+
+	# skip out, conf
+	add %cx, %di
+	add %cx, %di
+
+	pop %cx
+	# }}}
+
+	# cursor pos
+	mov %di, %ax
+	mov $0x02, %cx
+	xor %dx, %dx
+	div %cx
+	mov %ax, %cx
+
+	add $0x01, %si
 	jmp .outbs__lp
 
 .outbs__done:
@@ -252,7 +277,8 @@ _start:
 	ret
 
 # {DATA}
-.bmsg_fayos: .asciz "FAYOS\n"
+.bmsg_fayos: .asciz "FAYOS\n\n"
+.bmsg_a: .asciz "AAA"
 
 # {DONE}
 .fill 0x01FE-(.-_start), 0x01, 0x00
