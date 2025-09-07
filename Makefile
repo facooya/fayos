@@ -168,7 +168,7 @@ $(BUILD)/fayos.img: $(BUILD)/boot.bin $(BUILD)/kernel.bin | $(BUILD)
 	dd if=$(BUILD)/kernel.bin of=$(BUILD)/fayos.img bs=512 seek=16 conv=notrunc
 
 $(BUILD)/boot.bin: ./boot/boot.s | $(BUILD)
-	$(AS) ./boot/boot.s -o $(BUILD)/boot.o
+	$(AS) -Iboot ./boot/boot.s -o $(BUILD)/boot.o
 	$(LD_BOOT) $(BUILD)/boot.o -o $(BUILD)/boot.bin
 
 $(BUILD)/kernel.bin: $(OBJS) | $(BUILD)
