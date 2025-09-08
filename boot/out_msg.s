@@ -13,22 +13,22 @@ out_msg:
 	mov 0x04(%bp), %si
 
 	# vid init
-	mov $0xB800, %ax
+	mov $VID_MEM_SEG, %ax
 	mov %ax, %es
 	xor %di, %di
 
 	# {{{ get cursor
-	mov $0x0E, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_HI, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	in %dx, %al
 	mov %al, %ah
 
-	mov $0x0F, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_LO, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	in %dx, %al
 
 	# skip outc, conf
@@ -45,7 +45,7 @@ out_msg:
 	jz .out_msg__done
 
 	# (chr == newline) ? {newline}
-	cmp $NEWLINE, %al
+	cmp $CHR_NL, %al
 	je .out_msg__newline
 
 	# out
@@ -65,7 +65,7 @@ out_msg:
 .out_msg__newline:
 	# {{{ newline
 	push %cx
-	mov $0x044A, %bx
+	mov $DISP_MEM_COL, %bx
 	mov (%bx), %cx # col
 
 	xor %dx, %dx
@@ -92,17 +92,17 @@ out_msg:
 
 .out_msg__done:
 	# {{{ set cursor
-	mov $0x0E, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_HI, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	mov %ch, %al
 	out %al, %dx
 
-	mov $0x0F, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_LO, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	mov %cl, %al
 	out %al, %dx
 	# }}}
@@ -110,4 +110,3 @@ out_msg:
 	pop %es
 	pop %bp
 	ret
-

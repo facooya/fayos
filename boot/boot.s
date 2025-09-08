@@ -29,9 +29,9 @@ _start:
 	add $0x02, %sp
 
 	# kernel
-	mov $KERNEL_OFF, %di
+	mov $KERN_OFF, %di
 	call read_kernel
-	ljmp $KERNEL_SEG, $KERNEL_OFF
+	ljmp $KERN_SEG, $KERN_OFF
 
 # {FUNC}
 .include "out_msg.s"

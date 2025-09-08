@@ -9,16 +9,16 @@ clear_disp:
 	push %es
 
 	# vid init
-	mov $0xB000, %ax
+	mov $VID_MEM_SEG, %ax
 	mov %ax, %es
-	mov $0x8000, %di
+	xor %di, %di
 
 	# {{{ get disp
 	xor %dx, %dx
-	mov $0x0484, %bx
+	mov $DISP_MEM_ROW, %bx
 	mov (%bx), %dl
 
-	mov $0x044A, %bx
+	mov $DISP_MEM_COL, %bx
 	mov (%bx), %ax
 	# }}}
 
@@ -31,7 +31,7 @@ clear_disp:
 	jz .clear_disp__end
 
 	# clear
-	mov $SPACE, %al
+	mov $CHR_SP, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 
@@ -46,17 +46,17 @@ clear_disp:
 
 .clear_disp__end:
 	# {{{ set cursor
-	mov $0x0E, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_HI, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	xor %al, %al
 	out %al, %dx
 
-	mov $0x0F, %al
-	mov $0x03D4, %dx
+	mov $CURS_POS_LO, %al
+	mov $CURS_CMD_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $CURS_DATA_REG, %dx
 	xor %al, %al
 	out %al, %dx
 	# }}}
