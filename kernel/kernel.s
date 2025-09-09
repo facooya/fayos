@@ -39,12 +39,14 @@ _start:
 	add $0x02, %si
 
 	# {main}
+	call off_conf_byte_bit6
+	call chk_scan_code_set
 	jmp kernel_main
 
 # kernel_main()
 # <req> (*si == raw_buf.data)
 kernel_main:
-	call _sys_read_key
+	call read_key
 	call kbd_main
 
 	# {lp}

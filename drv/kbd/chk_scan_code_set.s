@@ -26,10 +26,6 @@ chk_scan_code_set:
 	# ok 0xFA
 	call ._ibf
 	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	# }}}
 
 	# {{{ get current scan code
@@ -41,10 +37,6 @@ chk_scan_code_set:
 	# ok 0xFA
 	call ._obf
 	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	# }}
 
 	# {{ sub cmd - get
@@ -55,19 +47,11 @@ chk_scan_code_set:
 	# ok 0xFA
 	call ._obf
 	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	# }}
 
 	# {{ get scan code
 	call ._obf
 	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	# }}
 	# }}}
 
@@ -78,10 +62,6 @@ chk_scan_code_set:
 	# ok 0xFA
 	call ._ibf
 	in $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	# }}}
 
 .done:

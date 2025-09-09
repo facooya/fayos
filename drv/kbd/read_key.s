@@ -9,47 +9,28 @@
 .global read_key
 
 # read_key()
+# <ret> al = ascii
 read_key:
 	push %si
-	push %di
 
 	mov $keymap, %si
-	mov %si, %di
 	xor %ax, %ax
 
+	call ._obf
+	in $0x60, %al
+
+	# scan_code to ascii
+	add %ax, %si
+	mov (%si), %al
+
+	# HACK
 	push %ax
-	call set_cursor2
-	add $0x02, %sp
-
-.lp:
-	call ._obf
+	call ._obf # 0xF0
 	in $0x60, %al
-
-	# (kd == end_key) ? {cont}
-	cmp $0xF0, %al
-	je .cont
-
-	# (sc == null) ? {skip} : {outc}
-	add %ax, %di
-	mov (%di), %al
-	test %al, %al
-	jz .skip
-	call outc2
-
-.skip:
-	xor %ax, %ax
-	mov %si, %di
-	jmp .lp
-
-.cont:
-	call ._obf
+	call ._obf # scan_code
 	in $0x60, %al
+	pop %ax
 
-	xor %ax, %ax
-	mov %si, %di
-	jmp .lp
-
-	pop %di
 	pop %si
 	ret
 

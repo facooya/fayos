@@ -28,7 +28,6 @@ drv/disk/read_disk3.s \
 drv/disk/write_disk2.s \
 \
 kernel/sys/_sys_disk.s \
-kernel/sys/_sys_kbd.s \
 kernel/sys/_sys_vid.s \
 kernel/sys/get_disp_size.s \
 \
