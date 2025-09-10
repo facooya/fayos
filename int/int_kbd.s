@@ -14,17 +14,10 @@
 # EOI 0x20
 # int $0x31
 int_kbd:
-	pusha
+	call read_key
+	call kbd_main
 
-	xor %ax, %ax
-	inb $0x60, %al
-
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-
+	# EOI
 	mov $0x20, %al
-	outb %al, $0x20
-
-	popa
+	out %al, $0x20
 	iret

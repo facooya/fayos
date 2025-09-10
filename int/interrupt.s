@@ -38,6 +38,9 @@ interrupt:
 	add $0x02, %sp
 	# }}}
 
+	mov $0x20, %al
+	out %al, $0x20
+
 	pop %bx
 	pop %es
 	iret
