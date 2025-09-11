@@ -10,8 +10,9 @@ LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
 SRCS = \
 kernel/kernel.s \
 \
+int/pic_init.s \
 int/interrupt.s \
-int/int_kbd.s \
+int/irq_kbd.s \
 \
 drv/disp/write.s \
 drv/disp/outc2.s \

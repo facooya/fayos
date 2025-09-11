@@ -4,9 +4,6 @@
 #
 # Fayos kernel
 
-# reference link
-# http://wiki.osdev.org/8259_PIC
-
 .section .data
 .kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
 
@@ -16,24 +13,20 @@
 
 # _start()
 _start:
-	call ._pic_init
-
-	# enable irq 1
-	in $0x21, %al
-	and $0xFD, %al
-	out %al, $0x21
+	call pic_init
+	#call ivt_init
 
 	# interrupt handler
 	xor %ax, %ax
 	mov %ax, %es
 
 	# irq 0
-	mov $interrupt, %es:(0x00C0)
-	mov %cs, %es:(0x00C2)
+	mov $interrupt, %es:(0x0080)
+	mov %cs, %es:(0x0082)
 
 	# irq 1
-	mov $int_kbd, %es:(0x00C4)
-	mov %cs, %es:(0x00C6)
+	mov $irq_kbd, %es:(0x0084)
+	mov %cs, %es:(0x0086)
 
 	call proc_super
 
@@ -58,47 +51,6 @@ _start:
 	call off_conf_byte_bit6
 	call chk_scan_code_set
 	jmp kernel_main
-
-._io_wait:
-	out %al, $0x80
-	ret
-
-# 0x20 PIC1
-# 0xA0 PIC2
-._pic_init:
-	# init
-	mov $0x11, %al # ICW1_INIT+ICW1_ICW4
-	out %al, $0x20
-	call ._io_wait
-	out %al, $0xA0
-	call ._io_wait
-
-	# IRQ remap
-	mov $0x30, %al # master PIC
-	out %al, $0x21
-	call ._io_wait
-	mov $0x38, %al # slave PIC
-	out %al, $0xA1
-	call ._io_wait
-
-	# connect
-	mov $0x04, %al
-	out %al, $0x21
-	call ._io_wait
-	mov $0x02, %al
-	out %al, $0xA1
-	call ._io_wait
-
-	mov $0x01, %al # ICW4_8086
-	out %al, $0x21
-	call ._io_wait
-	out %al, $0xA1
-	call ._io_wait
-
-	mov $0xFF, %al
-	out %al, $0x21
-	out %al, $0xA1
-	ret
 
 # kernel_main()
 # <req> (*si == raw_buf.data)
