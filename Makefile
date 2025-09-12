@@ -11,6 +11,7 @@ SRCS = \
 kernel/kernel.s \
 \
 int/pic_init.s \
+int/ivt_init.s \
 int/interrupt.s \
 int/irq_kbd.s \
 \

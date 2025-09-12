@@ -36,7 +36,7 @@ make
 Using `qemu` emulator in this guide.
 Emulator install:
 ```bash
-sudo apt qemu-system
+sudo apt install qemu-system
 ```
 
 Quick execute Fayos with qemu:

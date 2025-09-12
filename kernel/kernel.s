@@ -14,19 +14,7 @@
 # _start()
 _start:
 	call pic_init
-	#call ivt_init
-
-	# interrupt handler
-	xor %ax, %ax
-	mov %ax, %es
-
-	# irq 0
-	mov $interrupt, %es:(0x0080)
-	mov %cs, %es:(0x0082)
-
-	# irq 1
-	mov $irq_kbd, %es:(0x0084)
-	mov %cs, %es:(0x0086)
+	call ivt_init
 
 	call proc_super
 
