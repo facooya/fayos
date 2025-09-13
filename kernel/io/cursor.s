@@ -7,14 +7,15 @@
 .section .data
 .global cursor
 cursor:
-	.byte 0x00 # min
-	.byte 0x00 # max
+	.word 0x00 # min_pos
+	.word 0x00 # max_pos
 
 .section .text
 .code16
 .global get_cursor
 .global set_cursor
 .global init_cursor
+.global init_cursor2
 
 # get_cursor()
 # <ret> cx = scan_line
@@ -40,4 +41,11 @@ init_cursor:
 	mov %dl, (cursor)
 	mov %dl, (cursor+0x01)
 	pop %bx
+	ret
+
+# init_cursor2()
+init_cursor2:
+	call get_cursor2
+	mov %ax, (cursor)
+	mov %ax, (cursor+0x02)
 	ret

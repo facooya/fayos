@@ -8,11 +8,7 @@
 .code16
 .global irq_kbd
 
-# KD 0x60
-# KS 0x64
-# PIC 0x20
-# EOI 0x20
-# int $0x31
+# int $0x21
 irq_kbd:
 	call read_key
 	call kbd_main

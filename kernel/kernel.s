@@ -31,7 +31,7 @@ _start:
 	call outs
 	add $0x02, %sp
 
-	call init_cursor
+	call init_cursor2
 	mov $raw_buf, %si
 	add $0x02, %si
 

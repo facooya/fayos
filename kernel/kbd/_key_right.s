@@ -10,15 +10,17 @@
 
 # _key_right
 _key_right:
-	call get_cursor
+	call get_cursor2
 
 	# {end.done} (cursor.x == cursor.max)
-	cmp (cursor+0x01), %dl
+	cmp (cursor+0x02), %ax
 	je .done
 
 	# right cursor
-	add $0x01, %dl # cursor.x
-	call set_cursor
+	add $0x01, %ax
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
 
 	# ptr
 	add $0x01, %si # raw.data

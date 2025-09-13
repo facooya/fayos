@@ -11,7 +11,7 @@
 
 # kbd_main()
 # <req> al = ascii_code
-# <req> ax = scan_code
+# <req> ax = extend_key
 kbd_main:
 	# {{{
 	# {task} (ascii_code == bs)
@@ -25,19 +25,19 @@ kbd_main:
 
 	# {{{
 	# {task} (scan_code == left)
-	cmp $KEY_LEFT, %ax
+	cmp $0xE06B, %ax
 	je _key_left
 
 	# {task} (scan_code == right)
-	cmp $KEY_RIGHT, %ax
+	cmp $0xE074, %ax
 	je _key_right
 
 	# {task} (scan_code == up)
-	cmp $KEY_UP, %ax
+	cmp $0xE075, %ax
 	je _key_up
 
 	# {task} (scan_code == down)
-	cmp $KEY_DOWN, %ax
+	cmp $0xE072, %ax
 	je _key_down
 	# }}}
 
@@ -50,9 +50,9 @@ kbd_main:
 	mov %ax, (raw_buf)
 
 	# update cursor max
-	mov (cursor+0x01), %al # cursor.max
-	add $0x01, %al
-	mov %al, (cursor+0x01)
+	mov (cursor+0x02), %ax # cursor.max
+	add $0x01, %ax
+	mov %ax, (cursor+0x02)
 	pop %ax
 	# }}}
 
