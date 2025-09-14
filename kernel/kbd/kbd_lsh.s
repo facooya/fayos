@@ -52,20 +52,38 @@ kbd_lsh:
 
 .lsh__end:
 	# left cursor [d_lsh.2]
-	call get_cursor
-	sub $0x01, %dl # cursor.x
-	call set_cursor
-
-	# [d_lsh.3]
-	push %si
-	call outs
+	call get_cursor2
+	sub $0x01, %ax # cursor.x
+	push %ax # [s.1:curs_pos]
+	push %ax
+	call set_cursor2
 	add $0x02, %sp
 
+	push %si # [s.0:raw_buf]
+
+.outc__lp:
+	# [d_lsh.3]
+	mov (%si), %al
+	test %al, %al
+	jz .outc__end
+
+	call outc2
+
+	add $0x01, %si
+	jmp .outc__lp
+
+.outc__end:
+	pop %si # [s.0:raw_buf]
+
 	# overwrite [d_lsh.4]
-	call outsp
+	mov $0x20, %al # space
+	call outc2
 
 	# left cursor [d_lsh.5]
-	call set_cursor
+	pop %ax # [s.1:curs_pos]
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
 
 .done:
 	pop %di

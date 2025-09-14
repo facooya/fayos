@@ -62,7 +62,9 @@ kbd_main:
 	jnz .call_kbd_rsh
 
 	# {{{
+	push %ax # [s.0:ascii]
 	call outc2
+	pop %ax # [s.0:ascii]
 
 	# store chr
 	mov %al, -0x01(%si) # raw.data

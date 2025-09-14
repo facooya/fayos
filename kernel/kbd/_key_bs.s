@@ -11,15 +11,15 @@
 # _key_bs
 _key_bs:
 	# {end.done} (cursor.x == cursor.min)
-	call get_cursor
-	cmp (cursor), %dl
+	call get_cursor2
+	cmp (cursor), %ax
 	je .done
 
 	# {{{ pre-update
 	# dec cursor max
-	mov (cursor+0x01), %al # cursor.max
-	sub $0x01, %al
-	mov %al, (cursor+0x01)
+	mov (cursor+0x02), %ax # cursor.max
+	sub $0x01, %ax
+	mov %ax, (cursor+0x02)
 
 	# dec raw_buf
 	sub $0x01, %si # raw.data
@@ -35,15 +35,22 @@ _key_bs:
 
 	# {{{ [d_nsh]
 	# left cursor [d_nsh.1]
-	call get_cursor
-	sub $0x01, %dl # cursor.x
-	call set_cursor
+	call get_cursor2
+	sub $0x01, %ax # cursor.x
+	push %ax # [s.0:curs_pos]
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
 
 	# overwrite [d_nsh.2]
-	call outsp
+	mov $0x20, %al # space
+	call outc2
 
 	# left cursor [d_nsh.3]
-	call set_cursor
+	pop %ax # [s.0:curs_pos]
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
 
 	# {step} store null [d_nsh.4]
 	xor %al, %al
