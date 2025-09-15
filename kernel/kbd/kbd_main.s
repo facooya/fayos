@@ -63,7 +63,7 @@ kbd_main:
 
 	# {{{
 	push %ax # [s.0:ascii]
-	call outc2
+	call vga_putc
 	pop %ax # [s.0:ascii]
 
 	# store chr

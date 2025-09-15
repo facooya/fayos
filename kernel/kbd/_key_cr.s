@@ -13,7 +13,7 @@ _key_cr:
 	call exec_cmd
 
 	push $ps1
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	call init_cursor

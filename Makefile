@@ -15,8 +15,10 @@ int/ivt_init.s \
 int/interrupt.s \
 int/irq_kbd.s \
 \
+drv/vga/vga_putc.s \
+drv/vga/vga_puts.s \
+\
 drv/disp/write.s \
-drv/disp/outc2.s \
 drv/disp/get_cursor2.s \
 drv/disp/set_cursor2.s \
 \

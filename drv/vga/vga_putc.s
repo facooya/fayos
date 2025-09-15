@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Out character 2
+# Video put character
 
 .section .text
 .code16
-.global outc2
+.global vga_putc
 
-# outc2()
+# vga_putc()
 # <req> al = chr
-outc2:
+vga_putc:
 	push %es
 	push %di
 

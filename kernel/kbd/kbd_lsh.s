@@ -59,25 +59,13 @@ kbd_lsh:
 	call set_cursor2
 	add $0x02, %sp
 
-	push %si # [s.0:raw_buf]
-
-.outc__lp:
-	# [d_lsh.3]
-	mov (%si), %al
-	test %al, %al
-	jz .outc__end
-
-	call outc2
-
-	add $0x01, %si
-	jmp .outc__lp
-
-.outc__end:
-	pop %si # [s.0:raw_buf]
+	push %si
+	call vga_puts
+	add $0x02, %sp
 
 	# overwrite [d_lsh.4]
 	mov $0x20, %al # space
-	call outc2
+	call vga_putc
 
 	# left cursor [d_lsh.5]
 	pop %ax # [s.1:curs_pos]

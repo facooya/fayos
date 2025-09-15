@@ -44,7 +44,7 @@ _key_bs:
 
 	# overwrite [d_nsh.2]
 	mov $0x20, %al # space
-	call outc2
+	call vga_putc
 
 	# left cursor [d_nsh.3]
 	pop %ax # [s.0:curs_pos]
