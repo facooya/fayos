@@ -63,17 +63,19 @@ kbd_rsh:
 	sub $0x01, %di
 	mov %ah, (%di) # raw.data
 
-	call get_cursor
+	call get_cursor2
 
-	push %dx # cursor.pos
+	push %ax # [s.0:curs_pos]
 	push %di # raw.data
-	call outs
+	call vga_puts
 	add $0x02, %sp
-	pop %dx # cursor.pos
+	pop %ax # [s.0:curs_pos]
 
 	# restore cursor.pos
-	add $0x01, %dl # cursor.x
-	call set_cursor
+	add $0x01, %ax # cursor.x
+	push %ax
+	call set_cursor2
+	add $0x02, %sp
 
 	pop %di
 	ret
