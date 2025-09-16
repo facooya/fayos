@@ -11,8 +11,12 @@
 # int $0x21
 irq_kbd:
 	call read_key
+	test %ax, %ax
+	jz .pass
+
 	call kbd_main
 
+.pass:
 	# EOI
 	mov $0x20, %al
 	out %al, $0x20

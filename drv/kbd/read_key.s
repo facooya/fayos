@@ -17,6 +17,9 @@ read_key:
 	call ._obf
 	in $0x60, %al
 
+	cmp $0xF0, %al
+	je .skip
+
 	cmp $0xE0, %al
 	je .read_extend_key
 
@@ -25,14 +28,12 @@ read_key:
 	# scan_code to ascii
 	add %ax, %si
 	mov (%si), %al
+	jmp .done
 
-	# HACK
-	push %ax
-	call ._obf # 0xF0
+.skip:
+	call ._obf
 	in $0x60, %al
-	call ._obf # scan_code
-	in $0x60, %al
-	pop %ax
+	xor %ax, %ax
 	jmp .done
 
 .read_extend_key:
@@ -41,21 +42,20 @@ read_key:
 	call ._obf
 	in $0x60, %al
 
+	cmp $0xF0, %al
+	je .skip_extend
+
 	# extend_code
 	add %ax, %si
 	mov (%si), %al
 
-	# HACK
-	push %ax
-	call ._obf # 0xE0
-	in $0x60, %al
-	call ._obf # 0xF0
-	in $0x60, %al
-	call ._obf # scan_code
-	in $0x60, %al
-	pop %ax
-
 	mov $0xE0, %ah
+	jmp .done
+
+.skip_extend:
+	call ._obf
+	in $0x60, %al
+	xor %ax, %ax
 	jmp .done
 
 .done:
