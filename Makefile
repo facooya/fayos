@@ -35,7 +35,6 @@ drv/disk/write_disk2.s \
 \
 kernel/sys/_sys_disk.s \
 kernel/sys/_sys_vid.s \
-kernel/sys/get_disp_size.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
