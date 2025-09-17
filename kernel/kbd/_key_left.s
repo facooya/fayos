@@ -10,7 +10,7 @@
 
 # _key_left
 _key_left:
-	call get_cursor2
+	call vga_get_curs
 
 	# {end.done} (cursor.x == cursor.min)
 	cmp (cursor), %ax
@@ -19,7 +19,7 @@ _key_left:
 	# left cursor
 	sub $0x01, %ax
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	# ptr

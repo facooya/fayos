@@ -30,7 +30,7 @@ vga_clr:
 
 	xor %ax, %ax
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 .lp:

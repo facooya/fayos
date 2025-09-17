@@ -164,7 +164,7 @@ _key_up:
 	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor2
+	call vga_init_curs
 	# }}}
 
 	call _kbd_hist_line

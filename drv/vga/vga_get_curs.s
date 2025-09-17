@@ -2,36 +2,35 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Set cursor position
+# Get cursor position
 
 # reference link
 # http://wiki.osdev.org/Text_Mode_Cursor#Get_Cursor_Position
 
 .section .text
 .code16
-.global set_cursor2
+.global vga_get_curs
 
-# set_cursor2(pos)
-set_cursor2:
-	push %bp
-	mov %sp, %bp
+# vga_get_curs()
+# <ret> ax = pos
+# <info>
+# ax / width = y
+# ax % width = x
+vga_get_curs:
+	xor %ax, %ax
 
 	# high
 	mov $0x0E, %al
 	mov $0x03D4, %dx
 	out %al, %dx
 	mov $0x03D5, %dx
-	mov 0x04(%bp), %ax
-	mov %ah, %al
-	out %al, %dx
+	in %dx, %al
+	mov %al, %ah
 
 	# low
 	mov $0x0F, %al
 	mov $0x03D4, %dx
 	out %al, %dx
 	mov $0x03D5, %dx
-	mov 0x04(%bp), %ax
-	out %al, %dx
-
-	pop %bp
+	in %dx, %al
 	ret

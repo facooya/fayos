@@ -52,11 +52,11 @@ kbd_lsh:
 
 .lsh__end:
 	# left cursor [d_lsh.2]
-	call get_cursor2
+	call vga_get_curs
 	sub $0x01, %ax # cursor.x
 	push %ax # [s.1:curs_pos]
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	push %si
@@ -70,7 +70,7 @@ kbd_lsh:
 	# left cursor [d_lsh.5]
 	pop %ax # [s.1:curs_pos]
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 .done:

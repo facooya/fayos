@@ -11,7 +11,7 @@
 # _key_bs
 _key_bs:
 	# {end.done} (cursor.x == cursor.min)
-	call get_cursor2
+	call vga_get_curs
 	cmp (cursor), %ax
 	je .done
 
@@ -35,11 +35,11 @@ _key_bs:
 
 	# {{{ [d_nsh]
 	# left cursor [d_nsh.1]
-	call get_cursor2
+	call vga_get_curs
 	sub $0x01, %ax # cursor.x
 	push %ax # [s.0:curs_pos]
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	# overwrite [d_nsh.2]
@@ -49,7 +49,7 @@ _key_bs:
 	# left cursor [d_nsh.3]
 	pop %ax # [s.0:curs_pos]
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	# {step} store null [d_nsh.4]

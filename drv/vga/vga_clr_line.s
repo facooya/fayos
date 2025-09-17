@@ -18,7 +18,7 @@ vga_clr_line:
 	mov %ax, %es
 	xor %di, %di
 
-	call get_cursor2
+	call vga_get_curs
 
 	# get column
 	mov $0x044A, %bx
@@ -37,7 +37,7 @@ vga_clr_line:
 	add %ax, %di
 
 	push %ax
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	# get col

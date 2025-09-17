@@ -16,7 +16,7 @@ _key_cr:
 	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor2
+	call vga_init_curs
 
 	# {init.task}
 	push $raw_buf

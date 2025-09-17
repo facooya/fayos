@@ -90,7 +90,7 @@ _key_down:
 	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor2
+	call vga_init_curs
 
 .disp:
 	mov $raw_buf, %si
@@ -198,7 +198,7 @@ _key_down:
 	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor2
+	call vga_init_curs
 	# }}}
 
 	call _kbd_hist_line

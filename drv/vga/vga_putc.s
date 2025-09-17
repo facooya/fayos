@@ -20,7 +20,7 @@ vga_putc:
 	mov $0x8000, %di
 
 	push %ax # [s.0:chr]
-	call get_cursor2
+	call vga_get_curs
 	mov %ax, %dx
 	add %dx, %di
 	add %dx, %di
@@ -37,7 +37,7 @@ vga_putc:
 
 	add $0x01, %dx
 	push %dx
-	call set_cursor2
+	call vga_set_curs
 	add $0x02, %sp
 
 	pop %di
