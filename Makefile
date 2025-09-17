@@ -58,7 +58,6 @@ kernel/mem/alloc_mem.s \
 kernel/mem/free_mem.s \
 \
 kernel/disp/clear_disp.s \
-kernel/disp/clear_line_disp.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \
