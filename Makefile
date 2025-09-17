@@ -17,6 +17,7 @@ int/irq_kbd.s \
 \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
+drv/vga/vga_clr.s \
 drv/vga/vga_clr_line.s \
 \
 drv/disp/write.s \
@@ -56,8 +57,6 @@ kernel/disk/set_dap_blk_lba.s \
 kernel/mem/mem.s \
 kernel/mem/alloc_mem.s \
 kernel/mem/free_mem.s \
-\
-kernel/disp/clear_disp.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \

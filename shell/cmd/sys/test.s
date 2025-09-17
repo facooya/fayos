@@ -10,7 +10,7 @@
 
 # cmd_test()
 cmd_test:
-	#call vga_clr_line
+	#call vga_clr
 	#call off_conf_byte_bit6
 	#call chk_scan_code_set
 
