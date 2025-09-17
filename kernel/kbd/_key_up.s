@@ -158,13 +158,13 @@ _key_up:
 	call bufzero
 	add $0x02, %sp
 
-	call clear_line_disp
+	call vga_clr_line
 
 	push $ps1
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor
+	call init_cursor2
 	# }}}
 
 	call _kbd_hist_line

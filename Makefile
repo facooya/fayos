@@ -17,6 +17,7 @@ int/irq_kbd.s \
 \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
+drv/vga/vga_clr_line.s \
 \
 drv/disp/write.s \
 drv/disp/get_cursor2.s \

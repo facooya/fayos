@@ -75,9 +75,9 @@ _kbd_hist_line:
 	add $0x02, %si # skip len
 
 	push %cx
-	mov (cursor), %al # cursor.min
-	add %al, %cl
-	mov %cl, (cursor+0x01) # update cursor.max
+	mov (cursor), %ax # cursor.min
+	add %ax, %cx
+	mov %cx, (cursor+0x02) # update cursor.max
 	pop %cx
 
 .disp__lp:

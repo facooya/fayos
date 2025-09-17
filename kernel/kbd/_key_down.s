@@ -84,13 +84,13 @@ _key_down:
 	call bufcpy
 	add $0x04, %sp
 
-	call clear_line_disp
+	call vga_clr_line
 
 	push $ps1
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor
+	call init_cursor2
 
 .disp:
 	mov $raw_buf, %si
@@ -98,9 +98,9 @@ _key_down:
 	add $0x02, %si # skip len
 
 	push %cx
-	mov (cursor), %al # cursor.min
-	add %al, %cl
-	mov %cl, (cursor+0x01) # update cursor.max
+	mov (cursor), %ax # cursor.min
+	add %ax, %cx
+	mov %cx, (cursor+0x02) # update cursor.max
 	pop %cx
 
 .disp__lp:
@@ -109,7 +109,7 @@ _key_down:
 	test %cx, %cx
 	jz .disp__end
 
-	call outc
+	call vga_putc
 
 	add $0x01, %si
 	sub $0x01, %cx
@@ -192,13 +192,13 @@ _key_down:
 	call bufzero
 	add $0x02, %sp
 
-	call clear_line_disp
+	call vga_clr_line
 
 	push $ps1
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
-	call init_cursor
+	call init_cursor2
 	# }}}
 
 	call _kbd_hist_line
