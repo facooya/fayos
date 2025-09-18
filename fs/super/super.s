@@ -38,7 +38,7 @@ proc_super:
 	jne .run_make
 
 	push $.kmsg_found
-	call outs
+	call vga_puts
 	add $0x02, %sp
 	# }}}
 	
@@ -48,7 +48,7 @@ proc_super:
 # {TASK}
 .run_make:
 	push $.kmsg_try
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	# {{{ write superblock disk
@@ -93,7 +93,7 @@ proc_super:
 # {DONE}
 .done:
 	push $.kmsg_ok
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	pop %bx

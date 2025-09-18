@@ -20,9 +20,15 @@ dbg_buf:
 	push %bx
 	push %cx
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	mov 0x04(%bp), %si
 	mov (%si), %cx # buf.len
@@ -30,13 +36,22 @@ dbg_buf:
 
 	mov %cx, %ax # buf.len
 	add $0x30, %al
-	call outc
-	call outnl
+	call vga_putc
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	call ._data
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	pop %cx
 	pop %bx
@@ -55,26 +70,37 @@ dbg_redir_buf:
 	push %si
 	push %di
 	push %bx
+	push %cx
 
 	mov $redir_buf, %si
 	mov (%si), %cx # redir.hdr
 	
 	# {{{ out
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	# type
 	mov %ch, %al # redir.type
 	add $0x30, %al
-	call _sys_tty_out
-	call outcol
+	call vga_putc
+	mov $CHR_COL, %al
+	call vga_putc
 
 	# len
 	mov %cl, %al # redir.len
 	add $0x30, %al
-	call _sys_tty_out
-	call outnl
+	call vga_putc
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	# }}}
 
 	# {{{
@@ -85,14 +111,21 @@ dbg_redir_buf:
 	mov %al, %cl # redir.len
 	call ._data
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	# }}}
 
 	pop %si
 	pop %di
 	pop %bx
+	pop %cx
 	ret
 
 # {TASK}
@@ -112,17 +145,17 @@ dbg_redir_buf:
 	test %al, %al
 	jz ._data__nul
 
-	call _sys_tty_out
+	call vga_putc
 	jmp ._data__chk
 
 ._data__sp:
 	mov $CHR_PRD, %al
-	call _sys_tty_out
+	call vga_putc
 	jmp ._data__chk
 
 ._data__nul:
 	mov $CHR_ZERO, %al
-	call _sys_tty_out
+	call vga_putc
 	jmp ._data__chk
 
 ._data__chk:

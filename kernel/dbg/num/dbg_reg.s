@@ -4,6 +4,7 @@
 #
 # Debug register - show register value
 
+.include "chr.s"
 .section .data
 .outnum: .zero 0x05
 
@@ -59,11 +60,14 @@ dbg_reg:
 
 .end:
 	push $.outnum
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	pop %cx
 	pop %bx

@@ -4,6 +4,7 @@
 #
 # Execute command
 
+.include "chr.s"
 .section .text
 .code16
 .global exec_cmd
@@ -14,7 +15,10 @@ exec_cmd:
 	push %di
 	push %bx
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	# {end.done} (ret.code != 0)
 	call proc_args
@@ -127,7 +131,7 @@ exec_cmd:
 	add $0x02, %si # skip len
 
 	push %si
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	# {end.done}
@@ -170,7 +174,10 @@ exec_cmd:
 	jmp .err_hdl
 
 .err_hdl:
-	call outs
+	call vga_puts
 	add $0x02, %sp
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	jmp .done

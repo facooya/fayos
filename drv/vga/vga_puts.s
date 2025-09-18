@@ -13,6 +13,7 @@ vga_puts:
 	push %bp
 	mov %sp, %bp
 	push %si
+	push %ax
 
 	mov 0x04(%bp), %si
 
@@ -27,6 +28,7 @@ vga_puts:
 	jmp .lp
 
 .end:
+	pop %ax
 	pop %si
 	pop %bp
 	ret

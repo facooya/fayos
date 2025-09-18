@@ -30,7 +30,6 @@ drv/disk/read_disk3.s \
 drv/disk/write_disk2.s \
 \
 kernel/sys/_sys_disk.s \
-kernel/sys/_sys_vid.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
@@ -55,8 +54,6 @@ kernel/mem/free_mem.s \
 \
 kernel/io/buf.s \
 kernel/io/cursor.s \
-kernel/io/outs.s \
-kernel/io/out_utils.s \
 \
 kernel/lib/bufcpy.s \
 kernel/lib/bufzero.s \

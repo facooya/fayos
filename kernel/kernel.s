@@ -4,6 +4,7 @@
 #
 # Fayos kernel
 
+.include "chr.s"
 .section .data
 .kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
 
@@ -19,16 +20,19 @@ _start:
 	call proc_super
 
 	push $.kmsg_welcome
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	call init_ps1
 	call build_ps1
 
 	push $ps1
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	call vga_init_curs

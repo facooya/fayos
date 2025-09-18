@@ -23,9 +23,15 @@ dbg_paths:
 	push %cx
 	push %dx
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	# {{{ pathc
 	mov $paths, %si
@@ -33,13 +39,17 @@ dbg_paths:
 	add $0x02, %si
 
 	push $.pathc_str
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	mov %cx, %ax
 	add $0x30, %al
-	call outc
-	call outnl
+	call vga_putc
+
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	# }}}
 
 	xor %dx, %dx # pathv idx
@@ -47,15 +57,15 @@ dbg_paths:
 .lp:
 	# {{{ pathv idx
 	push $.pathv_str
-	call outs
+	call vga_puts
 	add $0x02, %sp
 
 	mov %dl, %al
 	add $0x30, %al
-	call outc
+	call vga_putc
 
 	push $.pathv_end_str
-	call outs
+	call vga_puts
 	add $0x02, %sp
 	# }}}
 
@@ -67,7 +77,7 @@ dbg_paths:
 	add %ax, %di
 
 	push %di
-	call outs
+	call vga_puts
 	add $0x02, %sp
 	# }}}
 
@@ -79,13 +89,22 @@ dbg_paths:
 	# (pathc == 0) ? {end} : {lp}
 	test %cx, %cx
 	jz .end
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	jmp .lp
 
 .end:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	pop %dx
 	pop %cx

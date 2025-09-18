@@ -269,17 +269,26 @@ tok_args:
 
 # {ERR}
 .err_qt_no:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_qt_no
 	jmp .err_hdl
 
 .err_tok_syn:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_tok_syn
 	jmp .err_hdl
 
 .err_hdl:
-	call outs
+	call vga_puts
 	add $0x02, %sp
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	jmp .exit

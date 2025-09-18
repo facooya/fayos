@@ -13,17 +13,22 @@
 vga_putc:
 	push %es
 	push %di
+	push %dx
 
 	# init
-	mov $0xB000, %dx
-	mov %dx, %es
-	mov $0x8000, %di
-
 	push %ax # [s.0:chr]
+	mov $0xB800, %ax
+	mov %ax, %es
+	xor %di, %di
+
 	call vga_get_curs
-	mov %ax, %dx
-	add %dx, %di
-	add %dx, %di
+	add %ax, %di # curs_pos
+	add %ax, %di
+
+	add $0x01, %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
 	pop %ax # [s.0:chr]
 
 	# out
@@ -35,11 +40,7 @@ vga_putc:
 	mov %al, %es:(%di)
 	add $0x01, %di
 
-	add $0x01, %dx
-	push %dx
-	call vga_set_curs
-	add $0x02, %sp
-
+	pop %dx
 	pop %di
 	pop %es
 	ret

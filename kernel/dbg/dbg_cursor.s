@@ -4,6 +4,7 @@
 #
 # Debug cursor
 
+.include "chr.s"
 .section .text
 .code16
 .global dbg_cursor
@@ -14,21 +15,33 @@ dbg_cursor:
 	
 	mov $cursor, %si
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	mov (%si), %al
 	add $0x30, %al
-	call outc
+	call vga_putc
 
 	mov 0x01(%si), %al
 	add $0x30, %al
-	call outc
+	call vga_putc
 
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	pop %si
 	ret

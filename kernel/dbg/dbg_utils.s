@@ -21,7 +21,7 @@ dbg_line:
 	jz .done
 
 	mov $CHR_EQ, %al
-	call _sys_tty_out
+	call vga_putc
 
 	# {lp}
 	sub $0x01, %cx

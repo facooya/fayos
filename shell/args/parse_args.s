@@ -266,32 +266,50 @@ parse_args:
 
 # {ERR}
 .err_cmd_syn:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_cmd_syn
 	jmp .err_hdl
 
 .err_opt_syn:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_opt_syn
 	jmp .err_hdl
 
 .err_redir_type:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_redir_type
 	jmp .err_hdl
 
 .err_redir_req:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_redir_req
 	jmp .err_hdl
 
 .err_redir_extra:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	push $emsg_redir_extra
 	jmp .err_hdl
 
 .err_hdl:
-	call outs
+	call vga_puts
 	add $0x02, %sp
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	jmp .exit

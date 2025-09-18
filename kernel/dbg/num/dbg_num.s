@@ -4,6 +4,7 @@
 #
 # Debug number - show number value
 
+.include "chr.s"
 .section .text
 .code16
 .global dbg_num
@@ -24,20 +25,23 @@ dbg_num:
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
-	call outc
+	call vga_putc
 	mov %dl, %al
-	call outc
+	call vga_putc
 
 	mov (%si), %dx
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
-	call outc
+	call vga_putc
 	mov %dl, %al
-	call outc
+	call vga_putc
 
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	pop %dx
 	pop %ax

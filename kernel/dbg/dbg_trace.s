@@ -4,6 +4,7 @@
 #
 # Debug trace
 
+.include "chr.s"
 .section .text
 .code16
 .global dbg_a
@@ -29,15 +30,23 @@ dbg_c:
 	jmp .done
 
 .done:
-	call _sys_tty_out
-	call outsp
+	call vga_putc
+	mov $CHR_SP, %al
+	call vga_putc
 	call dbg_line
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	pop %ax
 	ret
 
 ._prol:
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	call dbg_line
-	call outsp
+	mov $CHR_SP, %al
+	call vga_putc
 	ret

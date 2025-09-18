@@ -4,6 +4,7 @@
 #
 # Disk read/write
 
+.include "chr.s"
 .section .text
 .code16
 .global read_disk
@@ -53,7 +54,10 @@ write_disk:
 # {ERR}
 .err_disk_io:
 	push $emsg_disk_io
-	call outs
+	call vga_puts
 	add $0x02, %sp
-	call outnl
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 	jmp .exit
