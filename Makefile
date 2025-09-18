@@ -1,12 +1,7 @@
-BUILD = ./build
-
-AS = as --32
-LD_BOOT = ld --oformat binary -m elf_i386 -Ttext 0x7C00
-LD_KERNEL = ld -m elf_i386 -T ./tools/linker.ld
-
 # Don't reposition "kernel/kernel.s",
 # This file always first location in Fayos.
-# kernel_addr: segment:offset = 0x0000:0x1000
+# Kernel address - segment:offset = 0x0000:0x1000
+
 SRCS = \
 kernel/kernel.s \
 \
@@ -159,36 +154,37 @@ lib/str/memcpy.s \
 lib/str/memset.s \
 lib/str/strlen.s
 
-OBJS = $(SRCS:%.s=$(BUILD)/%.o)
+OBJS = $(SRCS:%.s=./build/%.o)
 
 # ALL
-all: $(BUILD)/fayos.img
+all: ./build/fayos.img
 
-$(BUILD)/fayos.img: $(BUILD)/boot.bin $(BUILD)/kernel.bin | $(BUILD)
-	dd if=/dev/zero of=$(BUILD)/fayos.img bs=512 count=20480
-	dd if=$(BUILD)/boot.bin of=$(BUILD)/fayos.img bs=512 count=1 conv=notrunc
-	dd if=$(BUILD)/kernel.bin of=$(BUILD)/fayos.img bs=512 seek=16 conv=notrunc
+./build/fayos.img: ./build/boot.bin ./build/kernel.bin | ./build/
+	dd if=/dev/zero of=./build/fayos.img bs=512 count=20480
+	dd if=./build/boot.bin of=./build/fayos.img bs=512 count=1 conv=notrunc
+	dd if=./build/kernel.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
 
-$(BUILD)/boot.bin: ./boot/boot.s | $(BUILD)
-	$(AS) -Iboot ./boot/boot.s -o $(BUILD)/boot.o
-	$(LD_BOOT) $(BUILD)/boot.o -o $(BUILD)/boot.bin
+./build/boot.bin: ./boot/boot.s | ./build/
+	as --32 -Iboot ./boot/boot.s -o ./build/boot.o
+	ld --oformat binary -m elf_i386 -Ttext 0x7C00 ./build/boot.o -o ./build/boot.bin
 
-$(BUILD)/kernel.bin: $(OBJS) | $(BUILD)
-	$(LD_KERNEL) $(OBJS) -o $(BUILD)/kernel.bin
+./build/kernel.bin: $(OBJS) | ./build/
+	ld -m elf_i386 -T ./tools/linker.ld $(OBJS) -o ./build/kernel.bin
 
-$(BUILD)/%.o: %.s | $(BUILD)
+./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)
-	$(AS) -Iinclude $< -o $@
+	as --32 -Iinclude $< -o $@
 
-$(BUILD):
+./build/:
 	mkdir -p $@
 
 # CLEAN
 clean:
-	find $(BUILD) -name "*.bin" -delete
-	find $(BUILD) -name "*.o" -delete
-	find $(BUILD) -type d -empty -delete
+	find ./build/ -name "*.bin" -delete
+	find ./build/ -name "*.o" -delete
+	find ./build/ -name "bochslog" -delete
+	find ./build/ -type d -empty -delete
 
 clean_all: clean
-	find $(BUILD) -name "*.img" -delete
-	find $(BUILD) -type d -empty -delete
+	find ./build/ -name "*.img" -delete
+	find ./build/ -type d -empty -delete
