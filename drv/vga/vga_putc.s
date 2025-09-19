@@ -4,6 +4,7 @@
 #
 # Video put character
 
+.include "chr.s"
 .section .text
 .code16
 .global vga_putc
@@ -13,7 +14,14 @@
 vga_putc:
 	push %es
 	push %di
+	push %bx
 	push %dx
+
+	# esc chrs
+	cmp $CHR_CR, %al
+	je .chr__cr
+	cmp $CHR_LF, %al
+	je .chr__lf
 
 	# init
 	push %ax # [s.0:chr]
@@ -39,8 +47,48 @@ vga_putc:
 	mov $0x07, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
+	jmp .done
 
+.chr__cr:
+	call vga_get_curs
+
+	# vga col
+	mov $0x044A, %bx
+	mov (%bx), %cx # col
+	mov %ax, %bx # curs_pos
+
+	# [curs_pos - (curs_pos % col)]
+	xor %dx, %dx
+	div %cx
+	sub %dx, %bx
+
+	push %bx
+	call vga_set_curs
+	add $0x02, %sp
+	jmp .done
+
+.chr__lf:
+	call vga_get_curs
+
+	# vga col
+	mov $0x044A, %bx
+	mov (%bx), %cx # col
+	mov %ax, %bx # curs_pos
+
+	# [curs_pos - (curs_pos % col) + col]
+	xor %dx, %dx
+	div %cx
+	sub %dx, %bx
+	add %cx, %bx
+
+	push %bx
+	call vga_set_curs
+	add $0x02, %sp
+	jmp .done
+
+.done:
 	pop %dx
+	pop %bx
 	pop %di
 	pop %es
 	ret

@@ -1,7 +1,6 @@
 # Roadmap
 ## WIP
 - without bios
-- make interrupt
 
 ## Feature
 - Tab: autocomplete file or dir

@@ -23,10 +23,10 @@ _start:
 	call vga_puts
 	add $0x02, %sp
 
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
+	#mov $CHR_CR, %al
+	#call vga_putc
+	#mov $CHR_LF, %al
+	#call vga_putc
 
 	call init_ps1
 	call build_ps1
