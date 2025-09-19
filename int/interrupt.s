@@ -16,10 +16,6 @@ interrupt:
 	push %es
 	push %bx
 
-	push $.str
-	call write
-	add $0x02, %sp
-
 	# {{{ column
 	mov $0x044A, %bx
 	mov (%bx), %ax

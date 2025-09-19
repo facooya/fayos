@@ -10,6 +10,9 @@ int/ivt_init.s \
 int/interrupt.s \
 int/irq_kbd.s \
 \
+drv/ata/ata_read_sect.s \
+drv/ata/ata_read_blk.s \
+\
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
 drv/vga/vga_clr.s \
@@ -17,8 +20,6 @@ drv/vga/vga_clr_line.s \
 drv/vga/vga_init_curs.s \
 drv/vga/vga_get_curs.s \
 drv/vga/vga_set_curs.s \
-\
-drv/disp/write.s \
 \
 drv/kbd/chk_scan_code_set.s \
 drv/kbd/off_conf_byte_bit6.s \

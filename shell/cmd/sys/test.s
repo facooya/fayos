@@ -10,12 +10,6 @@
 
 # cmd_test()
 cmd_test:
-	#call vga_clr
-	#call off_conf_byte_bit6
-	#call chk_scan_code_set
-
-	#call read_key
-	#call read_disk2
-	#call write_disk2
-	#call read_disk3
+	call ata_read_blk
+	hlt
 	ret
