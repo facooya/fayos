@@ -28,10 +28,6 @@ drv/kbd/off_conf_byte_bit6.s \
 drv/kbd/read_key.s \
 drv/kbd/keymap.s \
 \
-drv/disk/read_disk2.s \
-drv/disk/read_disk3.s \
-drv/disk/write_disk2.s \
-\
 kernel/sys/_sys_disk.s \
 \
 kernel/kbd/kbd_main.s \

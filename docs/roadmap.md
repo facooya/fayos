@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- disk without bios
+- enter key if last line, shift up
 
 ## Feature
 - Tab: autocomplete file or dir
