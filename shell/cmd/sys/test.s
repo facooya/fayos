@@ -11,5 +11,4 @@
 # cmd_test()
 cmd_test:
 	call ata_read_blk
-	hlt
 	ret

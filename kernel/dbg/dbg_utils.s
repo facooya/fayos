@@ -13,6 +13,7 @@
 dbg_line:
 	push %ax
 	push %cx
+	push %dx
 	mov $0x05, %cx
 
 .lp:
@@ -28,6 +29,7 @@ dbg_line:
 	jmp .lp
 
 .done:
+	pop %dx
 	pop %cx
 	pop %ax
 	ret

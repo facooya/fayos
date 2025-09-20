@@ -13,7 +13,7 @@
 
 # ata_read_sect(
 # seg, off,
-# lba_hi, lba_mid, lba_lo,
+# lba_hi, lba_lo,
 # sect_cnt)
 ata_read_sect:
 	push %bp
@@ -22,6 +22,10 @@ ata_read_sect:
 	push %di
 	push %bx
 
+	mov 0x04(%bp), %ax
+	mov %ax, %es
+	mov 0x06(%bp), %di
+
 	# set mode
 	mov $0x01F6, %dx
 	mov $0xE0, %al # 0b11100000
@@ -29,17 +33,17 @@ ata_read_sect:
 
 	# sector count
 	mov $0x01F2, %dx
-	mov 0x0E(%bp), %ax # sect_cnt
-	xor %ax, %bx # sect_cnt
+	mov 0x0C(%bp), %ax # sect_cnt
+	mov %ax, %bx # sect_cnt
 	out %al, %dx
 
 	# {{{ LBA
 	mov $0x01F3, %dx
-	mov 0x0C(%bp), %ax # lba_lo
+	mov 0x0A(%bp), %ax # lba_lo
 	out %al, %dx
 
 	mov $0x01F4, %dx
-	mov 0x0A(%bp), %ax # lba_mid
+	mov %ah, %al # lba_mid
 	out %al, %dx
 
 	mov $0x01F5, %dx
@@ -51,14 +55,10 @@ ata_read_sect:
 	mov $0x01F7, %dx
 	mov $0x20, %al
 	out %al, %dx
-
-	mov 0x04(%bp), %ax
-	mov %ax, %es
-	mov 0x06(%bp), %di
 	jmp .drq__lp
 
 .sect__lp:
-	mov $0x01F0, %dx
+	mov $0x01F7, %dx
 
 .drq__lp:
 	in %dx, %al
@@ -79,14 +79,6 @@ ata_read_sect:
 	# load
 	in %dx, %ax
 	mov %ax, %es:(%di)
-
-	push %cx
-	push %dx
-	push %ax
-	call dbg_reg
-	pop %ax
-	pop %dx
-	pop %cx
 
 	# {lp}
 	sub $0x01, %cx

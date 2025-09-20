@@ -20,6 +20,7 @@ dbg_reg:
 	push %ax
 	push %bx
 	push %cx
+	push %dx
 
 	call dbg_line
 	
@@ -69,6 +70,7 @@ dbg_reg:
 	mov $CHR_LF, %al
 	call vga_putc
 
+	pop %dx
 	pop %cx
 	pop %bx
 	pop %ax
