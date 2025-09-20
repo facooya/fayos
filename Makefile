@@ -12,6 +12,8 @@ int/irq_kbd.s \
 \
 drv/ata/ata_read_sect.s \
 drv/ata/ata_read_blk.s \
+drv/ata/ata_write_sect.s \
+drv/ata/ata_write_blk.s \
 \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \

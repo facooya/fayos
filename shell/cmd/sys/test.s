@@ -11,4 +11,6 @@
 # cmd_test()
 cmd_test:
 	call ata_read_blk
+	call ata_write_blk
+	call ata_read_blk
 	ret

@@ -14,7 +14,8 @@
 # ata_read_sect(
 # seg, off,
 # lba_hi, lba_lo,
-# sect_cnt)
+# sect_cnt
+# )
 ata_read_sect:
 	push %bp
 	mov %sp, %bp
@@ -86,6 +87,12 @@ ata_read_sect:
 	jmp .data__lp
 
 .data__end:
+.bsy__lp:
+	mov $0x01F7, %dx
+	in %dx, %al
+	test $0x80, %al
+	jnz .bsy__lp
+
 	# (sect_cnt == 0) ? {done} : {sec.lp}
 	test %bx, %bx
 	jz .done

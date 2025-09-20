@@ -18,7 +18,7 @@ ata_read_blk:
 	# mov 0x08(%bp), %ax
 
 	push $0x08 # sect_cnt
-	push $0x80 # lba_lo
+	push $0xA0 # lba_lo
 	push $0x00 # lba_hi
 	mov 0x06(%bp), %ax
 	xor %ax, %ax
