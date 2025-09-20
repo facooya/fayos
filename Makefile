@@ -22,6 +22,7 @@ drv/vga/vga_clr_line.s \
 drv/vga/vga_init_curs.s \
 drv/vga/vga_get_curs.s \
 drv/vga/vga_set_curs.s \
+drv/vga/vga_shu.s \
 \
 drv/kbd/chk_scan_code_set.s \
 drv/kbd/off_conf_byte_bit6.s \

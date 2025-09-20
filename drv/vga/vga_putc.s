@@ -15,7 +15,6 @@ vga_putc:
 	push %es
 	push %di
 	push %bx
-	push %dx
 
 	# esc chrs
 	cmp $CHR_CR, %al
@@ -81,14 +80,32 @@ vga_putc:
 	sub %dx, %bx
 	add %cx, %bx
 
+	# calc max_curs
+	push %bx # [s.c0:curs_pos]
+	mov $0x044A, %bx
+	mov (%bx), %cx
+	xor %ax, %ax
+	mov $0x0484, %bx
+	mov (%bx), %al
+	add $0x01, %al
+	mul %cx
+	pop %bx # [s.c0:curs_pos]
+
+	# (curs_pos >= max_curs) : {call.vga_shu}
+	cmp %ax, %bx
+	jge .call__vga_shu
+
 	push %bx
 	call vga_set_curs
 	add $0x02, %sp
 	jmp .done
 
 .done:
-	pop %dx
 	pop %bx
 	pop %di
 	pop %es
 	ret
+
+.call__vga_shu:
+	call vga_shu
+	jmp .done

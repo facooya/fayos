@@ -1,6 +1,7 @@
 # Roadmap
 ## WIP
-- enter key if last line, shift up
+- replace all by ata
+- replace equ
 
 ## Feature
 - Tab: autocomplete file or dir
