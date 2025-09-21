@@ -78,8 +78,7 @@ ata_write_sect:
 	jz .data__end
 
 	# store
-	# mov %es:(%di), %ax
-	mov $0x61, %ax
+	mov %es:(%di), %ax
 	out %ax, %dx
 
 	# {lp}

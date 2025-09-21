@@ -4,31 +4,48 @@
 #
 # Write block
 
+.include "fayfs/super.s"
 .section .text
 .code16
 .global ata_write_blk
 
-# ata_write_blk(seg, off, blknum)
+# ata_write_blk(seg, off, *blknum)
 ata_write_blk:
 	push %bp
 	mov %sp, %bp
+	push %si
+	push %bx
 
 	# TODO: allocate memory seg:off - es:di
-	# TODO: blknum to LBA
-	# mov 0x08(%bp), %ax
+	mov 0x08(%bp), %si
 
+	# TODO: blknum hi lo calc
+	mov (%si), %ax
+	xor %dx, %dx
+	mov $0x08, %cx
+	mul %cx
+
+	# [lba_lo + NORM_LBA]
+	mov $S_OFF_MEM, %bx
+	mov NORM_LBA_OFF(%bx), %cx
+	clc
+	add %cx, %ax
+	jnc .ncf
+	add $0x01, %dx
+
+.ncf:
 	push $0x08 # sect_cnt
-	push $0xA0 # lba_lo
-	push $0x00 # lba_hi
+	push %ax # lba_lo
+	push %dx # lba_hi
 	mov 0x06(%bp), %ax
-	xor %ax, %ax
 	push %ax # off
 	mov 0x04(%bp), %ax
-	mov $0x2000, %ax
 	push %ax # seg
 	call ata_write_sect
 	add $0x0A, %sp
 
 .done:
+	pop %bx
+	pop %si
 	pop %bp
 	ret

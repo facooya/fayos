@@ -4,13 +4,20 @@
 #
 # Command test - temporary debug and test runtime
 
+.section .data
+.blknum: .long 0x01
+
 .section .text
 .code16
 .global cmd_test
 
 # cmd_test()
 cmd_test:
-	call ata_read_blk
+	push $.blknum
+	xor %ax, %ax
+	push %ax
+	mov $0x1000, %ax
+	push %ax
 	call ata_write_blk
-	call ata_read_blk
+	add $0x06, %sp
 	ret
