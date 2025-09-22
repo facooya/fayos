@@ -30,8 +30,6 @@ drv/kbd/off_conf_byte_bit6.s \
 drv/kbd/read_key.s \
 drv/kbd/keymap.s \
 \
-kernel/sys/_sys_disk.s \
-\
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
 kernel/kbd/kbd_rsh.s \
@@ -44,7 +42,6 @@ kernel/kbd/_key_right.s \
 kernel/kbd/_key_up.s \
 kernel/kbd/_kbd_hist_line.s \
 \
-kernel/disk/disk.s \
 kernel/disk/dap.s \
 kernel/disk/dap_utils.s \
 kernel/disk/set_dap_blk_lba.s \

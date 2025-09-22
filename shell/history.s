@@ -36,9 +36,18 @@ history:
 	call set_dap_blk_lba
 	add $0x02, %sp
 
-	push $dap
-	call read_disk
-	add $0x02, %sp
+	mov $dap, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -109,9 +118,18 @@ history:
 	call set_dap_blk_lba
 	add $0x02, %sp
 
-	push $dap
-	call read_disk
-	add $0x02, %sp
+	mov $dap, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -149,11 +167,21 @@ history:
 	call set_dap_blk_lba
 	add $0x02, %sp
 
-	push $dap
-	call read_disk
-	add $0x02, %sp
-	mov %ax, %bx # mem
+	mov $dap, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov %ax, %bx
 	mov %dx, %es
+
 	pop %ax # [s.2] file_size
 	add %ax, %bx
 	push %ax # [s.3] file_size
@@ -189,9 +217,18 @@ history:
 	add $0x02, %cx # his.len
 	push %cx # [s.5] his.len
 
-	push $dap
-	call write_disk
-	add $0x02, %sp
+	mov $dap, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 
 	# {{{ update .history size
 	push $inode

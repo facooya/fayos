@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- replace all by ata
 - replace equ
 
 ## Feature
@@ -33,3 +32,4 @@
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
+- replace dap
