@@ -26,6 +26,17 @@ proc_super:
 	mov %ax, %bx
 	mov %dx, %es
 
+	#push $0x01 # sect_cnt
+	#push $0x01 # lba_lo
+	#xor %ax, %ax
+	#push %ax # lba_hi
+	#mov $0x0600, %ax
+	#push %ax # off
+	#xor %ax, %ax
+	#push %ax # seg
+	#call ata_read_sect
+	#add $0x0A, %sp
+
 	# {{{ check superblock
 	# {task} (disk_magic_low != magic_low)
 	mov %es:S_MAG_OFF(%bx), %ax
@@ -54,7 +65,9 @@ proc_super:
 	# {{{ write superblock disk
 	mov %bx, %si
 	add $DP_BUF_OFF, %si
-	call _sys_read_disk_param
+	call ata_get_sect
+	mov %ax, 0x10(%si) # HACK
+	mov %dx, 0x12(%si) # HACK
 
 	call _super_alloc_lba
 	call _super_write_data

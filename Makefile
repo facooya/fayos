@@ -10,6 +10,7 @@ int/ivt_init.s \
 int/interrupt.s \
 int/irq_kbd.s \
 \
+drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \
 drv/ata/ata_read_blk.s \
 drv/ata/ata_write_sect.s \

@@ -13,11 +13,5 @@
 
 # cmd_test()
 cmd_test:
-	push $.blknum
-	xor %ax, %ax
-	push %ax
-	mov $0x1000, %ax
-	push %ax
-	call ata_write_blk
-	add $0x06, %sp
+	#call ata_get_sect
 	ret
