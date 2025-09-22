@@ -20,22 +20,18 @@ proc_super:
 	push %si
 	push %bx
 
-	push $dap_super
-	call read_disk
-	add $0x02, %sp
+	push $0x01 # sect_cnt
+	push $0x01 # lba_lo
+	xor %ax, %ax
+	push %ax # lba_hi
+	mov $0x0600, %ax
+	push %ax # off
+	xor %ax, %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
-
-	#push $0x01 # sect_cnt
-	#push $0x01 # lba_lo
-	#xor %ax, %ax
-	#push %ax # lba_hi
-	#mov $0x0600, %ax
-	#push %ax # off
-	#xor %ax, %ax
-	#push %ax # seg
-	#call ata_read_sect
-	#add $0x0A, %sp
 
 	# {{{ check superblock
 	# {task} (disk_magic_low != magic_low)
@@ -72,9 +68,16 @@ proc_super:
 	call _super_alloc_lba
 	call _super_write_data
 
-	push $dap_super
-	call write_disk
-	add $0x02, %sp
+	push $0x01 # sect_cnt
+	push $0x01 # lba_lo
+	xor %ax, %ax
+	push %ax # lba_hi
+	mov $0x0600, %ax
+	push %ax # off
+	xor %ax, %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	call _super_set_lba

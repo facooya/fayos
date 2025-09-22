@@ -16,9 +16,18 @@ add_inode:
 	push %bx
 
 	# {{{ alloc blknum
-	push $dap_bb
-	call read_disk
-	add $0x02, %sp
+	mov $dap_bb, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -30,9 +39,18 @@ add_inode:
 	# }}}
 
 	# {{{ alloc inum
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
+	mov $dap_ib, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -47,9 +65,18 @@ add_inode:
 
 	# {{{ read/write inode table
 	# read inode table
-	push $dap_it
-	call read_disk
-	add $0x02, %sp
+	mov $dap_it, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -65,15 +92,33 @@ add_inode:
 	mov %ax, %es:I_BLK_0_OFF(%bx)
 
 	# write inode table
-	push $dap_it
-	call write_disk
-	add $0x02, %sp
+	mov $dap_it, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	# {{{ set inum bit
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
+	mov $dap_ib, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -83,15 +128,33 @@ add_inode:
 	call set_bit
 	add $0x06, %sp
 
-	push $dap_ib
-	call write_disk
-	add $0x02, %sp
+	mov $dap_ib, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	# {{{ set blknum bit
-	push $dap_bb
-	call read_disk
-	add $0x02, %sp
+	mov $dap_bb, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -101,9 +164,18 @@ add_inode:
 	call set_bit
 	add $0x06, %sp
 
-	push $dap_bb
-	call write_disk
-	add $0x02, %sp
+	mov $dap_bb, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	pop %bx

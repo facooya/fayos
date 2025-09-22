@@ -18,9 +18,18 @@ clear_inode:
 	push %bx
 
 	# {{{ read/write inode table
-	push $dap_it
-	call read_disk
-	add $0x02, %sp
+	mov $dap_it, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -42,15 +51,33 @@ clear_inode:
 	mov %ax, %es:I_BLK_0_OFF(%bx)
 	mov %ax, %es:I_BLK_0_OFF+0x02(%bx)
 
-	push $dap_it
-	call write_disk
-	add $0x02, %sp
+	mov $dap_it, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# } push bitnum
 
 	# { clear block bit
-	push $dap_bb
-	call read_disk
-	add $0x02, %sp
+	mov $dap_bb, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -60,15 +87,33 @@ clear_inode:
 	call clear_bit
 	add $0x06, %sp
 
-	push $dap_bb
-	call write_disk
-	add $0x02, %sp
+	mov $dap_bb, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	# {{{ clear inum bit
-	push $dap_ib
-	call read_disk
-	add $0x02, %sp
+	mov $dap_ib, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_read_sect
+	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -81,9 +126,18 @@ clear_inode:
 	call clear_bit
 	add $0x06, %sp
 
-	push $dap_ib
-	call write_disk
-	add $0x02, %sp
+	mov $dap_ib, %bx
+	push $0x08 # sect_cnt
+	mov 0x08(%bx), %ax
+	push %ax # lba_lo
+	mov 0x0A(%bx), %ax
+	push %ax # lba_hi
+	mov 0x04(%bx), %ax
+	push %ax # off
+	mov 0x06(%bx), %ax
+	push %ax # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	pop %bx

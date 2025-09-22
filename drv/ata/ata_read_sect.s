@@ -16,6 +16,7 @@
 # lba_hi, lba_lo,
 # sect_cnt
 # )
+# <ret> dx:ax = seg:off
 ata_read_sect:
 	push %bp
 	mov %sp, %bp
@@ -99,6 +100,9 @@ ata_read_sect:
 	jmp .sect__lp
 
 .done:
+	mov 0x04(%bp), %dx
+	mov 0x06(%bp), %ax
+
 	pop %bx
 	pop %di
 	pop %es
