@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- readme update
 
 ## Feature
 - Tab: autocomplete file or dir

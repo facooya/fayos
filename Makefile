@@ -168,7 +168,7 @@ all: ./build/fayos.img
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)
-	as --32 -Iinclude $< -o $@
+	as --32 -Iinc $< -o $@
 
 ./build/:
 	mkdir -p $@

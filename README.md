@@ -1,7 +1,11 @@
 # Fayos
 Fayos is 16-bit real-mode OS.
 Write by GNU Assembler.
-Using BIOS interrupt.
+
+- [#quick-start] (Quick Start)
+- [#quick-start-for-windows] (Quick Start for Windows)
+- [#command-list] (Command List)
+- [#directory-structure] (Directory Structure)
 
 ## Quick Start
 Step summary
@@ -33,25 +37,45 @@ make
 - `make clean_all` - remove `build/` directory.
 
 ### 3. Execute Fayos
-Using `qemu` emulator in this guide.
+#### 3.1. [Optional] Qemu
 Emulator install:
 ```bash
 sudo apt install qemu-system
 ```
 
-Quick execute Fayos with qemu:
+Quick execute:
 ```bash
 ./tools/qemu.sh
 ```
-The `./tools/qemu.sh` for x86-64 or amd64 architecture.
+The `./tools/qemu.sh` for **amd64** architecture.
 
-Manual execute Fayos with qemu:
+Manual execute:
 ```bash
 qemu-system-x86_64 -drive format=raw,file=./build/fayos.img
 ```
 - `qemu-system-[architecture] -drive format=raw,file=[path].img`
 
-Follow the command list.
+Follow the **Command List** section.
+
+#### 3.2. [Optional] Bochs
+Emulator install:
+```bash
+sudo apt install bochs bochsbios vgabios bochs-sdl
+```
+
+Quick execute:
+```bash
+./tools/bochs.sh
+```
+- Bochs log default path: `build/bochslog`
+
+Manual execute:
+Modify `tools/bochsrc` file if you need.
+```bash
+bochs -q -f ./tools/bochsrc
+```
+
+Follow the **Command List** section.
 
 ---
 
@@ -65,10 +89,9 @@ Install linux terminal in windows:
 - execute linux terminal `wsl -d Debian` or `debian`
 - make user and password and reboot WSL.
 
-And follow the Quick Start.
+And follow the **Quick Start** section.
 
 ---
-
 
 ## Command List
 - Directory
@@ -89,22 +112,19 @@ And follow the Quick Start.
 
 ---
 
-## Documentation
-Every files follow the documentation rules, Examples:
-- `boot/boot.s` - `docs/boot/boot.md`
-- `kernel/args/args.s` - `docs/kernel/args/args.md`
-
----
-
 ## Directory Structure
-- boot/ - Boot
-- shell/ - Shell
-- docs/ - Documentation
-- fs/ - File system
-- include/ - Constants only
-- kernel/ - Kernel
-- lib/ - Library
-- tools/ - Misc
+- `boot/` - Boot
+- `docs/` - Documentation
+- `drv/` - Driver
+- `fs/` - File System: Fayfs only
+- `inc/` - Include: Constants only
+- `int/` - Interrupt
+- `kernel/` - Kernel
+- `lib/` - Library
+- `shell/` - Shell
+- `tools/` - Tools: Misc
+
+More directory structure in `docs/`. Examples: `docs/kernel/README.md` and find **Directory Structure** section.
 
 ---
 
