@@ -2,10 +2,10 @@
 Fayos is 16-bit real-mode OS.
 Write by GNU Assembler.
 
-- [#quick-start] (Quick Start)
-- [#quick-start-for-windows] (Quick Start for Windows)
-- [#command-list] (Command List)
-- [#directory-structure] (Directory Structure)
+- [Quick Start](#quick-start)
+- [Quick Start for Windows](#quick-start-for-windows)
+- [Command List](#command-list)
+- [Directory Structure](#directory-structure)
 
 ## Quick Start
 Step summary
