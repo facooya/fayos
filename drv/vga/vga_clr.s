@@ -4,6 +4,8 @@
 #
 # Clear all
 
+.include "drv/vga.s"
+.include "chr.s"
 .section .text
 .code16
 .global vga_clr
@@ -14,16 +16,16 @@ vga_clr:
 	push %di
 	push %bx
 
-	mov $0xB800, %ax
+	mov $VGA_SEG, %ax
 	mov %ax, %es
 	xor %di, %di
 
 	xor %dx, %dx
-	mov $0x0484, %bx
-	mov (%bx), %dl # row
+	mov $VGA_ROW, %bx
+	mov (%bx), %dl
 
-	mov $0x044A, %bx
-	mov (%bx), %ax # col
+	mov $VGA_COL, %bx
+	mov (%bx), %ax
 
 	mul %dx
 	mov %ax, %cx # count
@@ -39,12 +41,12 @@ vga_clr:
 	jz .end
 
 	# clr
-	mov $0x20, %al
+	mov $CHR_SP, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 
 	# conf
-	mov $0x07, %al
+	mov $VGA_COLOR_NORM, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 

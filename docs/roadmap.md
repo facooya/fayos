@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- replace equ
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -32,5 +33,4 @@
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
 - replace dap
-- replace equ
 - support more key

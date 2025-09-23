@@ -4,6 +4,7 @@
 #
 # Viedo shift up by line
 
+.include "drv/vga.s"
 .section .text
 .code16
 .global vga_shu
@@ -15,10 +16,10 @@ vga_shu:
 	push %di
 	push %bx
 
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx
 	xor %ax, %ax
-	mov $0x0484, %bx
+	mov $VGA_ROW, %bx
 	mov (%bx), %al
 	mul %cx
 	mov %ax, %cx # cpy_cnt
@@ -29,13 +30,13 @@ vga_shu:
 	add $0x02, %sp
 	pop %cx # [s.f0:cpy_cnt]
 
-	mov $0xB800, %ax
+	mov $VGA_SEG, %ax
 	mov %ax, %es
 	xor %si, %si
 	xor %di, %di
 
 	# ignore top row
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %ax
 	add %ax, %si
 	add %ax, %si

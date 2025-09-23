@@ -4,6 +4,8 @@
 #
 # Clear current cursor line
 
+.include "drv/vga.s"
+.include "chr.s"
 .section .text
 .code16
 .global vga_clr_line
@@ -14,14 +16,14 @@ vga_clr_line:
 	push %di
 	push %bx
 
-	mov $0xB800, %ax
+	mov $VGA_SEG, %ax
 	mov %ax, %es
 	xor %di, %di
 
 	call vga_get_curs
 
 	# get column
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx
 	push %cx # [s.0:col]
 
@@ -41,7 +43,7 @@ vga_clr_line:
 	add $0x02, %sp
 
 	# get col
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx
 
 .lp:
@@ -50,12 +52,12 @@ vga_clr_line:
 	jz .done
 
 	# write
-	mov $0x20, %al # space
+	mov $CHR_SP, %al # space
 	mov %al, %es:(%di)
 	add $0x01, %di
 
 	# conf
-	mov $0x07, %al
+	mov $VGA_COLOR_NORM, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 

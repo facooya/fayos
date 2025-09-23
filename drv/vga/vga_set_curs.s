@@ -7,6 +7,7 @@
 # reference link
 # http://wiki.osdev.org/Text_Mode_Cursor#Get_Cursor_Position
 
+.include "drv/vga.s"
 .section .text
 .code16
 .global vga_set_curs
@@ -17,19 +18,19 @@ vga_set_curs:
 	mov %sp, %bp
 
 	# high
-	mov $0x0E, %al
-	mov $0x03D4, %dx
+	mov $VGA_CURS_IDX_HI, %al
+	mov $VGA_CURS_IDX_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $VGA_CURS_DATA_REG, %dx
 	mov 0x04(%bp), %ax
 	mov %ah, %al
 	out %al, %dx
 
 	# low
-	mov $0x0F, %al
-	mov $0x03D4, %dx
+	mov $VGA_CURS_IDX_LO, %al
+	mov $VGA_CURS_IDX_REG, %dx
 	out %al, %dx
-	mov $0x03D5, %dx
+	mov $VGA_CURS_DATA_REG, %dx
 	mov 0x04(%bp), %ax
 	out %al, %dx
 

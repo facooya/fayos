@@ -4,6 +4,7 @@
 #
 # Video put character
 
+.include "drv/vga.s"
 .include "chr.s"
 .section .text
 .code16
@@ -24,7 +25,7 @@ vga_putc:
 
 	# init
 	push %ax # [s.0:chr]
-	mov $0xB800, %ax
+	mov $VGA_SEG, %ax
 	mov %ax, %es
 	xor %di, %di
 
@@ -43,7 +44,7 @@ vga_putc:
 	add $0x01, %di
 
 	# conf
-	mov $0x07, %al
+	mov $VGA_COLOR_NORM, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 	jmp .done
@@ -52,7 +53,7 @@ vga_putc:
 	call vga_get_curs
 
 	# vga col
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx # col
 	mov %ax, %bx # curs_pos
 
@@ -70,7 +71,7 @@ vga_putc:
 	call vga_get_curs
 
 	# vga col
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx # col
 	mov %ax, %bx # curs_pos
 
@@ -82,10 +83,10 @@ vga_putc:
 
 	# calc max_curs
 	push %bx # [s.c0:curs_pos]
-	mov $0x044A, %bx
+	mov $VGA_COL, %bx
 	mov (%bx), %cx
 	xor %ax, %ax
-	mov $0x0484, %bx
+	mov $VGA_ROW, %bx
 	mov (%bx), %al
 	add $0x01, %al
 	mul %cx
