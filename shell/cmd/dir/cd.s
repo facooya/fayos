@@ -103,6 +103,11 @@ cmd_cd:
 	add %ax, %bx
 	# }}}
 
+	# (file_type != dir) ? {err} : {run}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x40, %al
+	jne .err_dir_type
+
 	# {{{ add ps1 path
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
@@ -133,10 +138,6 @@ cmd_cd:
 	add $0x06, %sp
 	# }}}
 
-	# (file_type != dir) ? {err} : {run}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
-	cmp $0x40, %al
-	jne .err_dir_type
 	jmp .run
 
 # {TASK}
