@@ -1,2 +1,2 @@
-*.* linguist-detectable=false
+* linguist-detectable=false
 *.s linguist-detectable=true
