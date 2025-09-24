@@ -7,6 +7,7 @@
 # reference link
 # https://wiki.osdev.org/ATA_read/write_sectors#Read_in_LBA_mode
 
+.include "drv/ata.s"
 .section .text
 .code16
 .global ata_read_sect
@@ -29,48 +30,48 @@ ata_read_sect:
 	mov 0x06(%bp), %di
 
 	# set mode
-	mov $0x01F6, %dx
-	mov $0xE0, %al # 0b11100000
+	mov $ATA_DRV_REG, %dx
+	mov $ATA_DRV_MA_LBA, %al # 0b11100000
 	out %al, %dx
 
 	# sector count
-	mov $0x01F2, %dx
+	mov $ATA_SECT_CNT_REG, %dx
 	mov 0x0C(%bp), %ax # sect_cnt
 	mov %ax, %bx # sect_cnt
 	out %al, %dx
 
 	# {{{ LBA
-	mov $0x01F3, %dx
+	mov $ATA_LBA_LO_REG, %dx
 	mov 0x0A(%bp), %ax # lba_lo
 	out %al, %dx
 
-	mov $0x01F4, %dx
+	mov $ATA_LBA_MID_REG, %dx
 	mov %ah, %al # lba_mid
 	out %al, %dx
 
-	mov $0x01F5, %dx
+	mov $ATA_LBA_HI_REG, %dx
 	mov 0x08(%bp), %ax # lba_hi
 	out %al, %dx
 	# }}}
 
 	# read
-	mov $0x01F7, %dx
-	mov $0x20, %al
+	mov $ATA_CMD_REG, %dx
+	mov $ATA_CMD_READ, %al
 	out %al, %dx
 	jmp .drq__lp
 
 .sect__lp:
-	mov $0x01F7, %dx
+	mov $ATA_STAT_REG, %dx
 
 .drq__lp:
 	in %dx, %al
-	test $0x08, %al
+	test $ATA_STAT_DRQ, %al
 	jz .drq__lp
 
 	# TODO: err
 
-	mov $0x01F0, %dx
-	mov $0x0100, %cx
+	mov $ATA_DATA_REG, %dx
+	mov $ATA_SECT_SIZE_WORD, %cx
 	sub $0x01, %bx # sect_cnt
 
 .data__lp:
@@ -89,9 +90,9 @@ ata_read_sect:
 
 .data__end:
 .bsy__lp:
-	mov $0x01F7, %dx
+	mov $ATA_STAT_REG, %dx
 	in %dx, %al
-	test $0x80, %al
+	test $ATA_STAT_BSY, %al
 	jnz .bsy__lp
 
 	# (sect_cnt == 0) ? {done} : {sec.lp}
