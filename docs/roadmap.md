@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- replace equ
+- performance
 
 ## Feature
 - Tab: autocomplete file or dir
@@ -10,6 +10,7 @@
 - Debug runtime
 - Using allocate memory and free - inode, dap, inum, ... `close()`
 - Record log, error log
+- OBF, IBF timeout error
 
 ## Command
 - cp

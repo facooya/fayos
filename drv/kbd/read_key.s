@@ -4,6 +4,7 @@
 #
 # Read key
 
+.include "drv/ps2.s"
 .section .text
 .code16
 .global read_key

@@ -13,7 +13,22 @@
 .equ PS2_WRITE_CONF_BYTE, 0x60
 
 # Bits
-.equ PS2_OBF, (1<<0)
-.equ PS2_IBF, (1<<1)
+.equ PS2_OBF, (0x01<<0x00)
+.equ PS2_IBF, (0x01<<0x01)
+.equ PS2_XLATE_BIT, (0x01<<0x06)
 
 .equ PS2_ACK, 0xFA
+
+.macro IBF
+0:
+	in $PS2_STAT_REG, %al
+	test $PS2_IBF, %al
+	jnz 0b
+.endm
+
+.macro OBF
+0:
+	in $PS2_STAT_REG, %al
+	test $PS2_OBF, %al
+	jz 0b
+.endm

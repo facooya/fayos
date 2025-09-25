@@ -14,35 +14,20 @@
 .global ps2_xlate_off
 
 ps2_xlate_off:
-	xor %ax, %ax
-
-	# read conf_byte
-	mov $PS2_CMD_REG, %dx
+	IBF
 	mov $PS2_READ_CONF_BYTE, %al
-	out %al, %dx
+	out %al, $PS2_CMD_REG
 
-	# conf_byte
-	call ._ibf
-	mov $PS2_DATA_REG, %dx
-	in %dx, %al
-
-	# {{{ off bit 6 - off translate
-	and $~(1<<6), %al
-
-	# write conf_byte
+	OBF
+	in $PS2_DATA_REG, %al # conf_byte
+	and $~PS2_XLATE_BIT, %al
 	mov %al, %ah
-	mov $PS2_WRITE_CONF_BYTE, %al
-	mov $PS2_CMD_REG, %dx
-	out %al, %dx
-	mov %ah, %al
-	mov $PS2_DATA_REG, %dx
-	out %al, %dx
-	# }}}
-	ret
 
-._ibf:
-	mov $PS2_STAT_REG, %dx
-	in %dx, %al
-	test $PS2_IBF, %al
-	jnz ._ibf
+	IBF
+	mov $PS2_WRITE_CONF_BYTE, %al
+	out %al, $PS2_CMD_REG
+
+	IBF
+	mov %ah, %al
+	out %al, $PS2_DATA_REG
 	ret
