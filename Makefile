@@ -16,6 +16,9 @@ drv/ata/ata_read_blk.s \
 drv/ata/ata_write_sect.s \
 drv/ata/ata_write_blk.s \
 \
+drv/ps2/ps2_init.s \
+drv/ps2/ps2_xlate_off.s \
+\
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
 drv/vga/vga_clr.s \
@@ -26,7 +29,6 @@ drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
 drv/kbd/chk_scan_code_set.s \
-drv/kbd/off_conf_byte_bit6.s \
 drv/kbd/read_key.s \
 drv/kbd/keymap.s \
 \

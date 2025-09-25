@@ -23,10 +23,10 @@ _start:
 	call vga_puts
 	add $0x02, %sp
 
-	#mov $CHR_CR, %al
-	#call vga_putc
-	#mov $CHR_LF, %al
-	#call vga_putc
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
 
 	call init_ps1
 	call build_ps1
@@ -40,8 +40,7 @@ _start:
 	add $0x02, %si
 
 	# {main}
-	call off_conf_byte_bit6
-	call chk_scan_code_set
+	call ps2_init
 	jmp kernel_main
 
 # kernel_main()

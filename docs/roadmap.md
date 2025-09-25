@@ -9,6 +9,7 @@
 - Color
 - Debug runtime
 - Using allocate memory and free - inode, dap, inum, ... `close()`
+- Record log, error log
 
 ## Command
 - cp

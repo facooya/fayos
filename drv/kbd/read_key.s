@@ -15,7 +15,7 @@ read_key:
 
 	xor %ax, %ax
 	call ._obf
-	in $0x60, %al
+	in $PS2_DATA_REG, %al
 
 	cmp $0xF0, %al
 	je .skip
@@ -32,7 +32,7 @@ read_key:
 
 .skip:
 	call ._obf
-	in $0x60, %al
+	in $PS2_DATA_REG, %al
 	xor %ax, %ax
 	jmp .done
 
@@ -40,7 +40,7 @@ read_key:
 	mov $extend_keymap, %si
 
 	call ._obf
-	in $0x60, %al
+	in $PS2_DATA_REG, %al
 
 	cmp $0xF0, %al
 	je .skip_extend
@@ -54,7 +54,7 @@ read_key:
 
 .skip_extend:
 	call ._obf
-	in $0x60, %al
+	in $PS2_DATA_REG, %al
 	xor %ax, %ax
 	jmp .done
 
@@ -63,7 +63,7 @@ read_key:
 	ret
 
 ._obf:
-	in $0x64, %al
-	test $0x01, %al
+	in $PS2_STAT_REG, %al
+	test $PS2_OBF, %al
 	jz ._obf
 	ret
