@@ -2,27 +2,27 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Read key
+# Read scan code
 
 .include "drv/ps2.s"
 .section .text
 .code16
-.global read_key
+.global ps2_read_sc
 
-# read_key()
-# <ret> al = ascii
-read_key:
+# ps2_read_sc()
+# <ret> ax = scan_code
+ps2_read_sc:
 	push %si
 
 	xor %ax, %ax
-	call ._obf
+	OBF
 	in $PS2_DATA_REG, %al
 
-	cmp $0xF0, %al
+	cmp $PS2_SC_BRK, %al
 	je .skip
 
-	cmp $0xE0, %al
-	je .read_extend_key
+	cmp $PS2_SC_EXT, %al
+	je .read_ext_key
 
 	mov $keymap, %si
 
@@ -32,39 +32,33 @@ read_key:
 	jmp .done
 
 .skip:
-	call ._obf
+	OBF
 	in $PS2_DATA_REG, %al
 	xor %ax, %ax
 	jmp .done
 
-.read_extend_key:
+.read_ext_key:
 	mov $extend_keymap, %si
 
-	call ._obf
+	OBF
 	in $PS2_DATA_REG, %al
 
-	cmp $0xF0, %al
-	je .skip_extend
+	cmp $PS2_SC_BRK, %al
+	je .skip_ext
 
 	# extend_code
 	add %ax, %si
 	mov (%si), %al
 
-	mov $0xE0, %ah
+	mov $PS2_SC_EXT, %ah
 	jmp .done
 
-.skip_extend:
-	call ._obf
+.skip_ext:
+	OBF
 	in $PS2_DATA_REG, %al
 	xor %ax, %ax
 	jmp .done
 
 .done:
 	pop %si
-	ret
-
-._obf:
-	in $PS2_STAT_REG, %al
-	test $PS2_OBF, %al
-	jz ._obf
 	ret

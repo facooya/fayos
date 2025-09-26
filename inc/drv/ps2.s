@@ -4,6 +4,10 @@
 #
 # Personal System 2
 
+# reference link
+# https://www.eecg.utoronto.ca/~jayar/ece241_08F/AudioVideoCores/ps2/ps2.html
+# https://www-ug.eecg.toronto.edu/msl/nios_devices/datasheets/PS2%20Keyboard%20Protocol.htm
+
 .equ PS2_DATA_REG, 0x60
 .equ PS2_CMD_REG, 0x64
 .equ PS2_STAT_REG, 0x64
@@ -11,6 +15,9 @@
 # Commands
 .equ PS2_READ_CONF_BYTE, 0x20
 .equ PS2_WRITE_CONF_BYTE, 0x60
+
+.equ PS2_SC_EXT, 0xE0
+.equ PS2_SC_BRK, 0xF0
 
 # Bits
 .equ PS2_OBF, (0x01<<0x00)

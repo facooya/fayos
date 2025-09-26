@@ -10,9 +10,13 @@
 
 # int $0x21
 irq_kbd:
-	call read_key
+	call ps2_read_sc
+
+	# (sc == null) ? {pass}
 	test %ax, %ax
 	jz .pass
+
+	# call kbd_sctok
 
 	call kbd_main
 
