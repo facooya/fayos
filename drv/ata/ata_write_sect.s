@@ -33,6 +33,9 @@ ata_write_sect:
 	mov $ATA_DRV_MA_LBA, %al
 	out %al, %dx
 
+	BSY
+	RDY
+
 	# sector count
 	mov $ATA_SECT_CNT_REG, %dx
 	mov 0x0C(%bp), %ax # sect_cnt
@@ -55,23 +58,17 @@ ata_write_sect:
 
 	# write
 	mov $ATA_CMD_REG, %dx
-	mov $ATA_CMD_WRITE, %al
+	mov $ATA_WRITE, %al
 	out %al, %dx
-	jmp .drq__lp
 
 .sect__lp:
-	mov $ATA_STAT_REG, %dx
-
-.drq__lp:
-	in %dx, %al
-	test $ATA_STAT_DRQ, %al
-	jz .drq__lp
-
-	# TODO: err
+	BSY
+	RDY
+	DRQ
+	# TODO: err, df
 
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
-	sub $0x01, %bx # sect_cnt
 
 .data__lp:
 	# (count == 0) ? {end}
@@ -88,18 +85,16 @@ ata_write_sect:
 	jmp .data__lp
 
 .data__end:
-.bsy__lp:
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-	test $ATA_STAT_BSY, %al
-	jnz .bsy__lp
-
 	# (sect_cnt == 0) ? {done} : {sec.lp}
+	sub $0x01, %bx # sect_cnt
 	test %bx, %bx
 	jz .done
 	jmp .sect__lp
 
 .done:
+	BSY
+	# TODO: err, df
+
 	pop %bx
 	pop %di
 	pop %es

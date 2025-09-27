@@ -17,20 +17,16 @@ ata_get_sect:
 	mov $ATA_DRV_MA, %al
 	out %al, %dx
 
+	BSY
+	RDY
+
 	mov $ATA_CMD_REG, %dx
-
-.bsy__lp:
-	in %dx, %al
-	test $ATA_STAT_BSY, %al
-	jnz .bsy__lp
-
-	mov $ATA_CMD_ID_DEV, %al
+	mov $ATA_ID_DEV, %al
 	out %al, %dx
 
-.drq__lp:
-	in %dx, %al
-	test $ATA_STAT_DRQ, %al
-	jz .drq__lp
+	BSY
+	RDY
+	DRQ
 
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
