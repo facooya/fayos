@@ -12,23 +12,17 @@
 # ps2_read_sc()
 # <ret> ax = scan_code
 ps2_read_sc:
-	push %si
-
 	xor %ax, %ax
 	OBF
 	in $PS2_DATA_REG, %al
 
+	# (data == brk) ? {skip}
 	cmp $PS2_SC_BRK, %al
 	je .skip
 
+	# (data == ext) ? {ext} : {done}
 	cmp $PS2_SC_EXT, %al
-	je .read_ext_key
-
-	mov $keymap, %si
-
-	# scan_code to ascii
-	add %ax, %si
-	mov (%si), %al
+	je .ext
 	jmp .done
 
 .skip:
@@ -37,28 +31,21 @@ ps2_read_sc:
 	xor %ax, %ax
 	jmp .done
 
-.read_ext_key:
-	mov $extend_keymap, %si
-
+.ext:
 	OBF
 	in $PS2_DATA_REG, %al
 
+	# (data == brk) ? {skip} : {done}
 	cmp $PS2_SC_BRK, %al
-	je .skip_ext
-
-	# extend_code
-	add %ax, %si
-	mov (%si), %al
-
+	je .ext__skip
 	mov $PS2_SC_EXT, %ah
 	jmp .done
 
-.skip_ext:
+.ext__skip:
 	OBF
 	in $PS2_DATA_REG, %al
 	xor %ax, %ax
 	jmp .done
 
 .done:
-	pop %si
 	ret

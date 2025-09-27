@@ -8,19 +8,18 @@
 .code16
 .global irq_kbd
 
-# int $0x21
+# irq 0x01 || int $0x21
 irq_kbd:
 	call ps2_read_sc
 
-	# (sc == null) ? {pass}
+	# (sc == null) ? {done}
 	test %ax, %ax
-	jz .pass
+	jz .done
 
-	# call kbd_sctok
-
+	call kbd_sctokc
 	call kbd_main
 
-.pass:
+.done:
 	# EOI
 	mov $0x20, %al
 	out %al, $0x20

@@ -30,7 +30,8 @@ drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
 drv/kbd/chk_scan_code_set.s \
-drv/kbd/keymap.s \
+drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_sctokc.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
