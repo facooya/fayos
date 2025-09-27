@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- keyboard
 
 ## TODO PRIORITY
 - optimize ata
