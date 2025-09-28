@@ -70,22 +70,8 @@ ata_read_sect:
 
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
+	rep insw
 
-.data__lp:
-	# (count == 0) ? {end}
-	test %cx, %cx
-	jz .data__end
-
-	# load
-	in %dx, %ax
-	mov %ax, %es:(%di)
-
-	# {lp}
-	sub $0x01, %cx
-	add $0x02, %di
-	jmp .data__lp
-
-.data__end:
 	# (sect_cnt == 0) ? {done} : {sec.lp}
 	sub $0x01, %bx
 	test %bx, %bx

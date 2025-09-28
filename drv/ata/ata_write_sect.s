@@ -20,13 +20,13 @@
 ata_write_sect:
 	push %bp
 	mov %sp, %bp
-	push %es
-	push %di
+	push %ds
+	push %si
 	push %bx
 
 	mov 0x04(%bp), %ax
-	mov %ax, %es
-	mov 0x06(%bp), %di
+	mov %ax, %ds
+	mov 0x06(%bp), %si
 
 	# set mode
 	mov $ATA_DRV_REG, %dx
@@ -69,22 +69,8 @@ ata_write_sect:
 
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
+	rep outsw
 
-.data__lp:
-	# (count == 0) ? {end}
-	test %cx, %cx
-	jz .data__end
-
-	# store
-	mov %es:(%di), %ax
-	out %ax, %dx
-
-	# {lp}
-	sub $0x01, %cx
-	add $0x02, %di
-	jmp .data__lp
-
-.data__end:
 	# (sect_cnt == 0) ? {done} : {sec.lp}
 	sub $0x01, %bx # sect_cnt
 	test %bx, %bx
@@ -96,7 +82,7 @@ ata_write_sect:
 	# TODO: err, df
 
 	pop %bx
-	pop %di
-	pop %es
+	pop %si
+	pop %ds
 	pop %bp
 	ret

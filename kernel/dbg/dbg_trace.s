@@ -13,18 +13,21 @@
 
 dbg_a:
 	push %ax
+	push %cx
 	call ._prol
 	mov $0x41, %al
 	jmp .done
 
 dbg_b:
 	push %ax
+	push %cx
 	call ._prol
 	mov $0x42, %al
 	jmp .done
 
 dbg_c:
 	push %ax
+	push %cx
 	call ._prol
 	mov $0x43, %al
 	jmp .done
@@ -38,6 +41,8 @@ dbg_c:
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
+
+	pop %cx
 	pop %ax
 	ret
 

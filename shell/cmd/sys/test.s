@@ -13,5 +13,28 @@
 
 # cmd_test()
 cmd_test:
-	#call ata_get_sect
+	mov $0x01, %cx
+
+.lp:
+	test %cx, %cx
+	jz .done
+
+	push %cx
+	mov $0x08, %ax
+	push %ax # sect_cnt
+	mov $0x01, %ax
+	push %ax # lba_lo
+	xor %ax, %ax
+	push %ax # lba_hi
+	push $0x00 # off
+	push $0x1000 # seg
+	call ata_write_sect
+	add $0x0A, %sp
+	pop %cx
+
+	sub $0x01, %cx
+	jmp .lp
+
+.done:
+	call dbg_a
 	ret
