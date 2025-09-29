@@ -18,8 +18,8 @@ vga_set_curs:
 	mov %sp, %bp
 
 	# high
-	mov $VGA_CURS_IDX_HI, %al
 	mov $VGA_CURS_IDX_REG, %dx
+	mov $VGA_CURS_IDX_HI, %al
 	out %al, %dx
 	mov $VGA_CURS_DATA_REG, %dx
 	mov 0x04(%bp), %ax
@@ -27,8 +27,8 @@ vga_set_curs:
 	out %al, %dx
 
 	# low
-	mov $VGA_CURS_IDX_LO, %al
 	mov $VGA_CURS_IDX_REG, %dx
+	mov $VGA_CURS_IDX_LO, %al
 	out %al, %dx
 	mov $VGA_CURS_DATA_REG, %dx
 	mov 0x04(%bp), %ax

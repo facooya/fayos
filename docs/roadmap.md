@@ -1,9 +1,9 @@
 # Roadmap
 ## WIP
+- optimize vga
+- get vga info
 
 ## TODO PRIORITY
-- optimize ata
-- optimize vga
 
 ## TODO
 - support relative path

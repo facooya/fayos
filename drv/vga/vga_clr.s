@@ -20,6 +20,7 @@ vga_clr:
 	mov %ax, %es
 	xor %di, %di
 
+	# {{{ TODO: get vga size and save superblock
 	xor %dx, %dx
 	mov $VGA_ROW, %bx
 	mov (%bx), %dl
@@ -29,29 +30,15 @@ vga_clr:
 
 	mul %dx
 	mov %ax, %cx # count
+	# }}}
+
+	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	rep stosw
 
 	xor %ax, %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
-
-.lp:
-	# (count == 0) ? {end}
-	test %cx, %cx
-	jz .end
-
-	# clr
-	mov $CHR_SP, %al
-	mov %al, %es:(%di)
-	add $0x01, %di
-
-	# conf
-	mov $VGA_COLOR_NORM, %al
-	mov %al, %es:(%di)
-	add $0x01, %di
-
-	sub $0x01, %cx
-	jmp .lp
 
 .end:
 	pop %bx

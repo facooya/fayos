@@ -16,6 +16,7 @@ vga_shu:
 	push %di
 	push %bx
 
+	# TODO: vga size
 	mov $VGA_COL, %bx
 	mov (%bx), %cx
 	xor %ax, %ax
@@ -30,29 +31,21 @@ vga_shu:
 	add $0x02, %sp
 	pop %cx # [s.f0:cpy_cnt]
 
-	mov $VGA_SEG, %ax
-	mov %ax, %es
-	xor %si, %si
-	xor %di, %di
-
-	# ignore top row
+	# ignore top row # TODO: vga size
 	mov $VGA_COL, %bx
 	mov (%bx), %ax
+	xor %si, %si
 	add %ax, %si
 	add %ax, %si
+	xor %di, %di
 
-.cpy__lp:
-	# (cpy_cnt == 0) : {end}
-	test %cx, %cx
-	jz .end
+	push %ds # [s.s0:vga_seg]
+	mov $VGA_SEG, %ax
+	mov %ax, %es
+	mov %ax, %ds
 
-	mov %es:(%si), %ax
-	mov %ax, %es:(%di)
-
-	add $0x02, %si
-	add $0x02, %di
-	sub $0x01, %cx
-	jmp .cpy__lp
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
 
 .end:
 	call vga_clr_line

@@ -22,6 +22,7 @@ vga_clr_line:
 
 	call vga_get_curs
 
+	# {{{ TODO: vga size
 	# get column
 	mov $VGA_COL, %bx
 	mov (%bx), %cx
@@ -45,24 +46,10 @@ vga_clr_line:
 	# get col
 	mov $VGA_COL, %bx
 	mov (%bx), %cx
+	# }}}
 
-.lp:
-	# (count == 0) ? {end}
-	test %cx, %cx
-	jz .done
-
-	# write
-	mov $CHR_SP, %al # space
-	mov %al, %es:(%di)
-	add $0x01, %di
-
-	# conf
-	mov $VGA_COLOR_NORM, %al
-	mov %al, %es:(%di)
-	add $0x01, %di
-
-	sub $0x01, %cx
-	jmp .lp
+	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	rep stosw
 
 .done:
 	pop %bx
