@@ -6,7 +6,7 @@
 
 .include "chr.s"
 .section .data
-.kmsg_welcome: .asciz "\nWelcome to Fayos\r\n"
+.kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"
 
 .section .text
 .code16

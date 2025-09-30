@@ -5,7 +5,7 @@
 # Command test - temporary debug and test runtime
 
 .section .data
-.blknum: .long 0x01
+.str: .asciz "Hello world\r\nHello World 2\r\n"
 
 .section .text
 .code16
@@ -13,14 +13,17 @@
 
 # cmd_test()
 cmd_test:
-	mov $0xFFFF, %cx
+	#mov $0xFFFF, %cx
+	mov $0x0F, %cx
 
 .lp:
 	test %cx, %cx
 	jz .done
 	push %cx
 
-	call vga_clr_line
+	push $.str
+	call vga_puts
+	add $0x02, %sp
 
 	pop %cx
 	dec %cx

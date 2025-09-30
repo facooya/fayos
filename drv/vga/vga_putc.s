@@ -40,13 +40,9 @@ vga_putc:
 	pop %ax # [s.0:chr]
 
 	# out
-	mov %al, %es:(%di)
-	add $0x01, %di
-
-	# conf
-	mov $VGA_COLOR_NORM, %al
-	mov %al, %es:(%di)
-	add $0x01, %di
+	mov $VGA_COLOR_NORM, %ah
+	mov %ax, %es:(%di)
+	add $0x02, %di
 	jmp .done
 
 .chr__cr:
