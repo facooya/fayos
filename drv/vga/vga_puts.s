@@ -79,6 +79,7 @@ vga_puts:
 
 .shu:
 	# init
+	push %si # [s.l0:str]
 	mov (VGA_COL), %ax
 	xor %si, %si
 	add %ax, %si
@@ -92,6 +93,7 @@ vga_puts:
 	mov %ax, %ds
 	rep movsw
 	pop %ds # [s.s0:vga_seg]
+	pop %si # [s.l0:str]
 
 	# clr last line
 	mov (VGA_COL), %cx
