@@ -5,7 +5,7 @@
 # Command test - temporary debug and test runtime
 
 .section .data
-.str: .asciz "Hello world\r\nHello World 2\r\n"
+.str: .asciz "Hello world\r\nHello World 2\r\nHello world 3\r\nHello world 4\r\n"
 
 .section .text
 .code16
@@ -14,7 +14,7 @@
 # cmd_test()
 cmd_test:
 	#mov $0xFFFF, %cx
-	mov $0x0F, %cx
+	mov $0x06, %cx
 
 .lp:
 	test %cx, %cx

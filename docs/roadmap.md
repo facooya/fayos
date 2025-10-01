@@ -1,7 +1,6 @@
 # Roadmap
 ## WIP
 - optimize vga
-- get vga info
 
 ## TODO PRIORITY
 

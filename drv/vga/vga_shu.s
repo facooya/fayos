@@ -16,29 +16,19 @@ vga_shu:
 	push %di
 	push %bx
 
-	# TODO: vga size
-	mov $VGA_COL, %bx
-	mov (%bx), %cx
-	xor %ax, %ax
-	mov $VGA_ROW, %bx
-	mov (%bx), %al
-	mul %cx
-	mov %ax, %cx # cpy_cnt
-
-	push %cx # [s.f0:cpy_cnt]
+	mov (vga_last_row_off), %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
-	pop %cx # [s.f0:cpy_cnt]
 
-	# ignore top row # TODO: vga size
-	mov $VGA_COL, %bx
-	mov (%bx), %ax
+	# ignore top row
+	mov (VGA_COL), %ax
 	xor %si, %si
 	add %ax, %si
 	add %ax, %si
 	xor %di, %di
 
+	mov (vga_last_row_off), %cx
 	push %ds # [s.s0:vga_seg]
 	mov $VGA_SEG, %ax
 	mov %ax, %es
@@ -47,7 +37,6 @@ vga_shu:
 	rep movsw
 	pop %ds # [s.s0:vga_seg]
 
-.end:
 	call vga_clr_line
 
 .done:

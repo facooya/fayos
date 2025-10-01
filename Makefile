@@ -21,6 +21,7 @@ drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
 drv/ps2/ps2_read_sc.s \
 \
+drv/vga/vga.s \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
 drv/vga/vga_clr.s \

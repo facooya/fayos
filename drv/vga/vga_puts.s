@@ -65,31 +65,44 @@ vga_puts:
 	jmp .lp
 
 .chr__lf:
-	mov $VGA_COL, %bx
-	mov (%bx), %ax
+	mov (VGA_COL), %ax
 	add %ax, %cx
 	add %ax, %di
 	add %ax, %di
 
-	# TODO: size
-	xor %ax, %ax
-	mov $VGA_ROW, %bx
-	mov (%bx), %al
-	add $0x01, %al
-	mov $VGA_COL, %bx
-	mov (%bx), %bx
-	xor %dx, %dx
-	mul %bx
-
-	# (curs_pos >= max_curs) : {shu}
+	# (cur_curs >= vga_size) ? {shu} : {lp}
+	mov (vga_size), %ax
 	cmp %ax, %cx
 	jge .shu
-
 	inc %si
 	jmp .lp
 
 .shu:
-	#call vga_shu
+	# init
+	mov (VGA_COL), %ax
+	xor %si, %si
+	add %ax, %si
+	add %ax, %si
+	xor %di, %di
+
+	# cpy
+	mov (vga_last_row_off), %cx
+	push %ds # [s.s0:vga_seg]
+	mov $VGA_SEG, %ax
+	mov %ax, %ds
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
+
+	# clr last line
+	mov (VGA_COL), %cx
+	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	rep stosw
+
+	mov (vga_last_row_off), %cx # cur_curs
+	mov %cx, %di
+	add %cx, %di
+
+	inc %si
 	jmp .lp
 
 .end:

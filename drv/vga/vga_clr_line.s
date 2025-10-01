@@ -22,11 +22,7 @@ vga_clr_line:
 
 	call vga_get_curs
 
-	# {{{ TODO: vga size
-	# get column
-	mov $VGA_COL, %bx
-	mov (%bx), %cx
-	push %cx # [s.0:col]
+	mov (VGA_COL), %cx
 
 	# get current line [line_idx=curs_pos/col]
 	xor %dx, %dx
@@ -34,7 +30,7 @@ vga_clr_line:
 	mov %ax, %cx # line_idx
 
 	# [line_start_pos=col*line_idx]
-	pop %ax # [s.0:col]
+	mov (VGA_COL), %ax
 	mul %cx
 	add %ax, %di
 	add %ax, %di
@@ -43,11 +39,7 @@ vga_clr_line:
 	call vga_set_curs
 	add $0x02, %sp
 
-	# get col
-	mov $VGA_COL, %bx
-	mov (%bx), %cx
-	# }}}
-
+	mov (VGA_COL), %cx
 	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
 	rep stosw
 

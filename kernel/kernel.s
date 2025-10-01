@@ -16,6 +16,7 @@
 _start:
 	call pic_init
 	call ivt_init
+	call vga_init
 
 	call proc_super
 
