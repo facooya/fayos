@@ -2,7 +2,7 @@
 ## WIP
 
 ## TODO PRIORITY
-- over column to next line with shift up
+- support more key
 
 ## TODO
 - support relative path
@@ -12,7 +12,6 @@
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
 - replace dap
-- support more key
 
 ## Feature
 - Tab: autocomplete file or dir

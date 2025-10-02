@@ -5,7 +5,7 @@
 # Command test - temporary debug and test runtime
 
 .section .data
-.str: .asciz "Hello world\nHello World 2\r\nHello world 3\r\nHello world 4\r\n"
+.str: .asciz "Hello world Hello World 2 Hello world 3 Hello world 4 Hello world 5 Hello world 6 Hello world 7\r\n"
 
 .section .text
 .code16
@@ -13,12 +13,8 @@
 
 # cmd_test()
 cmd_test:
-	mov $0x0A, %al
-	call vga_putc
 	push $.str
 	call vga_puts
 	add $0x02, %sp
-	mov $0x0A, %al
-	call vga_putc
 
 	ret
