@@ -1,8 +1,8 @@
 # Roadmap
 ## WIP
-- optimize vga
 
 ## TODO PRIORITY
+- over column to next line with shift up
 
 ## TODO
 - support relative path

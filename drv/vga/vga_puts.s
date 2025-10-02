@@ -51,8 +51,7 @@ vga_puts:
 
 .chr__cr:
 	mov %cx, %ax # cur_curs
-	mov $VGA_COL, %bx
-	mov (%bx), %bx # col
+	mov (VGA_COL), %bx # col
 
 	# [cur_curs - (cur_curs % col)]
 	xor %dx, %dx
@@ -81,6 +80,8 @@ vga_puts:
 	# init
 	push %si # [s.l0:str]
 	mov (VGA_COL), %ax
+	sub %ax, %cx
+	mov %cx, %bx # curs_pos
 	xor %si, %si
 	add %ax, %si
 	add %ax, %si
@@ -100,9 +101,10 @@ vga_puts:
 	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
 	rep stosw
 
-	mov (vga_last_row_off), %cx # cur_curs
-	mov %cx, %di
-	add %cx, %di
+	# set
+	mov %bx, %cx # curs_pos
+	mov %bx, %di
+	add %bx, %di
 
 	inc %si
 	jmp .lp
