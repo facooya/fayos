@@ -10,8 +10,11 @@
 # https://www.eecg.utoronto.ca/~jayar/ece241_08F/AudioVideoCores/ps2/ps2.html#apkeycodes
 
 .section .data
+.global kbd_keymap_stat
 .global kbd_keymap
 .global kbd_keymap_shf
+
+kbd_keymap_stat: .word 0x00
 
 kbd_keymap:
 	# 0x00-0x0F

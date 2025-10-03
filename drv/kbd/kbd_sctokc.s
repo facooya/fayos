@@ -21,11 +21,12 @@ kbd_sctokc:
 	mov $kbd_keymap, %si
 
 	# (sc_hi != shf) ? {shf}
-	#cmp $0x12, %ah
-	#jne .kc
-	#mov $kbd_keymap_shf, %si
+	mov (kbd_keymap_stat), %cx
+	cmp $0x01, %cx
+	jne .norm
+	mov $kbd_keymap_shf, %si
 
-.kc:
+.norm:
 	add %ax, %si
 	mov (%si), %al
 	jmp .done
