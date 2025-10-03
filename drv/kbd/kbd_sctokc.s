@@ -19,6 +19,13 @@ kbd_sctokc:
 	jnz .done
 
 	mov $kbd_keymap, %si
+
+	# (sc_hi != shf) ? {shf}
+	#cmp $0x12, %ah
+	#jne .kc
+	#mov $kbd_keymap_shf, %si
+
+.kc:
 	add %ax, %si
 	mov (%si), %al
 	jmp .done

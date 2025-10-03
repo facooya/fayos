@@ -42,7 +42,6 @@ vga_puts:
 	cmp $CHR_LF, %al
 	je .chr__lf
 
-	# TEST # ?????
 	# (curs_pos >= vga_size) ? {shu.in}
 	cmp %bx, %cx
 	jge .shu__in
