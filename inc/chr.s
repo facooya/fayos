@@ -37,3 +37,5 @@
 .equ KEY_LEFT, 0x4B00
 .equ KEY_RIGHT, 0x4D00
 .equ KEY_DOWN, 0x5000
+
+.equ CHR_CASE_MASK, 0x20

@@ -10,12 +10,17 @@
 
 # irq 0x01 || int $0x21
 irq_kbd:
+	# <ret> ax:sc, dx:sc_brk
 	call ps2_read_sc
 
-	# (sc == null) ? {done}
+	# <req> ax:sc, dx:sc_brk
+	# <ret> ax:sc
+	call kbd_flg_hdl
+	# (sc == 0) ? {done(skip)}
 	test %ax, %ax
 	jz .done
 
+	# <req> ax:sc
 	call kbd_sctokc
 	call kbd_main
 

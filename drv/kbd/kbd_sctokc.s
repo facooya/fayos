@@ -5,12 +5,14 @@
 # Scan code to keycode
 
 .include "chr.s"
+.include "drv/kbd.s"
 .section .text
 .code16
 .global kbd_sctokc
 
 # kbd_sctokc()
 # <req> ax = scan_code
+# <req> kbd_flg
 # <ret> ax = keycode
 kbd_sctokc:
 	push %si
@@ -21,23 +23,29 @@ kbd_sctokc:
 
 	mov $kbd_keymap, %si
 	# (stat == norm) ? {kc}
-	mov (kbd_keymap_stat), %cx
+	mov (kbd_flg), %cx
 	test %cx, %cx
 	jz .kc
 
 	mov $kbd_keymap_shf, %si
-	# ((stat AND caps) != 0) ? {caps}
-	test $(0x01<<0x02), %cx
-	jnz .caps
+	# ((stat & cap) != 0) ? {cap}
+	test $KBD_FLG_CAP, %cx
+	jnz .cap
 	jmp .kc
 
-.caps:
-	# ((stat AND lshf) != 0) ? {caps.shf}
-	test $(0x01<<0x00), %cx
-	jnz .caps__shf
-	# ((stat AND rshf) != 0) ? {caps.shf}
-	test $(0x01<<0x01), %cx
-	jnz .caps__shf
+.kc:
+	add %ax, %si
+	mov (%si), %al
+	jmp .done
+
+# {CAP}
+.cap:
+	# ((stat & lshf) != 0) ? {cap.shf}
+	test $KBD_FLG_LSHF, %cx
+	jnz .cap__shf
+	# ((stat & rshf) != 0) ? {cap.shf}
+	test $KBD_FLG_RSHF, %cx
+	jnz .cap__shf
 
 	# get kc
 	mov $kbd_keymap, %si
@@ -46,22 +54,22 @@ kbd_sctokc:
 
 	push %ax # [s.0:kc]
 	cmp $CHR_LC_A, %al
-	jb .caps__re_false
+	jb .cap__re_false
 	cmp $CHR_LC_Z, %al
-	jbe .caps__re_true
+	jbe .cap__re_true
 	pop %ax
 	jmp .done
 
-.caps__re_true:
+.cap__re_true:
 	pop %ax # [s.0:kc]
-	sub $0x20, %al
+	sub $CHR_CASE_MASK, %al
 	jmp .done
 
-.caps__re_false:
+.cap__re_false:
 	pop %ax # [s.0:kc]
 	jmp .done
 
-.caps__shf:
+.cap__shf:
 	# get kc
 	mov $kbd_keymap_shf, %si
 	add %ax, %si
@@ -69,24 +77,19 @@ kbd_sctokc:
 
 	push %ax # [s.0:kc]
 	cmp $CHR_UC_A, %al
-	jb .caps__shf_re_false
+	jb .cap__shf_re_false
 	cmp $CHR_UC_Z, %al
-	jbe .caps__shf_re_true
+	jbe .cap__shf_re_true
 	pop %ax
 	jmp .done
 
-.caps__shf_re_true:
+.cap__shf_re_true:
 	pop %ax # [s.0:kc]
-	add $0x20, %al
+	add $CHR_CASE_MASK, %al
 	jmp .done
 
-.caps__shf_re_false:
+.cap__shf_re_false:
 	pop %ax # [s.0:kc]
-	jmp .done
-
-.kc:
-	add %ax, %si
-	mov (%si), %al
 	jmp .done
 
 .done:

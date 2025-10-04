@@ -37,7 +37,7 @@
 .equ PS2_SC_LSHF, 0x12
 .equ PS2_SC_LCTRL, 0x14
 
-.equ PS2_SC_CAPS, 0x58
+.equ PS2_SC_CAP, 0x58
 .equ PS2_SC_RSHF, 0x59
 # }}}
 
