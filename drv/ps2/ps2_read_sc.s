@@ -24,19 +24,20 @@ ps2_read_sc:
 	cmp $PS2_SC_EXT, %al
 	je .ext
 
-	# (data == shf) ? {shf}
-	cmp $0x12, %al
-	je .set_shf
+	# (data == shf) ? {shf.set}
+	cmp $PS2_SC_SHF, %al
+	je .shf__set
 
+	# TODO: ctrl, alt, ...
 	jmp .done
 
 .skip:
 	OBF
 	in $PS2_DATA_REG, %al
 
-	# (data == shf) ? {clr_shf} : {done}
-	cmp $0x12, %al
-	je .clr_shf
+	# (data == shf) ? {shf.clr} : {done}
+	cmp $PS2_SC_SHF, %al
+	je .shf__clr
 	xor %ax, %ax
 	jmp .done
 
@@ -56,13 +57,13 @@ ps2_read_sc:
 	xor %ax, %ax
 	jmp .done
 
-.set_shf:
+.shf__set:
 	mov $0x01, %ax
 	mov %ax, (kbd_keymap_stat)
 	xor %ax, %ax
 	jmp .done
 
-.clr_shf:
+.shf__clr:
 	xor %ax, %ax
 	mov %ax, (kbd_keymap_stat)
 	jmp .done

@@ -13,8 +13,8 @@
 
 # cmd_test()
 cmd_test:
-	push $.str
-	call vga_puts
-	add $0x02, %sp
+	#push %ax
+	#call dbg_reg
+	#add $0x02, %sp
 
 	ret

@@ -21,8 +21,10 @@ dbg_line:
 	test %cx, %cx
 	jz .done
 
+	push %cx
 	mov $CHR_EQ, %al
 	call vga_putc
+	pop %cx
 
 	# {lp}
 	sub $0x01, %cx

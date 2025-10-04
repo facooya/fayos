@@ -29,6 +29,7 @@
 # Scan code
 .equ PS2_SC_EXT, 0xE0
 .equ PS2_SC_BRK, 0xF0
+.equ PS2_SC_SHF, 0x12
 # }}}
 
 # Bits
