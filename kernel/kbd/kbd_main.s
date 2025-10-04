@@ -39,6 +39,10 @@ kbd_main:
 	# {task} (scan_code == down)
 	cmp $0xE072, %ax
 	je _key_down
+
+	# (sc == ext) ? {done}
+	cmp $0xE0, %ah
+	je .done
 	# }}}
 
 	# {{{ pre-update

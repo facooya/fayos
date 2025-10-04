@@ -15,6 +15,7 @@ ps2_read_sc:
 	xor %ax, %ax
 	OBF
 	in $PS2_DATA_REG, %al
+	mov (kbd_keymap_stat), %cx
 
 	# (data == brk) ? {skip}
 	cmp $PS2_SC_BRK, %al
@@ -24,9 +25,15 @@ ps2_read_sc:
 	cmp $PS2_SC_EXT, %al
 	je .ext
 
-	# (data == shf) ? {shf.set}
-	cmp $PS2_SC_SHF, %al
-	je .shf__set
+	# (data == lshf) ? {lshf.set}
+	cmp $PS2_SC_LSHF, %al
+	je .lshf__set
+	# (data == rshf) ? {rshf.set}
+	cmp $PS2_SC_RSHF, %al
+	je .rshf__set
+	# (data == caps) ? {caps.set}
+	cmp $PS2_SC_CAPS, %al
+	je .caps__set
 
 	# TODO: ctrl, alt, ...
 	jmp .done
@@ -35,9 +42,12 @@ ps2_read_sc:
 	OBF
 	in $PS2_DATA_REG, %al
 
-	# (data == shf) ? {shf.clr} : {done}
-	cmp $PS2_SC_SHF, %al
-	je .shf__clr
+	# (data == lshf) ? {lshf.clr} : {done}
+	cmp $PS2_SC_LSHF, %al
+	je .lshf__clr
+	# (data == rshf) ? {rshf.clr} : {done}
+	cmp $PS2_SC_RSHF, %al
+	je .rshf__clr
 	xor %ax, %ax
 	jmp .done
 
@@ -57,15 +67,41 @@ ps2_read_sc:
 	xor %ax, %ax
 	jmp .done
 
-.shf__set:
-	mov $0x01, %ax
-	mov %ax, (kbd_keymap_stat)
+# {SHF}
+.lshf__set:
+	or $(0x01<<0x00), %cx
+	jmp .com__set
+
+.lshf__clr:
+	and $~(0x01<<0x00), %cx
+	jmp .com__clr
+
+.rshf__set:
+	or $(0x01<<0x01), %cx
+	jmp .com__set
+
+.rshf__clr:
+	and $~(0x01<<0x01), %cx
+	jmp .com__clr
+
+.caps__set:
+	test $(0x01<<0x02), %cx
+	jnz .caps__clr
+	or $(0x01<<0x02), %cx
+	jmp .com__set
+
+.caps__clr:
+	and $~(0x01<<0x02), %cx
+	jmp .com__clr
+
+.com__set:
+	mov %cx, (kbd_keymap_stat)
 	xor %ax, %ax
 	jmp .done
 
-.shf__clr:
+.com__clr:
+	mov %cx, (kbd_keymap_stat)
 	xor %ax, %ax
-	mov %ax, (kbd_keymap_stat)
 	jmp .done
 
 .done:

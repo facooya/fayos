@@ -16,7 +16,7 @@
 .equ PS2_ACK, 0xFA
 .equ PS2_RE, 0xFE
 
-# {{{ Commands
+# {{{ Command
 .equ PS2_READ_CONF_BYTE, 0x20
 .equ PS2_WRITE_CONF_BYTE, 0x60
 
@@ -25,11 +25,20 @@
 .equ PS2_EN_SCAN, 0xF4
 .equ PS2_CUR_SC_SET, 0xF0
 .equ PS2_GET_SC_SET, 0x00
+# }}}
 
-# Scan code
+# {{{ Scan code
 .equ PS2_SC_EXT, 0xE0
 .equ PS2_SC_BRK, 0xF0
-.equ PS2_SC_SHF, 0x12
+
+.equ PS2_SC_TAB, 0x0D
+
+.equ PS2_SC_LALT, 0x11
+.equ PS2_SC_LSHF, 0x12
+.equ PS2_SC_LCTRL, 0x14
+
+.equ PS2_SC_CAPS, 0x58
+.equ PS2_SC_RSHF, 0x59
 # }}}
 
 # Bits
@@ -37,6 +46,7 @@
 .equ PS2_IBF, (0x01<<0x01)
 .equ PS2_XLATE_BIT, (0x01<<0x06)
 
+# Macro
 .macro IBF
 0:
 	in $PS2_STAT_REG, %al
