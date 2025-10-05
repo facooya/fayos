@@ -5,6 +5,7 @@
 # Keyboard main
 
 .include "chr.s"
+.include "drv/kbd.s"
 .section .text
 .code16
 .global kbd_main
@@ -24,30 +25,46 @@ kbd_main:
 	# }}}
 
 	# {{{
-	# {task} (scan_code == left)
-	cmp $0xE06B, %ax
+	# (kc == left) ? {key.left}
+	cmp $KBD_KC_LEFT, %ax
 	je _key_left
 
-	# {task} (scan_code == right)
-	cmp $0xE074, %ax
+	# (kc == right) ? {key.right}
+	cmp $KBD_KC_RIGHT, %ax
 	je _key_right
 
-	# {task} (scan_code == up)
-	cmp $0xE075, %ax
+	# (kc == up) ? {key.up}
+	cmp $KBD_KC_UP, %ax
 	je _key_up
 
-	# {task} (scan_code == down)
-	cmp $0xE072, %ax
+	# (kc == down) ? {key.down}
+	cmp $KBD_KC_DOWN, %ax
 	je _key_down
 
-	# (sc == ext) ? {done}
-	cmp $0xE0, %ah
+	# (kc == num_sl) ? {key.n.sl}
+	cmp $KBD_KC_NUM_SL, %ax
+	je .key__num_sl
+
+	# (kc == num_ent) ? {key.cr}
+	cmp $KBD_KC_NUM_ENT, %ax
+	je _key_cr
+
+	# (kc_hi == ext) ? {done}
+	cmp $KBD_KC_EXT, %ah
 	je .done
 	# }}}
+	jmp .norm
 
+.key__num_sl:
+	# sctokc
+	xor %ax, %ax
+	mov $CHR_SL, %al
+	jmp .norm
+
+.norm:
 	# {{{ pre-update
 	# update raw_buf
-	push %ax
+	push %ax # [s.0:kc]
 	add $0x01, %si # raw.data
 	mov (raw_buf), %ax # raw.len
 	add $0x01, %ax
@@ -57,7 +74,7 @@ kbd_main:
 	mov (cursor+0x02), %ax # cursor.max
 	add $0x01, %ax
 	mov %ax, (cursor+0x02)
-	pop %ax
+	pop %ax # [s.0:kc]
 	# }}}
 
 	# {task} (raw.data-1 != null)

@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- support more key
+- remap for fN, 0xE0XX
 
 ## TODO PRIORITY
 
@@ -12,6 +12,7 @@
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
 - replace dap
+- support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 
 ## Feature
 - Tab: autocomplete file or dir
