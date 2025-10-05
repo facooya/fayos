@@ -22,15 +22,27 @@ kbd_sctokc:
 	jnz .done
 
 	mov $kbd_keymap, %si
-	# (stat == norm) ? {kc}
+	# (flg == 0) ? {kc}
 	mov (kbd_flg), %cx
 	test %cx, %cx
 	jz .kc
 
-	mov $kbd_keymap_shf, %si
-	# ((stat & cap) != 0) ? {cap}
+	# ((flg & cap) != 0) ? {cap}
 	test $KBD_FLG_CAP, %cx
 	jnz .cap
+
+	# ((flg & lshf) != 0) ? {shf}
+	test $KBD_FLG_LSHF, %cx
+	jnz .shf
+
+	# ((flg & rshf) != 0) ? {shf}
+	test $KBD_FLG_RSHF, %cx
+	jnz .shf
+
+	jmp .kc
+
+.shf:
+	mov $kbd_keymap_shf, %si
 	jmp .kc
 
 .kc:
@@ -40,10 +52,13 @@ kbd_sctokc:
 
 # {CAP}
 .cap:
-	# ((stat & lshf) != 0) ? {cap.shf}
+	mov $kbd_keymap_shf, %si
+
+	# ((flg & lshf) != 0) ? {cap.shf}
 	test $KBD_FLG_LSHF, %cx
 	jnz .cap__shf
-	# ((stat & rshf) != 0) ? {cap.shf}
+
+	# ((flg & rshf) != 0) ? {cap.shf}
 	test $KBD_FLG_RSHF, %cx
 	jnz .cap__shf
 

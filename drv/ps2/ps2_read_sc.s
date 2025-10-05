@@ -53,7 +53,7 @@ ps2_read_sc:
 	in $PS2_DATA_REG, %al
 
 	xor %dx, %dx
-	mov %al, %dl
+	mov %ax, %dx
 	xor %ax, %ax
 	jmp .done
 

@@ -29,27 +29,59 @@ kbd_flg_hdl:
 
 .set:
 	# (sc == lshf) ? {lshf.set}
-	cmp $PS2_SC_LSHF, %al
+	cmp $PS2_SC_LSHF, %ax
 	je .lshf__set
 
 	# (sc == rshf) ? {rshf.set}
-	cmp $PS2_SC_RSHF, %al
+	cmp $PS2_SC_RSHF, %ax
 	je .rshf__set
 
+	# (sc == lctl) ? {lctl.set}
+	cmp $PS2_SC_LCTL, %ax
+	je .lctl__set
+
+	# (sc == rctl) ? {rctl.set}
+	cmp $PS2_SC_RCTL, %ax
+	je .rctl__set
+
+	# (sc == lalt) ? {lalt.set}
+	cmp $PS2_SC_LALT, %ax
+	je .lctl__set
+
+	# (sc == ralt) ? {ralt.set}
+	cmp $PS2_SC_RALT, %ax
+	je .rctl__set
+
 	# (sc == caps) ? {cap.set}
-	cmp $PS2_SC_CAP, %al
+	cmp $PS2_SC_CAP, %ax
 	je .cap__set
 
 	jmp .done # cont
 
 .clr:
 	# (sc_brk == lshf) ? {lshf.clr} : {done}
-	cmp $PS2_SC_LSHF, %dl
+	cmp $PS2_SC_LSHF, %dx
 	je .lshf__clr
 
 	# (sc_brk == rshf) ? {rshf.clr} : {done}
-	cmp $PS2_SC_RSHF, %dl
+	cmp $PS2_SC_RSHF, %dx
 	je .rshf__clr
+
+	# (sc == lctl) ? {lctl.set}
+	cmp $PS2_SC_LCTL, %dx
+	je .lctl__set
+
+	# (sc == rctl) ? {rctl.set}
+	cmp $PS2_SC_RCTL, %dx
+	je .rctl__set
+
+	# (sc == lalt) ? {lalt.set}
+	cmp $PS2_SC_LALT, %dx
+	je .lctl__set
+
+	# (sc == ralt) ? {ralt.set}
+	cmp $PS2_SC_RALT, %dx
+	je .rctl__set
 
 	jmp .done # cont
 
@@ -68,6 +100,40 @@ kbd_flg_hdl:
 
 .rshf__clr:
 	and $~KBD_FLG_RSHF, %cx
+	jmp .done__flg
+
+# {CTL}
+.lctl__set:
+	or $KBD_FLG_LCTL, %cx
+	jmp .done__flg
+
+.lctl__clr:
+	and $~KBD_FLG_LCTL, %cx
+	jmp .done__flg
+
+.rctl__set:
+	or $KBD_FLG_RCTL, %cx
+	jmp .done__flg
+
+.rctl__clr:
+	and $~KBD_FLG_RCTL, %cx
+	jmp .done__flg
+
+# {ALT}
+.lalt__set:
+	or $KBD_FLG_LALT, %cx
+	jmp .done__flg
+
+.lalt__clr:
+	and $~KBD_FLG_LALT, %cx
+	jmp .done__flg
+
+.ralt__set:
+	or $KBD_FLG_RALT, %cx
+	jmp .done__flg
+
+.ralt__clr:
+	and $~KBD_FLG_RALT, %cx
 	jmp .done__flg
 
 # {CAP}
