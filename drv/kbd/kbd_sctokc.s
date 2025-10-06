@@ -6,37 +6,37 @@
 
 .include "chr.s"
 .include "drv/kbd.s"
+.include "drv/ps2.s"
 .section .text
 .code16
 .global kbd_sctokc
 
 # kbd_sctokc()
-# <req> ax = scan_code
-# <req> kbd_flg
-# <ret> ax = keycode
+# <req> ax = sc
+# <req> kbd_mflg
+# <ret> al = kc
 kbd_sctokc:
 	push %si
 
 	# (sc != norm) ? {done}
 	test %ah, %ah
-	jnz .done
+	jnz .ext
 
 	mov $kbd_keymap, %si
-	# (flg == 0) ? {kc}
-	mov (kbd_flg), %cx
+	# (mflg == 0) ? {kc}
+	mov (kbd_mflg), %cx
 	test %cx, %cx
 	jz .kc
 
-	# ((flg & cap) != 0) ? {cap}
-	test $KBD_FLG_CAP, %cx
+	# ((mflg & cap) != 0) ? {cap}
+	test $KBD_MFLG_CAP, %cx
 	jnz .cap
 
-	# ((flg & lshf) != 0) ? {shf}
-	test $KBD_FLG_LSHF, %cx
+	# ((mflg & lshf) != 0) ? {shf}
+	test $KBD_MFLG_LSHF, %cx
 	jnz .shf
-
-	# ((flg & rshf) != 0) ? {shf}
-	test $KBD_FLG_RSHF, %cx
+	# ((mflg & rshf) != 0) ? {shf}
+	test $KBD_MFLG_RSHF, %cx
 	jnz .shf
 
 	jmp .kc
@@ -54,12 +54,12 @@ kbd_sctokc:
 .cap:
 	mov $kbd_keymap_shf, %si
 
-	# ((flg & lshf) != 0) ? {cap.shf}
-	test $KBD_FLG_LSHF, %cx
+	# ((mflg & lshf) != 0) ? {cap.shf}
+	test $KBD_MFLG_LSHF, %cx
 	jnz .cap__shf
 
-	# ((flg & rshf) != 0) ? {cap.shf}
-	test $KBD_FLG_RSHF, %cx
+	# ((mflg & rshf) != 0) ? {cap.shf}
+	test $KBD_MFLG_RSHF, %cx
 	jnz .cap__shf
 
 	# get kc
@@ -107,6 +107,58 @@ kbd_sctokc:
 	pop %ax # [s.0:kc]
 	jmp .done
 
+# {EXT}
+.ext:
+	# arrow
+	cmp $PS2_SC_UP, %ax
+	je .kc__up
+	cmp $PS2_SC_DOWN, %ax
+	je .kc__down
+	cmp $PS2_SC_LEFT, %ax
+	je .kc__left
+	cmp $PS2_SC_RIGHT, %ax
+	je .kc__right
+
+	# num
+	cmp $PS2_SC_NUM_SL, %ax
+	je .kc__num_sl
+	cmp $PS2_SC_NUM_ENT, %ax
+	je .kc__num_ent
+	jmp .done
+
+# {KC.ARROW}
+.kc__up:
+	xor %ax, %ax
+	mov $KBD_KC_UP, %al
+	jmp .done
+
+.kc__down:
+	xor %ax, %ax
+	mov $KBD_KC_DOWN, %al
+	jmp .done
+
+.kc__left:
+	xor %ax, %ax
+	mov $KBD_KC_LEFT, %al
+	jmp .done
+
+.kc__right:
+	xor %ax, %ax
+	mov $KBD_KC_RIGHT, %al
+	jmp .done
+
+# {KC.NUM}
+.kc__num_sl:
+	xor %ax, %ax
+	mov $KBD_KC_NUM_SL, %al
+	jmp .done
+
+.kc__num_ent:
+	xor %ax, %ax
+	mov $KBD_KC_NUM_ENT, %al
+	jmp .done
+
+# {DONE}
 .done:
 	pop %si
 	ret

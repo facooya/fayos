@@ -2,25 +2,25 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Flag handler
+# Modifier flag handler
 
 .include "drv/ps2.s"
 .include "drv/kbd.s"
 .section .data
-.global kbd_flg
-kbd_flg: .word 0x00
+.global kbd_mflg
+kbd_mflg: .word 0x00
 
 .section .text
 .code16
-.global kbd_flg_hdl
+.global kbd_mflg_mng
 
-# kbd_flg_hdl()
+# kbd_mflg_mng()
 # <req> ax = sc
 # <req> dx = sc_brk
 # <ret> ax = sc (skip=0)
-# <ret> kbd_flg
-kbd_flg_hdl:
-	mov (kbd_flg), %cx
+# <ret> kbd_mflg
+kbd_mflg_mng:
+	mov (kbd_mflg), %cx
 
 	# (sc_brk == 0) ? {set} : {clr}
 	test %dx, %dx
@@ -28,26 +28,26 @@ kbd_flg_hdl:
 	jmp .clr
 
 .set:
+	# Shf
 	# (sc == lshf) ? {lshf.set}
 	cmp $PS2_SC_LSHF, %ax
 	je .lshf__set
-
 	# (sc == rshf) ? {rshf.set}
 	cmp $PS2_SC_RSHF, %ax
 	je .rshf__set
 
+	# Ctl
 	# (sc == lctl) ? {lctl.set}
 	cmp $PS2_SC_LCTL, %ax
 	je .lctl__set
-
 	# (sc == rctl) ? {rctl.set}
 	cmp $PS2_SC_RCTL, %ax
 	je .rctl__set
 
+	# Alt
 	# (sc == lalt) ? {lalt.set}
 	cmp $PS2_SC_LALT, %ax
 	je .lctl__set
-
 	# (sc == ralt) ? {ralt.set}
 	cmp $PS2_SC_RALT, %ax
 	je .rctl__set
@@ -59,26 +59,26 @@ kbd_flg_hdl:
 	jmp .done # cont
 
 .clr:
+	# Shf
 	# (sc_brk == lshf) ? {lshf.clr} : {done}
 	cmp $PS2_SC_LSHF, %dx
 	je .lshf__clr
-
 	# (sc_brk == rshf) ? {rshf.clr} : {done}
 	cmp $PS2_SC_RSHF, %dx
 	je .rshf__clr
 
+	# Ctl
 	# (sc == lctl) ? {lctl.set}
 	cmp $PS2_SC_LCTL, %dx
 	je .lctl__set
-
 	# (sc == rctl) ? {rctl.set}
 	cmp $PS2_SC_RCTL, %dx
 	je .rctl__set
 
+	# Alt
 	# (sc == lalt) ? {lalt.set}
 	cmp $PS2_SC_LALT, %dx
 	je .lctl__set
-
 	# (sc == ralt) ? {ralt.set}
 	cmp $PS2_SC_RALT, %dx
 	je .rctl__set
@@ -87,69 +87,62 @@ kbd_flg_hdl:
 
 # {SHF}
 .lshf__set:
-	or $KBD_FLG_LSHF, %cx
+	or $KBD_MFLG_LSHF, %cx
 	jmp .done__flg
-
 .lshf__clr:
-	and $~KBD_FLG_LSHF, %cx
+	and $~KBD_MFLG_LSHF, %cx
 	jmp .done__flg
 
 .rshf__set:
-	or $KBD_FLG_RSHF, %cx
+	or $KBD_MFLG_RSHF, %cx
 	jmp .done__flg
-
 .rshf__clr:
-	and $~KBD_FLG_RSHF, %cx
+	and $~KBD_MFLG_RSHF, %cx
 	jmp .done__flg
 
 # {CTL}
 .lctl__set:
-	or $KBD_FLG_LCTL, %cx
+	or $KBD_MFLG_LCTL, %cx
 	jmp .done__flg
-
 .lctl__clr:
-	and $~KBD_FLG_LCTL, %cx
+	and $~KBD_MFLG_LCTL, %cx
 	jmp .done__flg
 
 .rctl__set:
-	or $KBD_FLG_RCTL, %cx
+	or $KBD_MFLG_RCTL, %cx
 	jmp .done__flg
-
 .rctl__clr:
-	and $~KBD_FLG_RCTL, %cx
+	and $~KBD_MFLG_RCTL, %cx
 	jmp .done__flg
 
 # {ALT}
 .lalt__set:
-	or $KBD_FLG_LALT, %cx
+	or $KBD_MFLG_LALT, %cx
 	jmp .done__flg
-
 .lalt__clr:
-	and $~KBD_FLG_LALT, %cx
+	and $~KBD_MFLG_LALT, %cx
 	jmp .done__flg
 
 .ralt__set:
-	or $KBD_FLG_RALT, %cx
+	or $KBD_MFLG_RALT, %cx
 	jmp .done__flg
-
 .ralt__clr:
-	and $~KBD_FLG_RALT, %cx
+	and $~KBD_MFLG_RALT, %cx
 	jmp .done__flg
 
 # {CAP}
 .cap__set:
-	test $KBD_FLG_CAP, %cx
+	test $KBD_MFLG_CAP, %cx
 	jnz .cap__clr
-	or $KBD_FLG_CAP, %cx
+	or $KBD_MFLG_CAP, %cx
 	jmp .done__flg
-
 .cap__clr:
-	and $~KBD_FLG_CAP, %cx
+	and $~KBD_MFLG_CAP, %cx
 	jmp .done__flg
 
 # {DONE}
 .done__flg:
-	mov %cx, (kbd_flg)
+	mov %cx, (kbd_mflg)
 	xor %ax, %ax # skip
 	jmp .done
 

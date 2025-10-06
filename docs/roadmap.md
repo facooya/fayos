@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- remap for fN, 0xE0XX
 
 ## TODO PRIORITY
 

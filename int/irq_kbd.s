@@ -14,14 +14,18 @@ irq_kbd:
 	call ps2_read_sc
 
 	# <req> ax:sc, dx:sc_brk
-	# <ret> ax:sc
-	call kbd_flg_hdl
+	# <ret> ax:sc (skip=0)
+	# <ret> mflg
+	call kbd_mflg_mng
 	# (sc == 0) ? {done(skip)}
 	test %ax, %ax
 	jz .done
 
 	# <req> ax:sc
+	# <ret> al:kc
 	call kbd_sctokc
+
+	# <req> al:kc
 	call kbd_main
 
 .done:

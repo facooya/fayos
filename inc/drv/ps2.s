@@ -31,15 +31,24 @@
 .equ PS2_SC_EXT, 0xE0
 .equ PS2_SC_BRK, 0xF0
 
+# Mod
 .equ PS2_SC_LSHF, 0x12
 .equ PS2_SC_RSHF, 0x59
 .equ PS2_SC_LCTL, 0x14
-.equ PS2_SC_RCTL, 0xE014
 .equ PS2_SC_LALT, 0x11
+.equ PS2_SC_RCTL, 0xE014
 .equ PS2_SC_RALT, 0xE011
-
 .equ PS2_SC_CAP, 0x58
-.equ PS2_SC_TAB, 0x0D
+
+# Arrow
+.equ PS2_SC_UP, 0xE075
+.equ PS2_SC_DOWN, 0xE072
+.equ PS2_SC_LEFT, 0xE06B
+.equ PS2_SC_RIGHT, 0xE074
+
+# Numpad
+.equ PS2_SC_NUM_SL, 0xE04A
+.equ PS2_SC_NUM_ENT, 0xE05A
 # }}}
 
 # Bits

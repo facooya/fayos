@@ -31,8 +31,8 @@ drv/vga/vga_get_curs.s \
 drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
-drv/kbd/kbd_flg_hdl.s \
 drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_mflg_mng.s \
 drv/kbd/kbd_sctokc.s \
 \
 kernel/kbd/kbd_main.s \

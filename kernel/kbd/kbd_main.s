@@ -11,53 +11,61 @@
 .global kbd_main
 
 # kbd_main()
-# <req> al = ascii_code
-# <req> ax = extend_key
+# <req> al = kc
 kbd_main:
 	# {{{
-	# {task} (ascii_code == bs)
+	# (kc == bs) ? {key.bs}
 	cmp $CHR_BS, %al
 	je _key_bs
 
-	# {task} (ascii_code == cr)
+	# (kc == cr) ? {key.cr}
 	cmp $CHR_CR, %al
 	je _key_cr
 	# }}}
 
+	# TODO: check (kc >= 0x80)
 	# {{{
+	# Arrow
 	# (kc == left) ? {key.left}
-	cmp $KBD_KC_LEFT, %ax
+	cmp $KBD_KC_LEFT, %al
 	je _key_left
-
 	# (kc == right) ? {key.right}
-	cmp $KBD_KC_RIGHT, %ax
+	cmp $KBD_KC_RIGHT, %al
 	je _key_right
-
 	# (kc == up) ? {key.up}
-	cmp $KBD_KC_UP, %ax
+	cmp $KBD_KC_UP, %al
 	je _key_up
-
 	# (kc == down) ? {key.down}
-	cmp $KBD_KC_DOWN, %ax
+	cmp $KBD_KC_DOWN, %al
 	je _key_down
 
+	# Numpad
 	# (kc == num_sl) ? {key.n.sl}
-	cmp $KBD_KC_NUM_SL, %ax
+	cmp $KBD_KC_NUM_SL, %al
 	je .key__num_sl
-
-	# (kc == num_ent) ? {key.cr}
-	cmp $KBD_KC_NUM_ENT, %ax
+	# (kc == num_ent) ? {key.n.cr}
+	cmp $KBD_KC_NUM_ENT, %al
 	je _key_cr
 
-	# (kc_hi == ext) ? {done}
-	cmp $KBD_KC_EXT, %ah
+	# Special
+	# (kc == tab) ? {key.tab}
+	cmp $KBD_KC_TAB, %al
+	je .done
+	# (kc == esc) ? {key.esc}
+	cmp $KBD_KC_ESC, %al
+	je .done
+
+	# FN
+	# (kc == f1) ? {key.f1}
+	cmp $KBD_KC_F1, %al
+	je .done
+	# (kc == f2) ? {key.f2}
+	cmp $KBD_KC_F2, %al
 	je .done
 	# }}}
 	jmp .norm
 
 .key__num_sl:
-	# sctokc
-	xor %ax, %ax
 	mov $CHR_SL, %al
 	jmp .norm
 
@@ -83,9 +91,9 @@ kbd_main:
 	jnz .call_kbd_rsh
 
 	# {{{
-	push %ax # [s.0:ascii]
+	push %ax # [s.0:kc]
 	call vga_putc
-	pop %ax # [s.0:ascii]
+	pop %ax # [s.0:kc]
 
 	# store chr
 	mov %al, -0x01(%si) # raw.data
