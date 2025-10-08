@@ -74,25 +74,15 @@ _kbd_hist_line:
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
 
+	push %si
 	push %cx
+	call vga_putls
+	add $0x04, %sp
+
 	mov (cursor), %ax # cursor.min
 	add %ax, %cx
 	mov %cx, (cursor+0x02) # update cursor.max
-	pop %cx
-
-.disp__lp:
-	# {end} (buf.len == 0)
-	mov (%si), %al
-	test %cx, %cx
-	jz .done
-
-	push %cx
-	call vga_putc
-	pop %cx
-
-	add $0x01, %si
-	sub $0x01, %cx
-	jmp .disp__lp
+	jmp .done
 
 .done:
 	pop %bx

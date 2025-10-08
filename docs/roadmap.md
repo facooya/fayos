@@ -3,7 +3,7 @@
 
 ## TODO PRIORITY
 - check history current buffer save and restore
-- make putm or putb
+- Makefile group for src
 
 ## TODO
 - support relative path
@@ -14,6 +14,7 @@
 - calculate low, high address
 - replace dap
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
+- scroll and restore many line feed
 
 ## Feature
 - Tab: autocomplete file or dir

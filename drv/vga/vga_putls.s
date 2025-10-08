@@ -1,0 +1,176 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# Video put length string
+
+.include "drv/vga.s"
+.include "chr.s"
+.section .text
+.code16
+.global vga_putls
+
+# vga_putls(len, *str)
+vga_putls:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	mov 0x06(%bp), %si
+
+	mov $VGA_SEG, %ax
+	mov %ax, %es
+	xor %di, %di
+
+	call vga_get_curs
+	add %ax, %di
+	add %ax, %di
+	mov %ax, %cx # cur_curs
+	mov (vga_size), %bx
+	mov 0x04(%bp), %dx # len
+
+.lp:
+	# (len == 0) ? {done}
+	test %dx, %dx
+	jz .done
+
+	mov (%si), %al
+	cmp $CHR_CR, %al
+	je .chr__cr
+	cmp $CHR_LF, %al
+	je .chr__lf
+
+	# (curs_pos >= vga_size) ? {shu.in}
+	cmp %bx, %cx
+	jge .shu__in
+
+.lp__put:
+	mov $VGA_COLOR_NORM, %ah
+	mov %ax, %es:(%di)
+	add $0x02, %di
+
+	inc %si
+	inc %cx # cur_curs
+	dec %dx # len
+	jmp .lp
+
+# {CHR}
+.chr__cr:
+	push %bx # [s.l0:vga_size]
+	push %dx # [s.l1:len]
+	mov %cx, %ax # cur_curs
+	mov (VGA_COL), %bx # col
+
+	# [cur_curs - (cur_curs % col)]
+	xor %dx, %dx
+	div %bx
+	sub %dx, %cx # cur_curs
+	sub %dx, %di
+	sub %dx, %di
+
+	pop %dx # [s.l1:len]
+	pop %bx # [s.l0:vga_size]
+	inc %si
+	dec %dx # len
+	jmp .lp
+
+.chr__lf:
+	mov (VGA_COL), %ax
+	add %ax, %cx
+	add %ax, %di
+	add %ax, %di
+
+	# (cur_curs >= vga_size) ? {shu} : {lp}
+	mov (vga_size), %ax
+	cmp %ax, %cx
+	jge .shu
+	inc %si
+	dec %dx # len
+	jmp .lp
+
+# {SHU}
+.shu__in:
+	push %si # [s.l1:str]
+	push %ax # [s.l0:chr]
+
+	# init
+	mov (VGA_COL), %ax
+	xor %si, %si
+	add %ax, %si
+	add %ax, %si
+	xor %di, %di
+
+	# cpy
+	mov (vga_last_row_off), %cx
+	push %ds # [s.s0:vga_seg]
+	mov $VGA_SEG, %ax
+	mov %ax, %ds
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
+
+	# clr line
+	mov (VGA_COL), %cx
+	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	rep stosw
+
+	mov (vga_last_row_off), %cx # curs_pos
+	mov %cx, %di
+	add %cx, %di # vga_off
+
+	pop %ax # [s.l0:chr]
+	pop %si # [s.l1:str]
+	jmp .lp__put
+
+.shu:
+	push %dx # [s.l1:len]
+
+	# init
+	push %si # [s.l0:str]
+	mov (VGA_COL), %ax
+	sub %ax, %cx
+	mov %cx, %dx # curs_pos
+	xor %si, %si
+	add %ax, %si
+	add %ax, %si
+	xor %di, %di
+
+	# cpy
+	mov (vga_last_row_off), %cx
+	push %ds # [s.s0:vga_seg]
+	mov $VGA_SEG, %ax
+	mov %ax, %ds
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
+	pop %si # [s.l0:str]
+
+	# clr last line
+	mov (VGA_COL), %cx
+	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	rep stosw
+
+	# set
+	mov %dx, %cx # curs_pos
+	mov %dx, %di
+	add %dx, %di
+
+	pop %dx # [s.l1:len]
+
+	inc %si
+	dec %dx # len
+	jmp .lp
+
+# {DONE}
+.done:
+	push %cx # cur_curs
+	call vga_set_curs
+	add $0x02, %sp
+
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	pop %bp
+	ret
