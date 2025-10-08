@@ -2,8 +2,6 @@
 ## WIP
 
 ## TODO PRIORITY
-- check history current buffer save and restore
-- Makefile group for src
 
 ## TODO
 - support relative path

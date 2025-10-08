@@ -2,39 +2,8 @@
 # This file always first location in Fayos.
 # Kernel address - segment:offset = 0x0000:0x1000
 
-SRCS = \
+SRCS_KERN = \
 kernel/kernel.s \
-\
-int/pic_init.s \
-int/ivt_init.s \
-int/interrupt.s \
-int/irq_kbd.s \
-\
-drv/ata/ata_get_sect.s \
-drv/ata/ata_read_sect.s \
-drv/ata/ata_read_blk.s \
-drv/ata/ata_write_sect.s \
-drv/ata/ata_write_blk.s \
-\
-drv/ps2/ps2_chk_sc_set.s \
-drv/ps2/ps2_init.s \
-drv/ps2/ps2_xlate_off.s \
-drv/ps2/ps2_read_sc.s \
-\
-drv/vga/vga.s \
-drv/vga/vga_putc.s \
-drv/vga/vga_puts.s \
-drv/vga/vga_putls.s \
-drv/vga/vga_clr.s \
-drv/vga/vga_clr_line.s \
-drv/vga/vga_init_curs.s \
-drv/vga/vga_get_curs.s \
-drv/vga/vga_set_curs.s \
-drv/vga/vga_shu.s \
-\
-drv/kbd/kbd_keymap.s \
-drv/kbd/kbd_mflg_mng.s \
-drv/kbd/kbd_sctokc.s \
 \
 kernel/kbd/kbd_main.s \
 kernel/kbd/kbd_lsh.s \
@@ -70,9 +39,9 @@ kernel/dbg/dbg_trace.s \
 kernel/dbg/dbg_utils.s \
 \
 kernel/dbg/num/dbg_num.s \
-kernel/dbg/num/dbg_reg.s \
-\
-\
+kernel/dbg/num/dbg_reg.s
+
+SRCS_FS = \
 fs/cache.s \
 \
 fs/super/super.s \
@@ -97,9 +66,9 @@ fs/bit/set_bit.s \
 fs/path/path.s \
 fs/path/read_paths.s \
 fs/path/tok_paths.s \
-fs/path/build_paths.s \
-\
-\
+fs/path/build_paths.s
+
+SRCS_SH = \
 shell/history.s \
 \
 shell/args/args.s \
@@ -131,9 +100,42 @@ shell/cmd/file/touch.s \
 shell/cmd/dir/cd.s \
 shell/cmd/dir/ls.s \
 shell/cmd/dir/mkdir.s \
-shell/cmd/dir/rmdir.s \
+shell/cmd/dir/rmdir.s
+
+SRCS_DRV = \
+drv/ata/ata_get_sect.s \
+drv/ata/ata_read_sect.s \
+drv/ata/ata_read_blk.s \
+drv/ata/ata_write_sect.s \
+drv/ata/ata_write_blk.s \
 \
+drv/ps2/ps2_chk_sc_set.s \
+drv/ps2/ps2_init.s \
+drv/ps2/ps2_xlate_off.s \
+drv/ps2/ps2_read_sc.s \
 \
+drv/vga/vga.s \
+drv/vga/vga_putc.s \
+drv/vga/vga_puts.s \
+drv/vga/vga_putls.s \
+drv/vga/vga_clr.s \
+drv/vga/vga_clr_line.s \
+drv/vga/vga_init_curs.s \
+drv/vga/vga_get_curs.s \
+drv/vga/vga_set_curs.s \
+drv/vga/vga_shu.s \
+\
+drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_mflg_mng.s \
+drv/kbd/kbd_sctokc.s
+
+SRCS_INT = \
+int/pic_init.s \
+int/ivt_init.s \
+int/interrupt.s \
+int/irq_kbd.s
+
+SRCS_LIB = \
 lib/re.s \
 \
 lib/dir/get_bottom_dir.s \
@@ -154,6 +156,14 @@ lib/str/memcmp.s \
 lib/str/memcpy.s \
 lib/str/memset.s \
 lib/str/strlen.s
+
+SRCS = \
+$(SRCS_KERN) \
+$(SRCS_FS) \
+$(SRCS_SH) \
+$(SRCS_DRV) \
+$(SRCS_INT) \
+$(SRCS_LIB)
 
 OBJS = $(SRCS:%.s=./build/%.o)
 
