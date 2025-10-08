@@ -2,6 +2,8 @@
 ## WIP
 
 ## TODO PRIORITY
+- check history current buffer save and restore
+- make putm or putb
 
 ## TODO
 - support relative path

@@ -86,7 +86,9 @@ _kbd_hist_line:
 	test %cx, %cx
 	jz .done
 
+	push %cx
 	call vga_putc
+	pop %cx
 
 	add $0x01, %si
 	sub $0x01, %cx

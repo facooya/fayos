@@ -2,4 +2,3 @@
 ## WIP
 
 ## FIXME
-- up key logic broken
