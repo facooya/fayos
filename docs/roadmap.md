@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- fix the HACK in kbd
 
 ## TODO PRIORITY
 

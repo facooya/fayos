@@ -28,6 +28,24 @@ _kbd_hist_line:
 	sub %ax, %cx # hist_line
 	sub $0x01, %cx # hist_line_i
 
+	# HACK {{
+	cmp $0x00, %cx
+	jl .line_zero
+
+	mov (hist_stack), %ax
+	cmp $0x00, %ax
+	jl .line_zero
+	jmp .line_true
+
+.line_zero:
+	xor %cx, %cx
+	mov $0x01, %cx
+	mov $0xFFFF, %ax
+	mov %ax, (hist_stack)
+	jmp .line_true
+
+.line_true:
+	# }}
 	add %cx, %di
 	add %cx, %di
 	mov (%di), %dx # hist_line_size
