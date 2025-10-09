@@ -2,24 +2,20 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Modifier flag handler
+# Update modifier flag
 
 .include "drv/ps2.s"
 .include "drv/kbd.s"
-.section .data
-.global kbd_mflg
-kbd_mflg: .word 0x00
-
 .section .text
 .code16
-.global kbd_mflg_mng
+.global kbd_upd_mflg
 
-# kbd_mflg_mng()
+# kbd_upd_mflg()
 # <req> ax = sc
 # <req> dx = sc_brk
 # <ret> ax = sc (skip=0)
 # <ret> kbd_mflg
-kbd_mflg_mng:
+kbd_upd_mflg:
 	mov (kbd_mflg), %cx
 
 	# (sc_brk == 0) ? {set} : {clr}

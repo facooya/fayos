@@ -16,7 +16,7 @@ irq_kbd:
 	# <req> ax:sc, dx:sc_brk
 	# <ret> ax:sc (skip=0)
 	# <ret> mflg
-	call kbd_mflg_mng
+	call kbd_upd_mflg
 	# (sc == 0) ? {done(skip)}
 	test %ax, %ax
 	jz .done
