@@ -55,14 +55,15 @@ kbd_upd_hist:
 	mov (%si), %cx
 	add $0x02, %si
 
+	mov %cx, %dx
+	mov (cursor), %ax
+	add %ax, %dx
+	mov %dx, (cursor+0x02)
+
 	push %si
 	push %cx
 	call vga_putls
 	add $0x04, %sp
-
-	mov (cursor), %ax
-	add %ax, %cx
-	mov %cx, (cursor+0x02)
 	jmp .done
 
 .done:
