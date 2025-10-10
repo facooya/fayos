@@ -11,11 +11,8 @@ kernel/kbd/kbd_rsh.s \
 \
 kernel/kbd/_key_bs.s \
 kernel/kbd/_key_cr.s \
-kernel/kbd/_key_down.s \
 kernel/kbd/_key_left.s \
 kernel/kbd/_key_right.s \
-kernel/kbd/_key_up.s \
-kernel/kbd/_kbd_hist_line.s \
 \
 kernel/disk/dap.s \
 kernel/disk/dap_utils.s \

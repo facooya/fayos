@@ -10,13 +10,8 @@
 
 # TODO: history/cache.s
 .section .data
-.global hist_stack
-.global hist_data
 .global hist_idx
-hist_stack: .word 0x00
-hist_data: .word 0x00
 hist_idx: .word 0x00
-# 0:default, 1:up_key, 2:down_key
 
 .section .text
 .code16
@@ -333,11 +328,9 @@ history:
 	push %es
 	call fparse_lines
 	add $0x06, %sp
-	mov (file_lines), %ax
 
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
+	# upd hist_idx
+	mov (file_lines), %ax
 	mov %ax, (hist_idx)
 	# }}}
 	# }}}}}
