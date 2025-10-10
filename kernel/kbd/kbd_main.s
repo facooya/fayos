@@ -34,10 +34,10 @@ kbd_main:
 	je _key_right
 	# (kc == up) ? {key.up}
 	cmp $KBD_KC_UP, %al
-	je _key_up
+	je .call__kbd_key_up
 	# (kc == down) ? {key.down}
 	cmp $KBD_KC_DOWN, %al
-	je _key_down
+	je .call__kbd_key_down
 
 	# Numpad
 	# (kc == num_sl) ? {key.n.sl}
@@ -102,6 +102,15 @@ kbd_main:
 .done:
 	ret
 
+# {CALL}
 .call_kbd_rsh:
 	call kbd_rsh
+	jmp .done
+
+.call__kbd_key_up:
+	call kbd_key_up
+	jmp .done
+
+.call__kbd_key_down:
+	call kbd_key_down
 	jmp .done

@@ -128,8 +128,10 @@ drv/vga/vga_shu.s \
 drv/kbd/kbd_data.s \
 drv/kbd/kbd_keymap.s \
 drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_upd_hflg.s \
-drv/kbd/kbd_sctokc.s
+drv/kbd/kbd_upd_hist.s \
+drv/kbd/kbd_sctokc.s \
+drv/kbd/kbd_key_up.s \
+drv/kbd/kbd_key_down.s
 
 SRCS_INT = \
 int/pic_init.s \

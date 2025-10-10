@@ -6,7 +6,4 @@
 
 .section .data
 .global kbd_mflg
-.global kbd_hflg
-
 kbd_mflg: .word 0x00
-kbd_hflg: .word 0x00

@@ -26,11 +26,10 @@ _key_cr:
 	mov $raw_buf, %si
 	add $0x02, %si # skip len
 
-	# zero hist
-	xor %ax, %ax
-	mov %ax, (hist_stack)
-	mov %ax, (hist_data)
-
+	# TODO: history fparse -> file_linec=hist_idx
+	#xor %ax, %ax
+	#mov %ax, (hist_stack)
+	#mov %ax, (hist_data)
 	jmp .done
 
 .done:

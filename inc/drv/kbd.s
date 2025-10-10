@@ -4,7 +4,8 @@
 #
 # Keyboard constants
 
-# Bit
+# {{{ Bit
+# Modifier flag
 .equ KBD_MFLG_LSHF, (0x01<<0x00)
 .equ KBD_MFLG_RSHF, (0x01<<0x01)
 .equ KBD_MFLG_LCTL, (0x01<<0x02)
@@ -12,6 +13,7 @@
 .equ KBD_MFLG_LALT, (0x01<<0x04)
 .equ KBD_MFLG_RALT, (0x01<<0x05)
 .equ KBD_MFLG_CAP, (0x01<<0x06)
+# }}}
 
 # {{{ Keycode
 # 0xE0-0xEF
