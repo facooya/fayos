@@ -19,6 +19,7 @@ dbg_buf:
 	push %ax
 	push %bx
 	push %cx
+	push %dx
 
 	mov $CHR_CR, %al
 	call vga_putc
@@ -36,11 +37,13 @@ dbg_buf:
 
 	mov %cx, %ax # buf.len
 	add $0x30, %al
+	push %cx
 	call vga_putc
 	mov $CHR_CR, %al
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
+	pop %cx
 
 	call ._data
 	mov $CHR_CR, %al
@@ -53,6 +56,7 @@ dbg_buf:
 	mov $CHR_LF, %al
 	call vga_putc
 
+	pop %dx
 	pop %cx
 	pop %bx
 	pop %ax
@@ -145,17 +149,23 @@ dbg_redir_buf:
 	test %al, %al
 	jz ._data__nul
 
+	push %cx
 	call vga_putc
+	pop %cx
 	jmp ._data__chk
 
 ._data__sp:
 	mov $CHR_PRD, %al
+	push %cx
 	call vga_putc
+	pop %cx
 	jmp ._data__chk
 
 ._data__nul:
 	mov $CHR_ZERO, %al
+	push %cx
 	call vga_putc
+	pop %cx
 	jmp ._data__chk
 
 ._data__chk:
