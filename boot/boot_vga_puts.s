@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Out message for boot
+# Put string in bootloader
 
 .include "boot.s"
 .section .text
 .code16
-.global out_msg
+.global boot_vga_puts
 
-# out_msg(&str)
-out_msg:
+# boot_vga_puts(&str)
+boot_vga_puts:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -43,15 +43,15 @@ out_msg:
 	mov %ax, %cx # pos
 	# }}}
 
-.out_msg__lp:
+.lp:
 	# (chr == null) ? {end}
 	mov (%si), %al
 	test %al, %al
-	jz .out_msg__done
+	jz .done
 
 	# (chr == newline) ? {newline}
 	cmp $CHR_NL, %al
-	je .out_msg__newline
+	je .nl
 
 	# out
 	mov %al, %es:(%di)
@@ -65,9 +65,9 @@ out_msg:
 	# {lp}
 	add $0x01, %si
 	add $0x01, %cx # pos
-	jmp .out_msg__lp
+	jmp .lp
 
-.out_msg__newline:
+.nl:
 	# {{{ newline
 	push %cx
 	mov $DISP_MEM_COL, %bx
@@ -93,9 +93,9 @@ out_msg:
 	mov %ax, %cx
 
 	add $0x01, %si
-	jmp .out_msg__lp
+	jmp .lp
 
-.out_msg__done:
+.done:
 	# {{{ set cursor
 	mov $CURS_POS_HI, %al
 	mov $CURS_CMD_REG, %dx

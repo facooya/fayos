@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Read kernel disk for boot
+# Read sectors in bootloader
 
 .include "boot.s"
 .section .text
 .code16
-.global read_kernel
+.global boot_ata_read_sect
 
-# read_kernel()
-read_kernel:
+# boot_ata_read_sect()
+boot_ata_read_sect:
 	# set mode
 	mov $ATA_DRV_REG, %dx
 	mov $ATA_DRV_SET, %al # 0b11100000
@@ -40,15 +40,15 @@ read_kernel:
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_CMD_READ, %al
 	out %al, %dx
-	jmp .read_kernel__drq__lp
+	jmp .drq__lp
 
-.read_kernel__sect__lp:
+.sect__lp:
 	mov $ATA_STAT_REG, %dx
 
-.read_kernel__drq__lp:
+.drq__lp:
 	in %dx, %al
 	test $ATA_STAT_DRQ, %al
-	jz .read_kernel__drq__lp
+	jz .drq__lp
 
 	# TODO: error
 
@@ -56,10 +56,10 @@ read_kernel:
 	mov $SECT_SIZE_WORD, %cx
 	sub $0x01, %bx # sector count
 
-.read_kernel__data__lp:
+.data__lp:
 	# (count == 0) ? {end}
 	test %cx, %cx
-	jz .read_kernel__data__end
+	jz .data__end
 
 	# load
 	in %dx, %ax
@@ -68,13 +68,13 @@ read_kernel:
 	# {lp}
 	sub $0x01, %cx
 	add $0x02, %di
-	jmp .read_kernel__data__lp
+	jmp .data__lp
 
-.read_kernel__data__end:
+.data__end:
 	# (sector == 0) ? {done} : {sec.lp}
 	test %bx, %bx
-	jz .read_kernel__disk__done
-	jmp .read_kernel__sect__lp
+	jz .done
+	jmp .sect__lp
 
-.read_kernel__disk__done:
+.done:
 	ret

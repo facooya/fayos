@@ -9,9 +9,9 @@
 # Boot start address - segment:offset = 0x0000:0x7C00
 BOOT_SRCS = \
 boot/boot.s \
-boot/out_msg.s \
-boot/clear_disp.s \
-boot/read_kernel.s
+boot/boot_vga_puts.s \
+boot/boot_vga_clr.s \
+boot/boot_ata_read_sect.s
 
 # Don't reposition "kernel/kernel.s",
 # This file always first location in Fayos.

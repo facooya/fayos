@@ -5,7 +5,7 @@
 # Bootloader
 
 .include "boot.s"
-.section .data
+.section .rodata
 .bmsg_fayos: .asciz "FAYOS\n"
 
 .section .text
@@ -27,12 +27,12 @@ _start:
 	mov $STACK_PTR, %sp
 
 	# display
-	call clear_disp
+	call boot_vga_clr
 	push $.bmsg_fayos
-	call out_msg
+	call boot_vga_puts
 	add $0x02, %sp
 
 	# kernel
 	mov $KERN_OFF, %di
-	call read_kernel
+	call boot_ata_read_sect
 	ljmp $KERN_SEG, $KERN_OFF

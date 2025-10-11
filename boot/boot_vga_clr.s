@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Clear display for boot
+# Clear display in bootloader
 
 .include "boot.s"
 .section .text
 .code16
-.global clear_disp
+.global boot_vga_clr
 
-# clear_disp()
-clear_disp:
+# boot_vga_clr()
+boot_vga_clr:
 	push %es
 
 	# vid init
@@ -30,10 +30,10 @@ clear_disp:
 	mul %dx
 	mov %ax, %cx
 
-.clear_disp__lp:
+.lp:
 	# (count == 0) ? {end}
 	test %cx, %cx
-	jz .clear_disp__end
+	jz .done
 
 	# clear
 	mov $CHR_SP, %al
@@ -47,9 +47,9 @@ clear_disp:
 
 	# {lp}
 	sub $0x01, %cx
-	jmp .clear_disp__lp
+	jmp .lp
 
-.clear_disp__end:
+.done:
 	# {{{ set cursor
 	mov $CURS_POS_HI, %al
 	mov $CURS_CMD_REG, %dx
