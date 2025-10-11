@@ -178,10 +178,10 @@ all: ./build/fayos.img
 
 ./build/boot.bin: ./boot/boot.s | ./build/
 	as --32 -Iboot ./boot/boot.s -o ./build/boot.o
-	ld --oformat binary -m elf_i386 -Ttext 0x7C00 ./build/boot.o -o ./build/boot.bin
+	ld -T ./boot/boot.lds ./build/boot.o -o ./build/boot.bin
 
 ./build/kernel.bin: $(OBJS) | ./build/
-	ld -m elf_i386 -T ./tools/linker.ld $(OBJS) -o ./build/kernel.bin
+	ld -T ./kernel/kern.lds $(OBJS) -o ./build/kernel.bin
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)

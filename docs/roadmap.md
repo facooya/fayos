@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- ld?
 
 ## TODO PRIORITY
 
@@ -38,3 +39,9 @@
 - `fclose()` - file close
 - `opendir()` - dir open 
 - `closedir()` - dir close
+
+## Refactor
+- raw\_buf -> cmd\_buf, hist\_buf -> cmd\_hist\_buf
+- ? kernel -> kern
+- ? shell -> sh
+- inc/fayfs -> inc/fs

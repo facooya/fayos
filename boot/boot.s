@@ -5,6 +5,10 @@
 # Bootloader
 
 .include "boot_equ.s"
+.section .data
+.bmsg_fayos: .asciz "FAYOS\n"
+
+.section .text
 .code16
 .global _start
 
@@ -37,10 +41,3 @@ _start:
 .include "out_msg.s"
 .include "clear_disp.s"
 .include "read_kernel.s"
-
-# {DATA}
-.bmsg_fayos: .asciz "FAYOS\n"
-
-# {DONE}
-.fill FILL_REP-(.-_start), FILL_SIZE, FILL_VAL
-.word BOOT_SIG
