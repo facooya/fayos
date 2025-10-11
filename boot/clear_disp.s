@@ -4,6 +4,11 @@
 #
 # Clear display for boot
 
+.include "boot.s"
+.section .text
+.code16
+.global clear_disp
+
 # clear_disp()
 clear_disp:
 	push %es

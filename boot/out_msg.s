@@ -4,6 +4,11 @@
 #
 # Out message for boot
 
+.include "boot.s"
+.section .text
+.code16
+.global out_msg
+
 # out_msg(&str)
 out_msg:
 	push %bp

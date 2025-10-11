@@ -1,7 +1,15 @@
+# Don't reposition "boot/boot.s",
+# This file always first location in Fayos.
+# Boot start address - segment:offset = 0x0000:0x7C00
+BOOT_SRCS = \
+boot/boot.s \
+boot/out_msg.s \
+boot/clear_disp.s \
+boot/read_kernel.s
+
 # Don't reposition "kernel/kernel.s",
 # This file always first location in Fayos.
 # Kernel address - segment:offset = 0x0000:0x1000
-
 SRCS_KERN = \
 kernel/kernel.s \
 \
@@ -166,6 +174,7 @@ $(SRCS_DRV) \
 $(SRCS_INT) \
 $(SRCS_LIB)
 
+BOOT_OBJS = $(BOOT_SRCS:%.s=./build/%.o)
 OBJS = $(SRCS:%.s=./build/%.o)
 
 # ALL
@@ -176,12 +185,11 @@ all: ./build/fayos.img
 	dd if=./build/boot.bin of=./build/fayos.img bs=512 count=1 conv=notrunc
 	dd if=./build/kernel.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
 
-./build/boot.bin: ./boot/boot.s | ./build/
-	as --32 -Iboot ./boot/boot.s -o ./build/boot.o
-	ld -T ./boot/boot.lds ./build/boot.o -o ./build/boot.bin
+./build/boot.bin: $(BOOT_OBJS) | ./build/
+	ld -T ./boot/boot.lds $(BOOT_OBJS) -o $@
 
 ./build/kernel.bin: $(OBJS) | ./build/
-	ld -T ./kernel/kern.lds $(OBJS) -o ./build/kernel.bin
+	ld -T ./kernel/kern.lds $(OBJS) -o $@
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)

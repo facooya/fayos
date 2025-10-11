@@ -4,6 +4,11 @@
 #
 # Read kernel disk for boot
 
+.include "boot.s"
+.section .text
+.code16
+.global read_kernel
+
 # read_kernel()
 read_kernel:
 	# set mode

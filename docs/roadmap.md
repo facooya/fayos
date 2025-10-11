@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- ld?
 
 ## TODO PRIORITY
 

@@ -6,10 +6,6 @@
 
 # BOOT
 .equ STACK_PTR, 0x7C00
-.equ FILL_REP, 0x01FE
-.equ FILL_SIZE, 0x01
-.equ FILL_VAL, 0x00
-.equ BOOT_SIG, 0xAA55
 
 # DISK
 .equ KERN_SEG, 0x0000

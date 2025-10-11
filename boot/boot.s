@@ -4,7 +4,7 @@
 #
 # Bootloader
 
-.include "boot_equ.s"
+.include "boot.s"
 .section .data
 .bmsg_fayos: .asciz "FAYOS\n"
 
@@ -36,8 +36,3 @@ _start:
 	mov $KERN_OFF, %di
 	call read_kernel
 	ljmp $KERN_SEG, $KERN_OFF
-
-# {FUNC}
-.include "out_msg.s"
-.include "clear_disp.s"
-.include "read_kernel.s"
