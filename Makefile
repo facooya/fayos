@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# Make file for fayos.img
+
 # Don't reposition "boot/boot.s",
 # This file always first location in Fayos.
 # Boot start address - segment:offset = 0x0000:0x7C00
@@ -46,6 +52,7 @@ kernel/dbg/dbg_utils.s \
 kernel/dbg/num/dbg_num.s \
 kernel/dbg/num/dbg_reg.s
 
+# File System
 SRCS_FS = \
 fs/cache.s \
 \
@@ -73,6 +80,7 @@ fs/path/read_paths.s \
 fs/path/tok_paths.s \
 fs/path/build_paths.s
 
+# Shell
 SRCS_SH = \
 shell/history.s \
 \
@@ -107,6 +115,7 @@ shell/cmd/dir/ls.s \
 shell/cmd/dir/mkdir.s \
 shell/cmd/dir/rmdir.s
 
+# Driver
 SRCS_DRV = \
 drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \
@@ -138,12 +147,14 @@ drv/kbd/kbd_sctokc.s \
 drv/kbd/kbd_key_up.s \
 drv/kbd/kbd_key_down.s
 
+# Interrupt
 SRCS_INT = \
 int/pic_init.s \
 int/ivt_init.s \
 int/interrupt.s \
 int/irq_kbd.s
 
+# Library
 SRCS_LIB = \
 lib/re.s \
 \

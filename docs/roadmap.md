@@ -44,3 +44,5 @@
 - ? kernel -> kern
 - ? shell -> sh
 - inc/fayfs -> inc/fs
+
+> Authors 2025 Facooya and Fanone Facooya
