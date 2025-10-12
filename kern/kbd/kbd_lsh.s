@@ -51,9 +51,9 @@ kbd_lsh:
 	jmp .lsh__lp
 
 .lsh__end:
-	# left cursor [d_lsh.2]
+	# left curs [d_lsh.2]
 	call vga_get_curs
-	sub $0x01, %ax # cursor.x
+	sub $0x01, %ax # curs.x
 	push %ax # [s.1:curs_pos]
 	push %ax
 	call vga_set_curs
@@ -67,7 +67,7 @@ kbd_lsh:
 	mov $0x20, %al # space
 	call vga_putc
 
-	# left cursor [d_lsh.5]
+	# left curs [d_lsh.5]
 	pop %ax # [s.1:curs_pos]
 	push %ax
 	call vga_set_curs

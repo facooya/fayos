@@ -22,7 +22,7 @@ boot_vga_puts:
 	mov %ax, %es
 	xor %di, %di
 
-	# {{{ get cursor
+	# {{{ get curs
 	mov $CURS_POS_HI, %al
 	mov $CURS_CMD_REG, %dx
 	out %al, %dx
@@ -85,7 +85,7 @@ boot_vga_puts:
 	pop %cx
 	# }}}
 
-	# cursor pos
+	# curs pos
 	mov %di, %ax
 	mov $0x02, %cx
 	xor %dx, %dx
@@ -96,7 +96,7 @@ boot_vga_puts:
 	jmp .lp
 
 .done:
-	# {{{ set cursor
+	# {{{ set curs
 	mov $CURS_POS_HI, %al
 	mov $CURS_CMD_REG, %dx
 	out %al, %dx

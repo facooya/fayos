@@ -2,7 +2,6 @@
 ## WIP
 
 ## PRIORITY
-- saperate history logic
 - keyboard dependency move to driver
 
 ## TODO

@@ -12,11 +12,11 @@
 _key_right:
 	call vga_get_curs
 
-	# {end.done} (cursor.x == cursor.max)
-	cmp (cursor+0x02), %ax
+	# {end.done} (curs.x == curs.max)
+	cmp (curs+0x02), %ax
 	je .done
 
-	# right cursor
+	# right curs
 	add $0x01, %ax
 	push %ax
 	call vga_set_curs

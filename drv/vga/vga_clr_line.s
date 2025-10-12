@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Clear current cursor line
+# Clear current curs line
 
 .include "drv/vga.s"
 .include "chr.s"

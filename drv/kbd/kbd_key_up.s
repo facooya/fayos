@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Arrow key up - history
+# [Keyborad] Arrow key up
 
 .include "fs/inode.s"
 .include "fs/dentry.s"
@@ -11,9 +11,6 @@
 .global kbd_key_up
 
 # kbd_key_up()
-# <req> *si = cl_lbuf
-# <req> hist_idx
-# <ret> cl_lbuf
 kbd_key_up:
 	# (hist_idx == 0) ? {done}
 	mov (hist_idx), %ax

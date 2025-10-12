@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Arrow key down - history
+# [Keyboard] Arrow key down
 
 .section .text
 .code16
@@ -56,9 +56,9 @@ kbd_key_down:
 	pop %cx # [s.f0:len]
 	add %cx, %si
 
-	mov (cursor), %ax
+	mov (curs), %ax
 	add %ax, %cx
-	mov %cx, (cursor+0x02)
+	mov %cx, (curs+0x02)
 	jmp .done
 
 .cont:

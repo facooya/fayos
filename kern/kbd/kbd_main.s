@@ -78,10 +78,10 @@ kbd_main:
 	add $0x01, %ax
 	mov %ax, (cl_lbuf)
 
-	# update cursor max
-	mov (cursor+0x02), %ax # cursor.max
+	# update curs max
+	mov (curs+0x02), %ax # curs.max
 	add $0x01, %ax
-	mov %ax, (cursor+0x02)
+	mov %ax, (curs+0x02)
 	pop %ax # [s.0:kc]
 	# }}}
 

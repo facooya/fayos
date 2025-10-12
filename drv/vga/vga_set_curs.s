@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Set cursor position
+# Set curs position
 
 # reference link
 # http://wiki.osdev.org/Text_Mode_Cursor#Get_Cursor_Position

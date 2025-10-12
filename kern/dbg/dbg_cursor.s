@@ -2,18 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug cursor
+# Debug curs
 
 .include "chr.s"
 .section .text
 .code16
-.global dbg_cursor
+.global dbg_curs
 
-# dbg_cursor()
-dbg_cursor:
+# dbg_curs()
+dbg_curs:
 	push %si
 	
-	mov $cursor, %si
+	mov $curs, %si
 
 	mov $CHR_CR, %al
 	call vga_putc

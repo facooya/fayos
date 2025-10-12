@@ -50,7 +50,7 @@ boot_vga_clr:
 	jmp .lp
 
 .done:
-	# {{{ set cursor
+	# {{{ set curs
 	mov $CURS_POS_HI, %al
 	mov $CURS_CMD_REG, %dx
 	out %al, %dx

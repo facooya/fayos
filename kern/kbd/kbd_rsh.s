@@ -71,8 +71,8 @@ kbd_rsh:
 	add $0x02, %sp
 	pop %ax # [s.0:curs_pos]
 
-	# restore cursor.pos
-	add $0x01, %ax # cursor.x
+	# restore curs.pos
+	add $0x01, %ax # curs.x
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp

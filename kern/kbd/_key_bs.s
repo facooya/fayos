@@ -10,16 +10,16 @@
 
 # _key_bs
 _key_bs:
-	# {end.done} (cursor.x == cursor.min)
+	# {end.done} (curs.x == curs.min)
 	call vga_get_curs
-	cmp (cursor), %ax
+	cmp (curs), %ax
 	je .done
 
 	# {{{ pre-update
-	# dec cursor max
-	mov (cursor+0x02), %ax # cursor.max
+	# dec curs max
+	mov (curs+0x02), %ax # curs.max
 	sub $0x01, %ax
-	mov %ax, (cursor+0x02)
+	mov %ax, (curs+0x02)
 
 	# dec cl_lbuf
 	sub $0x01, %si # raw.data
@@ -34,9 +34,9 @@ _key_bs:
 	jnz .call_kbd_lsh
 
 	# {{{ [d_nsh]
-	# left cursor [d_nsh.1]
+	# left curs [d_nsh.1]
 	call vga_get_curs
-	sub $0x01, %ax # cursor.x
+	sub $0x01, %ax # curs.x
 	push %ax # [s.0:curs_pos]
 	push %ax
 	call vga_set_curs
@@ -46,7 +46,7 @@ _key_bs:
 	mov $0x20, %al # space
 	call vga_putc
 
-	# left cursor [d_nsh.3]
+	# left curs [d_nsh.3]
 	pop %ax # [s.0:curs_pos]
 	push %ax
 	call vga_set_curs

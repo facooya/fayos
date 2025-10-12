@@ -14,6 +14,8 @@
 # <req> hist_idx
 # <req> file_lines
 # <ret> cl_lbuf
+# <ret> curs
+# <ret> si
 hist_upd_cl:
 	push %es
 	push %di
@@ -168,9 +170,9 @@ hist_upd_cl:
 	pop %cx # [s.f0:len]
 	add %cx, %si
 
-	mov (cursor), %ax
+	mov (curs), %ax
 	add %ax, %cx
-	mov %cx, (cursor+0x02)
+	mov %cx, (curs+0x02)
 	# }}}
 
 .done:
