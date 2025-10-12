@@ -5,8 +5,8 @@
 # Read path refer paths
 
 .include "chr.s"
-.include "fayfs/inode.s"
-.include "fayfs/dentry.s"
+.include "fs/inode.s"
+.include "fs/dentry.s"
 .section .text
 .code16
 .global read_paths

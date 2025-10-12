@@ -1,7 +1,10 @@
 # Roadmap
 ## WIP
 
-## TODO PRIORITY
+## PRIORITY
+- raw\_buf -> cmd\_buf, hist\_buf -> cmd\_hist\_buf
+- history logic update
+- check history current buffer save and restore
 
 ## TODO
 - support relative path
@@ -38,11 +41,5 @@
 - `fclose()` - file close
 - `opendir()` - dir open 
 - `closedir()` - dir close
-
-## Refactor
-- raw\_buf -> cmd\_buf, hist\_buf -> cmd\_hist\_buf
-- ? kernel -> kern
-- ? shell -> sh
-- inc/fayfs -> inc/fs
 
 > Authors 2025 Facooya and Fanone Facooya

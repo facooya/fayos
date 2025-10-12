@@ -4,7 +4,7 @@
 #
 # Lookup directory entry
 
-.include "fayfs/dentry.s"
+.include "fs/dentry.s"
 .section .text
 .code16
 .global lookup_dentry

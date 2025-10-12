@@ -4,7 +4,7 @@
 #
 # Cache for file system
 
-.include "fayfs/inode.s"
+.include "fs/inode.s"
 .section .data
 .global inode
 .global tmp_inode

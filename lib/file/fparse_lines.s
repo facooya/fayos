@@ -5,7 +5,7 @@
 # Parse file lines and each line size except cr/lf
 
 .include "chr.s"
-.include "fayfs/inode.s"
+.include "fs/inode.s"
 .section .data
 .global file_lines
 .global file_linev

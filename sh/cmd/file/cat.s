@@ -2,23 +2,29 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command list - show file and directory list
+# Command concatenate - show file data
 
 .include "chr.s"
-.include "fayfs/dentry.s"
-.include "fayfs/inode.s"
+.include "fs/dentry.s"
+.include "fs/inode.s"
 .section .text
 .code16
-.global cmd_ls
+.global cmd_cat
 
-# cmd_ls()
-cmd_ls:
+# cmd_cat()
+cmd_cat:
 	push %es
 	push %si
 	push %di
 	push %bx
 
 	mov $args, %si
+
+	# (argc == 1) ? {err}
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .err_arg_req
+
 	mov 0x06(%si), %ax # argv[1]
 	mov $raw_buf, %si
 	add $0x02, %si
@@ -34,27 +40,27 @@ cmd_ls:
 	call proc_paths
 	add $0x02, %sp
 
-	# (proc_path() == 1) ? {err}
+	# (proc_paths() == 1) ? {err}
 	cmp $0x01, %cx
 	je .err_inv_path
 
-	# (proc_path() == 2) ? {err}
+	# (proc_paths() == 2) ? {err}
 	cmp $0x02, %cx
-	je .err_dir_no
+	je .err_file_no
 
 	mov %ax, %bx
 	mov %dx, %es
 	# }}}
 
-	# {{{
+	# (file_type != file) ? {err}
+	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	cmp $0x80, %al
+	jne .err_file_type
+
 	push $inode
 	push $path_inum
 	call read_inode
 	add $0x04, %sp
-
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx # [s.0:fsize]
 
 	push $inode
 	call set_dap_blk_lba
@@ -74,14 +80,28 @@ cmd_ls:
 	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	# }}}
 
-	# {task}
-	pop %dx # [s.0:fsize]
-	jmp .run
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %cx
+
+	push %cx
+	push %bx
+	push %es
+	call putns
+	add $0x06, %sp
+
+	# {end.done}
+	jmp .done
 
 .path_pass:
-	# {{{ argc 1
+	# {{{ lookup dentry
+	xor %ax, %ax
+	push %si
+	push %ax
+	call strlen
+	add $0x04, %sp
+
+	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -105,31 +125,10 @@ cmd_ls:
 	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
+	pop %cx # [s.0:strlen]
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx # fsize
-
-	# (argc == 1) ? {run} : lookup_dentry()
-	mov $args, %si
-	mov (%si), %ax
-	cmp $0x01, %ax
-	je .run
-	# }}}
-
-	# {{{ lookup dentry
-	mov 0x06(%si), %ax # argv[1]
-	mov $raw_buf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	xor %ax, %ax
-	push %si # raw_buf[argv[1]]
-	push %ax
-	call strlen
-	add $0x04, %sp
-
-	push %si
-	push %ax
+	push %si # src_name
+	push %cx # src_name_len
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
 	push %ax
@@ -138,26 +137,41 @@ cmd_ls:
 	call lookup_dentry
 	add $0x0A, %sp
 
+	# (lookup_dentry() == no_match)
+	# ? {err} : off+=ax;{run}
 	cmp $0x01, %ax
-	je .err_dir_no
+	je .err_file_no
 	add %ax, %bx
+	jmp .run
 	# }}}
 
-	# {{{ raw_buf[argv[1]]
-	# (file_type != dir) ? {err}
+.run:
+	# {err} (file_type != file)
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
-	cmp $0x40, %al
-	jne .err_dir_type
+	cmp $0x80, %al
+	jne .err_file_type
 
+	# save inum
+	mov (inum), %ax
+	push %ax # s.1 inum_lo
+	mov (inum+0x02), %ax
+	push %ax # s.2 inum_hi
+	push %bx # s.3 off
+
+	# set inum
 	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
+	mov %ax, (inum)
 	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
+	mov %ax, (inum+0x02)
 
 	push $inode
-	push $tmp_inum
+	push $inum
 	call read_inode
 	add $0x04, %sp
+
+	mov $inode, %si
+	mov I_FILE_SIZE_OFF(%si), %ax
+	push %ax # s.4 file_size
 
 	push $inode
 	call set_dap_blk_lba
@@ -178,62 +192,26 @@ cmd_ls:
 	mov %ax, %bx
 	mov %dx, %es
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx # fsize
-	jmp .run
-	# }}}
+	# putns
+	pop %cx # s.4 file_size
+	push %cx
+	push %bx
+	push %es
+	call putns
+	add $0x06, %sp
 
-# {TASK}
-.run:
-.run__lp:
-	# {chk} (inum == 0)
-	mov %es:DE_INUM_OFF(%bx), %ax
-	test %ax, %ax
-	or %es:DE_INUM_OFF+0x02(%bx), %ax
-	jz .run__lp_step
+	# restore
+	pop %bx # s.3 off
+	pop %ax # s.2 inum_hi
+	mov %ax, (inum+0x02)
+	pop %ax # s.1 inum_lo
+	mov %ax, (inum)
 
-	# set name ptr
-	mov %bx, %si
-	add $DE_NAME_OFF, %si
-
-	# get name len
-	xor %cx, %cx
-	mov %es:DE_NAME_LEN_OFF(%bx), %cl
-
-.run__name_lp:
-	# {end} (name_len == 0)
-	test %cx, %cx
-	jz .run__name_end
-
-	# copy
-	mov %es:(%si), %al
-	call putc
-
-	# {lp}
-	add $0x01, %si
-	sub $0x01, %cx
-	jmp .run__name_lp
-
-.run__name_end:
-	call putsp
-	call putsp
-
-.run__lp_step:
-	# add rec_len
-	mov %es:DE_REC_LEN_OFF(%bx), %ax
-	add %ax, %bx
-	sub %ax, %dx # file_size--
-
-	# {end.done} (file_size <= 0)
-	cmp $0x00, %dx
-	jle .done
-
-	# {lp}
-	jmp .run__lp
+	# {end.done}
+	jmp .done
 
 # {DONE}
 .done:
-	call putnl
 	xor %ax, %ax
 	jmp .epil
 
@@ -249,16 +227,20 @@ cmd_ls:
 	ret
 
 # {ERR}
+.err_arg_req:
+	push $emsg_arg_req
+	jmp .err_hdl
+
 .err_inv_path:
 	push $emsg_inv_path
 	jmp .err_hdl
 
-.err_dir_no:
-	push $emsg_dir_no
+.err_file_no:
+	push $emsg_file_no
 	jmp .err_hdl
 
-.err_dir_type:
-	push $emsg_dir_type
+.err_file_type:
+	push $emsg_file_type
 	jmp .err_hdl
 
 .err_hdl:

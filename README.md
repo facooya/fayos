@@ -116,15 +116,15 @@ And follow the **Quick Start** section.
 - `boot/` - Boot
 - `docs/` - Documentation
 - `drv/` - Driver
-- `fs/` - File System: Fayfs only
+- `fs/` - File System
 - `inc/` - Include: Constants only
 - `int/` - Interrupt
-- `kernel/` - Kernel
+- `kern/` - Kernel
 - `lib/` - Library
-- `shell/` - Shell
+- `sh/` - Shell
 - `tools/` - Tools: Misc
 
-More directory structure in `docs/`. Examples: `docs/kernel/README.md` and find **Directory Structure** section.
+More directory structure in `docs/`. Examples: `docs/kern/README.md` and find **Directory Structure** section.
 
 ---
 

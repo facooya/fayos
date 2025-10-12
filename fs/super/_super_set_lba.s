@@ -4,7 +4,7 @@
 #
 # Set lba by superblock disk
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .section .text
 .code16
 .global _super_set_lba

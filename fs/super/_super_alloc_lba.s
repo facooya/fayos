@@ -4,7 +4,7 @@
 #
 # Allocate LBA in superblock disk
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .section .text
 .code16
 .global _super_alloc_lba

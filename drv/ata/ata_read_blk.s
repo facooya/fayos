@@ -4,7 +4,7 @@
 #
 # Read block
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .section .text
 .code16
 .global ata_read_blk

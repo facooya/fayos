@@ -4,7 +4,7 @@
 #
 # Process superblock
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .section .data
 .kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
 .kmsg_found: .asciz "\r\nSuperblock found.\r\n"

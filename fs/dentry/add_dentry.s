@@ -4,8 +4,8 @@
 #
 # Add directory entry
 
-.include "fayfs/dentry.s"
-.include "fayfs/inode.s"
+.include "fs/dentry.s"
+.include "fs/inode.s"
 .section .text
 .code16
 .global add_dentry

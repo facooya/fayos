@@ -4,8 +4,8 @@
 #
 # set DAP by block LBA
 
-.include "fayfs/super.s"
-.include "fayfs/inode.s"
+.include "fs/super.s"
+.include "fs/inode.s"
 .section .data
 .blk_lba: .long 0x00
 

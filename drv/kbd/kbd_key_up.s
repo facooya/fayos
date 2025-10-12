@@ -4,8 +4,8 @@
 #
 # Arrow key up - history
 
-.include "fayfs/inode.s"
-.include "fayfs/dentry.s"
+.include "fs/inode.s"
+.include "fs/dentry.s"
 .section .text
 .code16
 .global kbd_key_up

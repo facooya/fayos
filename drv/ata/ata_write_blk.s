@@ -4,7 +4,7 @@
 #
 # Write block
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .section .text
 .code16
 .global ata_write_blk

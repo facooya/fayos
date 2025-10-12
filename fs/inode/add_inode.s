@@ -4,7 +4,7 @@
 #
 # Add inode in inode table
 
-.include "fayfs/inode.s"
+.include "fs/inode.s"
 .section .text
 .code16
 .global add_inode

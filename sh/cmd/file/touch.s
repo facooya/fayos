@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command make directory
+# Command touch - create file
 
 .include "chr.s"
-.include "fayfs/dentry.s"
-.include "fayfs/inode.s"
+.include "fs/dentry.s"
+.include "fs/inode.s"
 .section .text
 .code16
-.global cmd_mkdir
+.global cmd_touch
 
-# cmd_mkdir()
-cmd_mkdir:
+# cmd_touch()
+cmd_touch:
 	push %es
 	push %si
 	push %di
@@ -40,21 +40,11 @@ cmd_mkdir:
 	call proc_paths
 	add $0x02, %sp
 
-	# (pathc == 1) ? {err}
-	push %si # [s.1:raw_buf]
-	push %cx # [s.0:proc_paths()]
-	mov $paths, %si
-	mov (%si), %ax
-	cmp $0x01, %ax
-	je .err_dir_root
-	pop %cx # [s.0:proc_paths()]
-	pop %si # [s.1:raw_buf]
-
-	# (proc_paths() == 1) ? {err}
+	# (proc_path() == 1) ? {err}
 	cmp $0x01, %cx
 	je .err_inv_path
 
-	# (proc_paths() != 2) ? {err}
+	# (proc_path() != 2) ? {err}
 	cmp $0x02, %cx
 	jne .err_name_dup
 
@@ -62,6 +52,7 @@ cmd_mkdir:
 	mov %dx, %es
 	# }}}
 
+	# <ret> tmp_inum
 	call add_inode
 
 	# {{{ add dentry
@@ -82,23 +73,25 @@ cmd_mkdir:
 	push %ax
 	call strlen
 	add $0x04, %sp
+	# ax = len
 
-	mov %al, %cl
-	mov $0x40, %ch
-	push %si
-	push %cx
+	mov $0x80, %ch # (info) file_type
+	mov %al, %cl # (info) name_len
+	push %si # name
+	push %cx # info
 	push $path_inum
 	push $tmp_inum
 	call add_dentry
 	add $0x08, %sp
-	push %ax
+	push %ax # [s.0:reclen]
+	# }}}
 
 	push $inode
 	push $path_inum
 	call read_inode
 	add $0x04, %sp
 
-	pop %ax
+	pop %ax # [s.0:reclen]
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %cx
 	add %cx, %ax
@@ -108,74 +101,18 @@ cmd_mkdir:
 	push $path_inum
 	call update_inode
 	add $0x04, %sp
-	# }}}
-
-	# {{{ add dot
-	mov $de_dots, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call read_inode
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call update_inode
-	add $0x04, %sp
-	# }}}
-
-	# {{{ add dentry dotdot
-	mov $de_dots, %si
-	add $0x04, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $path_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call read_inode
-	add $0x04, %sp
-
-	pop %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call update_inode
-	add $0x04, %sp
-	# }}}
-
 	jmp .done
 
 .path_pass:
 	# {{{ lookup dentry
 	xor %ax, %ax
 	push %si
-	push %ax
+	push %es
 	call strlen
 	add $0x04, %sp
+	mov %ax, %cx
 
-	push %ax # [s.0:strlen]
+	push %cx # [s.0:strlen]
 	push $inode
 	push $inum
 	call read_inode
@@ -205,15 +142,16 @@ cmd_mkdir:
 	push %cx # src_name_len
 	mov $inode, %si
 	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax # file_size
-	push %bx # *off
-	push %es # *seg
+	push %ax
+	push %bx
+	push %es
 	call lookup_dentry
 	add $0x0A, %sp
 
-	# (lookup_dentry() != 1) ? {err} : {run}
+	# (lookup_dentry() != no_match)
+	# ? {err} : {run}
 	cmp $0x01, %ax
-	jne .err_name_dup
+	jnz .err_name_dup
 	jmp .run
 	# }}}
 
@@ -221,7 +159,7 @@ cmd_mkdir:
 .run:
 	call add_inode
 
-	# {init} for add_dentry
+	# {{{ add dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
 	mov $raw_buf, %si
@@ -234,16 +172,16 @@ cmd_mkdir:
 	call strlen
 	add $0x04, %sp
 
-	# {{{ add directory
-	mov %al, %cl
-	mov $0x40, %ch
-	push %si
-	push %cx
+	mov $0x80, %ch # (info) file_type
+	mov %al, %cl # (info) name_len
+	push %si # name
+	push %cx # info
 	push $inum
 	push $tmp_inum
 	call add_dentry
 	add $0x08, %sp
 	push %ax
+	# }}}
 
 	push $inode
 	push $inum
@@ -260,63 +198,8 @@ cmd_mkdir:
 	push $inum
 	call update_inode
 	add $0x04, %sp
-	# }}}
 
-	# {{{ add dot
-	mov $de_dots, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call read_inode
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call update_inode
-	add $0x04, %sp
-	# }}}
-
-	# {{{ add dentry dotdot
-	mov $de_dots, %si
-	add $0x04, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call read_inode
-	add $0x04, %sp
-
-	pop %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call update_inode
-	add $0x04, %sp
-	# }}}
-
+	# {end.done}
 	jmp .done
 
 # {DONE}
@@ -340,18 +223,12 @@ cmd_mkdir:
 	push $emsg_arg_req
 	jmp .err_hdl
 
-.err_dir_root:
-	pop %si
-	pop %cx
-	push $emsg_dir_root
+.err_name_dup:
+	push $emsg_name_dup
 	jmp .err_hdl
 
 .err_inv_path:
 	push $emsg_inv_path
-	jmp .err_hdl
-
-.err_name_dup:
-	push $emsg_name_dup
 	jmp .err_hdl
 
 .err_hdl:

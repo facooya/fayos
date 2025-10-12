@@ -17,40 +17,40 @@ boot/boot_ata_read_sect.s
 # This file always first location in Fayos.
 # Kernel address - segment:offset = 0x0000:0x1000
 SRCS_KERN = \
-kernel/kernel.s \
+kern/kernel.s \
 \
-kernel/kbd/kbd_main.s \
-kernel/kbd/kbd_lsh.s \
-kernel/kbd/kbd_rsh.s \
+kern/kbd/kbd_main.s \
+kern/kbd/kbd_lsh.s \
+kern/kbd/kbd_rsh.s \
 \
-kernel/kbd/_key_bs.s \
-kernel/kbd/_key_cr.s \
-kernel/kbd/_key_left.s \
-kernel/kbd/_key_right.s \
+kern/kbd/_key_bs.s \
+kern/kbd/_key_cr.s \
+kern/kbd/_key_left.s \
+kern/kbd/_key_right.s \
 \
-kernel/disk/dap.s \
-kernel/disk/dap_utils.s \
-kernel/disk/set_dap_blk_lba.s \
+kern/disk/dap.s \
+kern/disk/dap_utils.s \
+kern/disk/set_dap_blk_lba.s \
 \
-kernel/mem/mem.s \
-kernel/mem/alloc_mem.s \
-kernel/mem/free_mem.s \
+kern/mem/mem.s \
+kern/mem/alloc_mem.s \
+kern/mem/free_mem.s \
 \
-kernel/io/buf.s \
-kernel/io/cursor.s \
+kern/io/buf.s \
+kern/io/cursor.s \
 \
-kernel/lib/bufcpy.s \
-kernel/lib/bufzero.s \
+kern/lib/bufcpy.s \
+kern/lib/bufzero.s \
 \
-kernel/dbg/dbg_args.s \
-kernel/dbg/dbg_paths.s \
-kernel/dbg/dbg_cursor.s \
-kernel/dbg/dbg_buf.s \
-kernel/dbg/dbg_trace.s \
-kernel/dbg/dbg_utils.s \
+kern/dbg/dbg_args.s \
+kern/dbg/dbg_paths.s \
+kern/dbg/dbg_cursor.s \
+kern/dbg/dbg_buf.s \
+kern/dbg/dbg_trace.s \
+kern/dbg/dbg_utils.s \
 \
-kernel/dbg/num/dbg_num.s \
-kernel/dbg/num/dbg_reg.s
+kern/dbg/num/dbg_num.s \
+kern/dbg/num/dbg_reg.s
 
 # File System
 SRCS_FS = \
@@ -82,38 +82,38 @@ fs/path/build_paths.s
 
 # Shell
 SRCS_SH = \
-shell/history.s \
+sh/history.s \
 \
-shell/args/args.s \
-shell/args/tok_args.s \
-shell/args/build_args.s \
-shell/args/parse_args.s \
+sh/args/args.s \
+sh/args/tok_args.s \
+sh/args/build_args.s \
+sh/args/parse_args.s \
 \
-shell/exec/exec_cmd.s \
-shell/exec/exec_redir.s \
+sh/exec/exec_cmd.s \
+sh/exec/exec_redir.s \
 \
-shell/prompt/add_ps1_path.s \
-shell/prompt/sub_ps1_path.s \
-shell/prompt/build_ps1_path.s \
-shell/prompt/build_ps1.s \
-shell/prompt/init_ps1.s \
-shell/prompt/prompt.s \
+sh/prompt/add_ps1_path.s \
+sh/prompt/sub_ps1_path.s \
+sh/prompt/build_ps1_path.s \
+sh/prompt/build_ps1.s \
+sh/prompt/init_ps1.s \
+sh/prompt/prompt.s \
 \
-shell/cmd/cmd_map.s \
+sh/cmd/cmd_map.s \
 \
-shell/cmd/sys/test.s \
-shell/cmd/sys/echo.s \
-shell/cmd/sys/help.s \
-shell/cmd/sys/clear.s \
+sh/cmd/sys/test.s \
+sh/cmd/sys/echo.s \
+sh/cmd/sys/help.s \
+sh/cmd/sys/clear.s \
 \
-shell/cmd/file/cat.s \
-shell/cmd/file/rm.s \
-shell/cmd/file/touch.s \
+sh/cmd/file/cat.s \
+sh/cmd/file/rm.s \
+sh/cmd/file/touch.s \
 \
-shell/cmd/dir/cd.s \
-shell/cmd/dir/ls.s \
-shell/cmd/dir/mkdir.s \
-shell/cmd/dir/rmdir.s
+sh/cmd/dir/cd.s \
+sh/cmd/dir/ls.s \
+sh/cmd/dir/mkdir.s \
+sh/cmd/dir/rmdir.s
 
 # Driver
 SRCS_DRV = \
@@ -191,16 +191,16 @@ OBJS = $(SRCS:%.s=./build/%.o)
 # ALL
 all: ./build/fayos.img
 
-./build/fayos.img: ./build/boot.bin ./build/kernel.bin | ./build/
+./build/fayos.img: ./build/boot.bin ./build/kern.bin | ./build/
 	dd if=/dev/zero of=./build/fayos.img bs=512 count=20480
 	dd if=./build/boot.bin of=./build/fayos.img bs=512 count=1 conv=notrunc
-	dd if=./build/kernel.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
+	dd if=./build/kern.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
 
 ./build/boot.bin: $(BOOT_OBJS) | ./build/
 	ld -T ./boot/boot.lds $(BOOT_OBJS) -o $@
 
-./build/kernel.bin: $(OBJS) | ./build/
-	ld -T ./kernel/kern.lds $(OBJS) -o $@
+./build/kern.bin: $(OBJS) | ./build/
+	ld -T ./kern/kern.lds $(OBJS) -o $@
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)

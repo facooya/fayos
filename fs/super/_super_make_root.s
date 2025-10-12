@@ -4,7 +4,7 @@
 #
 # Make root
 
-.include "fayfs/inode.s"
+.include "fs/inode.s"
 .section .text
 .code16
 .global _super_make_root

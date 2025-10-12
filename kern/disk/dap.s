@@ -4,7 +4,7 @@
 #
 # Disk Address Packet
 
-.include "fayfs/super.s"
+.include "fs/super.s"
 .include "dap.s"
 .global dap
 .global dap_es
