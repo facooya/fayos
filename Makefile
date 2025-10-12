@@ -13,11 +13,11 @@ boot/boot_vga_puts.s \
 boot/boot_vga_clr.s \
 boot/boot_ata_read_sect.s
 
-# Don't reposition "kernel/kernel.s",
+# Don't reposition "kern/kern.s",
 # This file always first location in Fayos.
 # Kernel address - segment:offset = 0x0000:0x1000
 SRCS_KERN = \
-kern/kernel.s \
+kern/kern.s \
 \
 kern/kbd/kbd_main.s \
 kern/kbd/kbd_lsh.s \

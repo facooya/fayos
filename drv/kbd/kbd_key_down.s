@@ -19,11 +19,55 @@ kbd_key_down:
 	# upd hist_idx
 	mov (hist_idx), %ax
 	mov (file_lines), %cx
+
+	# (hist_idx == line_count) ? {done}
 	cmp %cx, %ax
-	jge .done
+	je .done
+
 	inc %ax
 	mov %ax, (hist_idx)
 
+	# (hist_idx++ == line_count) ? {load} : {cont}
+	cmp %cx, %ax
+	je .load
+	jmp .cont
+
+.load:
+	push $cmd_lbuf
+	call bufzero
+	add $0x02, %sp
+
+	push $cmd_hist_lbuf
+	push $cmd_lbuf
+	call bufcpy
+	add $0x04, %sp
+
+	call vga_clr_line
+
+	push $ps1
+	call vga_puts
+	add $0x02, %sp
+
+	call vga_init_curs
+
+	mov $cmd_lbuf, %si
+	mov (%si), %cx
+	add $0x02, %si
+
+	push %cx # [s.f0:len]
+	push %si
+	push %cx
+	call vga_putls
+	add $0x04, %sp
+	pop %cx # [s.f0:len]
+	add %cx, %si
+
+	mov (cursor), %ax
+	add %ax, %cx
+	mov %cx, (cursor+0x02)
+	jmp .done
+
+.cont:
 	# {{{ read root dir
 	push $inode
 	push $root_inum
@@ -110,19 +154,10 @@ kbd_key_down:
 	push %es
 	call fparse_lines
 	add $0x06, %sp
-
-	push $hist_buf
-	call bufzero
-	add $0x02, %sp
-
-	push $raw_buf
-	push $hist_buf
-	call bufcpy
-	add $0x04, %sp
 	# }}}
 
 	# {{{ clear
-	push $raw_buf
+	push $cmd_lbuf
 	call bufzero
 	add $0x02, %sp
 

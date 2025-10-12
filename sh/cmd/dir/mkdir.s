@@ -26,9 +26,9 @@ cmd_mkdir:
 	je .err_arg_req
 
 	mov 0x06(%si), %ax # argv[1]
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	add $0x02, %si
-	add %ax, %si # raw_buf[argv[1]]
+	add %ax, %si # cmd_lbuf[argv[1]]
 
 	# (path_buf[0] != slash) ? {pass}
 	mov (%si), %al
@@ -41,14 +41,14 @@ cmd_mkdir:
 	add $0x02, %sp
 
 	# (pathc == 1) ? {err}
-	push %si # [s.1:raw_buf]
+	push %si # [s.1:cmd_lbuf]
 	push %cx # [s.0:proc_paths()]
 	mov $paths, %si
 	mov (%si), %ax
 	cmp $0x01, %ax
 	je .err_dir_root
 	pop %cx # [s.0:proc_paths()]
-	pop %si # [s.1:raw_buf]
+	pop %si # [s.1:cmd_lbuf]
 
 	# (proc_paths() == 1) ? {err}
 	cmp $0x01, %cx
@@ -224,7 +224,7 @@ cmd_mkdir:
 	# {init} for add_dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	add $0x02, %si
 	add %ax, %si
 

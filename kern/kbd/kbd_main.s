@@ -71,12 +71,12 @@ kbd_main:
 
 .norm:
 	# {{{ pre-update
-	# update raw_buf
+	# update cmd_lbuf
 	push %ax # [s.0:kc]
 	add $0x01, %si # raw.data
-	mov (raw_buf), %ax # raw.len
+	mov (cmd_lbuf), %ax # raw.len
 	add $0x01, %ax
-	mov %ax, (raw_buf)
+	mov %ax, (cmd_lbuf)
 
 	# update cursor max
 	mov (cursor+0x02), %ax # cursor.max

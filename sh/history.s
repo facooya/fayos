@@ -18,7 +18,7 @@ hist_idx: .word 0x00
 .global history
 
 # history()
-# <req> raw_buf
+# <req> cmd_lbuf
 history:
 	push %es
 	push %si
@@ -185,7 +185,7 @@ history:
 	push %ax # [s.3] file_size
 
 .append:
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov (%si), %cx # buf.len
 	push %cx # [s.4] buf.len
 	add $0x02, %si # skip len

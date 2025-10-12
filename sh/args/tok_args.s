@@ -11,7 +11,7 @@
 
 # tok_args()
 # <INFO>
-# bx:si = (raw_buf) len:&data
+# bx:si = (cmd_lbuf) len:&data
 # cx:di = (tmp_buf) len:&data
 # <RET>
 # ax = 0:true, 1:exit, 2:skip
@@ -21,7 +21,7 @@ tok_args:
 	push %bx
 
 	# {{{ init
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov (%si), %bx # len
 	add $0x02, %si
 
@@ -122,7 +122,7 @@ tok_args:
 	sub $0x01, %cx
 
 .tok_chr_hs:
-	# (raw_buf[i-1] != back_slash) ? {cpy_buf}
+	# (cmd_lbuf[i-1] != back_slash) ? {cpy_buf}
 	mov -0x01(%si), %al
 	cmp $CHR_BSL, %al
 	jne .cpy_buf
@@ -210,7 +210,7 @@ tok_args:
 # {TASK}
 .cpy_buf:
 	push %cx
-	push $raw_buf
+	push $cmd_lbuf
 	call bufzero
 	add $0x02, %sp
 	pop %cx
@@ -225,7 +225,7 @@ tok_args:
 	mov %cx, (%di) # store len
 	add $0x02, %di # skip len
 
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov %cx, (%si) # store len
 	add $0x02, %si # skip len
 	# }}}

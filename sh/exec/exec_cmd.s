@@ -34,7 +34,7 @@ exec_cmd:
 # di:cx = (map) chr:len
 .map:
 	# {{{ len
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	add $0x02, %si # *buf_data
 
 	push %es

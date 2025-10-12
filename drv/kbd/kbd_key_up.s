@@ -11,20 +11,46 @@
 .global kbd_key_up
 
 # kbd_key_up()
-# <req> *si = raw_buf
+# <req> *si = cmd_lbuf
 # <req> hist_idx
-# <ret> raw_buf
+# <ret> cmd_lbuf
 kbd_key_up:
 	push %es
 	push %di
 	push %bx
 
+	# (hist_idx == 0) ? {done}
 	mov (hist_idx), %ax
 	test %ax, %ax
 	jz .done
+
+	# (hist_idx == line_count) ? {save} : {cont}
+	mov (file_lines), %cx
+	cmp %cx, %ax
+	je .save
+	dec %ax
+	mov %ax, (hist_idx)
+	jmp .cont
+
+.save:
 	dec %ax
 	mov %ax, (hist_idx)
 
+	# (len == 0) ? {cont}
+	mov (cmd_lbuf), %ax
+	test %ax, %ax
+	jz .cont
+
+	push $cmd_hist_lbuf
+	call bufzero
+	add $0x02, %sp
+
+	push $cmd_lbuf
+	push $cmd_hist_lbuf
+	call bufcpy
+	add $0x04, %sp
+
+.cont:
 	# {{{
 	push $inode
 	push $root_inum
@@ -111,19 +137,10 @@ kbd_key_up:
 	push %es
 	call fparse_lines
 	add $0x06, %sp
-
-	push $hist_buf
-	call bufzero
-	add $0x02, %sp
-
-	push $raw_buf
-	push $hist_buf
-	call bufcpy
-	add $0x04, %sp
 	# }}}
 
 	# {{{ clear
-	push $raw_buf
+	push $cmd_lbuf
 	call bufzero
 	add $0x02, %sp
 

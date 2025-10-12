@@ -23,7 +23,7 @@ kbd_upd_hist:
 	add %ax, %di
 	mov (%di), %dx # line_size
 
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov %dx, (%si)
 	add $0x02, %si
 
@@ -35,7 +35,7 @@ kbd_upd_hist:
 	add %dx, %bx # hist_file
 
 .raw:
-	mov (raw_buf), %cx
+	mov (cmd_lbuf), %cx
 
 .raw__lp:
 	# (len == 0) ? {disp}
@@ -51,7 +51,7 @@ kbd_upd_hist:
 	jmp .raw__lp
 
 .disp:
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 

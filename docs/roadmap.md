@@ -2,9 +2,8 @@
 ## WIP
 
 ## PRIORITY
-- raw\_buf -> cmd\_buf, hist\_buf -> cmd\_hist\_buf
-- history logic update
-- check history current buffer save and restore
+- saperate history logic
+- keyboard dependency move to driver
 
 ## TODO
 - support relative path

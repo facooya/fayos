@@ -21,11 +21,11 @@ _key_bs:
 	sub $0x01, %ax
 	mov %ax, (cursor+0x02)
 
-	# dec raw_buf
+	# dec cmd_lbuf
 	sub $0x01, %si # raw.data
-	mov (raw_buf), %ax # raw.len
+	mov (cmd_lbuf), %ax # raw.len
 	sub $0x01, %ax
-	mov %ax, (raw_buf)
+	mov %ax, (cmd_lbuf)
 	# }}}
 
 	# {task} (raw.data+1 != null)

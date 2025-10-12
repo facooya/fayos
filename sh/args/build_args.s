@@ -10,7 +10,7 @@
 
 # build_args()
 # <INFO>
-# si:bx = (raw_buf) len:&data
+# si:bx = (cmd_lbuf) len:&data
 # di = &args
 # cx = argc
 # dx = offset
@@ -25,7 +25,7 @@ build_args:
 # {TASK}
 .argv:
 	# {{{ init
-	mov $raw_buf, %si
+	mov $cmd_lbuf, %si
 	mov (%si), %bx # len
 	add $0x02, %si # skip len
 
@@ -39,7 +39,7 @@ build_args:
 	# }}}
 
 # <REQ>
-# bx:si = (raw_buf) len:&data
+# bx:si = (cmd_lbuf) len:&data
 # dx += offset
 # (*si != null)
 .argv__lp:
