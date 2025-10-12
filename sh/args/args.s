@@ -26,7 +26,7 @@ args: .zero 0x100
 proc_args:
 	push %si
 
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 
@@ -68,7 +68,7 @@ proc_args:
 
 .exit:
 	# {zero}
-	push $cmd_lbuf
+	push $cl_lbuf
 	call bufzero
 	add $0x02, %sp
 	call ._zero

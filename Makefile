@@ -18,6 +18,7 @@ boot/boot_ata_read_sect.s
 # Kernel address - segment:offset = 0x0000:0x1000
 SRCS_KERN = \
 kern/kern.s \
+kern/kern_data.s \
 \
 kern/kbd/kbd_main.s \
 kern/kbd/kbd_lsh.s \
@@ -35,9 +36,6 @@ kern/disk/set_dap_blk_lba.s \
 kern/mem/mem.s \
 kern/mem/alloc_mem.s \
 kern/mem/free_mem.s \
-\
-kern/io/buf.s \
-kern/io/cursor.s \
 \
 kern/lib/bufcpy.s \
 kern/lib/bufzero.s \
@@ -82,8 +80,6 @@ fs/path/build_paths.s
 
 # Shell
 SRCS_SH = \
-sh/history.s \
-\
 sh/args/args.s \
 sh/args/tok_args.s \
 sh/args/build_args.s \
@@ -91,6 +87,9 @@ sh/args/parse_args.s \
 \
 sh/exec/exec_cmd.s \
 sh/exec/exec_redir.s \
+\
+sh/hist/history.s \
+sh/hist/hist_upd_cl.s \
 \
 sh/prompt/add_ps1_path.s \
 sh/prompt/sub_ps1_path.s \
@@ -142,7 +141,6 @@ drv/vga/vga_shu.s \
 drv/kbd/kbd_data.s \
 drv/kbd/kbd_keymap.s \
 drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_upd_hist.s \
 drv/kbd/kbd_sctokc.s \
 drv/kbd/kbd_key_up.s \
 drv/kbd/kbd_key_down.s

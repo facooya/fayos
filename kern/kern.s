@@ -37,7 +37,7 @@ _start:
 	add $0x02, %sp
 
 	call vga_init_curs
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	add $0x02, %si
 
 	# {main}
@@ -45,7 +45,7 @@ _start:
 	jmp kernel_main
 
 # kernel_main()
-# <req> (*si == cmd_lbuf.data)
+# <req> (*si == cl_lbuf.data)
 kernel_main:
 	sti
 	hlt

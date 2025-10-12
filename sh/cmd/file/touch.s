@@ -26,9 +26,9 @@ cmd_touch:
 	je .err_arg_req
 
 	mov 0x06(%si), %ax # argv[1]
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	add $0x02, %si
-	add %ax, %si # cmd_lbuf[argv[1]]
+	add %ax, %si # cl_lbuf[argv[1]]
 
 	# (path_buf[0] != slash) ? {pass}
 	mov (%si), %al
@@ -162,7 +162,7 @@ cmd_touch:
 	# {{{ add dentry
 	mov $args, %si
 	mov 0x06(%si), %ax
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	add $0x02, %si
 	add %ax, %si
 

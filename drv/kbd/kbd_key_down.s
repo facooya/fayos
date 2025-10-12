@@ -4,18 +4,12 @@
 #
 # Arrow key down - history
 
-.include "fs/inode.s"
-.include "fs/dentry.s"
 .section .text
 .code16
 .global kbd_key_down
 
 # kbd_key_down()
 kbd_key_down:
-	push %es
-	push %di
-	push %bx
-
 	# upd hist_idx
 	mov (hist_idx), %ax
 	mov (file_lines), %cx
@@ -33,12 +27,12 @@ kbd_key_down:
 	jmp .cont
 
 .load:
-	push $cmd_lbuf
+	push $cl_lbuf
 	call bufzero
 	add $0x02, %sp
 
-	push $cmd_hist_lbuf
-	push $cmd_lbuf
+	push $cl_hist_lbuf
+	push $cl_lbuf
 	call bufcpy
 	add $0x04, %sp
 
@@ -50,7 +44,7 @@ kbd_key_down:
 
 	call vga_init_curs
 
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 
@@ -68,113 +62,9 @@ kbd_key_down:
 	jmp .done
 
 .cont:
-	# {{{ read root dir
-	push $inode
-	push $root_inum
-	call read_inode
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
-	mov %dx, %es
-	# }}}
-
-	# {{{ lookup history
-	mov $de_hist, %di
-	xor %cx, %cx
-	mov (%di), %ax
-	mov %al, %cl
-	add $0x02, %di
-	push %di
-	push %cx
-	mov $inode, %di
-	mov I_FILE_SIZE_OFF(%di), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
-
-	# {end.done.pass} (lookup_dentry() == no_match)
-	cmp $0x01, %ax
-	je .done
-
-	add %ax, %bx
-	# }}}
-
-	# {{{ read history file
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
-
-	push $inode
-	push $tmp_inum
-	call read_inode
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
-	mov %dx, %es
-	# }}}
-
-	# {{{ fparse
-	push $inode
-	push %bx
-	push %es
-	call fparse_lines
-	add $0x06, %sp
-	# }}}
-
-	# {{{ clear
-	push $cmd_lbuf
-	call bufzero
-	add $0x02, %sp
-
-	call vga_clr_line
-
-	push $ps1
-	call vga_puts
-	add $0x02, %sp
-
-	call vga_init_curs
-	# }}}
-
-	call kbd_upd_hist
+	call hist_upd_cl
 	jmp .done
 
 .done:
-	pop %bx
-	pop %di
-	pop %es
 	ret
+

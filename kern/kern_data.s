@@ -2,22 +2,27 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Buffer
+# [Kernel] Data
 
 .section .data
-.global cmd_lbuf
-.global cmd_hist_lbuf
+.global cl_lbuf
+.global cl_hist_lbuf
 .global tmp_buf
 .global redir_buf
 .global write_buf
 .global path_buf
+.global cursor
 
-cmd_lbuf: .zero 0x400
-cmd_hist_lbuf: .zero 0x400
+cl_lbuf: .zero 0x400
+cl_hist_lbuf: .zero 0x400
 tmp_buf: .zero 0x400
 redir_buf: .zero 0x200
 write_buf: .zero 0x400
 path_buf: .zero 0x100
+
+cursor:
+	.word 0x00 # min_pos
+	.word 0x00 # max_pos
 
 .section .text
 .code16

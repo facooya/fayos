@@ -19,11 +19,11 @@ _key_cr:
 	call vga_init_curs
 
 	# {init.task}
-	push $cmd_lbuf
+	push $cl_lbuf
 	call bufzero
 	add $0x02, %sp
 
-	mov $cmd_lbuf, %si
+	mov $cl_lbuf, %si
 	add $0x02, %si # skip len
 	jmp .done
 
