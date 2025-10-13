@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Key backspace
+# [Keyboard] Key backspace
 
 .section .text
 .code16
-.global _key_bs
+.global kbd_key_bs
 
-# _key_bs
-_key_bs:
+# kbd_key_bs()
+kbd_key_bs:
 	# {end.done} (curs.x == curs.min)
 	call vga_get_curs
 	cmp (curs), %ax
@@ -31,7 +31,7 @@ _key_bs:
 	# {task} (raw.data+1 != null)
 	mov 0x01(%si), %al
 	test %al, %al
-	jnz .call_kbd_lsh
+	jnz .call__kbd_lsh
 
 	# {{{ [d_nsh]
 	# left curs [d_nsh.1]
@@ -60,6 +60,8 @@ _key_bs:
 .done:
 	ret
 
-.call_kbd_lsh:
+.call__kbd_lsh:
+	push %si
 	call kbd_lsh
+	add $0x02, %sp
 	jmp .done

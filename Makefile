@@ -20,15 +20,6 @@ SRCS_KERN = \
 kern/kern.s \
 kern/kern_data.s \
 \
-kern/kbd/kbd_main.s \
-kern/kbd/kbd_lsh.s \
-kern/kbd/kbd_rsh.s \
-\
-kern/kbd/_key_bs.s \
-kern/kbd/_key_cr.s \
-kern/kbd/_key_left.s \
-kern/kbd/_key_right.s \
-\
 kern/disk/dap.s \
 kern/disk/dap_utils.s \
 kern/disk/set_dap_blk_lba.s \
@@ -42,7 +33,7 @@ kern/lib/bufzero.s \
 \
 kern/dbg/dbg_args.s \
 kern/dbg/dbg_paths.s \
-kern/dbg/dbg_cursor.s \
+kern/dbg/dbg_curs.s \
 kern/dbg/dbg_buf.s \
 kern/dbg/dbg_trace.s \
 kern/dbg/dbg_utils.s \
@@ -138,12 +129,19 @@ drv/vga/vga_get_curs.s \
 drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
+drv/kbd/kbd.s \
 drv/kbd/kbd_data.s \
 drv/kbd/kbd_keymap.s \
 drv/kbd/kbd_upd_mflg.s \
 drv/kbd/kbd_sctokc.s \
+drv/kbd/kbd_lsh.s \
+drv/kbd/kbd_rsh.s \
+drv/kbd/kbd_key_cr.s \
+drv/kbd/kbd_key_bs.s \
 drv/kbd/kbd_key_up.s \
-drv/kbd/kbd_key_down.s
+drv/kbd/kbd_key_down.s \
+drv/kbd/kbd_key_left.s \
+drv/kbd/kbd_key_right.s
 
 # Interrupt
 SRCS_INT = \

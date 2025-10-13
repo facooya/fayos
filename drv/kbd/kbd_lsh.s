@@ -8,16 +8,18 @@
 .code16
 .global kbd_lsh
 
-# kbd_lsh()
-# <req> *si = raw.data (updated)
-# <ret> *si = raw.data
+# kbd_lsh(*data)
+# <ret> [disp]
 kbd_lsh:
+	push %bp
+	mov %sp, %bp
+	push %si
 	push %di
-	jmp .lsh
 
-.lsh:
+	mov 0x04(%bp), %si # data
+
 	# cpy
-	mov %si, %di # raw.data
+	mov %si, %di
 	add $0x01, %di
 
 	# {{{ len
@@ -36,21 +38,21 @@ kbd_lsh:
 	mov %ax, %cx # len
 	# }}}
 
-.lsh__lp: # [d_lsh.1]
+.lp: # [d_lsh.1]
 	# left shift
-	mov (%di), %al # raw.data
+	mov (%di), %al # data
 	mov %al, -0x01(%di)
 
 	# {end} (str.len == 0)
 	test %cx, %cx
-	jz .lsh__end
+	jz .end
 
 	# {lp}
-	add $0x01, %di # raw.data
-	sub $0x01, %cx # raw.len
-	jmp .lsh__lp
+	add $0x01, %di # data
+	sub $0x01, %cx # len
+	jmp .lp
 
-.lsh__end:
+.end:
 	# left curs [d_lsh.2]
 	call vga_get_curs
 	sub $0x01, %ax # curs.x
@@ -75,4 +77,6 @@ kbd_lsh:
 
 .done:
 	pop %di
+	pop %si
+	pop %bp
 	ret

@@ -8,19 +8,20 @@
 .code16
 .global kbd_rsh
 
-# kbd_rsh()
-# <req> *si = raw.data (pre-update)
-# <req> al = ascii
-# <ret> *si = raw.data
+# kbd_rsh(*data, ascii)
+# <ret> [disp]
 kbd_rsh:
+	push %bp
+	mov %sp, %bp
+	push %si
 	push %di
-	jmp .rsh
 
-# {task}
-.rsh:
+	mov 0x04(%bp), %si
+	mov 0x06(%bp), %ax
+
 	# cpy
 	mov %al, %ah # ascii
-	mov %si, %di # raw.data
+	mov %si, %di # data
 	sub $0x01, %di # restore origin
 
 	# {{{ len
@@ -36,37 +37,37 @@ kbd_rsh:
 	add $0x04, %sp
 
 	mov %ax, %cx # len
-	add %ax, %di # raw.data.end
-	sub $0x01, %di # raw.data.last
+	add %ax, %di # data.end
+	sub $0x01, %di # data.last
 
 	pop %es
 	pop %ax
 	# }}}
 
-.rsh__lp:
+.lp:
 	# right shift
 	mov (%di), %al
 	mov %al, 0x01(%di)
 
 	# {end} (str.len == 0)
 	test %cx, %cx
-	je .rsh__end
+	je .end
 
 	# {lp}
-	sub $0x01, %di # raw.data
+	sub $0x01, %di # data
 	sub $0x01, %cx
-	jmp .rsh__lp
+	jmp .lp
 
-.rsh__end:
+.end:
 	# ah = ascii
 	mov %si, %di # cpy
 	sub $0x01, %di
-	mov %ah, (%di) # raw.data
+	mov %ah, (%di) # data
 
 	call vga_get_curs
 
 	push %ax # [s.0:curs_pos]
-	push %di # raw.data
+	push %di # data
 	call vga_puts
 	add $0x02, %sp
 	pop %ax # [s.0:curs_pos]
@@ -78,4 +79,6 @@ kbd_rsh:
 	add $0x02, %sp
 
 	pop %di
+	pop %si
+	pop %bp
 	ret

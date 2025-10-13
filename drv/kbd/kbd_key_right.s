@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Key arrow right
+# [Keyboard] Key arrow right
 
 .section .text
 .code16
-.global _key_right
+.global kbd_key_right
 
-# _key_right
-_key_right:
+# kbd_key_right()
+kbd_key_right:
 	call vga_get_curs
 
 	# {end.done} (curs.x == curs.max)

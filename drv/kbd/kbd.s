@@ -2,42 +2,42 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Keyboard main
+# [Keyboard]
 
 .include "chr.s"
 .include "drv/kbd.s"
 .section .text
 .code16
-.global kbd_main
+.global kbd
 
-# kbd_main()
+# kbd()
 # <req> al = kc
-kbd_main:
+kbd:
 	# {{{
 	# (kc == bs) ? {key.bs}
 	cmp $CHR_BS, %al
-	je _key_bs
+	je .call__key_bs
 
 	# (kc == cr) ? {key.cr}
 	cmp $CHR_CR, %al
-	je _key_cr
+	je .call__key_cr
 	# }}}
 
 	# TODO: check (kc >= 0x80)
 	# {{{
 	# Arrow
-	# (kc == left) ? {key.left}
-	cmp $KBD_KC_LEFT, %al
-	je _key_left
-	# (kc == right) ? {key.right}
-	cmp $KBD_KC_RIGHT, %al
-	je _key_right
 	# (kc == up) ? {key.up}
 	cmp $KBD_KC_UP, %al
-	je .call__kbd_key_up
+	je .call__key_up
 	# (kc == down) ? {key.down}
 	cmp $KBD_KC_DOWN, %al
-	je .call__kbd_key_down
+	je .call__key_down
+	# (kc == left) ? {key.left}
+	cmp $KBD_KC_LEFT, %al
+	je .call__key_left
+	# (kc == right) ? {key.right}
+	cmp $KBD_KC_RIGHT, %al
+	je .call__key_right
 
 	# Numpad
 	# (kc == num_sl) ? {key.n.sl}
@@ -45,7 +45,7 @@ kbd_main:
 	je .key__num_sl
 	# (kc == num_ent) ? {key.n.cr}
 	cmp $KBD_KC_NUM_ENT, %al
-	je _key_cr
+	je .call__key_cr
 
 	# Special
 	# (kc == tab) ? {key.tab}
@@ -88,7 +88,7 @@ kbd_main:
 	# {task} (raw.data-1 != null)
 	mov -0x01(%si), %ah
 	test %ah, %ah
-	jnz .call_kbd_rsh
+	jnz .call__kbd_rsh
 
 	# {{{
 	push %ax # [s.0:kc]
@@ -103,14 +103,34 @@ kbd_main:
 	ret
 
 # {CALL}
-.call_kbd_rsh:
+.call__kbd_rsh:
+	xor %ah, %ah
+	push %ax
+	push %si
 	call kbd_rsh
+	add $0x04, %sp
 	jmp .done
 
-.call__kbd_key_up:
+.call__key_cr:
+	call kbd_key_cr
+	jmp .done
+
+.call__key_bs:
+	call kbd_key_bs
+	jmp .done
+
+.call__key_up:
 	call kbd_key_up
 	jmp .done
 
-.call__kbd_key_down:
+.call__key_down:
 	call kbd_key_down
+	jmp .done
+
+.call__key_left:
+	call kbd_key_left
+	jmp .done
+
+.call__key_right:
+	call kbd_key_right
 	jmp .done

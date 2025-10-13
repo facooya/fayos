@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug curs
+# [Debug] Cursor structure
 
 .include "chr.s"
 .section .text

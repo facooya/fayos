@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Key arrow left
+# [Keyboard] Key arrow left
 
 .section .text
 .code16
-.global _key_left
+.global kbd_key_left
 
-# _key_left
-_key_left:
+# kbd_key_left()
+kbd_key_left:
 	call vga_get_curs
 
 	# {end.done} (curs.x == curs.min)

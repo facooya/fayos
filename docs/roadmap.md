@@ -2,7 +2,6 @@
 ## WIP
 
 ## PRIORITY
-- keyboard dependency move to driver
 
 ## TODO
 - support relative path

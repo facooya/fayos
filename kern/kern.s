@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Fayos kernel
+# [Kernel]
 
 .include "chr.s"
 .section .data
@@ -40,13 +40,12 @@ _start:
 	mov $cl_lbuf, %si
 	add $0x02, %si
 
-	# {main}
 	call ps2_init
-	jmp kernel_main
+	jmp .kern
 
 # kernel_main()
 # <req> (*si == cl_lbuf.data)
-kernel_main:
+.kern:
 	sti
 	hlt
-	jmp kernel_main
+	jmp .kern

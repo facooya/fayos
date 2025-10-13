@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Interrupt request from keyboard
+# [Interrupt] Interrupt request from keyboard
 
 .section .text
 .code16
@@ -21,12 +21,12 @@ irq_kbd:
 	test %ax, %ax
 	jz .done
 
-	# <req> ax:sc
-	# <ret> al:kc
+	# <req> ax = sc
+	# <ret> al = kc
 	call kbd_sctokc
 
-	# <req> al:kc
-	call kbd_main
+	# <req> al = kc
+	call kbd
 
 .done:
 	# EOI
