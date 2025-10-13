@@ -31,7 +31,7 @@ kbd_key_bs:
 	# {task} (raw.data+1 != null)
 	mov 0x01(%si), %al
 	test %al, %al
-	jnz .call__kbd_lsh
+	jnz .call__shl_cl
 
 	# {{{ [d_nsh]
 	# left curs [d_nsh.1]
@@ -60,8 +60,8 @@ kbd_key_bs:
 .done:
 	ret
 
-.call__kbd_lsh:
+.call__shl_cl:
 	push %si
-	call kbd_lsh
+	call disp_shl_cl
 	add $0x02, %sp
 	jmp .done

@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Right shift
+# [Display] Shift right in command line
 
 .section .text
 .code16
-.global kbd_rsh
+.global disp_shr_cl
 
-# kbd_rsh(*data, ascii)
+# disp_shr_cl(*data, ascii)
 # <ret> [disp]
-kbd_rsh:
+disp_shr_cl:
 	push %bp
 	mov %sp, %bp
 	push %si

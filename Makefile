@@ -118,6 +118,18 @@ drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
 drv/ps2/ps2_read_sc.s \
 \
+drv/kbd/kbd.s \
+drv/kbd/kbd_data.s \
+drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_upd_mflg.s \
+drv/kbd/kbd_sctokc.s \
+drv/kbd/kbd_key_cr.s \
+drv/kbd/kbd_key_bs.s \
+drv/kbd/kbd_key_up.s \
+drv/kbd/kbd_key_down.s \
+drv/kbd/kbd_key_left.s \
+drv/kbd/kbd_key_right.s \
+\
 drv/vga/vga.s \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
@@ -129,19 +141,8 @@ drv/vga/vga_get_curs.s \
 drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
-drv/kbd/kbd.s \
-drv/kbd/kbd_data.s \
-drv/kbd/kbd_keymap.s \
-drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_sctokc.s \
-drv/kbd/kbd_lsh.s \
-drv/kbd/kbd_rsh.s \
-drv/kbd/kbd_key_cr.s \
-drv/kbd/kbd_key_bs.s \
-drv/kbd/kbd_key_up.s \
-drv/kbd/kbd_key_down.s \
-drv/kbd/kbd_key_left.s \
-drv/kbd/kbd_key_right.s
+drv/disp/disp_shr_cl.s \
+drv/disp/disp_shl_cl.s
 
 # Interrupt
 SRCS_INT = \

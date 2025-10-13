@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Left shift
+# [Display] Shift left in command line
 
 .section .text
 .code16
-.global kbd_lsh
+.global disp_shl_cl
 
-# kbd_lsh(*data)
+# disp_shl_cl(*data)
 # <ret> [disp]
-kbd_lsh:
+disp_shl_cl:
 	push %bp
 	mov %sp, %bp
 	push %si

@@ -88,7 +88,7 @@ kbd:
 	# {task} (raw.data-1 != null)
 	mov -0x01(%si), %ah
 	test %ah, %ah
-	jnz .call__kbd_rsh
+	jnz .call__shr_cl
 
 	# {{{
 	push %ax # [s.0:kc]
@@ -103,11 +103,11 @@ kbd:
 	ret
 
 # {CALL}
-.call__kbd_rsh:
+.call__shr_cl:
 	xor %ah, %ah
 	push %ax
 	push %si
-	call kbd_rsh
+	call disp_shr_cl
 	add $0x04, %sp
 	jmp .done
 
