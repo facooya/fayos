@@ -82,12 +82,12 @@ sh/exec/exec_redir.s \
 sh/hist/history.s \
 sh/hist/hist_upd_cl.s \
 \
-sh/prompt/add_ps1_path.s \
-sh/prompt/sub_ps1_path.s \
-sh/prompt/build_ps1_path.s \
-sh/prompt/build_ps1.s \
-sh/prompt/init_ps1.s \
-sh/prompt/prompt.s \
+sh/ps/add_ps1_path.s \
+sh/ps/sub_ps1_path.s \
+sh/ps/build_ps1_path.s \
+sh/ps/build_ps1.s \
+sh/ps/init_ps1.s \
+sh/ps/prompt.s \
 \
 sh/cmd/cmd_map.s \
 \
@@ -109,9 +109,12 @@ sh/cmd/dir/rmdir.s
 SRCS_DRV = \
 drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \
-drv/ata/ata_read_blk.s \
 drv/ata/ata_write_sect.s \
-drv/ata/ata_write_blk.s \
+\
+drv/disk/disk_data.s \
+drv/disk/disk_set_dio.s \
+drv/disk/disk_read_sect.s \
+drv/disk/disk_write_sect.s \
 \
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
