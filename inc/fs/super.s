@@ -40,6 +40,7 @@
 
 # DAP
 .equ S_SECTOR_COUNT, 0x01
+.equ S_SECT_CNT, 0x01
 .equ S_OFF_MEM, 0x0600
 .equ S_SEG_MEM, 0x00
 .equ S_LBA, 0x00000001

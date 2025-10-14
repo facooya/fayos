@@ -8,7 +8,14 @@
 .code16
 .global disk_set_dio
 
-# disk_set_dio(ub32 *blknum, ub16 dnum)
+# disk_set_dio(
+# ub16 dnum,
+# ub16 sect_cnt,
+# ub16 seg,
+# ub16 off,
+# ub16 lba_hi,
+# ub16 lba_lo
+# )
 # <req> dio
 disk_set_dio:
 	push %si

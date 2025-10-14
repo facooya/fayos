@@ -5,6 +5,7 @@
 # Process superblock
 
 .include "fs/super.s"
+.include "drv/disk.s"
 .section .data
 .kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
 .kmsg_found: .asciz "\r\nSuperblock found.\r\n"
@@ -20,16 +21,9 @@ proc_super:
 	push %si
 	push %bx
 
-	push $0x01 # sect_cnt
-	push $0x01 # lba_lo
-	xor %ax, %ax
-	push %ax # lba_hi
-	mov $0x0600, %ax
-	push %ax # off
-	xor %ax, %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_SB
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -68,16 +62,9 @@ proc_super:
 	call _super_alloc_lba
 	call _super_write_data
 
-	push $0x01 # sect_cnt
-	push $0x01 # lba_lo
-	xor %ax, %ax
-	push %ax # lba_hi
-	mov $0x0600, %ax
-	push %ax # off
-	xor %ax, %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_SB
+	call disk_write_sect
+	add $0x02, %sp
 	# }}}
 
 	call _super_set_lba

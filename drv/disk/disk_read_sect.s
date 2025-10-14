@@ -5,6 +5,7 @@
 # [Disk] Read sectors
 
 .include "fs/super.s"
+.include "drv/disk.s"
 .section .text
 .code16
 .global disk_read_sect
@@ -18,7 +19,7 @@ disk_read_sect:
 	push %si
 	push %bx
 
-	mov (dnum), %ax
+	mov 0x04(%bp), %ax # dnum
 	mov $0x0A, %cx # dio_type_size
 	mul %cx
 	# ax = dio_off

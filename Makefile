@@ -112,6 +112,7 @@ drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
 drv/disk/disk_data.s \
+drv/disk/disk_init_dio.s \
 drv/disk/disk_set_dio.s \
 drv/disk/disk_read_sect.s \
 drv/disk/disk_write_sect.s \
