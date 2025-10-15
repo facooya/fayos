@@ -20,7 +20,7 @@ _start:
 
 	call disk_init_dio
 
-	call proc_super
+	call sb_run
 
 	push $.kmsg_welcome
 	call vga_puts
@@ -43,11 +43,11 @@ _start:
 	add $0x02, %si
 
 	call ps2_init
-	jmp .kern
+	jmp .run
 
-# kernel_main()
+# run()
 # <req> (*si == cl_lbuf.data)
-.kern:
+.run:
 	sti
 	hlt
-	jmp .kern
+	jmp .run

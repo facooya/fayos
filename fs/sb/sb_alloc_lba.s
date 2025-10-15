@@ -11,7 +11,6 @@
 .global sb_alloc_lba
 
 # sb_alloc_lba(seg, off)
-# <req> es:bx = sb_mem
 sb_alloc_lba:
 	push %bp
 	mov %sp, %bp
@@ -22,7 +21,6 @@ sb_alloc_lba:
 	mov %ax, %es
 	mov 0x06(%bp), %bx
 
-	#mov %es:DP_LBA_SIZE_OFF(%bx), %ax
 	mov %es:SB_OFF_TOT_SECT(%bx), %ax
 	# TODO: mov DP_LBA_SIZE_OFF+0x02(%bx), %ax
 	# TODO: calcluate high lba

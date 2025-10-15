@@ -45,12 +45,11 @@ kern/dbg/num/dbg_reg.s
 SRCS_FS = \
 fs/cache.s \
 \
-fs/super/super.s \
-fs/super/sb_alloc_lba.s \
-fs/super/_super_make_root.s \
-fs/super/_super_set_bitmap.s \
-fs/super/_super_set_lba.s \
-fs/super/_super_write_data.s \
+fs/sb/sb_run.s \
+fs/sb/sb_alloc_lba.s \
+fs/sb/sb_make_root.s \
+fs/sb/_super_set_bitmap.s \
+fs/sb/_super_set_lba.s \
 \
 fs/inode/add_inode.s \
 fs/inode/clear_inode.s \

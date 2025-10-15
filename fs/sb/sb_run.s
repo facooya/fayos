@@ -2,9 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Process superblock
+# [Superblock] Run
 
-.include "fs/super.s"
+.include "fs/fs.s"
 .include "fs/sb.s"
 .include "drv/disk.s"
 .section .data
@@ -14,10 +14,10 @@
 
 .section .text
 .code16
-.global proc_super
+.global sb_run
 
-# proc_super()
-proc_super:
+# sb_run()
+sb_run:
 	push %es
 	push %si
 	push %bx
@@ -28,38 +28,29 @@ proc_super:
 	mov %ax, %bx
 	mov %dx, %es
 
-	# {{{ check superblock
-	# {task} (disk_magic_low != magic_low)
+	# {{{ (sb_mag != mag) ? {make} : {init}
 	mov %es:SB_OFF_MAG(%bx), %ax
 	cmp $(SB_MAG&0xFFFF), %ax
-	jne .run_make
-
-	# {task} (disk_magic_high != magic_high)
+	jne .run__make
 	mov %es:SB_OFF_MAG+0x02(%bx), %ax
 	cmp $(SB_MAG>>0x10), %ax
-	jne .run_make
+	jne .run__make
 
 	push $.kmsg_found
 	call vga_puts
 	add $0x02, %sp
+	jmp .run__init
 	# }}}
 
-	# {task}
-	jmp .run_init
-
-# {TASK}
-.run_make:
+.run__make:
 	push $.kmsg_try
 	call vga_puts
 	add $0x02, %sp
 
-	# {{{ write superblock disk
+	# {{{ write superblock
 	mov %bx, %si
-	#add $DP_BUF_OFF, %si
 	add $SB_OFF_TOT_SECT, %si
 	call ata_get_sect
-	#mov %ax, 0x10(%si) # HACK
-	#mov %dx, 0x12(%si) # HACK
 	mov %ax, (%si)
 	mov %dx, 0x02(%si)
 
@@ -68,7 +59,11 @@ proc_super:
 	call sb_alloc_lba
 	add $0x04, %sp
 
-	call _super_write_data
+	# write magic
+	mov $(SB_MAG&0xFFFF), %ax
+	mov %ax, %es:SB_OFF_MAG(%bx)
+	mov $(SB_MAG>>0x10), %ax
+	mov %ax, %es:SB_OFF_MAG+0x02(%bx)
 
 	push $DNUM_SB
 	call disk_write_sect
@@ -78,27 +73,13 @@ proc_super:
 	call _super_set_lba
 	call _super_set_bitmap
 
-	mov $(ROOT_INUM&0xFFFF), %ax
-	mov %ax, (root_inum)
-	mov %ax, (inum)
-	mov $(ROOT_INUM>>0x10), %ax
-	mov %ax, (root_inum+0x02)
-	mov %ax, (inum+0x02)
-	call _super_make_root
-
+	FS_INIT_INUM
+	call sb_make_root
 	jmp .done
 
-# {TASK}
-.run_init:
-	mov $(ROOT_INUM&0xFFFF), %ax
-	mov %ax, (root_inum)
-	mov %ax, (inum)
-	mov $(ROOT_INUM>>0x10), %ax
-	mov %ax, (root_inum+0x02)
-	mov %ax, (inum+0x02)
-
+.run__init:
+	FS_INIT_INUM
 	call _super_set_lba
-
 	jmp .done
 
 # {DONE}

@@ -2,15 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Make root
+# [Superblock] Make root directory
 
 .include "fs/inode.s"
 .section .text
 .code16
-.global _super_make_root
+.global sb_make_root
 
-# _super_make_root()
-_super_make_root:
+# sb_make_root()
+sb_make_root:
+	push %si
+
 	call add_inode
 
 	# add dentry dot
@@ -65,4 +67,6 @@ _super_make_root:
 	push $inum
 	call update_inode
 	add $0x04, %sp
+
+	pop %si
 	ret

@@ -6,3 +6,12 @@
 
 .equ FS_ROOT_INUM, 0x00000001
 .equ FS_START_LBA, 0x40
+
+.macro FS_INIT_INUM
+	mov $(FS_ROOT_INUM&0xFFFF), %ax
+	mov %ax, (root_inum)
+	mov %ax, (inum)
+	mov $(FS_ROOT_INUM>>0x10), %ax
+	mov %ax, (root_inum+0x02)
+	mov %ax, (inum+0x02)
+.endm
