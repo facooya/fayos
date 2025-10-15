@@ -2,34 +2,34 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Set lba by superblock disk
+# [Superblock] Set logical block address
 
-.include "fs/super.s"
+.include "fs/sb.s"
 .section .text
 .code16
-.global _super_set_lba
+.global sb_set_lba
 
-# _super_set_lba()
-_super_set_lba:
-	mov %es:BB_LBA_OFF(%bx), %ax
+# sb_set_lba()
+sb_set_lba:
+	mov %es:SB_OFF_BBM_LBA(%bx), %ax
 	push %ax
-	mov %es:BB_LBA_OFF+0x02(%bx), %ax
+	mov %es:SB_OFF_BBM_LBA+0x02(%bx), %ax
 	push %ax
 	push $dap_bb
 	call set_src_dap_lba
 	add $0x06, %sp
 
-	mov %es:IB_LBA_OFF(%bx), %ax
+	mov %es:SB_OFF_IBM_LBA(%bx), %ax
 	push %ax
-	mov %es:IB_LBA_OFF+0x02(%bx), %ax
+	mov %es:SB_OFF_IBM_LBA+0x02(%bx), %ax
 	push %ax
 	push $dap_ib
 	call set_src_dap_lba
 	add $0x06, %sp
 
-	mov %es:IT_LBA_OFF(%bx), %ax
+	mov %es:SB_OFF_IT_LBA(%bx), %ax
 	push %ax
-	mov %es:IT_LBA_OFF+0x02(%bx), %ax
+	mov %es:SB_OFF_IT_LBA+0x02(%bx), %ax
 	push %ax
 	push $dap_it
 	call set_src_dap_lba

@@ -4,7 +4,6 @@
 #
 # [Disk] Read sectors
 
-.include "fs/super.s"
 .include "drv/disk.s"
 .section .text
 .code16

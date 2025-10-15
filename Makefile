@@ -48,8 +48,8 @@ fs/cache.s \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
 fs/sb/sb_make_root.s \
-fs/sb/_super_set_bitmap.s \
-fs/sb/_super_set_lba.s \
+fs/sb/sb_set_bm.s \
+fs/sb/sb_set_lba.s \
 \
 fs/inode/add_inode.s \
 fs/inode/clear_inode.s \

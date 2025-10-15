@@ -2,19 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Set bitmap
+# [Superblock] Set bitmap
 
 .section .text
 .code16
-.global _super_set_bitmap
+.global sb_set_bm
 
-# _super_set_bitmap()
-_super_set_bitmap:
+# sb_set_bm()
+sb_set_bm:
 	push %es
-
-	# {{{
 	push %bx
 
+	# {{{ bbm
 	mov $dap_bb, %bx
 	push $0x08 # sect_cnt
 	mov 0x08(%bx), %ax
@@ -48,13 +47,9 @@ _super_set_bitmap:
 	push %ax # seg
 	call ata_write_sect
 	add $0x0A, %sp
-
-	pop %bx
 	# }}}
 
-	# {{{
-	push %bx
-
+	# {{{ ibm
 	mov $dap_ib, %bx
 	push $0x08 # sect_cnt
 	mov 0x08(%bx), %ax
@@ -88,9 +83,8 @@ _super_set_bitmap:
 	push %ax # seg
 	call ata_write_sect
 	add $0x0A, %sp
-
-	pop %bx
 	# }}}
 
+	pop %bx
 	pop %es
 	ret

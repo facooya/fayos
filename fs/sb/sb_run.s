@@ -70,8 +70,8 @@ sb_run:
 	add $0x02, %sp
 	# }}}
 
-	call _super_set_lba
-	call _super_set_bitmap
+	call sb_set_lba
+	call sb_set_bm
 
 	FS_INIT_INUM
 	call sb_make_root
@@ -79,7 +79,7 @@ sb_run:
 
 .run__init:
 	FS_INIT_INUM
-	call _super_set_lba
+	call sb_set_lba
 	jmp .done
 
 # {DONE}

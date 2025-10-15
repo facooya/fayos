@@ -4,7 +4,6 @@
 #
 # Disk Address Packet
 
-.include "fs/super.s"
 .include "dap.s"
 .global dap
 .global dap_es
@@ -33,18 +32,6 @@ dap_es:
 	.word 0x00
 	.word 0x00
 	.word 0x00
-	.word 0x00
-	.word 0x00
-
-# Immutable
-dap_super:
-	.byte DAP_SIZE
-	.byte DAP_RESV
-	.word S_SECTOR_COUNT
-	.word S_OFF_MEM
-	.word S_SEG_MEM
-	.word (S_LBA&0xFFFF)
-	.word (S_LBA>>0x10)
 	.word 0x00
 	.word 0x00
 

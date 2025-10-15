@@ -4,7 +4,6 @@
 #
 # [Disk] Write sectors
 
-.include "fs/super.s"
 .section .text
 .code16
 .global disk_write_sect

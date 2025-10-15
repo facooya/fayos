@@ -4,7 +4,8 @@
 #
 # set DAP by block LBA
 
-.include "fs/super.s"
+.include "drv/disk.s"
+.include "fs/sb.s"
 .include "fs/inode.s"
 .section .data
 .blk_lba: .long 0x00
@@ -52,8 +53,8 @@ set_dap_blk_lba:
 
 	# add normal lba
 	mov (.blk_lba), %ax
-	mov $S_OFF_MEM, %bx
-	mov NORM_LBA_OFF(%bx), %cx
+	mov $DIO_SB_OFF, %bx
+	mov SB_OFF_NORM_LBA(%bx), %cx
 	# TODO: NORM_LBA_OFF+0x02(%bx)
 
 	clc

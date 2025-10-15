@@ -16,7 +16,7 @@
 .equ DIO_OFF_LBA_HI, 0x06
 .equ DIO_OFF_LBA_LO, 0x08
 
-.equ DIO_SB_SECT_CNT, 0x02
+.equ DIO_SB_SECT_CNT, 0x01
 .equ DIO_SB_SEG, 0x00
 .equ DIO_SB_OFF, 0x0600
 .equ DIO_SB_LBA_HI, 0x00

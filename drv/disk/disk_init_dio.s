@@ -4,7 +4,6 @@
 #
 # [Disk] Initial disk input/output
 
-.include "fs/super.s"
 .include "drv/disk.s"
 .section .text
 .code16
@@ -15,7 +14,7 @@ disk_init_dio:
 	mov $dio, %di
 
 	# sb
-	mov $S_SECT_CNT, %ax
+	mov $DIO_SB_SECT_CNT, %ax
 	mov %ax, DIO_OFF_SECT_CNT(%di)
 	mov $DIO_SB_SEG, %ax
 	mov %ax, DIO_OFF_SEG(%di)
@@ -28,4 +27,7 @@ disk_init_dio:
 	add $DIO_SIZE, %di
 
 	pop %di
+	ret
+
+disk_init_dio_bm:
 	ret
