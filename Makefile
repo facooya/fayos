@@ -46,7 +46,7 @@ SRCS_FS = \
 fs/cache.s \
 \
 fs/super/super.s \
-fs/super/_super_alloc_lba.s \
+fs/super/sb_alloc_lba.s \
 fs/super/_super_make_root.s \
 fs/super/_super_set_bitmap.s \
 fs/super/_super_set_lba.s \

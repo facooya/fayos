@@ -5,6 +5,7 @@
 # Process superblock
 
 .include "fs/super.s"
+.include "fs/sb.s"
 .include "drv/disk.s"
 .section .data
 .kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
@@ -29,20 +30,20 @@ proc_super:
 
 	# {{{ check superblock
 	# {task} (disk_magic_low != magic_low)
-	mov %es:S_MAG_OFF(%bx), %ax
-	cmp $(S_MAG&0xFFFF), %ax
+	mov %es:SB_OFF_MAG(%bx), %ax
+	cmp $(SB_MAG&0xFFFF), %ax
 	jne .run_make
 
 	# {task} (disk_magic_high != magic_high)
-	mov %es:S_MAG_OFF+0x02(%bx), %ax
-	cmp $(S_MAG>>0x10), %ax
+	mov %es:SB_OFF_MAG+0x02(%bx), %ax
+	cmp $(SB_MAG>>0x10), %ax
 	jne .run_make
 
 	push $.kmsg_found
 	call vga_puts
 	add $0x02, %sp
 	# }}}
-	
+
 	# {task}
 	jmp .run_init
 
@@ -54,12 +55,19 @@ proc_super:
 
 	# {{{ write superblock disk
 	mov %bx, %si
-	add $DP_BUF_OFF, %si
+	#add $DP_BUF_OFF, %si
+	add $SB_OFF_TOT_SECT, %si
 	call ata_get_sect
-	mov %ax, 0x10(%si) # HACK
-	mov %dx, 0x12(%si) # HACK
+	#mov %ax, 0x10(%si) # HACK
+	#mov %dx, 0x12(%si) # HACK
+	mov %ax, (%si)
+	mov %dx, 0x02(%si)
 
-	call _super_alloc_lba
+	push %bx
+	push %es
+	call sb_alloc_lba
+	add $0x04, %sp
+
 	call _super_write_data
 
 	push $DNUM_SB
