@@ -4,6 +4,7 @@
 #
 # [Disk] Write sectors
 
+.include "drv/disk.s"
 .section .text
 .code16
 .global disk_write_sect
@@ -16,23 +17,23 @@ disk_write_sect:
 	push %si
 	push %bx
 
-	mov (dnum), %ax
-	mov $0x0A, %cx # dio_type_size
+	mov 0x04(%bp), %ax # dnum
+	mov $DIO_SIZE, %cx # dio_type_size
 	mul %cx
 	# ax = dio_off
 
 	mov $dio, %si
 	add %ax, %si # dio_off
 	
-	mov (%si), %ax
+	mov DIO_OFF_SECT_CNT(%si), %ax
 	push %ax # sect_cnt
-	mov 0x08(%si), %ax
+	mov DIO_OFF_LBA_LO(%si), %ax
 	push %ax # lba_lo
-	mov 0x06(%si), %ax
+	mov DIO_OFF_LBA_HI(%si), %ax
 	push %ax # lba_hi
-	mov 0x04(%si), %ax
+	mov DIO_OFF_OFF(%si), %ax
 	push %ax # off
-	mov 0x02(%si), %ax
+	mov DIO_OFF_SEG(%si), %ax
 	push %ax # seg
 	call ata_write_sect
 	add $0x0A, %sp

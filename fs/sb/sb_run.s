@@ -70,7 +70,7 @@ sb_run:
 	add $0x02, %sp
 	# }}}
 
-	call sb_set_lba
+	call sb_set_dio
 	call sb_set_bm
 
 	FS_INIT_INUM
@@ -79,7 +79,7 @@ sb_run:
 
 .run__init:
 	FS_INIT_INUM
-	call sb_set_lba
+	call sb_set_dio
 	jmp .done
 
 # {DONE}

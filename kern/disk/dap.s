@@ -7,10 +7,6 @@
 .include "dap.s"
 .global dap
 .global dap_es
-.global dap_super
-.global dap_bb
-.global dap_ib
-.global dap_it
 
 # Mutable
 dap:
@@ -30,40 +26,6 @@ dap_es:
 	.word DAP_SECTOR_COUNT
 	.word 0x00
 	.word 0x00
-	.word 0x00
-	.word 0x00
-	.word 0x00
-	.word 0x00
-
-# Mutable LBA by superblock
-dap_bb:
-	.byte DAP_SIZE
-	.byte DAP_RESV
-	.word DAP_SECTOR_COUNT
-	.word 0x00
-	.word 0x1000
-	.word 0x00
-	.word 0x00
-	.word 0x00
-	.word 0x00
-
-dap_ib:
-	.byte DAP_SIZE
-	.byte DAP_RESV
-	.word DAP_SECTOR_COUNT
-	.word 0x1000
-	.word 0x1000
-	.word 0x00
-	.word 0x00
-	.word 0x00
-	.word 0x00
-
-dap_it:
-	.byte DAP_SIZE
-	.byte DAP_RESV
-	.word DAP_SECTOR_COUNT
-	.word 0x2000
-	.word 0x1000
 	.word 0x00
 	.word 0x00
 	.word 0x00

@@ -4,6 +4,7 @@
 #
 # [Superblock] Set bitmap
 
+.include "drv/disk.s"
 .section .text
 .code16
 .global sb_set_bm
@@ -14,18 +15,9 @@ sb_set_bm:
 	push %bx
 
 	# {{{ bbm
-	mov $dap_bb, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_BBM
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -35,33 +27,15 @@ sb_set_bm:
 	call set_bit
 	add $0x06, %sp
 
-	mov $dap_bb, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_BBM
+	call disk_write_sect
+	add $0x02, %sp
 	# }}}
 
 	# {{{ ibm
-	mov $dap_ib, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_IBM
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -71,18 +45,9 @@ sb_set_bm:
 	call set_bit
 	add $0x06, %sp
 
-	mov $dap_ib, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_IBM
+	call disk_write_sect
+	add $0x02, %sp
 	# }}}
 
 	pop %bx

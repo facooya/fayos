@@ -4,6 +4,7 @@
 #
 # [Disk] Set disk input/output structure
 
+.include "drv/disk.s"
 .section .text
 .code16
 .global disk_set_dio
@@ -16,32 +17,30 @@
 # ub16 lba_hi,
 # ub16 lba_lo
 # )
-# <req> dio
+# <ret> dio
 disk_set_dio:
-	push %si
+	push %bp
+	mov %sp, %bp
 	push %di
-	push %bx
 
 	mov $dio, %di
 
-	# TODO: allocate memory seg:off - es:di
-
-	# TODO: blknum hi lo calc
-	mov 0x02(%si), %ax
-	mov (%si), %ax
-	xor %dx, %dx
-	mov $0x08, %cx
+	mov 0x04(%bp), %ax
+	mov $DIO_SIZE, %cx
 	mul %cx
+	add %ax, %di
 
-	# [lba_lo + NORM_LBA]
-	#mov $S_OFF_MEM, %bx
-	#mov NORM_LBA_OFF(%bx), %cx
-	#clc
-	#add %cx, %ax
-	#jnc .ncf
-	#add $0x01, %dx
+	mov 0x06(%bp), %ax
+	mov %ax, DIO_OFF_SECT_CNT(%di)
+	mov 0x08(%bp), %ax
+	mov %ax, DIO_OFF_SEG(%di)
+	mov 0x0A(%bp), %ax
+	mov %ax, DIO_OFF_OFF(%di)
+	mov 0x0C(%bp), %ax
+	mov %ax, DIO_OFF_LBA_HI(%di)
+	mov 0x0E(%bp), %ax
+	mov %ax, DIO_OFF_LBA_LO(%di)
 
-	pop %bx
 	pop %di
-	pop %si
+	pop %bp
 	ret

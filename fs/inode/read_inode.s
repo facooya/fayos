@@ -4,6 +4,7 @@
 #
 # Read inode in inode table
 
+.include "drv/disk.s"
 .include "fs/inode.s"
 .section .text
 .code16
@@ -20,18 +21,9 @@ read_inode:
 	push %si
 	push %bx
 
-	mov $dap_it, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_IT
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 

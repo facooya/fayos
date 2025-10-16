@@ -4,6 +4,7 @@
 #
 # Clear inode in inode table
 
+.include "drv/disk.s"
 .include "fs/inode.s"
 .section .text
 .code16
@@ -18,18 +19,9 @@ clear_inode:
 	push %bx
 
 	# {{{ read/write inode table
-	mov $dap_it, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_IT
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -51,33 +43,15 @@ clear_inode:
 	mov %ax, %es:I_BLK_0_OFF(%bx)
 	mov %ax, %es:I_BLK_0_OFF+0x02(%bx)
 
-	mov $dap_it, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_IT
+	call disk_write_sect
+	add $0x02, %sp
 	# } push bitnum
 
 	# { clear block bit
-	mov $dap_bb, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_BBM
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -87,33 +61,15 @@ clear_inode:
 	call clear_bit
 	add $0x06, %sp
 
-	mov $dap_bb, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_BBM
+	call disk_write_sect
+	add $0x02, %sp
 	# }}}
 
 	# {{{ clear inum bit
-	mov $dap_ib, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push $DNUM_IBM
+	call disk_read_sect
+	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -126,18 +82,9 @@ clear_inode:
 	call clear_bit
 	add $0x06, %sp
 
-	mov $dap_ib, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $DNUM_IBM
+	call disk_write_sect
+	add $0x02, %sp
 	# }}}
 
 	pop %bx

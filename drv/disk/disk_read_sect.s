@@ -19,22 +19,22 @@ disk_read_sect:
 	push %bx
 
 	mov 0x04(%bp), %ax # dnum
-	mov $0x0A, %cx # dio_type_size
+	mov $DIO_SIZE, %cx
 	mul %cx
 	# ax = dio_off
 
 	mov $dio, %si
 	add %ax, %si # dio_off
-	
-	mov (%si), %ax
+
+	mov DIO_OFF_SECT_CNT(%si), %ax
 	push %ax # sect_cnt
-	mov 0x08(%si), %ax
+	mov DIO_OFF_LBA_LO(%si), %ax
 	push %ax # lba_lo
-	mov 0x06(%si), %ax
+	mov DIO_OFF_LBA_HI(%si), %ax
 	push %ax # lba_hi
-	mov 0x04(%si), %ax
+	mov DIO_OFF_OFF(%si), %ax
 	push %ax # off
-	mov 0x02(%si), %ax
+	mov DIO_OFF_SEG(%si), %ax
 	push %ax # seg
 	call ata_read_sect
 	add $0x0A, %sp
