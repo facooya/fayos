@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- alloc - * - free
 
 ## PRIORITY
 

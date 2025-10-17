@@ -28,6 +28,3 @@ disk_init_dio:
 
 	pop %di
 	ret
-
-disk_init_dio_bm:
-	ret

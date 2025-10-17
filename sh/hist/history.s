@@ -27,7 +27,7 @@ history:
 
 	push $inode
 	push $root_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -72,7 +72,7 @@ history:
 	jmp .save
 
 .create:
-	call add_inode
+	call ind_add
 	# <ret> tmp_inum
 
 	mov $de_hist, %si
@@ -89,7 +89,7 @@ history:
 	# {{{ update root file size
 	push $inode
 	push $root_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax # [s.1] dentry size
@@ -100,7 +100,7 @@ history:
 
 	push $inode
 	push $root_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -109,7 +109,7 @@ history:
 .save:
 	push $inode
 	push $root_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -154,7 +154,7 @@ history:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	mov $inode, %si
@@ -231,7 +231,7 @@ history:
 	# {{{ update .history size
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %cx # [s.5] his.len
@@ -242,7 +242,7 @@ history:
 
 	push $inode
 	push $tmp_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -250,7 +250,7 @@ history:
 	# {{{ read root content
 	push $inode
 	push $root_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -299,7 +299,7 @@ history:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode

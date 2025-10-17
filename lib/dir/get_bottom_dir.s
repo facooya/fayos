@@ -29,7 +29,7 @@ get_bottom_dir:
 .down__lp:
 	push $tmp_inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	mov $tmp_inode, %si
@@ -101,7 +101,7 @@ get_bottom_dir:
 
 	push $tmp_inode
 	push $tmp_dir_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	# (file_size == dots)

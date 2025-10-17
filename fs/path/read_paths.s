@@ -56,7 +56,7 @@ read_paths:
 
 	push $inode
 	push $path_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -97,7 +97,7 @@ read_paths:
 	push %cx # [s.0:pathc]
 	push $inode
 	push $path_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode

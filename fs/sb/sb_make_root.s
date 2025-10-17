@@ -13,7 +13,7 @@
 sb_make_root:
 	push %si
 
-	call add_inode
+	call ind_add
 
 	# add dentry dot
 	mov $de_dots, %si
@@ -28,7 +28,7 @@ sb_make_root:
 
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -37,7 +37,7 @@ sb_make_root:
 
 	push $inode
 	push $inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 
 	# add dentry dotdot
@@ -54,7 +54,7 @@ sb_make_root:
 
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %cx
@@ -65,7 +65,7 @@ sb_make_root:
 
 	push $inode
 	push $inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 
 	pop %si

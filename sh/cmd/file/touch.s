@@ -53,7 +53,7 @@ cmd_touch:
 	# }}}
 
 	# <ret> tmp_inum
-	call add_inode
+	call ind_add
 
 	# {{{ add dentry
 	mov $paths, %si
@@ -88,7 +88,7 @@ cmd_touch:
 
 	push $inode
 	push $path_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax # [s.0:reclen]
@@ -99,7 +99,7 @@ cmd_touch:
 
 	push $inode
 	push $path_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	jmp .done
 
@@ -115,7 +115,7 @@ cmd_touch:
 	push %cx # [s.0:strlen]
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -157,7 +157,7 @@ cmd_touch:
 
 # {TASK}
 .run:
-	call add_inode
+	call ind_add
 
 	# {{{ add dentry
 	mov $args, %si
@@ -185,7 +185,7 @@ cmd_touch:
 
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -196,7 +196,7 @@ cmd_touch:
 
 	push $inode
 	push $inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 
 	# {end.done}

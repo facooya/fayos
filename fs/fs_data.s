@@ -2,9 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Cache for file system
+# [File System] Data
 
-.include "fs/inode.s"
+.include "fs/ind.s"
 .section .data
 .global inode
 .global tmp_inode
@@ -21,11 +21,14 @@
 .global bbnum
 .global ibnum
 
+.global fd
+.global mnt
+
 .global de_dots
 .global de_hist
 
-inode: .zero I_SIZE
-tmp_inode: .zero I_SIZE
+inode: .zero IND_SIZE
+tmp_inode: .zero IND_SIZE
 
 inum: .long 0x00
 root_inum: .long 0x00
@@ -39,6 +42,9 @@ parent_path_inum: .long 0x00
 
 bbnum: .long 0x00
 ibnum: .long 0x00
+
+fd: .word 0x00
+mnt: .word 0x00
 
 de_dots:
 	.word 0x002E

@@ -28,7 +28,7 @@ add_dentry:
 
 	push $inode
 	push 0x06(%bp)
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode

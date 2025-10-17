@@ -44,7 +44,7 @@ kern/dbg/num/dbg_reg.s
 
 # File System
 SRCS_FS = \
-fs/cache.s \
+fs/fs_data.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
@@ -52,13 +52,13 @@ fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_set_dio.s \
 \
-fs/inode/add_inode.s \
-fs/inode/clear_inode.s \
-fs/inode/read_inode.s \
-fs/inode/update_inode.s \
+fs/ind/ind_add.s \
+fs/ind/ind_clr.s \
+fs/ind/ind_read.s \
+fs/ind/ind_upd.s \
 \
-fs/dentry/add_dentry.s \
-fs/dentry/lookup_dentry.s \
+fs/dent/add_dentry.s \
+fs/dent/lookup_dentry.s \
 \
 fs/bit/alloc_bit.s \
 fs/bit/clear_bit.s \

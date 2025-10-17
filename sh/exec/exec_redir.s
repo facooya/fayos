@@ -60,7 +60,7 @@ exec_redir:
 .path_pass:
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -126,7 +126,7 @@ exec_redir:
 	# read i node
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 .run__p:
@@ -210,7 +210,7 @@ exec_redir:
 
 	push $inode
 	push $inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 
 	# {end.done}

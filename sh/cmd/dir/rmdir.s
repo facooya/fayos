@@ -109,7 +109,7 @@ cmd_rmdir:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -222,7 +222,7 @@ cmd_rmdir:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $parent_path_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -278,7 +278,7 @@ cmd_rmdir:
 	add $0x0A, %sp
 
 	push $rmdir_inum
-	call clear_inode
+	call ind_clr
 	add $0x02, %sp
 	# }}}
 

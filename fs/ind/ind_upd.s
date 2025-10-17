@@ -2,19 +2,19 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Read inode in inode table
+# [Index Node] Update index node
 
 .include "drv/disk.s"
-.include "fs/inode.s"
+.include "fs/ind.s"
 .section .text
 .code16
-.global read_inode
+.global ind_upd
 
-# read_inode(
+# ind_upd(
 # *inum
 # *inode
 # )
-read_inode:
+ind_upd:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -27,25 +27,25 @@ read_inode:
 	mov %ax, %bx
 	mov %dx, %es
 
-	# calc inum
 	xor %dx, %dx
 	mov 0x04(%bp), %si # *inum
 	mov (%si), %ax # inum_lo
-	mov $I_SIZE, %cx
-	mul %cx
-	add %ax, %bx
+	mov $IND_SIZE, %cx
+	mul %cx # ax *= cx
+	add %ax, %bx # set mem
 
 	mov 0x06(%bp), %si # *inode
+	mov IND_OFF_FILE_SIZE(%si), %ax
+	mov %ax, %es:IND_OFF_FILE_SIZE(%bx)
 
-	# set i_file_size
-	mov %es:I_FILE_SIZE_OFF(%bx), %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
+	mov IND_OFF_BLK_0(%si), %ax
+	mov %ax, %es:IND_OFF_BLK_0(%bx)
+	mov IND_OFF_BLK_0+0x02(%si), %ax
+	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
-	# set i_blk
-	mov %es:I_BLK_0_OFF(%bx), %ax
-	mov %ax, I_BLK_0_OFF(%si)
-	mov %es:I_BLK_0_OFF+0x02(%bx), %ax
-	mov %ax, I_BLK_0_OFF+0x02(%si)
+	push $DNUM_IT
+	call disk_write_sect
+	add $0x02, %sp
 
 	pop %bx
 	pop %si

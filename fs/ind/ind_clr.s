@@ -2,16 +2,16 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Clear inode in inode table
+# [Index Node] Clear index node
 
 .include "drv/disk.s"
-.include "fs/inode.s"
+.include "fs/ind.s"
 .section .text
 .code16
-.global clear_inode
+.global ind_clr
 
-# clear_inode(*inum)
-clear_inode:
+# ind_clr(*inum)
+ind_clr:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -29,19 +29,19 @@ clear_inode:
 	xor %dx, %dx
 	mov 0x04(%bp), %si # *inum
 	mov (%si), %ax # inum_lo
-	mov $I_SIZE, %cx
+	mov $IND_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
 	# clear_bit(mem, bitnum)
-	mov %es:I_BLK_0_OFF(%bx), %ax
+	mov %es:IND_OFF_BLK_0(%bx), %ax
 	mov %ax, (bbnum)
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
-	mov %ax, %es:I_FILE_SIZE_OFF(%bx)
-	mov %ax, %es:I_BLK_0_OFF(%bx)
-	mov %ax, %es:I_BLK_0_OFF+0x02(%bx)
+	mov %ax, %es:IND_OFF_FILE_SIZE(%bx)
+	mov %ax, %es:IND_OFF_BLK_0(%bx)
+	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
 	push $DNUM_IT
 	call disk_write_sect

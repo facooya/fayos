@@ -62,7 +62,7 @@ cmd_mkdir:
 	mov %dx, %es
 	# }}}
 
-	call add_inode
+	call ind_add
 
 	# {{{ add dentry
 	mov $paths, %si
@@ -95,7 +95,7 @@ cmd_mkdir:
 
 	push $inode
 	push $path_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -106,7 +106,7 @@ cmd_mkdir:
 
 	push $inode
 	push $path_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -123,7 +123,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -132,7 +132,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -150,7 +150,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %cx
@@ -161,7 +161,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -178,7 +178,7 @@ cmd_mkdir:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -219,7 +219,7 @@ cmd_mkdir:
 
 # {TASK}
 .run:
-	call add_inode
+	call ind_add
 
 	# {init} for add_dentry
 	mov $args, %si
@@ -247,7 +247,7 @@ cmd_mkdir:
 
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -258,7 +258,7 @@ cmd_mkdir:
 
 	push $inode
 	push $inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -275,7 +275,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %ax
@@ -284,7 +284,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 
@@ -302,7 +302,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	pop %cx
@@ -313,7 +313,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 	# }}}
 

@@ -21,7 +21,7 @@ rm_dir:
 
 	push $tmp_inode
 	push 0x04(%bp)
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	mov $tmp_inode, %si
@@ -33,7 +33,7 @@ rm_dir:
 
 	push $tmp_inode
 	push 0x04(%bp)
-	call update_inode
+	call ind_upd
 	add $0x04, %sp
 
 	push $tmp_inode
@@ -91,7 +91,7 @@ rm_dir:
 	add $0x0A, %sp
 
 	push $clear_inum
-	call clear_inode
+	call ind_clr
 	add $0x02, %sp
 
 	pop %dx

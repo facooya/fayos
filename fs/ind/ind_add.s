@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Add inode in inode table
+# [Index Node] Add index node
 
 .include "drv/disk.s"
-.include "fs/inode.s"
+.include "fs/ind.s"
 .section .text
 .code16
-.global add_inode
+.global ind_add
 
-# add_inode()
+# ind_add()
 # <ret> tmp_inum = allocated inum by add_inode()
-add_inode:
+ind_add:
 	push %es
 	push %bx
 
@@ -57,13 +57,13 @@ add_inode:
 	# calc inode # TODO: LO,HI
 	xor %dx, %dx
 	mov (ibnum), %ax
-	mov $I_SIZE, %cx
+	mov $IND_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
 	# write blk # TODO: LO,HI
 	mov (bbnum), %ax
-	mov %ax, %es:I_BLK_0_OFF(%bx)
+	mov %ax, %es:IND_OFF_BLK_0(%bx)
 
 	# write inode table
 	push $DNUM_IT

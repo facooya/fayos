@@ -61,7 +61,7 @@ cmd_cd:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -179,7 +179,7 @@ cmd_cd:
 	# get i blk
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	# {end.done}

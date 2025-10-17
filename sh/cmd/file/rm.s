@@ -83,7 +83,7 @@ cmd_rm:
 	add $0x0A, %sp
 
 	push $clear_inum
-	call clear_inode
+	call ind_clr
 	add $0x02, %sp
 	# }}}
 
@@ -101,7 +101,7 @@ cmd_rm:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call read_inode
+	call ind_read
 	add $0x04, %sp
 
 	push $inode
@@ -175,7 +175,7 @@ cmd_rm:
 	add $0x0A, %sp
 
 	push $clear_inum
-	call clear_inode
+	call ind_clr
 	add $0x02, %sp
 	# }}}
 
