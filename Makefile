@@ -164,6 +164,8 @@ lib/dir/rm_dir.s \
 \
 lib/file/fparse_lines.s \
 \
+lib/fs/f_open.s \
+\
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \
 lib/err/emsg_syn.s \

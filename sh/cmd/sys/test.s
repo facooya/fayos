@@ -13,8 +13,10 @@
 
 # cmd_test()
 cmd_test:
-	#push %ax
-	#call dbg_reg
-	#add $0x02, %sp
+	mov $de_hist+0x02, %si
+
+	push %si
+	call f_open
+	add $0x02, %sp
 
 	ret

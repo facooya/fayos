@@ -21,11 +21,14 @@
 .global bbnum
 .global ibnum
 
-.global fd
 .global mnt
+.global f_num
+.global f_list
 
 .global de_dots
 .global de_hist
+
+.global ind_list
 
 inode: .zero IND_SIZE
 tmp_inode: .zero IND_SIZE
@@ -43,8 +46,10 @@ parent_path_inum: .long 0x00
 bbnum: .long 0x00
 ibnum: .long 0x00
 
-fd: .word 0x00
 mnt: .word 0x00
+f_num: .word 0x00
+f_list: .zero 0x100
+# flg, seg, off, ind_list_num
 
 de_dots:
 	.word 0x002E
@@ -55,3 +60,5 @@ de_dots:
 de_hist:
 	.word 0x8008
 	.ascii ".history"
+
+ind_list: .zero 0x100

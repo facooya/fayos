@@ -15,6 +15,7 @@
 # *inode
 # )
 # <ret> inode
+# <ret> fd
 ind_read:
 	push %bp
 	mov %sp, %bp
@@ -22,6 +23,8 @@ ind_read:
 	push %si
 	push %bx
 
+	# call alloc_mem
+	# push fd
 	push $DNUM_IT
 	call disk_read_sect
 	add $0x02, %sp
@@ -47,6 +50,8 @@ ind_read:
 	mov %ax, IND_OFF_BLK_0(%si)
 	mov %es:IND_OFF_BLK_0+0x02(%bx), %ax
 	mov %ax, IND_OFF_BLK_0+0x02(%si)
+
+	# call free_mem
 
 	pop %bx
 	pop %si
