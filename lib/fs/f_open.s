@@ -40,12 +40,15 @@ f_open:
 .f_num__end:
 	mov %cx, (f_num)
 
+	# TEST
 	mov $0x01, %ax
 	mov %ax, F_LIST_OFF_FLG(%di)
 	xor %ax, %ax
-	mov %ax, F_LIST_OFF_SEG(%di)
-	mov %ax, F_LIST_OFF_OFF(%di)
 	mov %ax, F_LIST_OFF_IND_LIST_NUM(%di)
+
+	#call mem_alloc
+	mov %ax, F_LIST_OFF_MEM(%di)
+	mov %dx, F_LIST_OFF_MEM+0x02(%di)
 
 	mov 0x04(%bp), %si
 	# call f_seek

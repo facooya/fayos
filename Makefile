@@ -24,9 +24,9 @@ kern/disk/dap.s \
 kern/disk/dap_utils.s \
 kern/disk/set_dap_blk_lba.s \
 \
-kern/mem/mem.s \
-kern/mem/alloc_mem.s \
-kern/mem/free_mem.s \
+kern/mem/mem_data.s \
+kern/mem/mem_alloc.s \
+kern/mem/mem_free.s \
 \
 kern/lib/bufcpy.s \
 kern/lib/bufzero.s \

@@ -23,7 +23,7 @@ ind_read:
 	push %si
 	push %bx
 
-	# call alloc_mem
+	# call mem_alloc
 	# push fd
 	push $DNUM_IT
 	call disk_read_sect
@@ -51,7 +51,7 @@ ind_read:
 	mov %es:IND_OFF_BLK_0+0x02(%bx), %ax
 	mov %ax, IND_OFF_BLK_0+0x02(%si)
 
-	# call free_mem
+	# call mem_free
 
 	pop %bx
 	pop %si
