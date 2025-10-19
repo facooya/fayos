@@ -21,11 +21,9 @@ ind_upd:
 	push %si
 	push %bx
 
-	push $DNUM_IT
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	mov $(DISK_IT_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	xor %dx, %dx
 	mov 0x04(%bp), %si # *inum
@@ -43,9 +41,15 @@ ind_upd:
 	mov IND_OFF_BLK_0+0x02(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
-	push $DNUM_IT
-	call disk_write_sect
-	add $0x02, %sp
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IT, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IT_MEM&0xFFFF) # off
+	push $(DISK_IT_MEM>>0x10) # seg
+	call ata_write_sect
+	add $0x0A, %sp
 
 	pop %bx
 	pop %si

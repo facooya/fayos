@@ -37,7 +37,6 @@ kern/dbg/dbg_curs.s \
 kern/dbg/dbg_buf.s \
 kern/dbg/dbg_trace.s \
 kern/dbg/dbg_utils.s \
-kern/dbg/dbg_dio.s \
 \
 kern/dbg/num/dbg_num.s \
 kern/dbg/num/dbg_reg.s
@@ -51,7 +50,7 @@ fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
 fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
-fs/sb/sb_set_dio.s \
+fs/sb/sb_set_dlba.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
@@ -114,10 +113,6 @@ drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
 drv/disk/disk_data.s \
-drv/disk/disk_init_dio.s \
-drv/disk/disk_set_dio.s \
-drv/disk/disk_read_sect.s \
-drv/disk/disk_write_sect.s \
 drv/disk/disk_read_blk.s \
 \
 drv/ps2/ps2_chk_sc_set.s \

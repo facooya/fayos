@@ -22,8 +22,8 @@
 .global ibnum
 
 .global mnt
-.global f_num
-.global f_list
+.global fd
+.global ft
 
 .global de_dots
 .global de_hist
@@ -47,8 +47,8 @@ bbnum: .long 0x00
 ibnum: .long 0x00
 
 mnt: .word 0x00
-f_num: .word 0x00
-f_list: .zero 0x100
+fd: .word 0x00
+ft: .zero 0x100
 # flg, seg, off, ind_ptr (seg, off)
 
 de_dots:

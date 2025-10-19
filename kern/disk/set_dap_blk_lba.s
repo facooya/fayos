@@ -18,6 +18,7 @@
 set_dap_blk_lba:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -53,7 +54,9 @@ set_dap_blk_lba:
 
 	# add normal lba
 	mov (.blk_lba), %ax
-	mov $DIO_SB_OFF, %bx
+	mov $(DISK_SB_MEM>>0x10), %cx
+	mov %cx, %es
+	mov $(DISK_SB_MEM&0xFFFF), %bx
 	mov SB_OFF_NORM_LBA(%bx), %cx
 	# TODO: NORM_LBA_OFF+0x02(%bx)
 
@@ -83,6 +86,7 @@ set_dap_blk_lba:
 .epil:
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret
 

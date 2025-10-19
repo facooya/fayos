@@ -23,11 +23,9 @@ ind_read:
 	push %si
 	push %bx
 
-	push $DNUM_IT
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	mov $(DISK_IT_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	# calc inum
 	xor %dx, %dx

@@ -22,11 +22,16 @@ sb_run:
 	push %si
 	push %bx
 
-	push $DNUM_SB
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_SB_SECT_CNT # sect_cnt
+	push $(DISK_SB_LBA&0xFFFF) # lba_lo
+	push $(DISK_SB_LBA>>0x10) # lba_hi
+	push $(DISK_SB_MEM&0xFFFF) # off
+	push $(DISK_SB_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_SB_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_SB_MEM&0xFFFF), %bx
 
 	# {{{ (sb_mag != mag) ? {make} : {init}
 	mov %es:SB_OFF_MAG(%bx), %ax
@@ -65,12 +70,16 @@ sb_run:
 	mov $(SB_MAG>>0x10), %ax
 	mov %ax, %es:SB_OFF_MAG+0x02(%bx)
 
-	push $DNUM_SB
-	call disk_write_sect
-	add $0x02, %sp
+	push $DISK_SB_SECT_CNT # sect_cnt
+	push $(DISK_SB_LBA&0xFFFF) # lba_lo
+	push $(DISK_SB_LBA>>0x10) # lba_hi
+	push $(DISK_SB_MEM&0xFFFF) # off
+	push $(DISK_SB_MEM>>0x10) # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
-	call sb_set_dio
+	call sb_set_dlba
 	call sb_set_bm
 
 	FS_INIT_INUM
@@ -79,7 +88,7 @@ sb_run:
 
 .run__init:
 	FS_INIT_INUM
-	call sb_set_dio
+	call sb_set_dlba
 	jmp .done
 
 # {DONE}

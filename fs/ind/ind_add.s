@@ -14,14 +14,22 @@
 # <ret> tmp_inum = allocated inum by add_inode()
 ind_add:
 	push %es
+	push %si
 	push %bx
 
 	# {{{ alloc blknum
-	push $DNUM_BBM
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_BBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_BBM_MEM&0xFFFF) # off
+	push $(DISK_BBM_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_BBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
 	push $bbnum
 	push %bx
@@ -31,11 +39,18 @@ ind_add:
 	# }}}
 
 	# {{{ alloc inum
-	push $DNUM_IBM
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IBM_MEM&0xFFFF) # off
+	push $(DISK_IBM_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_IBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
 	push $ibnum
 	push %bx
@@ -48,11 +63,18 @@ ind_add:
 
 	# {{{ read/write inode table
 	# read inode table
-	push $DNUM_IT
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IT, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IT_MEM&0xFFFF) # off
+	push $(DISK_IT_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_IT_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	# calc inode # TODO: LO,HI
 	xor %dx, %dx
@@ -66,17 +88,30 @@ ind_add:
 	mov %ax, %es:IND_OFF_BLK_0(%bx)
 
 	# write inode table
-	push $DNUM_IT
-	call disk_write_sect
-	add $0x02, %sp
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IT, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IT_MEM&0xFFFF) # off
+	push $(DISK_IT_MEM>>0x10) # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	# {{{ set inum bit
-	push $DNUM_IBM
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IBM_MEM&0xFFFF) # off
+	push $(DISK_IBM_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_IBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
 	push $ibnum
 	push %bx
@@ -84,17 +119,30 @@ ind_add:
 	call set_bit
 	add $0x06, %sp
 
-	push $DNUM_IBM
-	call disk_write_sect
-	add $0x02, %sp
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_IBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_IBM_MEM&0xFFFF) # off
+	push $(DISK_IBM_MEM>>0x10) # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	# {{{ set blknum bit
-	push $DNUM_BBM
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_BBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_BBM_MEM&0xFFFF) # off
+	push $(DISK_BBM_MEM>>0x10) # seg
+	call ata_read_sect
+	add $0x0A, %sp
+	mov $(DISK_BBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
 	push $bbnum
 	push %bx
@@ -102,11 +150,18 @@ ind_add:
 	call set_bit
 	add $0x06, %sp
 
-	push $DNUM_BBM
-	call disk_write_sect
-	add $0x02, %sp
+	push $DISK_BLK_SECT_CNT # sect_cnt
+	mov $dlba, %si
+	add $DLBA_OFF_BBM, %si
+	push (%si) # lba_lo
+	push 0x02(%si) # lba_hi
+	push $(DISK_BBM_MEM&0xFFFF) # off
+	push $(DISK_BBM_MEM>>0x10) # seg
+	call ata_write_sect
+	add $0x0A, %sp
 	# }}}
 
 	pop %bx
+	pop %si
 	pop %es
 	ret

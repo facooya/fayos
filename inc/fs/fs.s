@@ -7,9 +7,10 @@
 .equ FS_ROOT_INUM, 0x00000001
 .equ FS_START_LBA, 0x40
 
-.equ F_LIST_SIZE, 0x06
-.equ F_LIST_OFF_FLG, 0x00
-.equ F_LIST_OFF_MEM, 0x02
+.equ FT_SIZE, 0x0A
+.equ FT_OFF_FLG, 0x00
+.equ FT_OFF_MEM, 0x02
+.equ FT_IND_PTR, 0x06
 
 .macro FS_INIT_INUM
 	mov $(FS_ROOT_INUM&0xFFFF), %ax

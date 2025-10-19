@@ -18,8 +18,6 @@ _start:
 	call ivt_init
 	call vga_init
 
-	call disk_init_dio
-
 	call sb_run
 
 	push $.kmsg_welcome

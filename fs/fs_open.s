@@ -24,30 +24,30 @@ fs_open:
 	# f_seek
 	# if !f_seek() ? {create} || {err}
 
-.f_num:
+.fd:
 	xor %cx, %cx
-	mov $f_list, %di
+	mov $ft, %di
 
-.f_num__lp:
+.fd__lp:
 	# (fflg == 0) ? {end} : {lp}
 	mov (%di), %ax
 	test %ax, %ax
-	jz .f_num__end
+	jz .fd__end
 
 	inc %cx
-	add $F_LIST_SIZE, %di
-	jmp .f_num__lp
+	add $FT_SIZE, %di
+	jmp .fd__lp
 
-.f_num__end:
-	mov %cx, (f_num)
+.fd__end:
+	mov %cx, (fd)
 
 	# TEST
 	mov $0x01, %ax
-	mov %ax, F_LIST_OFF_FLG(%di)
+	mov %ax, FT_OFF_FLG(%di)
 
 	call mem_alloc
-	mov %ax, F_LIST_OFF_MEM(%di)
-	mov %dx, F_LIST_OFF_MEM+0x02(%di)
+	mov %ax, FT_OFF_MEM(%di)
+	mov %dx, FT_OFF_MEM+0x02(%di)
 
 	#mov 0x04(%bp), %si
 	# call f_seek

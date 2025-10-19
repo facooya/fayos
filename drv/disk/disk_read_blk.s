@@ -19,6 +19,7 @@
 disk_read_blk:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -29,11 +30,13 @@ disk_read_blk:
 	mov $0x08, %cx
 	mul %cx
 
-	mov $DIO_SB_OFF, %bx
+	mov $(DISK_SB_MEM>>0x10), %cx
+	mov %cx, %es
+	mov $(DISK_SB_MEM&0xFFFF), %bx
 	mov SB_OFF_NORM_LBA(%bx), %cx
 	add %cx, %ax
 
-	push $0x08 # sect_cnt
+	push $DISK_BLK_SECT_CNT # sect_cnt
 	push %ax # lba_lo
 	xor %ax, %ax
 	push %ax # lba_hi
@@ -46,5 +49,6 @@ disk_read_blk:
 
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

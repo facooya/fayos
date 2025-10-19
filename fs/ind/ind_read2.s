@@ -12,9 +12,10 @@
 
 # ind_read2(
 # *inum
-# f_num
+# fd
 # )
 # <ret> ind_list
+# <ret> (ft) ind_ptr
 ind_read2:
 	push %bp
 	mov %sp, %bp
@@ -22,11 +23,9 @@ ind_read2:
 	push %si
 	push %bx
 
-	push $DNUM_IT
-	call disk_read_sect
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	mov $(DISK_IT_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	# calc inum
 	xor %dx, %dx
