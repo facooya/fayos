@@ -2,19 +2,20 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Library] File open
+# [File System] Open
 
 .include "fs/fs.s"
 .include "fs/ind.s"
 .section .text
 .code16
-.global f_open
+.global fs_open
 
-# f_open(ub8 *name)
-# <ret> f_num
-f_open:
+# fs_open(ub8 *name_str)
+# <ret> fd
+fs_open:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %bx
 
@@ -43,61 +44,68 @@ f_open:
 	# TEST
 	mov $0x01, %ax
 	mov %ax, F_LIST_OFF_FLG(%di)
-	xor %ax, %ax
-	mov %ax, F_LIST_OFF_IND_LIST_NUM(%di)
 
-	#call mem_alloc
+	call mem_alloc
 	mov %ax, F_LIST_OFF_MEM(%di)
 	mov %dx, F_LIST_OFF_MEM+0x02(%di)
 
-	mov 0x04(%bp), %si
+	#mov 0x04(%bp), %si
 	# call f_seek
 
 .open:
-
-	push $inode
+	# {{{ open /
+	push %cx # [s.f0:f_num]
+	push %cx
 	push $root_inum
-	call ind_read
+	call ind_read2
 	add $0x04, %sp
+	pop %cx # [s.f0:f_num]
 
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
+	# ((( ind_list += f_num * ind_size
+	mov $ind_list, %si
+	mov %cx, %ax # f_num
+	mov $IND_SIZE, %cx
+	mul %cx
+	add %ax, %si
+	# )))
 
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
+	call mem_alloc # root
+
+	mov IND_OFF_BLK_0(%si), %cx
+	push %cx # blk_num
 	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push %dx # seg
+	call disk_read_blk
+	add $0x06, %sp
 	mov %ax, %bx
 	mov %dx, %es
 
-	mov $de_hist, %si
-	xor %cx, %cx
-	mov (%si), %ax
-	mov %al, %cl
-	add $0x02, %si
-	push %si
-	push %cx
-	mov $inode, %si
-	mov IND_OFF_FILE_SIZE(%si), %ax
 	push %ax
-	push %bx
-	push %es
+	push %dx
+	call mem_free # root
+	add $0x04, %sp
+	# }}}
+
+	mov 0x04(%bp), %si
+	push %si # *name_str
+	push %si
+	xor %ax, %ax
+	push %ax
+	call strlen
+	add $0x04, %sp
+	push %ax # name_len
+	mov $ind_list, %si
+	mov IND_OFF_FILE_SIZE(%si), %ax
+	push %ax # file_size
+	push %bx # *off
+	push %es # *seg
 	call lookup_dentry
 	add $0x0A, %sp
-	mov %es, %dx
 
 	# (dent_seek == no_match) ? {create}
 	cmp $0x01, %ax
 	je .create
+
 	jmp .done
 
 .create:
@@ -107,5 +115,6 @@ f_open:
 .done:
 	pop %bx
 	pop %si
+	pop %es
 	pop %bp
 	ret

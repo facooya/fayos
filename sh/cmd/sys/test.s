@@ -16,20 +16,7 @@ cmd_test:
 	mov $de_hist+0x02, %si
 
 	push %si
-	call f_open
+	call fs_open
 	add $0x02, %sp
-
-	call mem_alloc
-	push %dx
-	call dbg_reg
-	add $0x02, %sp
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-
-	push $0xD000
-	push $0x1000
-	call mem_free
-	add $0x04, %sp
 
 	ret

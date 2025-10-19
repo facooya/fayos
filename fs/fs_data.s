@@ -49,7 +49,7 @@ ibnum: .long 0x00
 mnt: .word 0x00
 f_num: .word 0x00
 f_list: .zero 0x100
-# flg, seg, off, ind_list_num
+# flg, seg, off, ind_ptr (seg, off)
 
 de_dots:
 	.word 0x002E
@@ -59,6 +59,6 @@ de_dots:
 
 de_hist:
 	.word 0x8008
-	.ascii ".history"
+	.asciz ".history"
 
 ind_list: .zero 0x100

@@ -8,15 +8,14 @@
 .include "fs/ind.s"
 .section .text
 .code16
-.global ind_read
+.global ind_read2
 
-# ind_read(
+# ind_read2(
 # *inum
-# *inode
+# f_num
 # )
 # <ret> ind_list
-# <ret> f_list(ind_list_num)
-ind_read:
+ind_read2:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -37,7 +36,12 @@ ind_read:
 	mul %cx
 	add %ax, %bx
 
-	mov 0x06(%bp), %si # *inode
+	# calc ind_list
+	mov $ind_list, %si
+	mov 0x06(%bp), %ax # f_num
+	mov $IND_SIZE, %cx
+	mul %cx
+	add %ax, %si
 
 	# set i_file_size
 	mov %es:IND_OFF_FILE_SIZE(%bx), %ax

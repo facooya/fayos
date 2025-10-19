@@ -45,6 +45,7 @@ kern/dbg/num/dbg_reg.s
 # File System
 SRCS_FS = \
 fs/fs_data.s \
+fs/fs_open.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
@@ -55,6 +56,7 @@ fs/sb/sb_set_dio.s \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
 fs/ind/ind_read.s \
+fs/ind/ind_read2.s \
 fs/ind/ind_upd.s \
 \
 fs/dent/add_dentry.s \
@@ -116,6 +118,7 @@ drv/disk/disk_init_dio.s \
 drv/disk/disk_set_dio.s \
 drv/disk/disk_read_sect.s \
 drv/disk/disk_write_sect.s \
+drv/disk/disk_read_blk.s \
 \
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
@@ -163,8 +166,6 @@ lib/dir/get_bottom_dir.s \
 lib/dir/rm_dir.s \
 \
 lib/file/fparse_lines.s \
-\
-lib/fs/f_open.s \
 \
 lib/err/emsg_common.s \
 lib/err/emsg_io.s \
