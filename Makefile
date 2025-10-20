@@ -69,7 +69,9 @@ fs/bm/bm_set.s \
 fs/path/path.s \
 fs/path/read_paths.s \
 fs/path/tok_paths.s \
-fs/path/build_paths.s
+fs/path/build_paths.s \
+\
+fs/lib/fs_blk_to_lba.s
 
 # Shell
 SRCS_SH = \

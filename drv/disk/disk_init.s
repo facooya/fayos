@@ -60,25 +60,16 @@ disk_init:
 	mov %dx, %es
 	mov %ax, %bx
 
-	# TODO: blk hi
 	mov IND_OFF_BLK_0(%bx), %ax
-	xor %dx, %dx
-	mov $0x08, %cx
-	mul %cx
-	mov %ax, %cx
-
-	# TODO: lba overflow
-	# get norm lba
-	mov $(DISK_SB_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(DISK_SB_MEM&0xFFFF), %bx
-	mov %es:SB_OFF_NORM_LBA(%bx), %ax
-	add %ax, %cx
+	push %ax # blk lo
+	mov IND_OFF_BLK_0+0x02(%bx), %ax
+	push %ax # blk hi
+	call fs_blk_to_lba
+	add $0x04, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt
-	push %cx # lba_lo
-	xor %ax, %ax
-	push %ax # lba_hi
+	push %ax # lba_lo
+	push %dx # lba_hi
 	push $(DISK_ROOT_MEM&0xFFFF) # off
 	push $(DISK_ROOT_MEM>>0x10) # seg
 	call ata_read_sect
