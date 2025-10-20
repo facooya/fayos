@@ -56,6 +56,7 @@ fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
 fs/ind/ind_read.s \
 fs/ind/ind_read2.s \
+fs/ind/ind_get_ptr.s \
 fs/ind/ind_upd.s \
 \
 fs/dent/add_dentry.s \

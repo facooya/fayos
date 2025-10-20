@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Kernel]
+# [Kernel] Main
 
 .include "chr.s"
 .section .data
@@ -19,6 +19,7 @@ _start:
 	call vga_init
 
 	call sb_run
+	#call disk_init
 
 	push $.kmsg_welcome
 	call vga_puts
