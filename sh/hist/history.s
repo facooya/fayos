@@ -5,8 +5,10 @@
 # Shell history
 
 .include "chr.s"
+.include "drv/disk.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
+.include "fs/ind.s"
 
 # TODO: history/cache.s
 .section .data
@@ -49,6 +51,7 @@ history:
 	mov %ax, %bx
 	mov %dx, %es
 
+	# { lookup dentry
 	mov $de_hist, %si
 	xor %cx, %cx
 	mov (%si), %ax
@@ -63,6 +66,7 @@ history:
 	push %es
 	call lookup_dentry
 	add $0x0A, %sp
+	# }
 
 	# {task} (lookup_dentry == no_match)
 	cmp $0x01, %ax

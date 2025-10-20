@@ -13,9 +13,11 @@
 .global ata_write_sect
 
 # ata_write_sect(
-# seg, off
-# lba_hi, lba_lo
-# sect_cnt
+# ub16 *seg,
+# ub16 *off,
+# ub16 lba_hi,
+# ub16 lba_lo,
+# ub16 sect_cnt
 # )
 ata_write_sect:
 	push %bp

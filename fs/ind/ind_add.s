@@ -12,21 +12,13 @@
 
 # ind_add()
 # <ret> tmp_inum = allocated inum by add_inode()
+# <ret> dx:ax = inum_hi:inum_lo
 ind_add:
 	push %es
 	push %si
 	push %bx
 
 	# {{{ alloc blknum
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_BBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_BBM_MEM&0xFFFF) # off
-	push $(DISK_BBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
@@ -39,15 +31,6 @@ ind_add:
 	# }}}
 
 	# {{{ alloc inum
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_IBM_MEM&0xFFFF) # off
-	push $(DISK_IBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_IBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
@@ -59,19 +42,10 @@ ind_add:
 	add $0x06, %sp
 	mov (ibnum), %ax
 	mov %ax, (tmp_inum)
+	push %ax # [s.r0:inum_lo]
 	# }}}
 
 	# {{{ read/write inode table
-	# read inode table
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IT, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_IT_MEM&0xFFFF) # off
-	push $(DISK_IT_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_IT_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_IT_MEM&0xFFFF), %bx
@@ -100,15 +74,6 @@ ind_add:
 	# }}}
 
 	# {{{ set inum bit
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_IBM_MEM&0xFFFF) # off
-	push $(DISK_IBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_IBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
@@ -131,15 +96,6 @@ ind_add:
 	# }}}
 
 	# {{{ set blknum bit
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_BBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_BBM_MEM&0xFFFF) # off
-	push $(DISK_BBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
@@ -160,6 +116,8 @@ ind_add:
 	call ata_write_sect
 	add $0x0A, %sp
 	# }}}
+
+	pop %ax # [s.r0:inum_lo]
 
 	pop %bx
 	pop %si

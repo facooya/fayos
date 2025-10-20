@@ -35,6 +35,7 @@ cmd_test:
 	mov %es:IND_OFF_FILE_SIZE(%bx), %dx
 	push %dx
 
+	# {{{ TEST: root
 	# TODO: blk hi
 	mov IND_OFF_BLK_0(%bx), %ax
 	xor %dx, %dx
@@ -61,6 +62,8 @@ cmd_test:
 	mov $(DISK_ROOT_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_ROOT_MEM&0xFFFF), %bx
+	# }}}
+
 	pop %dx
 
 .run__lp:

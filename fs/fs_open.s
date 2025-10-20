@@ -41,6 +41,8 @@ fs_open:
 .fd__end:
 	mov %cx, (fd)
 
+	jmp .file_add
+
 	# TEST
 	mov $0x01, %ax
 	mov %ax, FT_OFF_FLG(%di)
@@ -104,12 +106,27 @@ fs_open:
 
 	# (dent_seek == no_match) ? {create}
 	cmp $0x01, %ax
-	je .create
+	je .file_add
 
 	jmp .done
 
-.create:
-	# call f_create
+.file_add:
+	#call ind_add
+	#call dent_add
+	push %ax # [s.0:dent_rec_size]
+
+	# dent size upd
+	push $root_inum # TEST
+	#call ind_get_ptr
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
+	mov IND_OFF_FILE_SIZE(%bx), %cx
+	pop %ax # [s.0:dent_rec_size]
+	add %ax, %cx
+	mov %cx, IND_OFF_FILE_SIZE(%bx)
+	# DISK_WRITE_INODE
+
 	jmp .done
 
 .done:

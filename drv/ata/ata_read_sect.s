@@ -13,8 +13,8 @@
 .global ata_read_sect
 
 # ata_read_sect(
-# ub16 seg,
-# ub16 off,
+# ub16 *seg,
+# ub16 *off,
 # ub16 lba_hi,
 # ub16 lba_lo,
 # ub16 sect_cnt
