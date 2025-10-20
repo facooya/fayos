@@ -26,7 +26,7 @@ ind_add:
 	push $bbnum
 	push %bx
 	push %es
-	call alloc_bit
+	call bm_alloc
 	add $0x06, %sp
 	# }}}
 
@@ -38,7 +38,7 @@ ind_add:
 	push $ibnum
 	push %bx
 	push %es
-	call alloc_bit
+	call bm_alloc
 	add $0x06, %sp
 	mov (ibnum), %ax
 	mov %ax, (tmp_inum)
@@ -81,7 +81,7 @@ ind_add:
 	push $ibnum
 	push %bx
 	push %es
-	call set_bit
+	call bm_set
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt
@@ -103,7 +103,7 @@ ind_add:
 	push $bbnum
 	push %bx
 	push %es
-	call set_bit
+	call bm_set
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt

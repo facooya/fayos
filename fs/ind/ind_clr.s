@@ -78,7 +78,7 @@ ind_clr:
 	push $bbnum
 	push %bx
 	push %es
-	call clear_bit
+	call bm_clr
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt
@@ -112,7 +112,7 @@ ind_clr:
 	push $ibnum
 	push %bx
 	push %es
-	call clear_bit
+	call bm_clr
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt

@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Set bit
+# [Bitmap] Set bit number
 
 .section .text
 .code16
-.global set_bit
+.global bm_set
 
-# set_bit(*seg, *off, *bitnum)
-set_bit:
+# bm_set(*seg, *off, *bitnum)
+bm_set:
 	push %bp
 	mov %sp, %bp
 	push %es

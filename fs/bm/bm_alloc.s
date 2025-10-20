@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Allocate bit
+# [Bitmap] Allocate bit number
 
 .section .text
 .code16
-.global alloc_bit
+.global bm_alloc
 
-# alloc_bit(*seg, *off, *bitnum)
+# bm_alloc(*seg, *off, *bitnum)
 # <ret> bitnum
-alloc_bit:
+bm_alloc:
 	push %bp
 	mov %sp, %bp
 	push %es

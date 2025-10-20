@@ -2,14 +2,14 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Clear bit
+# [Bitmap] Clear bit number
 
 .section .text
 .code16
-.global clear_bit
+.global bm_clr
 
-# clear_bit(*seg, *off, *bitnum)
-clear_bit:
+# bm_clr(*seg, *off, *bitnum)
+bm_clr:
 	push %bp
 	mov %sp, %bp
 	push %es

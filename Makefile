@@ -62,9 +62,9 @@ fs/ind/ind_upd.s \
 fs/dent/add_dentry.s \
 fs/dent/lookup_dentry.s \
 \
-fs/bit/alloc_bit.s \
-fs/bit/clear_bit.s \
-fs/bit/set_bit.s \
+fs/bm/bm_alloc.s \
+fs/bm/bm_clr.s \
+fs/bm/bm_set.s \
 \
 fs/path/path.s \
 fs/path/read_paths.s \

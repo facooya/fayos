@@ -32,7 +32,7 @@ sb_set_bm:
 	push $bbnum
 	push %bx
 	push %es
-	call set_bit
+	call bm_set
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt
@@ -64,7 +64,7 @@ sb_set_bm:
 	push $ibnum
 	push %bx
 	push %es
-	call set_bit
+	call bm_set
 	add $0x06, %sp
 
 	push $DISK_BLK_SECT_CNT # sect_cnt
