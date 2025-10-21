@@ -29,7 +29,7 @@ fs_blk_to_lba:
 	mul %cx # ax=tmp_lba_lo
 
 	pop %cx # [s.c0:tmp_lba_hi]
-	add %cx, %dx # <ret.1> lba_hi
+	add %cx, %dx # <ret.1:lba_hi>
 
 	# get norm lba
 	mov $(DISK_SB_MEM>>0x10), %cx
@@ -39,12 +39,12 @@ fs_blk_to_lba:
 
 	# add norm
 	clc
-	add %cx, %ax # <ret> lba_lo
+	add %cx, %ax # <ret:lba_lo>
 	jc .carry
 	jmp .done
 
 .carry:
-	inc %dx # <ret.2> lba_hi
+	inc %dx # <ret.2:lba_hi>
 
 .done:
 	pop %bx

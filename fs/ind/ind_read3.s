@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Index Node] Return inode pointer
+# [Index Node] Read index node table and return index node memory
 
 .include "drv/disk.s"
 .include "fs/ind.s"
 .section .text
 .code16
-.global ind_get_ptr
+.global ind_read3
 
-# ind_get_ptr(ub32 *inum)
-# <ret> dx:ax = seg:off
-ind_get_ptr:
+# ind_read(ub16 inum_hi, ub16 inum_lo)
+# <ret> dx:ax = ind_seg:ind_off
+ind_read3:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -26,15 +26,14 @@ ind_get_ptr:
 
 	# calc inum
 	xor %dx, %dx
-	mov 0x04(%bp), %si # *inum
-	mov (%si), %ax # inum_lo
+	mov 0x04(%bp), %ax # inum_lo
 	mov $IND_SIZE, %cx
 	mul %cx
 	add %ax, %bx
 
 	# ret
-	mov %es, %dx
-	mov %bx, %ax
+	mov %es, %dx # <ret:seg>
+	mov %bx, %ax # <ret:off>
 
 	pop %bx
 	pop %si

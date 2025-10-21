@@ -45,6 +45,7 @@ kern/dbg/num/dbg_reg.s
 SRCS_FS = \
 fs/fs_data.s \
 fs/fs_open.s \
+fs/fs_add.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
@@ -55,9 +56,9 @@ fs/sb/sb_set_dlba.s \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
 fs/ind/ind_read.s \
-fs/ind/ind_read2.s \
-fs/ind/ind_get_ptr.s \
 fs/ind/ind_upd.s \
+fs/ind/ind_read3.s \
+fs/ind/ind_add2.s \
 \
 fs/dent/add_dentry.s \
 fs/dent/lookup_dentry.s \

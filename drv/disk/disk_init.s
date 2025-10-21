@@ -34,7 +34,6 @@ disk_init:
 	mov $dlba, %si
 	add $DLBA_OFF_IBM, %si
 	push (%si) # lba_lo
-	mov (%si), %ax
 	push 0x02(%si) # lba_hi
 	push $(DISK_IBM_MEM&0xFFFF) # off
 	push $(DISK_IBM_MEM>>0x10) # seg
@@ -46,7 +45,6 @@ disk_init:
 	mov $dlba, %si
 	add $DLBA_OFF_IT, %si
 	push (%si) # lba_lo
-	mov (%si), %ax
 	push 0x02(%si) # lba_hi
 	push $(DISK_IT_MEM&0xFFFF) # off
 	push $(DISK_IT_MEM>>0x10) # seg
@@ -54,16 +52,16 @@ disk_init:
 	add $0x0A, %sp
 
 	# {{{ root
-	push $root_inum
-	call ind_get_ptr
-	add $0x02, %sp
+	push (root_inum) # inum_lo
+	push (root_inum+0x02) # inum_hi
+	call ind_read3
+	add $0x04, %sp
+	# <ret> dx:ax = ind_seg:ind_off
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov IND_OFF_BLK_0(%bx), %ax
-	push %ax # blk lo
-	mov IND_OFF_BLK_0+0x02(%bx), %ax
-	push %ax # blk hi
+	push %es:IND_OFF_BLK_0(%bx) # blk_lo
+	push %es:IND_OFF_BLK_0+0x02(%bx) # blk_hi
 	call fs_blk_to_lba
 	add $0x04, %sp
 

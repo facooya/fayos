@@ -59,7 +59,7 @@ fs_open:
 	push %cx # [s.f0:f_num]
 	push %cx
 	push $root_inum
-	call ind_read2
+	#call ind_read2
 	add $0x04, %sp
 	pop %cx # [s.f0:f_num]
 
@@ -117,7 +117,7 @@ fs_open:
 
 	# dent size upd
 	push $root_inum # TEST
-	#call ind_get_ptr
+	# call ind_read3
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
