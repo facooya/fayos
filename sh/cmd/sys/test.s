@@ -20,7 +20,7 @@
 cmd_test:
 
 	push $.fname
-	#call fs_add
+	call fs_add
 	add $0x02, %sp
 
 	ret

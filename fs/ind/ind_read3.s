@@ -26,7 +26,7 @@ ind_read3:
 
 	# calc inum
 	xor %dx, %dx
-	mov 0x04(%bp), %ax # inum_lo
+	mov 0x06(%bp), %ax # inum_lo
 	mov $IND_SIZE, %cx
 	mul %cx
 	add %ax, %bx
