@@ -30,6 +30,12 @@
 
 .global ind_list
 
+# 0:current, 1:parent, 2:tmp
+.global disk_cache
+# seg, off, lba
+.global ind_cache
+# seg, off, inum, ind
+
 inode: .zero IND_SIZE
 tmp_inode: .zero IND_SIZE
 
@@ -62,3 +68,6 @@ de_hist:
 	.asciz ".history"
 
 ind_list: .zero 0x100
+
+disk_cache: .zero 0x100
+ind_cache: .zero 0x100

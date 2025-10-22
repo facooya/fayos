@@ -52,6 +52,7 @@ fs/sb/sb_alloc_lba.s \
 fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_set_dlba.s \
+fs/sb/sb_write_di.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \

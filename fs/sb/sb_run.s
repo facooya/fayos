@@ -70,6 +70,8 @@ sb_run:
 	mov $(SB_MAG>>0x10), %ax
 	mov %ax, %es:SB_OFF_MAG+0x02(%bx)
 
+	call sb_write_di
+
 	push $DISK_SB_SECT_CNT # sect_cnt
 	push $(DISK_SB_LBA&0xFFFF) # lba_lo
 	push $(DISK_SB_LBA>>0x10) # lba_hi
