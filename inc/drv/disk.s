@@ -17,3 +17,14 @@
 .equ DISK_IBM_MEM, 0x0000B000
 .equ DISK_IT_MEM, 0x0000C000
 .equ DISK_ROOT_MEM, 0x0000D000
+
+# Disk packet immutable
+.equ DPI_SIZE, 0x0A
+.equ DPI_OFF_SB, 0x00
+.equ DPI_OFF_BBM, DPI_OFF_SB+DPI_SIZE
+.equ DPI_OFF_IBM, DPI_OFF_BBM+DPI_SIZE
+.equ DPI_OFF_IT, DPI_OFF_IBM+DPI_SIZE
+
+.equ DP_OFF_SECT_CNT, 0x00 # [2-byte]
+.equ DP_OFF_MEM, 0x02 # [4-byte]
+.equ DP_OFF_LBA, 0x06 # [4-byte]

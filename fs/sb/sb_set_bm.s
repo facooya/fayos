@@ -25,6 +25,13 @@ sb_set_bm:
 	push $(DISK_BBM_MEM>>0x10) # seg
 	call ata_read_sect
 	add $0x0A, %sp
+
+	#mov $di_cache, %si
+	#add $DI_OFF_SB, %si
+	#push %si
+	#call disk_read_dp
+	#add $0x02, %sp
+
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx

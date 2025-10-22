@@ -70,7 +70,7 @@ sb_run:
 	mov $(SB_MAG>>0x10), %ax
 	mov %ax, %es:SB_OFF_MAG+0x02(%bx)
 
-	call sb_write_di
+	call sb_write_dpi
 
 	push $DISK_SB_SECT_CNT # sect_cnt
 	push $(DISK_SB_LBA&0xFFFF) # lba_lo
@@ -82,6 +82,7 @@ sb_run:
 	# }}}
 
 	call sb_set_dlba
+	call sb_set_dpi
 	call sb_set_bm
 
 	FS_INIT_INUM
@@ -91,6 +92,7 @@ sb_run:
 .run__init:
 	FS_INIT_INUM
 	call sb_set_dlba
+	call sb_set_dpi
 	jmp .done
 
 # {DONE}

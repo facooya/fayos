@@ -28,12 +28,9 @@
 .equ SB_OFF_IT_LBA, 0x68
 .equ SB_OFF_NORM_LBA, 0x6C
 
-# Disk immutable cache [0x70-0xBF] [10-byte]
-.equ SB_OFF_DI_SB, 0x70
-.equ SB_OFF_DI_BBM, 0x80
-.equ SB_OFF_DI_IBM, 0x90
-.equ SB_OFF_DI_IT, 0xA0
-
-.equ SB_OFF_DI_SECT_CNT, 0x00 # [2-byte]
-.equ SB_OFF_DI_MEM, 0x02 # [4-byte]
-.equ SB_OFF_DI_LBA, 0x06 # [4-byte]
+# Disk immutable cache [0x80-0xAF] [10-byte]
+.equ SB_DPI_SIZE, 0x0A
+.equ SB_OFF_DPI_SB, 0x80
+.equ SB_OFF_DPI_BBM, SB_OFF_DPI_SB+SB_DPI_SIZE
+.equ SB_OFF_DPI_IBM, SB_OFF_DPI_BBM+SB_DPI_SIZE
+.equ SB_OFF_DPI_IT, SB_OFF_DPI_IBM+SB_DPI_SIZE

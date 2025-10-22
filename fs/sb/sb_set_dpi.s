@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2025 Facooya and Fanone Facooya
+#
+# [Superblock] Set disk packet immutable
+
+.include "drv/disk.s"
+.include "fs/sb.s"
+.section .text
+.code16
+.global sb_set_dpi
+
+# sb_set_dpi()
+# <mod:dpi>
+sb_set_dpi:
+	push %es
+	push %si
+	push %di
+
+	mov $(DISK_SB_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_SB_MEM&0xFFFF), %si
+	mov $dpi, %di
+	mov $0x04, %cx # dpi_cnt
+	# [sb, bbm, ibm, it]
+
+.lp:
+	test %cx, %cx
+	jz .done
+
+	mov %es:DP_OFF_SECT_CNT(%si), %ax
+	mov %ax, %es:DP_OFF_SECT_CNT(%di)
+
+	mov %es:DP_OFF_MEM+0x02(%si), %ax
+	mov %ax, %es:DP_OFF_MEM(%di)
+	mov %es:DP_OFF_MEM(%si), %ax
+	mov %ax, %es:DP_OFF_MEM(%di)
+
+	mov %es:DP_OFF_LBA+0x02(%si), %ax
+	mov %ax, %es:DP_OFF_LBA(%di)
+	mov %es:DP_OFF_LBA(%si), %ax
+	mov %ax, %es:DP_OFF_LBA(%di)
+
+	add $DPI_SIZE, %si
+	add $DPI_SIZE, %di
+	dec %cx
+	jmp .lp
+
+.done:
+	pop %di
+	pop %si
+	pop %es
+	ret
+
+._set:
+	ret

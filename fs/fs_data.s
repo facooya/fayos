@@ -30,9 +30,11 @@
 
 .global ind_list
 
+.global dpi
+# sect_cnt, mem, lba
 # 0:current, 1:parent, 2:tmp
-.global disk_cache
-# seg, off, lba
+.global dp_cache
+# sect_cnt, mem, lba
 .global ind_cache
 # seg, off, inum, ind
 
@@ -69,5 +71,6 @@ de_hist:
 
 ind_list: .zero 0x100
 
-disk_cache: .zero 0x100
+dpi: .zero 0x100
+dp_cache: .zero 0x100
 ind_cache: .zero 0x100
