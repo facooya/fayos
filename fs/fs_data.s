@@ -30,8 +30,7 @@
 
 .global ind_list
 
-.global ind_cache
-# seg, off, inum, ind
+.global indp
 
 inode: .zero IND_SIZE
 tmp_inode: .zero IND_SIZE
@@ -66,4 +65,5 @@ de_hist:
 
 ind_list: .zero 0x100
 
-ind_cache: .zero 0x100
+indp: .zero 0x100
+# ind, ind_ptr, inum

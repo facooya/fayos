@@ -23,9 +23,10 @@ fs_add:
 
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
-	call ind_read3
-	add $0x04, %sp
-	# <dx:ax = ind_seg:ind_off>
+	mov $indp, %si
+	push %si # (*indp)
+	call ind_read4
+	add $0x06, %sp
 
 	mov 0x04(%bp), %si
 	push %si
