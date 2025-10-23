@@ -5,5 +5,9 @@
 # [Disk] Data
 
 .section .data
-.global dlba
-dlba: .zero 0x0C
+.global dpi # Disk Packet Immutable
+.global dp # Disk Packet
+dpi: .zero 0x100
+dp: .zero 0x100
+# 0:cur, 1:par, 2:tmp
+# sect_cnt, mem, lba

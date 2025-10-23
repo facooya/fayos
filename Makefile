@@ -51,7 +51,6 @@ fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
 fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
-fs/sb/sb_set_dlba.s \
 fs/sb/sb_write_dpi.s \
 fs/sb/sb_set_dpi.s \
 fs/sb/sb_load_mem.s \
@@ -120,7 +119,6 @@ drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
 drv/disk/disk_data.s \
-drv/disk/disk_init.s \
 drv/disk/disk_read_blk.s \
 drv/disk/disk_read_dp.s \
 drv/disk/disk_write_dp.s \

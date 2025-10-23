@@ -81,7 +81,6 @@ sb_run:
 	add $0x0A, %sp
 	# }}}
 
-	call sb_set_dlba # TODO: del
 	call sb_set_dpi
 	call sb_load_mem
 	call sb_set_bm
@@ -92,7 +91,6 @@ sb_run:
 
 .run__init:
 	FS_INIT_INUM
-	call sb_set_dlba # TODO: del
 	call sb_set_dpi
 	call sb_load_mem
 	jmp .done

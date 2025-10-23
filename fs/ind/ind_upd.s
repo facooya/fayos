@@ -41,15 +41,11 @@ ind_upd:
 	mov IND_OFF_BLK_0+0x02(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IT, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_IT_MEM&0xFFFF) # off
-	push $(DISK_IT_MEM>>0x10) # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	mov $dpi, %si
+	add $DPI_OFF_IT, %si
+	push %si
+	call disk_write_dp
+	add $0x02, %sp
 
 	pop %bx
 	pop %si

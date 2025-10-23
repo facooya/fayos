@@ -19,7 +19,6 @@ _start:
 	call vga_init
 
 	call sb_run
-	call disk_init
 
 	push $.kmsg_welcome
 	call vga_puts
