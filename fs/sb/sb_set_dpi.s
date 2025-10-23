@@ -20,6 +20,7 @@ sb_set_dpi:
 	mov $(DISK_SB_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_SB_MEM&0xFFFF), %si
+	add $SB_OFF_DPI_SB, %si
 	mov $dpi, %di
 	mov $0x04, %cx # dpi_cnt
 	# [sb, bbm, ibm, it]

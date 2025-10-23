@@ -122,6 +122,8 @@ drv/ata/ata_write_sect.s \
 drv/disk/disk_data.s \
 drv/disk/disk_init.s \
 drv/disk/disk_read_blk.s \
+drv/disk/disk_read_dp.s \
+drv/disk/disk_write_dp.s \
 \
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \

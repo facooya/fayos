@@ -19,6 +19,7 @@
 # ub16 lba_lo,
 # ub16 sect_cnt
 # )
+# <ret> dx:ax = seg:off
 ata_write_sect:
 	push %bp
 	mov %sp, %bp
@@ -82,6 +83,9 @@ ata_write_sect:
 .done:
 	BSY
 	# TODO: err, df
+
+	mov 0x04(%bp), %dx
+	mov 0x06(%bp), %ax
 
 	pop %bx
 	pop %si
