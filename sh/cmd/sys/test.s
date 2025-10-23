@@ -20,9 +20,11 @@
 cmd_test:
 	push %bx
 
+	mov $0x80, %ax
+	push %ax
 	push $.fname
 	call fs_add
-	add $0x02, %sp
+	add $0x04, %sp
 
 	pop %bx
 	ret

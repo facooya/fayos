@@ -64,6 +64,7 @@ fs/ind/ind_read4.s \
 fs/ind/ind_write.s \
 \
 fs/dent/dent_add.s \
+fs/dent/dent_add2.s \
 fs/dent/add_dentry.s \
 fs/dent/lookup_dentry.s \
 \
