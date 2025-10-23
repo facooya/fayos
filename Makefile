@@ -54,6 +54,7 @@ fs/sb/sb_set_bm.s \
 fs/sb/sb_set_dlba.s \
 fs/sb/sb_write_dpi.s \
 fs/sb/sb_set_dpi.s \
+fs/sb/sb_load_mem.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \

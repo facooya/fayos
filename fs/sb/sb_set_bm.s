@@ -16,22 +16,6 @@ sb_set_bm:
 	push %bx
 
 	# {{{ bbm
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_BBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_BBM_MEM&0xFFFF) # off
-	push $(DISK_BBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
-
-	#mov $di_cache, %si
-	#add $DI_OFF_SB, %si
-	#push %si
-	#call disk_read_dp
-	#add $0x02, %sp
-
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
@@ -42,28 +26,14 @@ sb_set_bm:
 	call bm_set
 	add $0x06, %sp
 
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_BBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_BBM_MEM&0xFFFF) # off
-	push $(DISK_BBM_MEM>>0x10) # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	mov $dpi, %si
+	add $DPI_OFF_BBM, %si
+	push %si # dpi bbm
+	call disk_write_dp
+	add $0x02, %sp
 	# }}}
 
 	# {{{ ibm
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IBM, %si
-	push (%si) # lba_lo
-	mov (%si), %ax
-	push 0x02(%si) # lba_hi
-	push $(DISK_IBM_MEM&0xFFFF) # off
-	push $(DISK_IBM_MEM>>0x10) # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov $(DISK_IBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
@@ -74,15 +44,11 @@ sb_set_bm:
 	call bm_set
 	add $0x06, %sp
 
-	push $DISK_BLK_SECT_CNT # sect_cnt
-	mov $dlba, %si
-	add $DLBA_OFF_IBM, %si
-	push (%si) # lba_lo
-	push 0x02(%si) # lba_hi
-	push $(DISK_IBM_MEM&0xFFFF) # off
-	push $(DISK_IBM_MEM>>0x10) # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	mov $dpi, %si
+	add $DPI_OFF_IBM, %si
+	push %si # dpi ibm
+	call disk_write_dp
+	add $0x02, %sp
 	# }}}
 
 	pop %bx
