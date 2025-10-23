@@ -63,6 +63,9 @@ cmd_mkdir:
 	# }}}
 
 	call ind_add
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	# {{{ add dentry
 	mov $paths, %si
@@ -220,6 +223,9 @@ cmd_mkdir:
 # {TASK}
 .run:
 	call ind_add
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	# {init} for add_dentry
 	mov $args, %si

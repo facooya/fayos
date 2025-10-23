@@ -52,8 +52,10 @@ cmd_touch:
 	mov %dx, %es
 	# }}}
 
-	# <ret> tmp_inum
 	call ind_add
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	# {{{ add dentry
 	mov $paths, %si
@@ -158,6 +160,9 @@ cmd_touch:
 # {TASK}
 .run:
 	call ind_add
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	# {{{ add dentry
 	mov $args, %si

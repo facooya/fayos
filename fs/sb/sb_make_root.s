@@ -14,6 +14,9 @@ sb_make_root:
 	push %si
 
 	call ind_add
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	# add dentry dot
 	mov $de_dots, %si

@@ -77,7 +77,9 @@ history:
 
 .create:
 	call ind_add
-	# <ret> tmp_inum
+	# <dx:ax = inum_hi:inum_lo>
+	mov %ax, (tmp_inum)
+	mov %dx, (tmp_inum+0x02)
 
 	mov $de_hist, %si
 	mov (%si), %cx

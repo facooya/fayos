@@ -20,18 +20,8 @@
 cmd_test:
 	push %bx
 
-	#push $.fname
-	#call fs_add
-	#add $0x02, %sp
-
-	mov $dpi, %bx
-	push %bx
-	call disk_read_dp
-	add $0x02, %sp
-
-	mov $dpi, %bx
-	push %bx
-	call disk_write_dp
+	push $.fname
+	call fs_add
 	add $0x02, %sp
 
 	pop %bx

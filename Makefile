@@ -61,7 +61,6 @@ fs/ind/ind_clr.s \
 fs/ind/ind_read.s \
 fs/ind/ind_upd.s \
 fs/ind/ind_read3.s \
-fs/ind/ind_add2.s \
 \
 fs/dent/dent_add.s \
 fs/dent/add_dentry.s \

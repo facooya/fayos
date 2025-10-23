@@ -16,7 +16,7 @@ fs_add:
 	mov %sp, %bp
 	push %si
 
-	call ind_add2
+	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 	mov %ax, (tmp_inum)
 	mov %dx, (tmp_inum+0x02)
