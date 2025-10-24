@@ -16,6 +16,7 @@ ind_read4:
 	mov %sp, %bp
 	push %es
 	push %si
+	push %di
 	push %bx
 
 	# save inum
@@ -57,6 +58,7 @@ ind_read4:
 
 .done:
 	pop %bx
+	pop %di
 	pop %si
 	pop %es
 	pop %bp

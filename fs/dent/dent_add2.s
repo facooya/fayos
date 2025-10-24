@@ -36,15 +36,10 @@ dent_add2:
 	add $0x04, %sp
 	# <dx:ax = lba_hi:lba_lo>
 
-	push $DISK_BLK_SECT_CNT # (sect_cnt)
-	push %ax # (lba_lo)
-	push %dx # (lba_hi)
-	call mem_alloc
-	# <dx:ax = seg:off>
-	push %ax # (off)
-	push %dx # (seg)
-	call ata_read_sect
-	add $0x0A, %sp
+	mov $dp+DP_OFF_CUR, %si
+	push %si # (*dp)
+	call disk_read_dp
+	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
 
@@ -103,22 +98,10 @@ dent_add2:
 	jmp .write__name_lp
 
 .write__end:
-	# TODO disk_cache
-	# write blk
-	push $DISK_BLK_SECT_CNT # (sect_cnt)
-	push $0x80 # (lba_lo)
-	xor %ax, %ax
-	push %ax # (lba_hi)
-	and $0xF000, %bx
-	push %bx # (off)
-	push %es # (seg)
-	call ata_write_sect
-	add $0x0A, %sp
-
-	push %bx
-	push %es
-	call mem_free
-	add $0x04, %sp
+	mov $dp+DP_OFF_CUR, %si
+	push %si
+	call disk_write_dp
+	add $0x02, %sp
 
 	# {end.done}
 	pop %ax # <ret:rec_size>

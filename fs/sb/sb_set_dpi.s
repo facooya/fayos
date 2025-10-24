@@ -42,8 +42,8 @@ sb_set_dpi:
 	mov %es:DP_OFF_LBA(%si), %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 
-	add $DPI_SIZE, %si
-	add $DPI_SIZE, %di
+	add $DP_SIZE, %si
+	add $DP_SIZE, %di
 	dec %cx
 	jmp .lp
 

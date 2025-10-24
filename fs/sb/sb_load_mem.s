@@ -27,7 +27,7 @@ sb_load_mem:
 	add $0x02, %sp
 	pop %cx # [s.f0:cnt]
 
-	add $DPI_SIZE, %bx
+	add $DP_SIZE, %bx
 	dec %cx
 	jmp .lp
 
