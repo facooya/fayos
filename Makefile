@@ -62,6 +62,7 @@ fs/ind/ind_upd.s \
 fs/ind/ind_read3.s \
 fs/ind/ind_read4.s \
 fs/ind/ind_write.s \
+fs/ind/ind_init.s \
 \
 fs/dent/dent_add.s \
 fs/dent/dent_add2.s \

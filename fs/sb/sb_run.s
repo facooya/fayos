@@ -87,6 +87,7 @@ sb_run:
 
 	FS_INIT_INUM
 	call sb_make_root
+	call ind_init
 	call disk_init_dp
 	jmp .done
 

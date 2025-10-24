@@ -14,6 +14,7 @@
 .section .data
 .global hist_idx
 hist_idx: .word 0x00
+.fname_hist: .asciz ".history"
 
 .section .text
 .code16
@@ -76,38 +77,45 @@ history:
 	jmp .save
 
 .create:
-	call ind_add
-	# <dx:ax = inum_hi:inum_lo>
-	mov %ax, (tmp_inum)
-	mov %dx, (tmp_inum+0x02)
-
-	mov $de_hist, %si
-	mov (%si), %cx
-	add $0x02, %si
-	push %si # name
-	push %cx # info
-	push $root_inum # src
-	push $tmp_inum # dest
-	call add_dentry
-	add $0x08, %sp
-	push %ax # [s.1] dentry_size
-
-	# {{{ update root file size
-	push $inode
-	push $root_inum
-	call ind_read
+	# TEST
+	mov $0x80, %ax
+	push %ax
+	push $.fname_hist
+	call fs_add
 	add $0x04, %sp
 
-	pop %ax # [s.1] dentry size
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $root_inum
-	call ind_upd
-	add $0x04, %sp
+	#call ind_add
+	## <dx:ax = inum_hi:inum_lo>
+	#mov %ax, (tmp_inum)
+	#mov %dx, (tmp_inum+0x02)
+#
+	#mov $de_hist, %si
+	#mov (%si), %cx
+	#add $0x02, %si
+	#push %si # name
+	#push %cx # info
+	#push $root_inum # src
+	#push $tmp_inum # dest
+	#call add_dentry
+	#add $0x08, %sp
+	#push %ax # [s.1] dentry_size
+#
+	## {{{ update root file size
+	#push $inode
+	#push $root_inum
+	#call ind_read
+	#add $0x04, %sp
+#
+	#pop %ax # [s.1] dentry size
+	#mov $inode, %si
+	#mov I_FILE_SIZE_OFF(%si), %cx
+	#add %cx, %ax
+	#mov %ax, I_FILE_SIZE_OFF(%si)
+#
+	#push $inode
+	#push $root_inum
+	#call ind_upd
+	#add $0x04, %sp
 	# }}}
 
 	jmp .save

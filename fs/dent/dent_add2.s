@@ -37,6 +37,9 @@ dent_add2:
 	# <dx:ax = lba_hi:lba_lo>
 
 	mov $dp+DP_OFF_CUR, %si
+	mov %dx, DP_OFF_LBA+0x02(%si)
+	mov %ax, DP_OFF_LBA(%si)
+
 	push %si # (*dp)
 	call disk_read_dp
 	add $0x02, %sp

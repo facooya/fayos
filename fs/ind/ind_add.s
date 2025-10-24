@@ -11,6 +11,9 @@
 .global ind_add
 
 # ind_add()
+# <mod> blk bitmap
+# <mod> inum bitmap
+# <mod> inode table
 # <ret> dx:ax = inum_hi:inum_lo
 ind_add:
 	push %es

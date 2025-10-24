@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- alloc - * - free
+- update file system using cache
 
 ## PRIORITY
 
