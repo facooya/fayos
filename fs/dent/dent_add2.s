@@ -81,7 +81,7 @@ dent_add2:
 	mov %bx, %di
 	add $DE_NAME_OFF, %di
 
-	mov 0x0E(%bp), %si # name
+	mov 0x04(%bp), %si # *name
 	xor %cx, %cx
 	mov %al, %cl # name_size
 
