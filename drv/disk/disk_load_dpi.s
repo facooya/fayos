@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Superblock] Load immutable memory
+# [Disk] Load memory for immutable disk packet
 
 .include "drv/disk.s"
 .section .text
 .code16
-.global sb_load_mem
+.global disk_load_dpi
 
-# sb_load_mem()
-sb_load_mem:
+# disk_load_dpi()
+disk_load_dpi:
 	push %bx
 
 	mov $dpi, %bx

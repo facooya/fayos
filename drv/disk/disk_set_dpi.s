@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Superblock] Set disk packet immutable
+# [Disk] Set disk packet immutable
 
 .include "drv/disk.s"
 .include "fs/sb.s"
 .section .text
 .code16
-.global sb_set_dpi
+.global disk_set_dpi
 
-# sb_set_dpi()
+# disk_set_dpi()
 # <mod:dpi>
-sb_set_dpi:
+disk_set_dpi:
 	push %es
 	push %si
 	push %di

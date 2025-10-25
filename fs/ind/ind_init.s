@@ -4,6 +4,7 @@
 #
 # [Index Node] Initial inode packet
 
+.include "fs/fs.s"
 .include "fs/ind.s"
 .section .text
 .code16
@@ -11,17 +12,28 @@
 
 # ind_init()
 ind_init:
+	push %si
+
 	mov $indp+INDP_OFF_PAR, %si
-	push (root_inum)
-	push (root_inum+0x02)
+	push $(FS_ROOT_INUM&0xFFFF)
+	push $(FS_ROOT_INUM>>0x10)
 	push %si
 	call ind_read4
 	add $0x06, %sp
 
 	mov $indp+INDP_OFF_CUR, %si
-	push (root_inum)
-	push (root_inum+0x02)
+	push $(FS_ROOT_INUM&0xFFFF)
+	push $(FS_ROOT_INUM>>0x10)
 	push %si
 	call ind_read4
 	add $0x06, %sp
+
+	mov $indp+INDP_OFF_TMP, %si
+	push $(FS_ROOT_INUM&0xFFFF)
+	push $(FS_ROOT_INUM>>0x10)
+	push %si
+	call ind_read4
+	add $0x06, %sp
+
+	pop %si
 	ret

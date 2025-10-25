@@ -81,20 +81,21 @@ sb_run:
 	add $0x0A, %sp
 	# }}}
 
-	call sb_set_dpi
-	call sb_load_mem
+	call disk_set_dpi
+	call disk_load_dpi
 	call sb_set_bm
 
 	FS_INIT_INUM
 	call sb_make_root
-	call ind_init
-	call disk_init_dp
 	jmp .done
 
 .run__init:
 	FS_INIT_INUM
-	call sb_set_dpi
-	call sb_load_mem
+	call disk_set_dpi
+	call disk_load_dpi
+
+	call ind_init
+	call disk_init_dp
 	jmp .done
 
 # {DONE}

@@ -52,8 +52,6 @@ fs/sb/sb_alloc_lba.s \
 fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_write_dpi.s \
-fs/sb/sb_set_dpi.s \
-fs/sb/sb_load_mem.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
@@ -127,6 +125,8 @@ drv/disk/disk_read_blk.s \
 drv/disk/disk_read_dp.s \
 drv/disk/disk_write_dp.s \
 drv/disk/disk_init_dp.s \
+drv/disk/disk_set_dpi.s \
+drv/disk/disk_load_dpi.s \
 \
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
