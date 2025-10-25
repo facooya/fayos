@@ -16,57 +16,43 @@ disk_init_dp:
 	push %si
 	push %di
 
-	mov $dp+DP_OFF_PAR, %di
+	mov $indp, %si
+	mov $dp, %di
+	mov $0x03, %cx
+	# [par, cur, tmp]
+
+.lp:
+	test %cx, %cx
+	jz .done
+
+	# set sect cnt
 	mov $DISK_BLK_SECT_CNT, %ax
 	mov %ax, DP_OFF_SECT_CNT(%di)
 
+	# set mem
 	mov $(DISK_PAR_MEM>>0x10), %ax
 	mov %ax, DP_OFF_MEM+0x02(%di)
 	mov $(DISK_PAR_MEM&0xFFFF), %ax
 	mov %ax, DP_OFF_MEM(%di)
 
-	mov $indp+INDP_OFF_PAR, %si
+	# { set lba
+	push %cx # [s.f0:cnt]
 	push IND_OFF_BLK_0(%si)
 	push IND_OFF_BLK_0+0x02(%si)
 	call fs_blk_to_lba
 	add $0x04, %sp
+	pop %cx # [s.f0:cnt]
+
 	mov %dx, DP_OFF_LBA+0x02(%di)
 	mov %ax, DP_OFF_LBA(%di)
+	# }
 
-	mov $dp+DP_OFF_CUR, %di
-	mov $DISK_BLK_SECT_CNT, %ax
-	mov %ax, DP_OFF_SECT_CNT(%di)
+	add $DP_SIZE, %di
+	add $INDP_SIZE, %si
+	dec %cx
+	jmp .lp
 
-	mov $(DISK_CUR_MEM>>0x10), %ax
-	mov %ax, DP_OFF_MEM+0x02(%di)
-	mov $(DISK_CUR_MEM&0xFFFF), %ax
-	mov %ax, DP_OFF_MEM(%di)
-
-	mov $indp+INDP_OFF_CUR, %si
-	push IND_OFF_BLK_0(%si)
-	push IND_OFF_BLK_0+0x02(%si)
-	call fs_blk_to_lba
-	add $0x04, %sp
-	mov %dx, DP_OFF_LBA+0x02(%di)
-	mov %ax, DP_OFF_LBA(%di)
-
-	mov $dp+DP_OFF_TMP, %di
-	mov $DISK_BLK_SECT_CNT, %ax
-	mov %ax, DP_OFF_SECT_CNT(%di)
-
-	mov $(DISK_TMP_MEM>>0x10), %ax
-	mov %ax, DP_OFF_MEM+0x02(%di)
-	mov $(DISK_TMP_MEM&0xFFFF), %ax
-	mov %ax, DP_OFF_MEM(%di)
-
-	mov $indp+INDP_OFF_TMP, %si
-	push IND_OFF_BLK_0(%si)
-	push IND_OFF_BLK_0+0x02(%si)
-	call fs_blk_to_lba
-	add $0x04, %sp
-	mov %dx, DP_OFF_LBA+0x02(%di)
-	mov %ax, DP_OFF_LBA(%di)
-
+.done:
 	pop %di
 	pop %si
 	ret
