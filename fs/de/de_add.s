@@ -5,20 +5,19 @@
 # [Directory Entry] Add
 
 .include "drv/disk.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
+.include "fs/de.s"
 .include "fs/ind.s"
 .section .text
 .code16
-.global dent_add2
+.global de_add
 
-# dent_add2(
+# de_add(
 # ub8 *name_str,
 # ub16 f_type
 # )
 # <req> *indp (cur,tmp)
 # <ret> ax = rec_size
-dent_add2:
+de_add:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -54,32 +53,32 @@ dent_add2:
 	# write inum
 	mov $indp+INDP_OFF_TMP, %si
 	mov INDP_OFF_INUM(%si), %ax
-	mov %ax, %es:DE_INUM_OFF(%bx)
+	mov %ax, %es:DE_OFF_INUM(%bx)
 	mov INDP_OFF_INUM+0x02(%si), %ax
-	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
 	mov 0x06(%bp), %ax
-	mov %al, %es:DE_FILE_TYPE_OFF(%bx)
+	mov %al, %es:DE_OFF_FILE_TYPE(%bx)
 	mov 0x04(%bp), %si
 	push %si
 	xor %ax, %ax
 	push %ax
 	call strlen
 	add $0x04, %sp
-	mov %al, %es:DE_NAME_LEN_OFF(%bx)
+	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 
 	# write rec_size
 	xor %cx, %cx
 	mov %al, %cl
 	add $0x0B, %cx # fix (8), align 4 (3)
 	and $0xFFFC, %cx # mask: 0b1100
-	mov %cx, %es:DE_REC_LEN_OFF(%bx)
+	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
 	push %cx # [s.0:rec_size]
 
 	# dest name
 	mov %bx, %di
-	add $DE_NAME_OFF, %di
+	add $DE_OFF_NAME, %di
 
 	mov 0x04(%bp), %si # *name
 	xor %cx, %cx

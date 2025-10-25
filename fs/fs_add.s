@@ -26,10 +26,9 @@ fs_add:
 	call ind_read4
 	add $0x06, %sp
 
-	# TODO: chk f_type if dir {dir}
 	push 0x06(%bp) # (f_type)
 	push 0x04(%bp) # (&name_str)
-	call dent_add2
+	call de_add
 	add $0x04, %sp
 	# <ax = rec_size>
 
@@ -45,7 +44,7 @@ fs_add:
 	mov 0x06(%bp), %ax
 	cmp $0x40, %ax
 	jne .done
-	call dent_add_dots
+	call de_add_dots
 
 .done:
 	pop %si

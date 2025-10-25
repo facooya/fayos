@@ -22,36 +22,8 @@ sb_make_root:
 
 	call ind_init
 	call disk_init_dp
-
-	mov $0x40, %ax
-	push %ax # (f_type)
-	push $.dent_dots # (&name_str)
-	call dent_add2
-	add $0x04, %sp
-	# <ax = rec_size>
-
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%si)
-	push %si # (*indp)
-	call ind_write
-	add $0x02, %sp
-
-	mov $0x40, %ax
-	push %ax # (f_type)
-	push $.dent_dot # (&name_str)
-	call dent_add2
-	add $0x04, %sp
-	# <ax = rec_size>
-
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%si)
-	push %si # (*indp)
-	call ind_write
-	add $0x02, %sp
+	call de_add_dots
+	call ind_init
 
 	pop %si
 	ret

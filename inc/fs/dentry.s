@@ -16,3 +16,9 @@
 
 # Name
 .equ DE_NAME_OFF, 0x08
+
+# Dots
+.equ DE_DOT, 0x002E
+.equ DE_DOT_INFO, 0x4001
+.equ DE_DOTS, 0x2E2E
+.equ DE_DOTS_INFO, 0x0240

@@ -62,11 +62,12 @@ fs/ind/ind_read4.s \
 fs/ind/ind_write.s \
 fs/ind/ind_init.s \
 \
-fs/dent/dent_add.s \
-fs/dent/dent_add2.s \
-fs/dent/add_dentry.s \
-fs/dent/lookup_dentry.s \
-fs/dent/dent_add_dots.s \
+fs/de/de_add.s \
+fs/de/de_add_dots.s \
+\
+fs/de/dent_add.s \
+fs/de/add_dentry.s \
+fs/de/lookup_dentry.s \
 \
 fs/bm/bm_alloc.s \
 fs/bm/bm_clr.s \
