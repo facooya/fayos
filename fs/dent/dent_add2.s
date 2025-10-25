@@ -16,7 +16,7 @@
 # ub8 *name_str,
 # ub16 f_type
 # )
-# <req> *indp
+# <req> *indp (cur,tmp)
 # <ret> ax = rec_size
 dent_add2:
 	push %bp
@@ -75,7 +75,7 @@ dent_add2:
 	add $0x0B, %cx # fix (8), align 4 (3)
 	and $0xFFFC, %cx # mask: 0b1100
 	mov %cx, %es:DE_REC_LEN_OFF(%bx)
-	push %cx
+	push %cx # [s.0:rec_size]
 
 	# dest name
 	mov %bx, %di
@@ -107,7 +107,7 @@ dent_add2:
 	add $0x02, %sp
 
 	# {end.done}
-	pop %ax # <ret:rec_size>
+	pop %ax # [s.0:rec_size] <ret.0:rec_size>
 	jmp .done
 
 # {DONE}

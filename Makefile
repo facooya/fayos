@@ -66,6 +66,7 @@ fs/dent/dent_add.s \
 fs/dent/dent_add2.s \
 fs/dent/add_dentry.s \
 fs/dent/lookup_dentry.s \
+fs/dent/dent_add_dots.s \
 \
 fs/bm/bm_alloc.s \
 fs/bm/bm_clr.s \

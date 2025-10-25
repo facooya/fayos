@@ -41,6 +41,13 @@ fs_add:
 	call ind_write
 	add $0x02, %sp
 
+	# (f_type != dir) ? {done} : {add_dots}
+	mov 0x06(%bp), %ax
+	cmp $0x40, %ax
+	jne .done
+	call dent_add_dots
+
+.done:
 	pop %si
 	pop %bp
 	ret

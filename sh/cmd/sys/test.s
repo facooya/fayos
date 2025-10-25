@@ -20,7 +20,7 @@
 cmd_test:
 	push %bx
 
-	mov $0x80, %ax
+	mov $0x40, %ax
 	push %ax
 	push $.fname
 	call fs_add
