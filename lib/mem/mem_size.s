@@ -2,39 +2,37 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# String length
+# [Memory] Get size
 
 .section .text
 .code16
-.global strlen
+.global mem_size
 
-# strlen(*seg, *off)
-# <ret> ax = length
-strlen:
+# mem_size(*seg, *off)
+# <ret> ax = size
+mem_size:
 	push %bp
 	mov %sp, %bp
 	push %es
 	push %bx
 
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (*seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx
-	xor %cx, %cx # len
+	mov 0x06(%bp), %bx # (*off)
+	xor %cx, %cx # size
 
 .lp:
+	# (chr == null) ? {done}
 	mov %es:(%bx), %al
-
-	# {end.done} (byte == null)
 	test %al, %al
 	jz .done
 
-	# {lp}
-	add $0x01, %bx
-	add $0x01, %cx # len
+	inc %bx
+	inc %cx # size
 	jmp .lp
 
 .done:
-	mov %cx, %ax # ret
+	mov %cx, %ax # <ret:size>
 
 	pop %bx
 	pop %es

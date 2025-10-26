@@ -93,7 +93,7 @@ fs_open:
 	push %si
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 	push %ax # name_len
 	mov $ind_list, %si

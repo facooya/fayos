@@ -33,7 +33,7 @@ bufzero:
 	push %ax
 	push %si
 	push %ax
-	call memset
+	call mem_set
 	add $0x08, %sp
 
 	pop %si

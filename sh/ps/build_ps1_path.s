@@ -25,7 +25,7 @@ build_ps1_path:
 	push %di
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	push %ax
@@ -33,7 +33,7 @@ build_ps1_path:
 	push %ax
 	push %di
 	push %ax
-	call memset
+	call mem_set
 	add $0x08, %sp
 	pop %cx # [s.0:pathc]
 	# }}}

@@ -185,10 +185,10 @@ lib/put/puts.s \
 lib/put/putns.s \
 lib/put/put_utils.s \
 \
-lib/str/memcmp.s \
-lib/str/memcpy.s \
-lib/str/memset.s \
-lib/str/strlen.s
+lib/mem/mem_cmp.s \
+lib/mem/mem_cpy.s \
+lib/mem/mem_set.s \
+lib/mem/mem_size.s
 
 SRCS = \
 $(SRCS_KERN) \

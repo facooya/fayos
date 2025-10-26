@@ -24,7 +24,7 @@ add_ps1_path:
 	push %di
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 	add %ax, %di
 
@@ -46,7 +46,7 @@ add_ps1_path:
 	push %di
 	xor %ax, %ax
 	push %ax
-	call memcpy
+	call mem_cpy
 	add $0x0A, %sp
 
 	# store last null

@@ -43,7 +43,7 @@ exec_cmd:
 
 	push %si
 	push %es
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %bx # cmd_len
@@ -62,7 +62,7 @@ exec_cmd:
 
 	push %di
 	push %es
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %cx # map_chr_len
@@ -99,14 +99,14 @@ exec_cmd:
 	push %es
 	push %di
 	push %es
-	call memcmp
+	call mem_cmp
 	add $0x0A, %sp
 
 	pop %es # s.2
 	pop %cx # s.1 map_chr_len
 	# }}}
 
-	# {end} (memcmp() == true)
+	# {end} (mem_cmp() == true)
 	test %ax, %ax
 	jz .map__end
 

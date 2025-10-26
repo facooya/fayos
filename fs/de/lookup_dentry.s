@@ -70,14 +70,14 @@ lookup_dentry:
 	push %ax # *src_seg
 	push %di # *dest_off
 	push %es # *dest_seg
-	call memcmp
+	call mem_cmp
 	add $0x0A, %sp
 
 	pop %es
 	pop %dx
 	pop %cx
 
-	# {end.done.m} (memcmp() == true)
+	# {end.done.m} (mem_cmp() == true)
 	test %ax, %ax
 	jz .done__m
 	# }}}

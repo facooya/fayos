@@ -64,7 +64,7 @@ de_add:
 	push %si
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 

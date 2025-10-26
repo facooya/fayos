@@ -41,7 +41,7 @@ bufcpy:
 	push %ax
 	push %di
 	push %ax
-	call memcpy
+	call mem_cpy
 	add $0x0A, %sp
 
 .done:

@@ -30,7 +30,7 @@ disp_shl_cl:
 
 	push %di
 	push %es
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	pop %es

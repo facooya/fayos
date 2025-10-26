@@ -33,7 +33,7 @@ disp_shr_cl:
 
 	push %di
 	push %es
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %cx # len

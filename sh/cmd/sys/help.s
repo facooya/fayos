@@ -42,7 +42,7 @@ cmd_help:
 
 	push %si
 	push %es
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	add %ax, %si

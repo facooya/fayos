@@ -128,11 +128,11 @@ read_paths:
 	push %di
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	push %di
-	push %ax # strlen()
+	push %ax # str_size()
 	mov $inode, %di
 	mov I_FILE_SIZE_OFF(%di), %ax
 	push %ax # file_size

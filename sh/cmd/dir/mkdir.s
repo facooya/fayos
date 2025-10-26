@@ -83,7 +83,7 @@ cmd_mkdir:
 	xor %ax, %ax
 	push %si
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	mov %al, %cl
@@ -175,10 +175,10 @@ cmd_mkdir:
 	xor %ax, %ax
 	push %si
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
-	push %ax # [s.0:strlen]
+	push %ax # [s.0:str_size]
 	push $inode
 	push $inum
 	call ind_read_old
@@ -202,7 +202,7 @@ cmd_mkdir:
 	add $0x0A, %sp
 	mov %ax, %bx
 	mov %dx, %es
-	pop %cx # [s.0:strlen]
+	pop %cx # [s.0:str_size]
 
 	push %si # src_name
 	push %cx # src_name_len
@@ -237,7 +237,7 @@ cmd_mkdir:
 	xor %ax, %ax
 	push %si
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	# {{{ add directory

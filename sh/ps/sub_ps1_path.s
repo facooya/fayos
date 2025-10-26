@@ -19,7 +19,7 @@ sub_ps1_path:
 	push %si
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 	add %ax, %si
 
@@ -43,7 +43,7 @@ sub_ps1_path:
 	push %di
 	xor %ax, %ax
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	cmp $0x01, %ax

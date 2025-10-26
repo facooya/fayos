@@ -125,7 +125,7 @@ cmd_ls:
 	xor %ax, %ax
 	push %si # cl_lbuf[argv[1]]
 	push %ax
-	call strlen
+	call mem_size
 	add $0x04, %sp
 
 	push %si
