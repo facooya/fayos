@@ -64,6 +64,7 @@ fs/ind/ind_upd.s \
 \
 fs/de/de_add.s \
 fs/de/de_add_dots.s \
+fs/de/de_seek.s \
 \
 fs/de/add_dentry.s \
 fs/de/lookup_dentry.s \

@@ -7,6 +7,7 @@
 .include "chr.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
+.include "fs/ind.s"
 .section .text
 .code16
 .global cmd_touch
@@ -140,29 +141,27 @@ cmd_touch:
 	mov %dx, %es
 	pop %cx # [s.0:str_size]
 
-	push %si # src_name
-	push %cx # src_name_len
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
+	push %si
+	call de_seek
+	add $0x02, %sp
+	# <ax = true:off, false:1>
 
-	# (lookup_dentry() != no_match)
-	# ? {err} : {run}
+	# (de_seek() != false) ? {err} : {run}
 	cmp $0x01, %ax
 	jnz .err_name_dup
 	jmp .run
 	# }}}
 
-# {TASK}
 .run:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
-	mov %ax, (tmp_inum)
-	mov %dx, (tmp_inum+0x02)
+
+	mov $indp+INDP_OFF_TMP, %si
+	push %ax
+	push %dx
+	push %si
+	call ind_read
+	add $0x06, %sp
 
 	# {{{ add dentry
 	mov $args, %si
@@ -171,40 +170,21 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si
 
-	xor %ax, %ax
+	mov $0x80, %ax
+	push %ax # (f_type)
+	push %si # (*name)
+	call de_add
+	add $0x04, %sp
+	# <ax = rec_size>
+
+	mov $indp+INDP_OFF_CUR, %si
+	mov IND_OFF_FILE_SIZE(%si), %cx
+	add %ax, %cx
+	mov %cx, IND_OFF_FILE_SIZE(%si)
 	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
+	call ind_write
+	add $0x02, %sp
 
-	mov $0x80, %ch # (info) file_type
-	mov %al, %cl # (info) name_len
-	push %si # name
-	push %cx # info
-	push $inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-	# }}}
-
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $inum
-	call ind_upd
-	add $0x04, %sp
-
-	# {end.done}
 	jmp .done
 
 # {DONE}
