@@ -59,7 +59,7 @@ cmd_cat:
 
 	push $inode
 	push $path_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -104,7 +104,7 @@ cmd_cat:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -166,7 +166,7 @@ cmd_cat:
 
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	mov $inode, %si

@@ -53,19 +53,18 @@ fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_write_dpi.s \
 \
-fs/ind/ind_add.s \
-fs/ind/ind_clr.s \
-fs/ind/ind_read.s \
-fs/ind/ind_upd.s \
-fs/ind/ind_read3.s \
-fs/ind/ind_read4.s \
-fs/ind/ind_write.s \
 fs/ind/ind_init.s \
+fs/ind/ind_add.s \
+fs/ind/ind_read.s \
+fs/ind/ind_write.s \
+\
+fs/ind/ind_clr.s \
+fs/ind/ind_read_old.s \
+fs/ind/ind_upd.s \
 \
 fs/de/de_add.s \
 fs/de/de_add_dots.s \
 \
-fs/de/dent_add.s \
 fs/de/add_dentry.s \
 fs/de/lookup_dentry.s \
 \

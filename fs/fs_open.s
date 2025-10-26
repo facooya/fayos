@@ -56,12 +56,12 @@ fs_open:
 
 .open:
 	# {{{ open /
-	push %cx # [s.f0:f_num]
-	push %cx
-	push $root_inum
+	#push %cx # [s.f0:f_num]
+	#push %cx
+	#push $root_inum
 	#call ind_read2
-	add $0x04, %sp
-	pop %cx # [s.f0:f_num]
+	#add $0x04, %sp
+	#pop %cx # [s.f0:f_num]
 
 	# ((( ind_list += f_num * ind_size
 	mov $ind_list, %si
@@ -111,22 +111,6 @@ fs_open:
 	jmp .done
 
 .file_add:
-	#call ind_add
-	#call dent_add
-	push %ax # [s.0:dent_rec_size]
-
-	# dent size upd
-	push $root_inum # TEST
-	# call ind_read3
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-	mov IND_OFF_FILE_SIZE(%bx), %cx
-	pop %ax # [s.0:dent_rec_size]
-	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%bx)
-	# DISK_WRITE_INODE
-
 	jmp .done
 
 .done:

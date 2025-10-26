@@ -98,7 +98,7 @@ cmd_mkdir:
 
 	push $inode
 	push $path_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax
@@ -126,7 +126,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax
@@ -153,7 +153,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %cx
@@ -181,7 +181,7 @@ cmd_mkdir:
 	push %ax # [s.0:strlen]
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -253,7 +253,7 @@ cmd_mkdir:
 
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax
@@ -281,7 +281,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax
@@ -308,7 +308,7 @@ cmd_mkdir:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %cx

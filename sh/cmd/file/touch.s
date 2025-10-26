@@ -90,7 +90,7 @@ cmd_touch:
 
 	push $inode
 	push $path_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax # [s.0:reclen]
@@ -117,7 +117,7 @@ cmd_touch:
 	push %cx # [s.0:strlen]
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -190,7 +190,7 @@ cmd_touch:
 
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	pop %ax

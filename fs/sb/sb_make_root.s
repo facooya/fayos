@@ -6,17 +6,12 @@
 
 .include "fs/inode.s"
 .include "fs/ind.s"
-.section .data
-.dent_dot: .asciz "."
-.dent_dots: .asciz ".."
 .section .text
 .code16
 .global sb_make_root
 
 # sb_make_root()
 sb_make_root:
-	push %si
-
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
@@ -24,6 +19,4 @@ sb_make_root:
 	call disk_init_dp
 	call de_add_dots
 	call ind_init
-
-	pop %si
 	ret

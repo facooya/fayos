@@ -49,7 +49,7 @@ cmd_ls:
 	# {{{
 	push $inode
 	push $path_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	mov $inode, %si
@@ -84,7 +84,7 @@ cmd_ls:
 	# {{{ argc 1
 	push $inode
 	push $inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -156,7 +156,7 @@ cmd_ls:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode

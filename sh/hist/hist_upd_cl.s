@@ -24,7 +24,7 @@ hist_upd_cl:
 	# {{{ read root dir
 	push $inode
 	push $root_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode
@@ -78,7 +78,7 @@ hist_upd_cl:
 
 	push $inode
 	push $tmp_inum
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	push $inode

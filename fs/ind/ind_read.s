@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Index Node] Read index node
+# [Index Node] Read index node table and make indp
 
 .include "drv/disk.s"
 .include "fs/ind.s"
@@ -10,44 +10,55 @@
 .code16
 .global ind_read
 
-# ind_read(
-# *inum
-# *inode
-# )
-# <ret> ind_list
-# <ret> f_list(ind_list_num)
+# ind_read(indp *indp, ub16 inum_hi, ub16 inum_lo)
 ind_read:
 	push %bp
 	mov %sp, %bp
 	push %es
 	push %si
+	push %di
 	push %bx
 
+	# save inum
+	mov 0x04(%bp), %di
+	mov 0x06(%bp), %ax
+	mov %ax, INDP_OFF_INUM+0x02(%di)
+	mov 0x08(%bp), %ax
+	mov %ax, INDP_OFF_INUM(%di)
+
+	# { save ptr
 	mov $(DISK_IT_MEM>>0x10), %ax
 	mov %ax, %es
-	mov $(DISK_IT_MEM&0xFFFF), %bx
+	mov $(DISK_IT_MEM&0xFFFF), %si
 
-	# calc inum
 	xor %dx, %dx
-	mov 0x04(%bp), %si # *inum
-	mov (%si), %ax # inum_lo
+	mov 0x08(%bp), %ax # inum_lo
 	mov $IND_SIZE, %cx
 	mul %cx
-	add %ax, %bx
+	add %ax, %si
 
-	mov 0x06(%bp), %si # *inode
+	mov %es, INDP_OFF_IND_PTR+0x02(%di)
+	mov %si, INDP_OFF_IND_PTR(%di)
+	# }
 
-	# set i_file_size
-	mov %es:IND_OFF_FILE_SIZE(%bx), %ax
-	mov %ax, IND_OFF_FILE_SIZE(%si)
+	mov $IND_SIZE, %cx
 
-	# set i_blk
-	mov %es:IND_OFF_BLK_0(%bx), %ax
-	mov %ax, IND_OFF_BLK_0(%si)
-	mov %es:IND_OFF_BLK_0+0x02(%bx), %ax
-	mov %ax, IND_OFF_BLK_0+0x02(%si)
+.lp:
+	test %cx, %cx
+	jz .done
 
+	# cpy inode
+	mov %es:(%si), %ax
+	mov %ax, (%di)
+
+	add $0x02, %si
+	add $0x02, %di
+	sub $0x02, %cx
+	jmp .lp
+
+.done:
 	pop %bx
+	pop %di
 	pop %si
 	pop %es
 	pop %bp

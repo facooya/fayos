@@ -18,21 +18,21 @@ ind_init:
 	push $(FS_ROOT_INUM&0xFFFF)
 	push $(FS_ROOT_INUM>>0x10)
 	push %si
-	call ind_read4
+	call ind_read
 	add $0x06, %sp
 
 	mov $indp+INDP_OFF_CUR, %si
 	push $(FS_ROOT_INUM&0xFFFF)
 	push $(FS_ROOT_INUM>>0x10)
 	push %si
-	call ind_read4
+	call ind_read
 	add $0x06, %sp
 
 	mov $indp+INDP_OFF_TMP, %si
 	push $(FS_ROOT_INUM&0xFFFF)
 	push $(FS_ROOT_INUM>>0x10)
 	push %si
-	call ind_read4
+	call ind_read
 	add $0x06, %sp
 
 	pop %si

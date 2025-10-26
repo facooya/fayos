@@ -23,7 +23,7 @@ fs_add:
 	push %dx # (inum_hi)
 	mov $indp+INDP_OFF_TMP, %si
 	push %si # (*indp)
-	call ind_read4
+	call ind_read
 	add $0x06, %sp
 
 	push 0x06(%bp) # (f_type)

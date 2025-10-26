@@ -21,7 +21,7 @@ rm_dir:
 
 	push $tmp_inode
 	push 0x04(%bp)
-	call ind_read
+	call ind_read_old
 	add $0x04, %sp
 
 	mov $tmp_inode, %si
