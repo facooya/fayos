@@ -35,6 +35,8 @@
 .global path_sbuf
 .global path_cv
 
+.global fsp
+
 inode: .zero IND_SIZE
 tmp_inode: .zero IND_SIZE
 
@@ -73,3 +75,7 @@ indp: .zero 0x100
 
 path_sbuf: .zero 0x100
 path_cv: .zero 0x100
+
+# file system packet
+fsp: .zero 0x200
+# ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba

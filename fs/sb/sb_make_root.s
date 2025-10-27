@@ -4,7 +4,7 @@
 #
 # [Superblock] Make root directory
 
-.include "fs/inode.s"
+.include "fs/fs.s"
 .include "fs/ind.s"
 .section .text
 .code16
@@ -15,6 +15,7 @@ sb_make_root:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
+	call fsp_init # test
 	call ind_init
 	call disk_init_dp
 

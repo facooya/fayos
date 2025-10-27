@@ -12,10 +12,9 @@
 .global de_seek
 
 # de_seek(
+# indp *src
 # ub8 *name
 # )
-# <req> *dp (cur)
-# <req> *indp (cur)
 # <ret> ax = {true:off, false:1}
 de_seek:
 	push %bp
@@ -25,8 +24,18 @@ de_seek:
 	push %di
 	push %bx
 
-	mov $dp+DP_OFF_CUR, %si
-	push %si
+	mov 0x04(%bp), %si
+
+	push IND_OFF_BLK_0(%si)
+	push IND_OFF_BLK_0+0x02(%si)
+	call fs_blk_to_lba
+	add $0x04, %sp
+
+	mov $dp+DP_OFF_CUR, %di
+	mov %dx, DP_OFF_LBA+0x02(%di)
+	mov %ax, DP_OFF_LBA(%di)
+
+	push %di
 	call disk_read_dp
 	add $0x02, %sp
 	mov %dx, %es
