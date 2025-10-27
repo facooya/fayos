@@ -44,7 +44,10 @@ fs_add:
 	mov 0x06(%bp), %ax
 	cmp $0x40, %ax
 	jne .done
+
+	push $indp+INDP_OFF_CUR
 	call de_add_dots
+	add $0x02, %sp
 
 .done:
 	pop %si

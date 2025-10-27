@@ -20,6 +20,7 @@
 .equ DISK_PAR_MEM, 0x0000E000
 .equ DISK_TMP_MEM, 0x0000F000
 .equ DISK_ROOT_MEM, 0x10000000
+.equ DISK_PATH_MEM, 0x10001000
 
 # Disk packet
 .equ DP_SIZE, 0x0A
@@ -32,6 +33,8 @@
 .equ DP_OFF_CUR, 0x00
 .equ DP_OFF_PAR, DP_SIZE
 .equ DP_OFF_TMP, DP_SIZE*0x02
+.equ DP_OFF_ROOT, DP_SIZE*0x03
+.equ DP_OFF_PATH, DP_SIZE*0x04
 
 .equ DP_OFF_SECT_CNT, 0x00 # [2-byte]
 .equ DP_OFF_MEM, 0x02 # [4-byte]

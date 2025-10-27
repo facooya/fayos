@@ -17,6 +17,10 @@ sb_make_root:
 
 	call ind_init
 	call disk_init_dp
+
+	push $indp+INDP_OFF_CUR
 	call de_add_dots
+	add $0x02, %sp
+
 	call ind_init
 	ret
