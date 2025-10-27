@@ -78,6 +78,10 @@ fs/path/read_paths.s \
 fs/path/tok_paths.s \
 fs/path/build_paths.s \
 \
+fs/lib/fs_path.s \
+fs/lib/fs_tok_path.s \
+fs/lib/fs_build_path.s \
+fs/lib/fs_read_path.s \
 fs/lib/fs_blk_to_lba.s
 
 # Shell

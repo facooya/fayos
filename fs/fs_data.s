@@ -32,6 +32,9 @@
 
 .global indp
 
+.global path_sbuf
+.global path_cv
+
 inode: .zero IND_SIZE
 tmp_inode: .zero IND_SIZE
 
@@ -67,3 +70,6 @@ ind_list: .zero 0x100
 
 indp: .zero 0x100
 # ind, ind_ptr, inum
+
+path_sbuf: .zero 0x100
+path_cv: .zero 0x100

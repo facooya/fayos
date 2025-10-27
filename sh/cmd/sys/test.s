@@ -11,6 +11,7 @@
 .section .data
 .str: .asciz "Hello world Hello World 2 Hello world 3 Hello world 4 Hello world 5 Hello world 6 Hello world 7\r\n"
 .fname: .asciz "hello"
+.path: .asciz "/abc/def"
 
 .section .text
 .code16
@@ -20,11 +21,15 @@
 cmd_test:
 	push %bx
 
-	mov $0x40, %ax
-	push %ax
-	push $.fname
-	call fs_add
-	add $0x04, %sp
+	#mov $0x40, %ax
+	#push %ax
+	#push $.fname
+	#call fs_add
+	#add $0x04, %sp
+
+	push $.path
+	call fs_path
+	add $0x02, %sp
 
 	pop %bx
 	ret

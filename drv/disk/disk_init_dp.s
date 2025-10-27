@@ -18,8 +18,8 @@ disk_init_dp:
 
 	mov $indp, %si
 	mov $dp, %di
-	mov $0x03, %cx
-	# [par, cur, tmp]
+	mov $0x05, %cx
+	# [par, cur, tmp, root, path]
 
 .lp:
 	test %cx, %cx

@@ -4,10 +4,6 @@
 #
 # [Disk] Constants
 
-.equ DLBA_OFF_BBM, 0x00
-.equ DLBA_OFF_IBM, 0x04
-.equ DLBA_OFF_IT, 0x08
-
 .equ DISK_SB_SECT_CNT, 0x01
 .equ DISK_SB_LBA, 0x00000001
 .equ DISK_BLK_SECT_CNT, 0x08

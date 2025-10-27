@@ -35,5 +35,19 @@ ind_init:
 	call ind_read
 	add $0x06, %sp
 
+	mov $indp+INDP_OFF_ROOT, %si
+	push $(FS_ROOT_INUM&0xFFFF)
+	push $(FS_ROOT_INUM>>0x10)
+	push %si
+	call ind_read
+	add $0x06, %sp
+
+	mov $indp+INDP_OFF_PATH, %si
+	push $(FS_ROOT_INUM&0xFFFF)
+	push $(FS_ROOT_INUM>>0x10)
+	push %si
+	call ind_read
+	add $0x06, %sp
+
 	pop %si
 	ret

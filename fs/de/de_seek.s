@@ -12,7 +12,7 @@
 .global de_seek
 
 # de_seek(
-# *name
+# ub8 *name
 # )
 # <req> *dp (cur)
 # <req> *indp (cur)
@@ -26,9 +26,11 @@ de_seek:
 	push %bx
 
 	mov $dp+DP_OFF_CUR, %si
-	mov DP_OFF_MEM+0x02(%si), %ax
-	mov %ax, %es
-	mov DP_OFF_MEM(%si), %bx
+	push %si
+	call disk_read_dp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
 
 	mov $indp+INDP_OFF_CUR, %si
 	mov IND_OFF_FILE_SIZE(%si), %cx # file_size
