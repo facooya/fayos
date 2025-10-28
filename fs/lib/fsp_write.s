@@ -9,11 +9,11 @@
 .include "fs/ind.s"
 .section .text
 .code16
-.global ind_write
+.global fsp_write
 
-# ind_write(fsp *src)
+# fsp_write(fsp *src)
 # <mod> ind_tbl
-ind_write:
+fsp_write:
 	push %bp
 	mov %sp, %bp
 	push %es

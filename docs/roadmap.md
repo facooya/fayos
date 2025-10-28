@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- make file system packet
+- disk read/write dpi, read/write fsp
 
 ## PRIORITY
 

@@ -5,6 +5,7 @@
 # [Directory Entry] Seek
 
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/ind.s"
 .include "fs/de.s"
 .section .text
@@ -12,7 +13,7 @@
 .global de_seek
 
 # de_seek(
-# indp *src
+# fsp *src
 # ub8 *name
 # )
 # <ret> ax = {true:off, false:1}
@@ -24,28 +25,19 @@ de_seek:
 	push %di
 	push %bx
 
-	mov 0x04(%bp), %si
-
-	push IND_OFF_BLK_0(%si)
-	push IND_OFF_BLK_0+0x02(%si)
-	call fs_blk_to_lba
-	add $0x04, %sp
-
-	mov $dp+DP_OFF_CUR, %di
-	mov %dx, DP_OFF_LBA+0x02(%di)
-	mov %ax, DP_OFF_LBA(%di)
-
-	push %di
+	mov 0x04(%bp), %si # (fsp *src)
+	add $FSP_OFF_DISK, %si
+	push %si
 	call disk_read_dp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx # file_size
+	mov 0x04(%bp), %si # (fsp *src)
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx # file_size
 
 	push %cx # [s.f0:file_size]
-	mov 0x04(%bp), %si # (*name)
+	mov 0x06(%bp), %si # (*name)
 	push %si # (*off)
 	xor %ax, %ax
 	push %ax # (*seg)
@@ -99,8 +91,8 @@ de_seek:
 
 .done__true:
 	mov %bx, %ax # <ret.0:off>
-	mov $dp+DP_OFF_CUR, %si
-	mov DP_OFF_MEM(%si), %bx
+	mov 0x04(%bp), %si
+	mov FSP_OFF_DISK_MEM(%si), %bx
 	sub %bx, %ax
 	jmp .epil
 

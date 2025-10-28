@@ -94,8 +94,7 @@ sb_run:
 	call disk_set_dpi
 	call disk_load_dpi
 
-	call ind_init
-	call disk_init_dp
+	call fsp_init
 	jmp .done
 
 # {DONE}

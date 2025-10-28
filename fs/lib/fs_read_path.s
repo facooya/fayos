@@ -6,6 +6,7 @@
 
 .include "chr.s"
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/ind.s"
 .include "fs/de.s"
 .section .text
@@ -111,9 +112,10 @@ fs_read_path:
 	mov (%si), %ax # pathv[i]
 	add %ax, %di
 
-	push %di
+	push %di # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
-	add $0x02, %sp
+	add $0x04, %sp
 	# <ax = true:off, false:1>
 
 	pop %cx # [s.f0:pathc]

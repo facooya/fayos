@@ -111,9 +111,10 @@ cmd_touch:
 
 .path_pass:
 	# {{{ de seek
-	push %si
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
-	add $0x02, %sp
+	add $0x04, %sp
 	# <ax = true:off, false:1>
 
 	# (de_seek() != false) ? {err} : {run}
@@ -154,7 +155,7 @@ cmd_touch:
 	add %ax, %cx
 	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
 	push %si # (fsp &src)
-	call ind_write
+	call fsp_write
 	add $0x02, %sp
 
 	jmp .done

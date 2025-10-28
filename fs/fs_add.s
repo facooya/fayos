@@ -39,7 +39,7 @@ fs_add:
 	add %ax, %cx
 	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
 	push %si # (fsp &src)
-	call ind_write
+	call fsp_write
 	add $0x02, %sp
 
 	# (f_type != dir) ? {done} : {add_dots}

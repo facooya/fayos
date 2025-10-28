@@ -53,10 +53,7 @@ fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_write_dpi.s \
 \
-fs/ind/ind_init.s \
 fs/ind/ind_add.s \
-fs/ind/ind_read.s \
-fs/ind/ind_write.s \
 \
 fs/ind/ind_clr.s \
 fs/ind/ind_read_old.s \
@@ -80,6 +77,7 @@ fs/path/build_paths.s \
 \
 fs/lib/fsp_init.s \
 fs/lib/fsp_read.s \
+fs/lib/fsp_write.s \
 fs/lib/fs_path.s \
 fs/lib/fs_tok_path.s \
 fs/lib/fs_build_path.s \
@@ -132,7 +130,6 @@ drv/disk/disk_data.s \
 drv/disk/disk_read_blk.s \
 drv/disk/disk_read_dp.s \
 drv/disk/disk_write_dp.s \
-drv/disk/disk_init_dp.s \
 drv/disk/disk_set_dpi.s \
 drv/disk/disk_load_dpi.s \
 \
