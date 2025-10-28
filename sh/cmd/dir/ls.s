@@ -5,6 +5,7 @@
 # Command list - show file and directory list
 
 .include "chr.s"
+.include "fs/fs.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -81,34 +82,23 @@ cmd_ls:
 	jmp .run
 
 .path_pass:
-	# {{{ argc 1
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_CUR, %di
+	push FSP_OFF_INUM(%di)
+	push FSP_OFF_INUM+0x02(%di)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	call set_dap_blk_lba
+	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
+	push %dx # [s.f0:f_size]
+	push $fsp+FSP_OFF_CUR
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
+	mov %ax, %bx
+	pop %dx # [s.f0:f_size]
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx # fsize
-
+	# {{{ argc 1
 	# (argc == 1) ? {run} : lookup_dentry()
 	mov $args, %si
 	mov (%si), %ax

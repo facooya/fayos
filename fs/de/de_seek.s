@@ -90,7 +90,7 @@ de_seek:
 
 .done__true:
 	mov %bx, %ax # <ret.0:off>
-	mov 0x04(%bp), %si
+	mov 0x04(%bp), %si # (fsp &src)
 	mov FSP_OFF_DISK_MEM(%si), %bx
 	sub %bx, %ax
 	jmp .epil

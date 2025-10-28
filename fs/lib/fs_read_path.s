@@ -47,24 +47,15 @@ fs_read_path:
 	# TODO: relative path
 
 .root:
-	mov $indp+INDP_OFF_PATH, %di
-	push (root_inum) # (inum_lo)
-	push (root_inum+0x02) # (inum_hi)
+	mov $fsp+FSP_OFF_ROOT, %di
+	push FSP_OFF_INUM(%di) # (inum_lo)
+	push FSP_OFF_INUM+0x02(%di) # (inum_hi)
 	push %di # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
-	push IND_OFF_BLK_0(%di)
-	push IND_OFF_BLK_0+0x02(%di)
-	call fs_blk_to_lba
-	add $0x02, %sp
-
-	mov $dp+DP_OFF_PATH, %di
-	mov %dx, DP_OFF_LBA+0x02(%di)
-	mov %ax, DP_OFF_LBA(%di)
-
-	push %di
-	#call disk_read_dp
+	push $fsp+FSP_OFF_ROOT
+	call disk_read_fsp
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
@@ -85,24 +76,15 @@ fs_read_path:
 
 	push %cx # [s.0:pathc]
 
-	mov $indp+INDP_OFF_PATH, %di
+	mov $fsp+FSP_OFF_PATH, %di
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
 	push %di # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
-	push IND_OFF_BLK_0(%di)
-	push IND_OFF_BLK_0+0x02(%di)
-	call fs_blk_to_lba
-	add $0x04, %sp
-
-	mov $dp+DP_OFF_PATH, %di
-	mov %dx, DP_OFF_LBA+0x02(%di)
-	mov %ax, DP_OFF_LBA(%di)
-
-	push %di
-	#call disk_read_dp
+	push %di # (fsp &src)
+	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx

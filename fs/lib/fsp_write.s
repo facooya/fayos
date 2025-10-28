@@ -20,7 +20,7 @@ fsp_write:
 	push %si
 	push %di
 
-	mov 0x04(%bp), %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	mov %ax, %es
 	mov FSP_OFF_IND_PTR(%si), %di

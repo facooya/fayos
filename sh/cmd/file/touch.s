@@ -110,6 +110,20 @@ cmd_touch:
 	jmp .done
 
 .path_pass:
+	# TODO: delete
+	mov $fsp+FSP_OFF_CUR, %di
+	push FSP_OFF_INUM(%di)
+	push FSP_OFF_INUM+0x02(%di)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
+
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
+
 	# {{{ de seek
 	push %si # (&name)
 	push $fsp+FSP_OFF_CUR # (fsp &src)

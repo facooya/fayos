@@ -5,6 +5,8 @@
 # Command change directory
 
 .include "chr.s"
+.include "fs/fs.s"
+.include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -51,52 +53,27 @@ cmd_cd:
 	jmp .run
 
 .path_pass:
-	# {{{ lookup dentry
-	xor %ax, %ax
-	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
+	# {{{
+	# TODO: delete
+	push (root_inum)
+	push (root_inum+0x02)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
 
-	push %ax # [s.0:str_size]
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
-	pop %cx # [s.0:str_size]
+	mov %ax, %bx
 
-	push %cx # [s.0:str_size]
-	push %si # src_name
-	push %cx # src_name_len
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
-	pop %cx # [s.0:str_size]
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call de_seek
+	add $0x04, %sp
+	# <ax = {true:off, false:1}
 
-	# (lookup_dentry() == no_match)
+	# (de_seek() == no_match)
 	# ? {err} : off+=ax;{run}
 	cmp $0x01, %ax
 	je .err_dir_no
@@ -107,6 +84,14 @@ cmd_cd:
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
+
+	mov %es:DE_OFF_INUM(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	push %ax
+	push %dx
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
 
 	# {{{ add ps1 path
 	mov $args, %si

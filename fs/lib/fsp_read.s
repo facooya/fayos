@@ -21,7 +21,7 @@ fsp_read:
 	push %bx
 
 	# save inum
-	mov 0x04(%bp), %di # (fsp &dsp)
+	mov 0x04(%bp), %di # (fsp *dsp)
 	mov 0x06(%bp), %ax
 	mov %ax, FSP_OFF_INUM+0x02(%di)
 	mov 0x08(%bp), %ax
@@ -31,6 +31,7 @@ fsp_read:
 	push FSP_OFF_IND_BLK_0+0x02(%di)
 	call fs_blk_to_lba
 	add $0x04, %sp
+	# <dx:ax = lba_hi:lba_lo>
 	mov %dx, FSP_OFF_DISK_LBA+0x02(%di)
 	mov %ax, FSP_OFF_DISK_LBA(%di)
 
