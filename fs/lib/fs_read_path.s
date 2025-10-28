@@ -47,10 +47,10 @@ fs_read_path:
 
 .root:
 	mov $indp+INDP_OFF_PATH, %di
-	push %di
-	push (root_inum)
-	push (root_inum+0x02)
-	call ind_read
+	push (root_inum) # (inum_lo)
+	push (root_inum+0x02) # (inum_hi)
+	push %di # (fsp &dst)
+	call fsp_read
 	add $0x06, %sp
 
 	push IND_OFF_BLK_0(%di)
@@ -85,10 +85,10 @@ fs_read_path:
 	push %cx # [s.0:pathc]
 
 	mov $indp+INDP_OFF_PATH, %di
-	push %di # (*indp)
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
-	call ind_read
+	push %di # (fsp &dst)
+	call fsp_read
 	add $0x06, %sp
 
 	push IND_OFF_BLK_0(%di)

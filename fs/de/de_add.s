@@ -5,6 +5,7 @@
 # [Directory Entry] Add
 
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/de.s"
 .include "fs/ind.s"
 .section .text
@@ -12,10 +13,11 @@
 .global de_add
 
 # de_add(
+# fsp *dst
+# fsp *src
 # ub8 *name_str,
 # ub16 f_type
 # )
-# <req> *indp (cur,tmp)
 # <ret> ax = rec_size
 de_add:
 	push %bp
@@ -25,21 +27,12 @@ de_add:
 	push %di
 	push %bx
 
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %ax
+	mov 0x06(%bp), %si # (fsp *src)
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
 	push %ax # [s.0:file_size]
 
-	push IND_OFF_BLK_0(%si) # (blk_lo)
-	push IND_OFF_BLK_0+0x02(%si) # (blk_hi)
-	call fs_blk_to_lba
-	add $0x04, %sp
-	# <dx:ax = lba_hi:lba_lo>
-
-	mov $dp+DP_OFF_CUR, %si
-	mov %dx, DP_OFF_LBA+0x02(%si)
-	mov %ax, DP_OFF_LBA(%si)
-
-	push %si # (*dp)
+	add $FSP_OFF_DISK, %si
+	push %si # (fsp *src)
 	call disk_read_dp
 	add $0x02, %sp
 	mov %dx, %es
@@ -51,16 +44,17 @@ de_add:
 
 .write:
 	# write inum
-	mov $indp+INDP_OFF_TMP, %si
-	mov INDP_OFF_INUM(%si), %ax
+	mov 0x04(%bp), %si # (fsp *dst)
+	#mov $indp+INDP_OFF_TMP, %si
+	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov INDP_OFF_INUM+0x02(%si), %ax
+	mov FSP_OFF_INUM+0x02(%si), %ax
 	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
-	mov 0x06(%bp), %ax
+	mov 0x0A(%bp), %ax # (f_type)
 	mov %al, %es:DE_OFF_FILE_TYPE(%bx)
-	mov 0x04(%bp), %si
+	mov 0x08(%bp), %si # (*name_str)
 	push %si
 	xor %ax, %ax
 	push %ax
@@ -80,7 +74,7 @@ de_add:
 	mov %bx, %di
 	add $DE_OFF_NAME, %di
 
-	mov 0x04(%bp), %si # *name
+	mov 0x08(%bp), %si # (*name_str)
 	xor %cx, %cx
 	mov %al, %cl # name_size
 
@@ -100,8 +94,9 @@ de_add:
 	jmp .write__name_lp
 
 .write__end:
-	mov $dp+DP_OFF_CUR, %si
-	push %si
+	mov 0x06(%bp), %si # (fsp *src)
+	add $FSP_OFF_DISK, %si
+	push %si # (fsp &src)
 	call disk_write_dp
 	add $0x02, %sp
 

@@ -79,6 +79,7 @@ fs/path/tok_paths.s \
 fs/path/build_paths.s \
 \
 fs/lib/fsp_init.s \
+fs/lib/fsp_read.s \
 fs/lib/fs_path.s \
 fs/lib/fs_tok_path.s \
 fs/lib/fs_build_path.s \

@@ -17,8 +17,8 @@ fsp_init:
 	mov $fsp+FSP_OFF_CUR, %di
 	push $(FS_ROOT_INUM&0xFFFF)
 	push $(FS_ROOT_INUM>>0x10)
-	push %di
-	call ind_read
+	push %di # (fsp &dst)
+	call fsp_read
 	add $0x06, %sp
 
 	mov $DISK_BLK_SECT_CNT, FSP_OFF_DISK_SECT_CNT(%di)

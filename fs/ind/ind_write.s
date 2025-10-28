@@ -5,12 +5,13 @@
 # [Index Node] Write index node
 
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/ind.s"
 .section .text
 .code16
 .global ind_write
 
-# ind_write(indp *indp)
+# ind_write(fsp *src)
 # <mod> ind_tbl
 ind_write:
 	push %bp
@@ -20,16 +21,16 @@ ind_write:
 	push %di
 
 	mov 0x04(%bp), %si
-	mov INDP_OFF_IND_PTR+0x02(%si), %ax
+	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	mov %ax, %es
-	mov INDP_OFF_IND_PTR(%si), %di
+	mov FSP_OFF_IND_PTR(%si), %di
 
-	mov IND_OFF_FILE_SIZE(%si), %ax
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
 	mov %ax, %es:IND_OFF_FILE_SIZE(%di)
 
-	mov IND_OFF_BLK_0(%si), %ax
+	mov FSP_OFF_IND_BLK_0(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0(%di)
-	mov IND_OFF_BLK_0+0x02(%si), %ax
+	mov FSP_OFF_IND_BLK_0+0x02(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%di)
 
 	mov $dpi, %si

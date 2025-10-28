@@ -6,6 +6,7 @@
 
 .include "chr.s"
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
@@ -126,10 +127,10 @@ cmd_touch:
 	# <dx:ax = inum_hi:inum_lo>
 
 	mov $indp+INDP_OFF_TMP, %si
-	push %ax
-	push %dx
-	push %si
-	call ind_read
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push %si # (fsp &dst)
+	call fsp_read
 	add $0x06, %sp
 
 	# {{{ add dentry
@@ -141,16 +142,18 @@ cmd_touch:
 
 	mov $0x80, %ax
 	push %ax # (f_type)
-	push %si # (*name)
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add
-	add $0x04, %sp
+	add $0x08, %sp
 	# <ax = rec_size>
 
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx
+	mov $fsp+FSP_OFF_CUR, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%si)
-	push %si
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
 	call ind_write
 	add $0x02, %sp
 

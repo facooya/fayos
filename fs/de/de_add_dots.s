@@ -7,13 +7,12 @@
 .include "drv/disk.s"
 .include "fs/de.s"
 .include "fs/ind.s"
+.include "fs/fs.s"
 .section .text
 .code16
 .global de_add_dots
 
-# de_add_dots(indp *dots)
-# <req> *indp (tmp)
-# <req> *dp (tmp)
+# de_add_dots(fsp *dst, fsp *src)
 de_add_dots:
 	push %bp
 	mov %sp, %bp
@@ -22,18 +21,9 @@ de_add_dots:
 	push %di
 	push %bx
 
-	mov $indp+INDP_OFF_TMP, %si
-	push IND_OFF_BLK_0(%si) # (blk_lo)
-	push IND_OFF_BLK_0+0x02(%si) # (blk_hi)
-	call fs_blk_to_lba
-	add $0x04, %sp
-	# <dx:ax = lba_hi:lba_lo>
-
-	mov $dp+DP_OFF_TMP, %si
-	mov %dx, DP_OFF_LBA+0x02(%si)
-	mov %ax, DP_OFF_LBA(%si)
-
-	push %si # (*dp)
+	mov 0x04(%bp), %si # (fsp *dst)
+	add $FSP_OFF_DISK, %si
+	push %si
 	call disk_read_dp
 	add $0x02, %sp
 	mov %dx, %es
@@ -41,10 +31,10 @@ de_add_dots:
 
 	# {{{ dot
 	# write inum
-	mov $indp+INDP_OFF_TMP, %si
-	mov INDP_OFF_INUM(%si), %ax
+	mov 0x06(%bp), %si # (fsp *src)
+	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov INDP_OFF_INUM+0x02(%si), %ax
+	mov FSP_OFF_INUM+0x02(%si), %ax
 	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
@@ -64,23 +54,24 @@ de_add_dots:
 	mov $DE_DOT_NAME, %al
 	mov %al, %es:DE_OFF_NAME(%bx)
 
-	mov $dp+DP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *dst)
+	add $FSP_OFF_DISK, %si
 	push %si
 	call disk_write_dp
 	add $0x02, %sp
 	# }}}
 
 	pop %ax # [s.0:rec_size]
-	mov $indp+INDP_OFF_TMP, %si
-	mov %ax, IND_OFF_FILE_SIZE(%si)
+	mov 0x04(%bp), %si # (fsp *dst)
+	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
 	add %ax, %bx
 
 	# {{{ dots
 	# write inum
-	mov 0x04(%bp), %si # (indp *dots)
-	mov INDP_OFF_INUM(%si), %ax
+	mov 0x06(%bp), %si # (fsp *src)
+	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov INDP_OFF_INUM+0x02(%si), %ax
+	mov FSP_OFF_INUM+0x02(%si), %ax
 	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
@@ -100,18 +91,19 @@ de_add_dots:
 	mov $DE_DOTS_NAME, %ax
 	mov %ax, %es:DE_OFF_NAME(%bx)
 
-	mov $dp+DP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *dst)
+	add $FSP_OFF_DISK, %si
 	push %si
 	call disk_write_dp
 	add $0x02, %sp
 	# }}}
 
 	pop %ax # [s.0:rec_size]
-	mov $indp+INDP_OFF_TMP, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx
+	mov 0x04(%bp), %si # (fsp *dst)
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%si)
-	push %si # (*indp)
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
 	call ind_write
 	add $0x02, %sp
 

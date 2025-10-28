@@ -19,24 +19,26 @@ fs_add:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	mov $indp+INDP_OFF_TMP, %si
-	push %si # (*indp)
-	call ind_read
+	push %ax
+	push %dx
+	mov $fsp+FSP_OFF_TMP, %si
+	push %si # (fsp &dst)
+	call fsp_read
 	add $0x06, %sp
 
 	push 0x06(%bp) # (f_type)
 	push 0x04(%bp) # (&name_str)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add
-	add $0x04, %sp
+	add $0x08, %sp
 	# <ax = rec_size>
 
-	mov $indp+INDP_OFF_CUR, %si
-	mov IND_OFF_FILE_SIZE(%si), %cx
+	mov $fsp+FSP_OFF_CUR, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, IND_OFF_FILE_SIZE(%si)
-	push %si # (*indp)
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
 	call ind_write
 	add $0x02, %sp
 
@@ -45,9 +47,10 @@ fs_add:
 	cmp $0x40, %ax
 	jne .done
 
-	push $indp+INDP_OFF_CUR
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add_dots
-	add $0x02, %sp
+	add $0x04, %sp
 
 .done:
 	pop %si

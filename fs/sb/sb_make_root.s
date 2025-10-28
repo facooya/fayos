@@ -5,7 +5,6 @@
 # [Superblock] Make root directory
 
 .include "fs/fs.s"
-.include "fs/ind.s"
 .section .text
 .code16
 .global sb_make_root
@@ -15,13 +14,12 @@ sb_make_root:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
-	call fsp_init # test
-	call ind_init
-	call disk_init_dp
+	call fsp_init
 
-	push $indp+INDP_OFF_CUR
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add_dots
-	add $0x02, %sp
+	add $0x04, %sp
 
-	call ind_init
+	call fsp_init
 	ret
