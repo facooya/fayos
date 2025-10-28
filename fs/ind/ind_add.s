@@ -62,10 +62,8 @@ ind_add:
 	mov %ax, %es:IND_OFF_BLK_0(%bx)
 
 	# write inode table
-	mov $dpi, %si
-	add $DPI_OFF_IT, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IT
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 
@@ -80,10 +78,8 @@ ind_add:
 	call bm_set
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_IBM, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 
@@ -98,10 +94,8 @@ ind_add:
 	call bm_set
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_BBM, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_BBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 

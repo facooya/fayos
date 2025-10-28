@@ -157,7 +157,6 @@ cmd_touch:
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp
-
 	jmp .done
 
 # {DONE}

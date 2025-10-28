@@ -2,16 +2,16 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Disk] Write disk packet
+# [Disk] Write disk packet immutable
 
 .include "drv/disk.s"
 .section .text
 .code16
-.global disk_write_dp
+.global disk_write_dpi
 
-# disk_write_dp(dp *dp)
+# disk_write_dpi(dpi *src)
 # <ret> dx:ax = seg:off
-disk_write_dp:
+disk_write_dpi:
 	push %bp
 	mov %sp, %bp
 	push %bx

@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- disk read/write dpi, read/write fsp
 
 ## PRIORITY
 

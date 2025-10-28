@@ -64,7 +64,7 @@ fs_read_path:
 	mov %ax, DP_OFF_LBA(%di)
 
 	push %di
-	call disk_read_dp
+	#call disk_read_dp
 	add $0x02, %sp
 	mov %ax, %bx
 	mov %dx, %es
@@ -102,7 +102,7 @@ fs_read_path:
 	mov %ax, DP_OFF_LBA(%di)
 
 	push %di
-	call disk_read_dp
+	#call disk_read_dp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx

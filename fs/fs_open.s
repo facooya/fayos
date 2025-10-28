@@ -77,7 +77,7 @@ fs_open:
 	push %cx # blk_num
 	push %ax # off
 	push %dx # seg
-	call disk_read_blk
+	#call disk_read_blk
 	add $0x06, %sp
 	mov %ax, %bx
 	mov %dx, %es

@@ -23,7 +23,7 @@ disk_load_dpi:
 
 	push %cx # [s.f0:cnt]
 	push %bx
-	call disk_read_dp
+	call disk_read_dpi
 	add $0x02, %sp
 	pop %cx # [s.f0:cnt]
 

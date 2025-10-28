@@ -41,10 +41,8 @@ ind_upd:
 	mov IND_OFF_BLK_0+0x02(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
-	mov $dpi, %si
-	add $DPI_OFF_IT, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IT
+	call disk_write_dpi
 	add $0x02, %sp
 
 	pop %bx

@@ -127,9 +127,10 @@ drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
 drv/disk/disk_data.s \
-drv/disk/disk_read_blk.s \
-drv/disk/disk_read_dp.s \
-drv/disk/disk_write_dp.s \
+drv/disk/disk_read_fsp.s \
+drv/disk/disk_write_fsp.s \
+drv/disk/disk_read_dpi.s \
+drv/disk/disk_write_dpi.s \
 drv/disk/disk_set_dpi.s \
 drv/disk/disk_load_dpi.s \
 \

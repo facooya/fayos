@@ -31,9 +31,8 @@ de_add:
 	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
 	push %ax # [s.0:file_size]
 
-	add $FSP_OFF_DISK, %si
 	push %si # (fsp *src)
-	call disk_read_dp
+	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
@@ -45,7 +44,6 @@ de_add:
 .write:
 	# write inum
 	mov 0x04(%bp), %si # (fsp *dst)
-	#mov $indp+INDP_OFF_TMP, %si
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
 	mov FSP_OFF_INUM+0x02(%si), %ax
@@ -95,9 +93,8 @@ de_add:
 
 .write__end:
 	mov 0x06(%bp), %si # (fsp *src)
-	add $FSP_OFF_DISK, %si
 	push %si # (fsp &src)
-	call disk_write_dp
+	call disk_write_fsp
 	add $0x02, %sp
 
 	# {end.done}

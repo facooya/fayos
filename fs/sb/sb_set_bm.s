@@ -26,10 +26,8 @@ sb_set_bm:
 	call bm_set
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_BBM, %si
-	push %si # dpi bbm
-	call disk_write_dp
+	push $dpi+DPI_OFF_BBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 
@@ -44,10 +42,8 @@ sb_set_bm:
 	call bm_set
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_IBM, %si
-	push %si # dpi ibm
-	call disk_write_dp
+	push $dpi+DPI_OFF_IBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 

@@ -26,9 +26,8 @@ de_seek:
 	push %bx
 
 	mov 0x04(%bp), %si # (fsp *src)
-	add $FSP_OFF_DISK, %si
 	push %si
-	call disk_read_dp
+	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx

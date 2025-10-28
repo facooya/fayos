@@ -2,16 +2,16 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Disk] Read disk packet
+# [Disk] Read disk packet immutable
 
 .include "drv/disk.s"
 .section .text
 .code16
-.global disk_read_dp
+.global disk_read_dpi
 
-# disk_read_dp(dp *dp)
+# disk_read_dpi(dpi *src)
 # <ret> dx:ax = seg:off
-disk_read_dp:
+disk_read_dpi:
 	push %bp
 	mov %sp, %bp
 	push %bx

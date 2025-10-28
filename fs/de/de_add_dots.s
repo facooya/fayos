@@ -22,9 +22,8 @@ de_add_dots:
 	push %bx
 
 	mov 0x04(%bp), %si # (fsp *dst)
-	add $FSP_OFF_DISK, %si
 	push %si
-	call disk_read_dp
+	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
@@ -55,9 +54,8 @@ de_add_dots:
 	mov %al, %es:DE_OFF_NAME(%bx)
 
 	mov 0x04(%bp), %si # (fsp *dst)
-	add $FSP_OFF_DISK, %si
 	push %si
-	call disk_write_dp
+	call disk_write_fsp
 	add $0x02, %sp
 	# }}}
 
@@ -92,9 +90,8 @@ de_add_dots:
 	mov %ax, %es:DE_OFF_NAME(%bx)
 
 	mov 0x04(%bp), %si # (fsp *dst)
-	add $FSP_OFF_DISK, %si
 	push %si
-	call disk_write_dp
+	call disk_write_fsp
 	add $0x02, %sp
 	# }}}
 

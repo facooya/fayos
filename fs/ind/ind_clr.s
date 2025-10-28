@@ -41,10 +41,8 @@ ind_clr:
 	mov %ax, %es:IND_OFF_BLK_0(%bx)
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
 
-	mov $dpi, %si
-	add $DPI_OFF_IT, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IT
+	call disk_write_dpi
 	add $0x02, %sp
 	# } push bitnum
 
@@ -59,18 +57,14 @@ ind_clr:
 	call bm_clr
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_BBM, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_BBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 
 	# {{{ clear inum bit
-	mov $dpi, %si
-	add $DPI_OFF_IBM, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IBM
+	call disk_write_dpi
 	add $0x02, %sp
 
 	mov 0x04(%bp), %si
@@ -82,10 +76,8 @@ ind_clr:
 	call bm_clr
 	add $0x06, %sp
 
-	mov $dpi, %si
-	add $DPI_OFF_IBM, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IBM
+	call disk_write_dpi
 	add $0x02, %sp
 	# }}}
 

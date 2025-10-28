@@ -33,10 +33,8 @@ fsp_write:
 	mov FSP_OFF_IND_BLK_0+0x02(%si), %ax
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%di)
 
-	mov $dpi, %si
-	add $DPI_OFF_IT, %si
-	push %si
-	call disk_write_dp
+	push $dpi+DPI_OFF_IT
+	call disk_write_dpi
 	add $0x02, %sp
 
 	pop %di
