@@ -27,14 +27,6 @@ fsp_read:
 	mov 0x08(%bp), %ax
 	mov %ax, FSP_OFF_INUM(%di)
 
-	push FSP_OFF_IND_BLK_0(%di)
-	push FSP_OFF_IND_BLK_0+0x02(%di)
-	call fs_blk_to_lba
-	add $0x04, %sp
-	# <dx:ax = lba_hi:lba_lo>
-	mov %dx, FSP_OFF_DISK_LBA+0x02(%di)
-	mov %ax, FSP_OFF_DISK_LBA(%di)
-
 	# { save ptr
 	mov $(DISK_IT_MEM>>0x10), %ax
 	mov %ax, %es
@@ -46,15 +38,16 @@ fsp_read:
 	mul %cx
 	add %ax, %bx
 
-	mov %es, FSP_OFF_IND_PTR+0x02(%di)
+	mov %es, %ax
+	mov %ax, FSP_OFF_IND_PTR+0x02(%di)
 	mov %bx, FSP_OFF_IND_PTR(%di)
 	# }
 
 	mov $IND_SIZE, %cx
 
-.lp:
+.ind__lp:
 	test %cx, %cx
-	jz .done
+	jz .ind__end
 
 	# cpy inode
 	mov %es:(%bx), %ax
@@ -63,7 +56,17 @@ fsp_read:
 	add $0x02, %bx
 	add $0x02, %di
 	sub $0x02, %cx
-	jmp .lp
+	jmp .ind__lp
+
+.ind__end:
+	# set lba
+	push FSP_OFF_IND_BLK_0(%di)
+	push FSP_OFF_IND_BLK_0+0x02(%di)
+	call fs_blk_to_lba
+	add $0x04, %sp
+	# <dx:ax = lba_hi:lba_lo>
+	mov %dx, FSP_OFF_DISK_LBA+0x02(%di)
+	mov %ax, FSP_OFF_DISK_LBA(%di)
 
 .done:
 	pop %bx

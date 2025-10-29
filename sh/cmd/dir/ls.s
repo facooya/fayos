@@ -90,11 +90,6 @@ cmd_ls:
 	call fsp_read
 	add $0x06, %sp
 
-	mov FSP_OFF_DISK_MEM+0x02(%di), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-
 	push $fsp+FSP_OFF_CUR
 	call disk_read_fsp
 	add $0x02, %sp
@@ -182,18 +177,18 @@ cmd_ls:
 .run:
 .run__lp:
 	# {chk} (inum == 0)
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .run__lp_step
 
 	# set name ptr
 	mov %bx, %si
-	add $DE_NAME_OFF, %si
+	add $DE_OFF_NAME, %si
 
-	# get name len
+	# get name size
 	xor %cx, %cx
-	mov %es:DE_NAME_LEN_OFF(%bx), %cl
+	mov %es:DE_OFF_NAME_SIZE(%bx), %cl
 
 .run__name_lp:
 	# {end} (name_len == 0)
@@ -214,16 +209,14 @@ cmd_ls:
 	call putsp
 
 .run__lp_step:
-	# add rec_len
-	mov %es:DE_REC_LEN_OFF(%bx), %ax
+	# add rec_size
+	mov %es:DE_OFF_REC_SIZE(%bx), %ax
 	add %ax, %bx
 	sub %ax, %dx # file_size--
 
-	# {end.done} (file_size <= 0)
+	# (file_size <= 0) ? {done} : {lp}
 	cmp $0x00, %dx
 	jle .done
-
-	# {lp}
 	jmp .run__lp
 
 # {DONE}

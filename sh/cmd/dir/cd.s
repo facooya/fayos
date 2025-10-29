@@ -85,6 +85,7 @@ cmd_cd:
 	cmp $0x40, %al
 	jne .err_dir_type
 
+	# upd
 	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 	push %ax
@@ -154,7 +155,6 @@ cmd_cd:
 
 .run__pass:
 	# }}}
-
 	# get dest inode num
 	mov %es:DE_INUM_OFF(%bx), %ax
 	mov %ax, (inum)
@@ -162,10 +162,10 @@ cmd_cd:
 	mov %ax, (inum+0x02)
 
 	# get i blk
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
+	#push $inode
+	#push $inum
+	#call ind_read_old
+	#add $0x04, %sp
 
 	# {end.done}
 	jmp .done
