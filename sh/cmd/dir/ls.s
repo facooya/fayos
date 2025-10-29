@@ -6,6 +6,7 @@
 
 .include "chr.s"
 .include "fs/fs.s"
+.include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -89,14 +90,18 @@ cmd_ls:
 	call fsp_read
 	add $0x06, %sp
 
-	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
-	push %dx # [s.f0:f_size]
+	mov FSP_OFF_DISK_MEM+0x02(%di), %ax
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+
 	push $fsp+FSP_OFF_CUR
 	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
 	mov %ax, %bx
-	pop %dx # [s.f0:f_size]
+
+	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
 
 	# {{{ argc 1
 	# (argc == 1) ? {run} : lookup_dentry()

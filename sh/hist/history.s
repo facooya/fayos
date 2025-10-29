@@ -5,6 +5,7 @@
 # Shell history
 
 .include "chr.s"
+.include "fs/fs.s"
 .include "drv/disk.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
@@ -28,48 +29,26 @@ history:
 	push %di
 	push %bx
 
-	push $inode
-	push $root_inum
-	call ind_read_old
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_ROOT, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_ROOT
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_ROOT
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
+	mov %ax, %bx
 
-	# { lookup dentry
-	mov $de_hist, %si
-	xor %cx, %cx
-	mov (%si), %ax
-	mov %al, %cl
-	add $0x02, %si
-	push %si
-	push %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
-	# }
+	push $.fname_hist # (&name)
+	push $fsp+FSP_OFF_ROOT # (fsp &src)
+	call de_seek
+	add $0x04, %sp
+	# <ax = {true:off, false:1}
 
-	# {task} (lookup_dentry == no_match)
+	# (de_seek == false) ? {create}
 	cmp $0x01, %ax
 	je .create
 
@@ -78,89 +57,46 @@ history:
 
 .create:
 	mov $0x80, %ax
-	push %ax
-	push $.fname_hist
+	push %ax # (f_type)
+	push $.fname_hist # (&name)
 	call fs_add
 	add $0x04, %sp
 	jmp .save
 
 .save:
-	push $inode
-	push $root_inum
-	call ind_read_old
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_ROOT, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_ROOT
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_ROOT
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
+	mov %ax, %bx
 
-	mov $de_hist, %si
-	xor %cx, %cx
-	mov (%si), %ax
-	mov %al, %cl
-	add $0x02, %si
-	push %si
-	push %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
+	push $.fname_hist # (&name)
+	push $fsp+FSP_OFF_ROOT # (fsp &src)
+	call de_seek
+	add $0x04, %sp
+	# <ax = {true:off, false:1}
 	add %ax, %bx
 
 	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
+	push %ax
 	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
+	push %ax
+	push $fsp+FSP_OFF_TMP
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax # [s.2] file_size
-
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
-
-	pop %ax # [s.2] file_size
-	add %ax, %bx
-	push %ax # [s.3] file_size
+	mov %ax, %bx
 
 .append:
 	mov $cl_lbuf, %si
@@ -191,37 +127,16 @@ history:
 	mov %al, %es:0x01(%bx)
 	add $0x02, %bx # mem
 	add $0x02, %cx # his.len
-	push %cx # [s.5] his.len
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
 
 	# {{{ update .history size
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %cx # [s.5] his.len
-	pop %ax # [s.3] file_size
-	add %ax, %cx
-	mov $inode, %si
-	mov %cx, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call ind_upd
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	add %cx, %ax
+	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+	jmp .done # HACK
 	# }}}
 
 	# {{{{{ TODO: optimize

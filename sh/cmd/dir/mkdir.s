@@ -5,6 +5,7 @@
 # Command make directory
 
 .include "chr.s"
+.include "fs/fs.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -171,6 +172,31 @@ cmd_mkdir:
 	jmp .done
 
 .path_pass:
+	mov $fsp+FSP_OFF_CUR, %di
+	push FSP_OFF_INUM(%di)
+	push FSP_OFF_INUM+0x02(%di)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
+
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
+
+	# {{{ de seek
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call de_seek
+	add $0x04, %sp
+	# <ax = true:off, false:1>
+
+	# (de_seek() != false) ? {err} : {run}
+	cmp $0x01, %ax
+	jnz .err_name_dup
+	jmp .run
+
 	# {{{ lookup dentry
 	xor %ax, %ax
 	push %si
@@ -224,6 +250,42 @@ cmd_mkdir:
 .run:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
+
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add_dots
+	add $0x04, %sp
+
+	mov $args, %si
+	mov 0x06(%si), %ax
+	mov $cl_lbuf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	mov $0x40, %ax
+	push %ax # (f_type)
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add
+	add $0x08, %sp
+	# <ax = rec_size>
+
+	mov $fsp+FSP_OFF_CUR, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	add %ax, %cx
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
+	call fsp_write
+	add $0x02, %sp
+	jmp .done
+
 	mov %ax, (tmp_inum)
 	mov %dx, (tmp_inum+0x02)
 

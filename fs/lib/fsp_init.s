@@ -22,8 +22,8 @@ fsp_init:
 	add $0x06, %sp
 
 	mov $DISK_BLK_SECT_CNT, FSP_OFF_DISK_SECT_CNT(%di)
-	mov $DISK_CUR_MEM+0x02, FSP_OFF_DISK_MEM+0x02(%di)
-	mov $DISK_CUR_MEM, FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_CUR_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_CUR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 
 	push FSP_OFF_IND_BLK_0(%di)
 	push FSP_OFF_IND_BLK_0+0x02(%di)
@@ -40,8 +40,8 @@ fsp_init:
 	push %ax
 	call mem_cpy
 	add $0x0A, %sp
-	mov $DISK_PAR_MEM+0x02, FSP_OFF_DISK_MEM+0x02(%di)
-	mov $DISK_PAR_MEM, FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_PAR_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_PAR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 	add $FSP_SIZE, %di
 
 	xor %ax, %ax
@@ -52,8 +52,8 @@ fsp_init:
 	push %ax
 	call mem_cpy
 	add $0x0A, %sp
-	mov $DISK_TMP_MEM+0x02, FSP_OFF_DISK_MEM+0x02(%di)
-	mov $DISK_TMP_MEM, FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_TMP_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_TMP_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 	add $FSP_SIZE, %di
 
 	xor %ax, %ax
@@ -64,8 +64,8 @@ fsp_init:
 	push %ax
 	call mem_cpy
 	add $0x0A, %sp
-	mov $DISK_PATH_MEM+0x02, FSP_OFF_DISK_MEM+0x02(%di)
-	mov $DISK_PATH_MEM, FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_PATH_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_PATH_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 	add $FSP_SIZE, %di
 
 	xor %ax, %ax
@@ -76,8 +76,8 @@ fsp_init:
 	push %ax
 	call mem_cpy
 	add $0x0A, %sp
-	mov $DISK_ROOT_MEM+0x02, FSP_OFF_DISK_MEM+0x02(%di)
-	mov $DISK_ROOT_MEM, FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_ROOT_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_ROOT_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 	add $FSP_SIZE, %di
 
 	pop %di

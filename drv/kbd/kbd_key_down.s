@@ -62,7 +62,7 @@ kbd_key_down:
 	jmp .done
 
 .cont:
-	call hist_upd_cl
+	#call hist_upd_cl
 	jmp .done
 
 .done:

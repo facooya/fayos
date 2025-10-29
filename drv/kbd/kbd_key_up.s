@@ -44,7 +44,7 @@ kbd_key_up:
 	add $0x04, %sp
 
 .cont:
-	call hist_upd_cl
+	#call hist_upd_cl
 	jmp .done
 
 .done:

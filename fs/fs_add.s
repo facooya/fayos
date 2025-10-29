@@ -19,10 +19,9 @@ fs_add:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
-	push %ax
-	push %dx
-	mov $fsp+FSP_OFF_TMP, %si
-	push %si # (fsp &dst)
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 

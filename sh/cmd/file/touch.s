@@ -141,7 +141,7 @@ cmd_touch:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
 
-	mov $indp+INDP_OFF_TMP, %si
+	mov $fsp+FSP_OFF_TMP, %si
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
 	push %si # (fsp &dst)

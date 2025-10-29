@@ -49,7 +49,7 @@ proc_args:
 	jmp .raw__lp
 
 .raw__end:
-	call history
+	#call history
 	call ._zero
 
 	# {{{ proc
