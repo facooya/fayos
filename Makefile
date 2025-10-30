@@ -37,6 +37,7 @@ kern/dbg/dbg_curs.s \
 kern/dbg/dbg_buf.s \
 kern/dbg/dbg_trace.s \
 kern/dbg/dbg_utils.s \
+kern/dbg/dbg_fsp.s \
 \
 kern/dbg/num/dbg_num.s \
 kern/dbg/num/dbg_reg.s

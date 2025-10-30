@@ -13,11 +13,11 @@
 .global path_buf
 .global curs
 
-cl_lbuf: .zero 0x400
-cl_hist_lbuf: .zero 0x400
-tmp_buf: .zero 0x400
+cl_lbuf: .zero 0x200
+cl_hist_lbuf: .zero 0x200
+tmp_buf: .zero 0x200
 redir_buf: .zero 0x200
-write_buf: .zero 0x400
+write_buf: .zero 0x200
 path_buf: .zero 0x100
 
 curs:

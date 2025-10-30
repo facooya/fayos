@@ -7,6 +7,7 @@
 .include "chr.s"
 .include "fs/fs.s"
 .include "drv/disk.s"
+.include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .include "fs/ind.s"
@@ -81,12 +82,12 @@ history:
 	push $fsp+FSP_OFF_ROOT # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}
+	# <ax = {true:off, false:1}>
 	add %ax, %bx
 
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	push %ax
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %ax
 	push %ax
 	push $fsp+FSP_OFF_TMP
 	call fsp_read
@@ -127,6 +128,10 @@ history:
 	mov %al, %es:0x01(%bx)
 	add $0x02, %bx # mem
 	add $0x02, %cx # his.len
+
+	push $fsp+FSP_OFF_TMP
+	call disk_write_fsp
+	add $0x02, %sp
 
 	# {{{ update .history size
 	mov $fsp+FSP_OFF_TMP, %si

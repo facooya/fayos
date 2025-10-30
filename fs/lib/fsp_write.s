@@ -19,8 +19,8 @@ fsp_write:
 	push %es
 	push %si
 	push %di
+	push %bx
 
-	mov 0x04(%bp), %si # (fsp *src)
 	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	mov %ax, %es
 	mov FSP_OFF_IND_PTR(%si), %di
@@ -37,6 +37,7 @@ fsp_write:
 	call disk_write_dpi
 	add $0x02, %sp
 
+	pop %bx
 	pop %di
 	pop %si
 	pop %es

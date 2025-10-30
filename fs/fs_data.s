@@ -73,8 +73,8 @@ ind_list: .zero 0x100
 indp: .zero 0x100
 # ind, ind_ptr, inum
 
-path_sbuf: .zero 0x100
-path_cv: .zero 0x100
+path_sbuf: .zero 0x50
+path_cv: .zero 0x50
 
 # file system packet
 fsp: .zero 0x200
