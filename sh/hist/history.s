@@ -99,6 +99,10 @@ history:
 	mov %dx, %es
 	mov %ax, %bx
 
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	add %ax, %bx
+
 .append:
 	mov $cl_lbuf, %si
 	mov (%si), %cx # buf.len
@@ -129,9 +133,11 @@ history:
 	add $0x02, %bx # mem
 	add $0x02, %cx # his.len
 
+	push %cx
 	push $fsp+FSP_OFF_TMP
 	call disk_write_fsp
 	add $0x02, %sp
+	pop %cx
 
 	# {{{ update .history size
 	mov $fsp+FSP_OFF_TMP, %si
