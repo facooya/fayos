@@ -4,8 +4,11 @@
 #
 # [Histroy] Update command line
 
+.include "fs/fs.s"
 .include "fs/inode.s"
 .include "fs/dentry.s"
+.section .data
+.name_hist: .asciz ".history"
 .section .text
 .code16
 .global hist_upd_cl
@@ -18,91 +21,53 @@
 # <ret> si
 hist_upd_cl:
 	push %es
+	push %si
 	push %di
 	push %bx
 
-	# {{{ read root dir
-	push $inode
-	push $root_inum
-	call ind_read_old
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_ROOT, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_ROOT
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_ROOT
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
-	# }}}
+	mov %ax, %bx
 
-	# {{{ lookup history
-	mov $de_hist, %di
-	xor %cx, %cx
-	mov (%di), %ax
-	mov %al, %cl
-	add $0x02, %di
-	push %di
-	push %cx
-	mov $inode, %di
-	mov I_FILE_SIZE_OFF(%di), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
+	push $.name_hist # (&name)
+	push $fsp+FSP_OFF_ROOT # (fsp &src)
+	call de_seek
+	add $0x04, %sp
+	# <ax = {true:off, false:1}
 
-	# {end.done.pass} (lookup_dentry() == no_match)
+	# (de_seek == false) ? {done}
 	cmp $0x01, %ax
 	je .done
-
 	add %ax, %bx
-	# }}}
 
 	# {{{ read history file
 	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
+	mov %es:DE_INUM_OFF+0x02(%bx), %dx
+	push %ax
+	push %dx
+	push $fsp+FSP_OFF_TMP
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
-	# }}}
+	mov %ax, %bx
 
 	# {{{ fparse
-	push $inode
+	push $fsp+FSP_OFF_TMP
 	push %bx
 	push %es
 	call fparse_lines
@@ -178,5 +143,6 @@ hist_upd_cl:
 .done:
 	pop %bx
 	pop %di
+	pop %si
 	pop %es
 	ret

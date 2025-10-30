@@ -5,6 +5,7 @@
 # Parse file lines and each line size except cr/lf
 
 .include "chr.s"
+.include "fs/fs.s"
 .include "fs/inode.s"
 .section .data
 .global file_lines
@@ -17,7 +18,7 @@ file_linev: .zero 0x100 # HACK
 .code16
 .global fparse_lines
 
-# fparse_lines(*seg, *off, *inode)
+# fparse_lines(*seg, *off, fsp *src)
 # <ret> file_lines
 fparse_lines:
 	push %bp
@@ -30,8 +31,8 @@ fparse_lines:
 	mov 0x04(%bp), %ax
 	mov %ax, %es
 	mov 0x06(%bp), %bx
-	mov 0x08(%bp), %si
-	mov I_FILE_SIZE_OFF(%si), %dx
+	mov 0x08(%bp), %si # (fsp *src)
+	mov FSP_OFF_IND_FILE_SIZE(%si), %dx
 
 	mov $file_linev, %di
 	xor %ax, %ax

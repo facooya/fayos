@@ -8,8 +8,6 @@
 .include "fs/fs.s"
 .include "drv/disk.s"
 .include "fs/de.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .include "fs/ind.s"
 
 # TODO: history/cache.s
@@ -40,6 +38,7 @@ history:
 	push $fsp+FSP_OFF_ROOT
 	call disk_read_fsp
 	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
@@ -147,87 +146,16 @@ history:
 	push %si
 	call fsp_write
 	add $0x02, %sp
-	jmp .done # HACK
 	# }}}
 
-	# {{{{{ TODO: optimize
-	# {{{ read root content
-	push $inode
-	push $root_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
+	# {{{ fparse history
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
 	mov %dx, %es
-	# }}}
-
-	# {{{ lookup history
-	mov $de_hist, %di
-	xor %cx, %cx
-	mov (%di), %ax
-	mov %al, %cl
-	add $0x02, %di
-	push %di
-	push %cx
-	mov $inode, %di
-	mov I_FILE_SIZE_OFF(%di), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
-	add %ax, %bx
-	# }}}
-
-	# {{{ read history file
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
-
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
 	mov %ax, %bx
-	mov %dx, %es
-	# }}}
 
-	# {{{ fparse
-	push $inode
+	push $fsp+FSP_OFF_TMP
 	push %bx
 	push %es
 	call fparse_lines
