@@ -41,14 +41,14 @@ cmd_touch:
 
 	# {{{ proc paths
 	push %si
-	call proc_paths
+	call fs_path
 	add $0x02, %sp
 
-	# (proc_path() == 1) ? {err}
+	# (fs_path() == 1) ? {err}
 	cmp $0x01, %cx
 	je .err_inv_path
 
-	# (proc_path() != 2) ? {err}
+	# (fs_path() != 2) ? {err}
 	cmp $0x02, %cx
 	jne .err_name_dup
 
@@ -58,11 +58,14 @@ cmd_touch:
 
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
-	mov %ax, (tmp_inum)
-	mov %dx, (tmp_inum+0x02)
 
-	# {{{ add dentry
-	mov $paths, %si
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+
+	mov $path_cv, %si
 	mov (%si), %cx # pathc
 	add $0x02, %si
 	add %cx, %si
@@ -70,43 +73,37 @@ cmd_touch:
 	sub $0x02, %si # pathv[last]
 
 	mov (%si), %ax
-	mov $path_buf, %si
+	mov $path_sbuf, %si
 	add $0x02, %si
 	add %ax, %si
 
-	xor %ax, %ax
+	push $fsp+FSP_OFF_PATH
+	call disk_read_fsp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
+
 	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
-	# <ax = mem_size>
+	mov $fsp+FSP_OFF_PATH, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	add %ax, %bx
+	pop %si
 
-	mov $0x80, %ch # (info) file_type
-	mov %al, %cl # (info) name_len
-	push %si # name
-	push %cx # info
-	push $path_inum
-	push $tmp_inum
-	call add_dentry
+	push $0x80 # (f_type)
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add
 	add $0x08, %sp
-	push %ax # [s.0:reclen]
-	# }}}
+	# <ax = rec_size>
 
-	push $inode
-	push $path_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %ax # [s.0:reclen]
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $path_inum
-	call ind_upd
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_PATH, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	add %ax, %cx
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
+	call fsp_write
+	add $0x02, %sp
 	jmp .done
 
 .path_pass:

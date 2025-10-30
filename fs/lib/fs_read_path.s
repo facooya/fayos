@@ -75,7 +75,6 @@ fs_read_path:
 	jz .done
 
 	push %cx # [s.0:pathc]
-
 	mov $fsp+FSP_OFF_PATH, %di
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
@@ -95,11 +94,10 @@ fs_read_path:
 	add %ax, %di
 
 	push %di # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_PATH # (fsp &src)
 	call de_seek
 	add $0x04, %sp
 	# <ax = true:off, false:1>
-
 	pop %cx # [s.f0:pathc]
 
 	# (de_seek() == false) ? {err} : off+=ret
