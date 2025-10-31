@@ -8,13 +8,12 @@
 .include "fs/fs.s"
 .include "fs/de.s"
 .include "fs/ind.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global cmd_cd
 
 # cmd_cd()
+# <mod> fsp *cur
 cmd_cd:
 	push %es
 	push %si
@@ -50,18 +49,19 @@ cmd_cd:
 	jnz .err_inv_path
 	# }}}
 
+	# upd
+	mov $fsp+FSP_OFF_PATH, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
+
 	call build_ps1_path
-	jmp .run
+	jmp .ps
 
 .path_pass:
 	# {{{
-	# TODO: delete
-	#push (root_inum)
-	#push (root_inum+0x02)
-	#push $fsp+FSP_OFF_CUR
-	#call fsp_read
-	#add $0x06, %sp
-
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
@@ -72,7 +72,7 @@ cmd_cd:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}
+	# <ax = {true:off, false:1}>
 
 	# (de_seek() == no_match)
 	# ? {err} : off+=ax;{run}
@@ -82,7 +82,7 @@ cmd_cd:
 	# }}}
 
 	# (file_type != dir) ? {err} : {run}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_OFF_FILE_TYPE(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
 
@@ -105,11 +105,11 @@ cmd_cd:
 	# (arg == dots) ? {sub}
 	mov (%si), %ax
 	cmp $0x2E2E, %ax
-	je .run__sub
+	je .ps__sub
 
 	# (arg == dot) ? {pass}
 	cmp $0x002E, %ax
-	je .run__pass
+	je .ps__pass
 
 	push %si
 	xor %ax, %ax
@@ -124,11 +124,9 @@ cmd_cd:
 	call add_ps1_path
 	add $0x06, %sp
 	# }}}
+	jmp .ps
 
-	jmp .run
-
-# {TASK}
-.run:
+.ps:
 	# {{{ prompt
 	mov $args, %si
 	mov 0x06(%si), %ax # argv[1]
@@ -139,36 +137,23 @@ cmd_cd:
 
 	# (arg == dots) ? {sub}
 	cmp $0x2E2E, %ax
-	je .run__sub
+	je .ps__sub
 
 	# (arg == dot) ? {pass} : {ps1}
 	cmp $0x002E, %ax
-	je .run__pass
-	jmp .run__ps1
+	je .ps__pass
+	jmp .ps__ps1
 
-.run__sub:
+.ps__sub:
 	call sub_ps1_path
 	call build_ps1
-	jmp .run__pass
+	jmp .ps__pass
 
-.run__ps1:
+.ps__ps1:
 	call build_ps1
 
-.run__pass:
+.ps__pass:
 	# }}}
-	# get dest inode num
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (inum+0x02)
-
-	# get i blk
-	#push $inode
-	#push $inum
-	#call ind_read_old
-	#add $0x04, %sp
-
-	# {end.done}
 	jmp .done
 
 # {DONE}

@@ -197,56 +197,6 @@ cmd_mkdir:
 	jnz .err_name_dup
 	jmp .run
 
-	# {{{ lookup dentry
-	xor %ax, %ax
-	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
-
-	push %ax # [s.0:str_size]
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
-	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
-	mov %dx, %es
-	pop %cx # [s.0:str_size]
-
-	push %si # src_name
-	push %cx # src_name_len
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax # file_size
-	push %bx # *off
-	push %es # *seg
-	call lookup_dentry
-	add $0x0A, %sp
-
-	# (lookup_dentry() != 1) ? {err} : {run}
-	cmp $0x01, %ax
-	jne .err_name_dup
-	jmp .run
-	# }}}
-
-# {TASK}
 .run:
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>

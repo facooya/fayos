@@ -119,6 +119,12 @@ fs_read_path:
 
 # {DONE}
 .done:
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push 0x04(%bp) # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+
 	xor %ax, %ax
 	jmp .epil
 

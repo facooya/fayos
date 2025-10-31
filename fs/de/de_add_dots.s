@@ -30,7 +30,6 @@ de_add_dots:
 
 	# {{{ dot
 	# write inum
-	mov 0x06(%bp), %si # (fsp *src)
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
 	mov FSP_OFF_INUM+0x02(%si), %ax

@@ -15,7 +15,7 @@ build_ps1_path:
 	push %di
 	push %bx
 
-	mov $paths, %bx
+	mov $path_cv, %bx
 	mov (%bx), %cx
 	add $0x02, %bx
 

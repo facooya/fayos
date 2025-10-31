@@ -8,8 +8,6 @@
 .include "drv/disk.s"
 .include "fs/fs.s"
 .include "fs/de.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .include "fs/ind.s"
 .section .text
 .code16
@@ -107,14 +105,6 @@ cmd_touch:
 	jmp .done
 
 .path_pass:
-	# TODO: delete
-	#mov $fsp+FSP_OFF_CUR, %di
-	#push FSP_OFF_INUM(%di)
-	#push FSP_OFF_INUM+0x02(%di)
-	#push $fsp+FSP_OFF_CUR
-	#call fsp_read
-	#add $0x06, %sp
-
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
