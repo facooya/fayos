@@ -16,6 +16,7 @@
 .global cmd_touch
 
 # cmd_touch()
+# <req> args, path_cv, path_sbuf
 cmd_touch:
 	push %es
 	push %si
@@ -39,21 +40,20 @@ cmd_touch:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ proc paths
-	push %si
+	# {{{ path
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
-	add $0x02, %sp
+	add $0x04, %sp
+	# <ax = ret_code>
 
 	# (fs_path() == 1) ? {err}
-	cmp $0x01, %cx
+	cmp $0x01, %ax
 	je .err_inv_path
 
 	# (fs_path() != 2) ? {err}
-	cmp $0x02, %cx
+	cmp $0x02, %ax
 	jne .err_name_dup
-
-	mov %ax, %bx
-	mov %dx, %es
 	# }}}
 
 	call ind_add
@@ -108,12 +108,12 @@ cmd_touch:
 
 .path_pass:
 	# TODO: delete
-	mov $fsp+FSP_OFF_CUR, %di
-	push FSP_OFF_INUM(%di)
-	push FSP_OFF_INUM+0x02(%di)
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
+	#mov $fsp+FSP_OFF_CUR, %di
+	#push FSP_OFF_INUM(%di)
+	#push FSP_OFF_INUM+0x02(%di)
+	#push $fsp+FSP_OFF_CUR
+	#call fsp_read
+	#add $0x06, %sp
 
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp

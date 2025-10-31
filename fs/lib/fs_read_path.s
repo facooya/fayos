@@ -13,14 +13,12 @@
 .code16
 .global fs_read_path
 
-# fs_read_path()
-# <req> path_cv
-# <ret> dx:ax = seg:off
-# <ret> cx = done:0, exit:1, ne_last:2
-# <info>
-# si = path_cv
-# di = path_sbuf
+# fs_read_path(fsp *dst)
+# <req> fsp *root, path_cv, path_sbuf
+# <ret> ax = {done:0, exit:1, ne_last:2}
 fs_read_path:
+	push %bp
+	mov %sp, %bp
 	push %es
 	push %si
 	push %di
@@ -62,8 +60,8 @@ fs_read_path:
 	jmp .done
 
 .abs:
-	mov (root_inum), %ax
-	mov (root_inum+0x02), %dx
+	mov $(FS_ROOT_INUM>>0x10), %dx
+	mov $(FS_ROOT_INUM&0xFFFF), %ax
 
 	# skip pathv[0]
 	add $0x02, %si
@@ -75,14 +73,13 @@ fs_read_path:
 	jz .done
 
 	push %cx # [s.0:pathc]
-	mov $fsp+FSP_OFF_PATH, %di
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
-	push %di # (fsp &dst)
+	push 0x04(%bp) # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
-	push %di # (fsp &src)
+	push 0x04(%bp) # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
@@ -94,7 +91,7 @@ fs_read_path:
 	add %ax, %di
 
 	push %di # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push 0x04(%bp) # (fsp &src)
 	call de_seek
 	add $0x04, %sp
 	# <ax = true:off, false:1>
@@ -118,26 +115,19 @@ fs_read_path:
 	sub $0x01, %cx
 	test %cx, %cx
 	jz .done__last
-
 	jmp .err_inv_path
 
 # {DONE}
 .done:
-	xor %cx, %cx
-	mov %bx, %ax
-	mov %es, %dx
+	xor %ax, %ax
 	jmp .epil
 
 .done__last:
-	mov %bx, %ax
-	mov %es, %dx
-	mov $0x02, %cx
+	mov $0x02, %ax
 	jmp .epil
 
 .exit:
-	xor %ax, %ax
-	xor %dx, %dx
-	mov $0x01, %cx
+	mov $0x01, %ax
 	jmp .epil
 
 .epil:
@@ -145,6 +135,7 @@ fs_read_path:
 	pop %di
 	pop %si
 	pop %es
+	pop %bp
 	ret
 
 # {ERR}

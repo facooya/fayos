@@ -7,6 +7,7 @@
 .include "chr.s"
 .include "fs/fs.s"
 .include "fs/de.s"
+.include "fs/ind.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -37,29 +38,29 @@ cmd_cd:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ proc paths
-	push %si
-	call proc_paths
-	add $0x02, %sp
+	# {{{ path
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &dst)
+	call fs_path
+	add $0x04, %sp
+	# <ax = ret_code>
 
-	# (proc_paths() != done) ? {err}
-	test %cx, %cx
+	# (fs_path() != done) ? {err}
+	test %ax, %ax
 	jnz .err_inv_path
-
-	mov %ax, %bx
-	mov %dx, %es
 	# }}}
+
 	call build_ps1_path
 	jmp .run
 
 .path_pass:
 	# {{{
 	# TODO: delete
-	push (root_inum)
-	push (root_inum+0x02)
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
+	#push (root_inum)
+	#push (root_inum+0x02)
+	#push $fsp+FSP_OFF_CUR
+	#call fsp_read
+	#add $0x06, %sp
 
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp

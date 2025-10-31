@@ -9,9 +9,8 @@
 .code16
 .global fs_tok_path
 
-# fs_tok_path(ub8 *path_str)
+# fs_tok_path(ub8 *path)
 # <mod> path_sbuf
-# <ret> ax = true:0
 fs_tok_path:
 	push %bp
 	mov %sp, %bp
@@ -88,15 +87,10 @@ fs_tok_path:
 .end__pre:
 	mov $path_sbuf, %di
 	mov %cx, (%di)
-
 	jmp .done
 
 # {DONE}
 .done:
-	xor %ax, %ax
-	jmp .epil
-
-.epil:
 	pop %di
 	pop %si
 	pop %bp
