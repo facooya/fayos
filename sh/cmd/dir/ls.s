@@ -7,8 +7,6 @@
 .include "chr.s"
 .include "fs/fs.s"
 .include "fs/de.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global cmd_ls
@@ -31,55 +29,36 @@ cmd_ls:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ proc paths
-	push %si
-	call proc_paths
-	add $0x02, %sp
+	# {{{ path
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &dst)
+	call fs_path
+	add $0x04, %sp
+	# <ax = {done:0, exit:1, ne_last:2}>
 
-	# (proc_path() == 1) ? {err}
-	cmp $0x01, %cx
+	# (fs_path() == 1) ? {err}
+	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (proc_path() == 2) ? {err}
-	cmp $0x02, %cx
+	# (fs_path() == 2) ? {err}
+	cmp $0x02, %ax
 	je .err_dir_no
-
-	mov %ax, %bx
-	mov %dx, %es
 	# }}}
 
-	# {{{
-	push $inode
-	push $path_inum
-	call ind_read_old
-	add $0x04, %sp
+	# TODO: write ind file type
+	#mov $fsp+FSP_OFF_PATH, %si
+	#mov FSP_OFF_IND_FILE_TYPE(%si), %al
+	#cmp $0x40, %al
+	#jne .err_dir_type
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx # [s.0:fsize]
-
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_PATH # (fsp &src)
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
-	# }}}
+	mov %ax, %bx
 
-	# {task}
-	pop %dx # [s.0:fsize]
+	mov FSP_OFF_IND_FILE_SIZE(%si), %dx # f_size
 	jmp .run
 
 .path_pass:
@@ -106,28 +85,19 @@ cmd_ls:
 	je .run
 	# }}}
 
-	# {{{ lookup dentry
+	# {{{ de seek
 	mov 0x06(%si), %ax # argv[1]
 	mov $cl_lbuf, %si
 	add $0x02, %si
 	add %ax, %si
 
-	xor %ax, %ax
-	push %si # cl_lbuf[argv[1]]
-	push %ax
-	call mem_size
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call de_seek
 	add $0x04, %sp
+	# <ax = {true:off, false:1}>
 
-	push %si
-	push %ax
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
-
+	# (de_seek() == false) ? {err}
 	cmp $0x01, %ax
 	je .err_dir_no
 	add %ax, %bx
@@ -135,48 +105,33 @@ cmd_ls:
 
 	# {{{ cl_lbuf[argv[1]]
 	# (file_type != dir) ? {err}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_OFF_FILE_TYPE(%bx), %al
 	cmp $0x40, %al
 	jne .err_dir_type
 
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (tmp_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_inum+0x02)
+	mov %es:DE_OFF_INUM(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	push %ax
+	push %dx
+	push $fsp+FSP_OFF_TMP
+	call fsp_read
+	add $0x06, %sp
 
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
+	mov %ax, %bx
 
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx # fsize
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %dx # f_size
 	jmp .run
 	# }}}
 
-# {TASK}
 .run:
 .run__lp:
-	# {chk} (inum == 0)
+	# (inum == 0) ? {chk}
 	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
 	or %es:DE_OFF_INUM+0x02(%bx), %ax
@@ -191,7 +146,7 @@ cmd_ls:
 	mov %es:DE_OFF_NAME_SIZE(%bx), %cl
 
 .run__name_lp:
-	# {end} (name_len == 0)
+	# (name_len == 0) ? {end}
 	test %cx, %cx
 	jz .run__name_end
 
@@ -199,7 +154,6 @@ cmd_ls:
 	mov %es:(%si), %al
 	call putc
 
-	# {lp}
 	add $0x01, %si
 	sub $0x01, %cx
 	jmp .run__name_lp
