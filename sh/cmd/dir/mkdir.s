@@ -36,40 +36,43 @@ cmd_mkdir:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ proc paths
-	push %si
-	call proc_paths
-	add $0x02, %sp
+	# {{{ path
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &dst)
+	call fs_path
+	add $0x04, %sp
+	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (pathc == 1) ? {err}
 	push %si # [s.1:cl_lbuf]
-	push %cx # [s.0:proc_paths()]
-	mov $paths, %si
+	push %ax # [s.0:fs_path()]
+	mov $path_cv, %si
 	mov (%si), %ax
 	cmp $0x01, %ax
 	je .err_dir_root
-	pop %cx # [s.0:proc_paths()]
+	pop %ax # [s.0:fs_path()]
 	pop %si # [s.1:cl_lbuf]
 
-	# (proc_paths() == 1) ? {err}
-	cmp $0x01, %cx
+	# (fs_path() == 1) ? {err}
+	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (proc_paths() != 2) ? {err}
-	cmp $0x02, %cx
+	# (fs_path() != 2) ? {err}
+	cmp $0x02, %ax
 	jne .err_name_dup
-
-	mov %ax, %bx
-	mov %dx, %es
 	# }}}
 
 	call ind_add
 	# <dx:ax = inum_hi:inum_lo>
-	mov %ax, (tmp_inum)
-	mov %dx, (tmp_inum+0x02)
 
-	# {{{ add dentry
-	mov $paths, %si
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+
+	# {{{ de add
+	mov $path_cv, %si
 	mov (%si), %cx # pathc
 	add $0x02, %si
 	add %cx, %si
@@ -77,98 +80,37 @@ cmd_mkdir:
 	sub $0x02, %si # pathv[last]
 
 	mov (%si), %ax
-	mov $path_buf, %si
+	mov $path_sbuf, %si
 	add $0x02, %si
 	add %ax, %si
 
-	xor %ax, %ax
-	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
+	push $fsp+FSP_OFF_PATH
+	call disk_read_fsp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
 
-	mov %al, %cl
-	mov $0x40, %ch
-	push %si
-	push %cx
-	push $path_inum
-	push $tmp_inum
-	call add_dentry
+	push $0x40 # (f_type)
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add
 	add $0x08, %sp
-	push %ax
+	# <ax = rec_size>
 
-	push $inode
-	push $path_inum
-	call ind_read_old
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_PATH, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	add %ax, %cx
+	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	push %si # (fsp &src)
+	call fsp_write
+	add $0x02, %sp
 
-	pop %ax
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $path_inum
-	call ind_upd
+	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add_dots
 	add $0x04, %sp
 	# }}}
-
-	# {{{ add dot
-	mov $de_dots, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call ind_upd
-	add $0x04, %sp
-	# }}}
-
-	# {{{ add dentry dotdot
-	mov $de_dots, %si
-	add $0x04, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $path_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call ind_upd
-	add $0x04, %sp
-	# }}}
-
 	jmp .done
 
 .path_pass:
@@ -234,107 +176,6 @@ cmd_mkdir:
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp
-	jmp .done
-
-	mov %ax, (tmp_inum)
-	mov %dx, (tmp_inum+0x02)
-
-	# {init} for add_dentry
-	mov $args, %si
-	mov 0x06(%si), %ax
-	mov $cl_lbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	xor %ax, %ax
-	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
-
-	# {{{ add directory
-	mov %al, %cl
-	mov $0x40, %ch
-	push %si
-	push %cx
-	push $inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %cx
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $inum
-	call ind_upd
-	add $0x04, %sp
-	# }}}
-
-	# {{{ add dot
-	mov $de_dots, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $tmp_inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %ax
-	mov $inode, %si
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call ind_upd
-	add $0x04, %sp
-	# }}}
-
-	# {{{ add dentry dotdot
-	mov $de_dots, %si
-	add $0x04, %si
-	mov 0x02(%si), %cx
-	push %si
-	push %cx
-	push $tmp_inum
-	push $inum
-	call add_dentry
-	add $0x08, %sp
-	push %ax
-
-	push $inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
-
-	pop %cx
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	add %cx, %ax
-	mov %ax, I_FILE_SIZE_OFF(%si)
-
-	push $inode
-	push $tmp_inum
-	call ind_upd
-	add $0x04, %sp
-	# }}}
-
 	jmp .done
 
 # {DONE}

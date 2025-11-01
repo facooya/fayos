@@ -81,12 +81,6 @@ cmd_touch:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push %si
-	mov $fsp+FSP_OFF_PATH, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
-	add %ax, %bx
-	pop %si
-
 	push $0x80 # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_PATH # (fsp &src)
