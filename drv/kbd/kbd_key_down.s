@@ -63,6 +63,8 @@ kbd_key_down:
 
 .cont:
 	call hist_upd_cl
+	# <ax = cl_pos>
+	mov %ax, %si
 	jmp .done
 
 .done:

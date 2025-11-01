@@ -14,11 +14,9 @@
 .global hist_upd_cl
 
 # hist_upd_cl()
-# <req> hist_idx
-# <req> file_lines
-# <ret> cl_lbuf
-# <ret> curs
-# <ret> si
+# <req> hist_idx, file_lines
+# <mod> cl_lbuf, curs
+# <ret> ax = cl_pos
 hist_upd_cl:
 	push %es
 	push %si
@@ -141,6 +139,8 @@ hist_upd_cl:
 	# }}}
 
 .done:
+	mov %si, %ax # <ret:cl_pos>
+
 	pop %bx
 	pop %di
 	pop %si

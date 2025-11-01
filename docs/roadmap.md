@@ -3,6 +3,7 @@
 - apply file-system-packet
 
 ## PRIORITY
+- remove bufzero, bufcmp
 
 ## TODO
 - support relative path
