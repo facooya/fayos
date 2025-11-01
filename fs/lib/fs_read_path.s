@@ -46,17 +46,8 @@ fs_read_path:
 
 .root:
 	mov $fsp+FSP_OFF_ROOT, %di
-	push FSP_OFF_INUM(%di) # (inum_lo)
-	push FSP_OFF_INUM+0x02(%di) # (inum_hi)
-	push %di # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_ROOT
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %ax, %bx
-	mov %dx, %es
+	mov FSP_OFF_INUM(%di), %ax
+	mov FSP_OFF_INUM+0x02(%di), %dx
 	jmp .done
 
 .abs:

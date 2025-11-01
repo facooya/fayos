@@ -10,6 +10,7 @@
 .global build_ps1_path
 
 # build_ps1_path()
+# <req> path_cv, path_sbuf
 build_ps1_path:
 	push %si
 	push %di
@@ -38,7 +39,7 @@ build_ps1_path:
 	pop %cx # [s.0:pathc]
 	# }}}
 
-	mov $path_buf, %si
+	mov $path_sbuf, %si
 	add $0x02, %si
 
 	# (pathc == 1) ? {root} : {lp}
