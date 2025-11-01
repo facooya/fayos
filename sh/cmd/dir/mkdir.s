@@ -2,12 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command make directory
+# [Command] Make directory
 
 .include "chr.s"
 .include "fs/fs.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global cmd_mkdir

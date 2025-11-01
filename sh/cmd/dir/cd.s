@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command change directory
+# [Command] Change directory
 
 .include "chr.s"
 .include "fs/fs.s"

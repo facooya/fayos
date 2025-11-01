@@ -45,12 +45,6 @@ cmd_ls:
 	je .err_dir_no
 	# }}}
 
-	# TODO: write ind file type
-	#mov $fsp+FSP_OFF_PATH, %si
-	#mov FSP_OFF_IND_FILE_TYPE(%si), %al
-	#cmp $0x40, %al
-	#jne .err_dir_type
-
 	push $fsp+FSP_OFF_PATH # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
@@ -58,7 +52,8 @@ cmd_ls:
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov FSP_OFF_IND_FILE_SIZE(%si), %dx # f_size
+	mov $fsp+FSP_OFF_PATH, %di
+	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
 	jmp .run
 
 .path_pass:

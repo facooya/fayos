@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command concatenate - show file data
+# [Command] Concatenate - show file data
 
 .include "chr.s"
 .include "fs/dentry.s"

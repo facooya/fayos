@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command touch - create file
+# [Command] Create file
 
 .include "chr.s"
 .include "drv/disk.s"
