@@ -7,8 +7,6 @@
 .include "chr.s"
 .include "fs/fs.s"
 .include "fs/de.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global cmd_rm
@@ -60,31 +58,45 @@ cmd_rm:
 	mov %dx, %es
 	mov %ax, %bx
 
-	# TODO: fs_path parent?
+	mov $path_cv, %si
+	mov (%si), %ax # pathc
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax # pathv[last]
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	push %si
+	push $fsp+FSP_OFF_DIR
+	call de_seek
+	add $0x04, %sp
+	# <ax = {true:off, false:1}>
+	add %ax, %bx
 
 	# (file_type != file) ? {err}
-	#mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	#cmp $0x80, %al
-	#jne .err_file_type
-#
-	## {{{ remove
-	#mov %es:DE_OFF_INUM(%bx), %ax
-	#mov %ax, (clear_inum)
-	#mov %es:DE_OFF_INUM+0x02(%bx), %ax
-	#mov %ax, (clear_inum+0x02)
-#
-	## clear inum
-	#xor %ax, %ax
-	#mov %ax, %es:DE_OFF_INUM(%bx)
-	#mov %ax, %es:DE_OFF_INUM+0x02(%bx)
+	mov %es:DE_OFF_FILE_TYPE(%bx), %al
+	cmp $0x80, %al
+	jne .err_file_type
 
-	#push $fsp+FSP_OFF_PATH # (fsp &src)
-	#call disk_write_fsp
-	#add $0x02, %sp
-#
-	#push $clear_inum
-	#call ind_clr
-	#add $0x02, %sp
+	# {{{ remove
+	mov %es:DE_OFF_INUM(%bx), %ax
+	mov %ax, (clear_inum)
+	mov %es:DE_OFF_INUM+0x02(%bx), %ax
+	mov %ax, (clear_inum+0x02)
+
+	# clear inum
+	xor %ax, %ax
+	mov %ax, %es:DE_OFF_INUM(%bx)
+	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
+
+	push $fsp+FSP_OFF_DIR # (fsp &src)
+	call disk_write_fsp
+	add $0x02, %sp
+
+	push $clear_inum
+	call ind_clr
+	add $0x02, %sp
 	# }}}
 	jmp .done
 
@@ -112,7 +124,7 @@ cmd_rm:
 # {TASK}
 .run:
 	# (file_type != file) ? {err}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	mov %es:DE_OFF_FILE_TYPE(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 

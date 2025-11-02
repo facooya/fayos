@@ -52,7 +52,7 @@ cmd_ls:
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov $fsp+FSP_OFF_DIR, %di
+	mov $fsp+FSP_OFF_BASE, %di
 	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
 	jmp .run
 
