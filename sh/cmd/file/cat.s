@@ -7,9 +7,6 @@
 .include "chr.s"
 .include "fs/fs.s"
 .include "fs/de.s"
-.include "fs/ind.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global cmd_cat
