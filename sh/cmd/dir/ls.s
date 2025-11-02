@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command list - show file and directory list
+# [Command] list - show file and directory list
 
 .include "chr.s"
 .include "fs/fs.s"
