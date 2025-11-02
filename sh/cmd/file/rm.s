@@ -5,6 +5,8 @@
 # Command remove - remove file
 
 .include "chr.s"
+.include "fs/fs.s"
+.include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -35,107 +37,72 @@ cmd_rm:
 	cmp $CHR_SL, %al
 	jne .path_pass
 
-	# {{{ proc paths
-	push %si
-	call proc_paths
-	add $0x02, %sp
+	# {{{ path
+	push %si # (&name)
+	push $fsp+FSP_OFF_PATH # (fsp &dst)
+	call fs_path
+	add $0x04, %sp
+	# <ax = {done:0, exit:1, ne_last:2}>
 
-	# (proc_path() == 1) ? {err}
-	cmp $0x01, %cx
+	# (fs_path() == 1) ? {err}
+	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (proc_path() == 2) ? {err}
-	cmp $0x02, %cx
+	# (fs_path() == 2) ? {err}
+	cmp $0x02, %ax
 	je .err_file_no
-
-	mov %ax, %bx
-	mov %dx, %es
 	# }}}
+
+	push $fsp+FSP_OFF_PATH # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# TODO: fs_path parent?
 
 	# (file_type != file) ? {err}
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
-	cmp $0x80, %al
-	jne .err_file_type
+	#mov %es:DE_OFF_FILE_TYPE(%bx), %al
+	#cmp $0x80, %al
+	#jne .err_file_type
+#
+	## {{{ remove
+	#mov %es:DE_OFF_INUM(%bx), %ax
+	#mov %ax, (clear_inum)
+	#mov %es:DE_OFF_INUM+0x02(%bx), %ax
+	#mov %ax, (clear_inum+0x02)
+#
+	## clear inum
+	#xor %ax, %ax
+	#mov %ax, %es:DE_OFF_INUM(%bx)
+	#mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
-	# {{{ remove
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %ax, (clear_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (clear_inum+0x02)
-
-	# clear inum
-	xor %ax, %ax
-	mov %ax, %es:DE_INUM_OFF(%bx)
-	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
-
-	# write
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
-
-	push $clear_inum
-	call ind_clr
-	add $0x02, %sp
+	#push $fsp+FSP_OFF_PATH # (fsp &src)
+	#call disk_write_fsp
+	#add $0x02, %sp
+#
+	#push $clear_inum
+	#call ind_clr
+	#add $0x02, %sp
 	# }}}
-
-	# {end.done}
 	jmp .done
 
 .path_pass:
-	# {{{ lookup dentry
-	xor %ax, %ax
-	push %si
-	push %ax
-	call mem_size
-	add $0x04, %sp
-
-	push %ax # [s.0:str_size]
-	push $inode
-	push $inum
-	call ind_read_old
-	add $0x04, %sp
-
-	push $inode
-	call set_dap_blk_lba
+	# {{{ de_seek
+	push $fsp+FSP_OFF_CUR
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
-	pop %cx # [s.0:str_size]
+	mov %ax, %bx
 
-	push %si # src_name
-	push %cx # src_name_len
-	mov $inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
-	push %ax
-	push %bx
-	push %es
-	call lookup_dentry
-	add $0x0A, %sp
+	push %si # (&name)
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	call de_seek
+	add $0x04, %sp
 
-	# (lookup_dentry() == no_match)
-	# ? {err} : off+=ax;{run}
+	# (de_seek() == false) ? {err} : {run}
 	cmp $0x01, %ax
 	je .err_file_no
 	add %ax, %bx
@@ -144,42 +111,31 @@ cmd_rm:
 
 # {TASK}
 .run:
-	# {err} (file_type != file)
+	# (file_type != file) ? {err}
 	mov %es:DE_FILE_TYPE_OFF(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 
 	# {{{
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %ax, (clear_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %ax
 	mov %ax, (clear_inum+0x02)
 
 	# clear inum
 	xor %ax, %ax
-	mov %ax, %es:DE_INUM_OFF(%bx)
-	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_OFF_INUM(%bx)
+	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $fsp+FSP_OFF_CUR
+	call disk_write_fsp
+	add $0x02, %sp
 
 	push $clear_inum
 	call ind_clr
 	add $0x02, %sp
 	# }}}
-
-	# {end.done}
 	jmp .done
 
 # {DONE}

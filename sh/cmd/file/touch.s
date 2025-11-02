@@ -43,7 +43,7 @@ cmd_touch:
 	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
 	add $0x04, %sp
-	# <ax = ret_code>
+	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (fs_path() == 1) ? {err}
 	cmp $0x01, %ax
