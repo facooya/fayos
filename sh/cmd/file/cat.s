@@ -37,9 +37,9 @@ cmd_cat:
 
 	# {{{ path
 	push %si # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
-	add $0x04, %sp
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (fs_path() == 1) ? {err}
@@ -51,14 +51,14 @@ cmd_cat:
 	je .err_file_no
 	# }}}
 
-	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_BASE # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov $fsp+FSP_OFF_PATH, %si
+	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
 
 	push %cx

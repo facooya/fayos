@@ -39,9 +39,9 @@ cmd_cd:
 
 	# {{{ path
 	push %si # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
-	add $0x04, %sp
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (fs_path() != done) ? {err}
@@ -49,8 +49,10 @@ cmd_cd:
 	jnz .err_inv_path
 	# }}}
 
+	# TODO: dir chk
+
 	# upd
-	mov $fsp+FSP_OFF_PATH, %si
+	mov $fsp+FSP_OFF_BASE, %si
 	push FSP_OFF_INUM(%si)
 	push FSP_OFF_INUM+0x02(%si)
 	push $fsp+FSP_OFF_CUR

@@ -60,12 +60,24 @@ fsp_init:
 	push $FSP_SIZE
 	push %di
 	push %ax
-	push $fsp+FSP_OFF_PATH
+	push $fsp+FSP_OFF_DIR
 	push %ax
 	call mem_cpy
 	add $0x0A, %sp
-	mov $(DISK_PATH_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
-	mov $(DISK_PATH_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
+	mov $(DISK_DIR_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_DIR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
+	add $FSP_SIZE, %di
+
+	xor %ax, %ax
+	push $FSP_SIZE
+	push %di
+	push %ax
+	push $fsp+FSP_OFF_BASE
+	push %ax
+	call mem_cpy
+	add $0x0A, %sp
+	mov $(DISK_BASE_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
+	mov $(DISK_BASE_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 	add $FSP_SIZE, %di
 
 	xor %ax, %ax

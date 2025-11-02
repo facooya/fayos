@@ -40,9 +40,9 @@ exec_redir:
 
 	# {{{ path
 	push %si # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
-	add $0x04, %sp
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (fs_path() != done) ? {err}
@@ -54,7 +54,7 @@ exec_redir:
 
 	xor %ax, %ax
 	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_PATH # (&s_off)
+	push $fsp+FSP_OFF_BASE # (&s_off)
 	push %ax # (&s_seg)
 	push $fsp+FSP_OFF_TMP # (&d_off)
 	push %ax # (&d_seg)

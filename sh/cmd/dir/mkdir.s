@@ -36,9 +36,9 @@ cmd_mkdir:
 
 	# {{{ path
 	push %si # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &dst)
 	call fs_path
-	add $0x04, %sp
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 
 	# (pathc == 1) ? {err}
@@ -82,7 +82,7 @@ cmd_mkdir:
 	add $0x02, %si
 	add %ax, %si
 
-	push $fsp+FSP_OFF_PATH
+	push $fsp+FSP_OFF_DIR
 	call disk_read_fsp
 	add $0x02, %sp
 	mov %dx, %es
@@ -90,13 +90,13 @@ cmd_mkdir:
 
 	push $0x40 # (f_type)
 	push %si # (&name)
-	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add
 	add $0x08, %sp
 	# <ax = rec_size>
 
-	mov $fsp+FSP_OFF_PATH, %si
+	mov $fsp+FSP_OFF_DIR, %si
 	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
 	add %ax, %cx
 	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
@@ -104,7 +104,7 @@ cmd_mkdir:
 	call fsp_write
 	add $0x02, %sp
 
-	push $fsp+FSP_OFF_PATH # (fsp &src)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add_dots
 	add $0x04, %sp
