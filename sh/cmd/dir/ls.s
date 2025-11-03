@@ -73,7 +73,7 @@ cmd_ls:
 	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
 
 	# {{{ argc 1
-	# (argc == 1) ? {run} : lookup_dentry()
+	# (argc == 1) ? {run} : de_seek()
 	mov $args, %si
 	mov (%si), %ax
 	cmp $0x01, %ax

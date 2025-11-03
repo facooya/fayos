@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Show paths - pathc, *pathv
+# [Debug] Show paths - pathc, *pathv
 
 .include "chr.s"
 .section .data
@@ -12,10 +12,10 @@
 
 .section .text
 .code16
-.global dbg_paths
+.global dbg_path_cv
 
-# dbg_paths()
-dbg_paths:
+# dbg_path_cv()
+dbg_path_cv:
 	push %si
 	push %di
 	push %ax
@@ -34,7 +34,7 @@ dbg_paths:
 	call vga_putc
 
 	# {{{ pathc
-	mov $paths, %si
+	mov $path_cv, %si
 	mov (%si), %cx
 	add $0x02, %si
 
@@ -70,7 +70,7 @@ dbg_paths:
 	# }}}
 
 	# {{{ path out
-	mov $path_buf, %di
+	mov $path_sbuf, %di
 	add $0x02, %di # skip bufc
 
 	mov (%si), %ax

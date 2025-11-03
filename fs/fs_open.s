@@ -56,29 +56,12 @@ fs_open:
 
 .open:
 	# {{{ open /
-	#push %cx # [s.f0:f_num]
-	#push %cx
-	#push $root_inum
-	#call ind_read2
-	#add $0x04, %sp
-	#pop %cx # [s.f0:f_num]
-
 	# ((( ind_list += f_num * ind_size
-	mov $ind_list, %si
-	mov %cx, %ax # f_num
-	mov $IND_SIZE, %cx
-	mul %cx
-	add %ax, %si
 	# )))
 
 	call mem_alloc # root
 
-	mov IND_OFF_BLK_0(%si), %cx
-	push %cx # blk_num
-	push %ax # off
-	push %dx # seg
-	#call disk_read_blk
-	add $0x06, %sp
+	#call disk_read
 	mov %ax, %bx
 	mov %dx, %es
 
@@ -88,23 +71,9 @@ fs_open:
 	add $0x04, %sp
 	# }}}
 
-	mov 0x04(%bp), %si
-	push %si # *name_str
-	push %si
-	xor %ax, %ax
-	push %ax
-	call mem_size
-	add $0x04, %sp
-	push %ax # name_len
-	mov $ind_list, %si
-	mov IND_OFF_FILE_SIZE(%si), %ax
-	push %ax # file_size
-	push %bx # *off
-	push %es # *seg
-	call lookup_dentry
-	add $0x0A, %sp
+	#call de_seek
 
-	# (dent_seek == no_match) ? {create}
+	# (de_seek() == false) ? {create}
 	cmp $0x01, %ax
 	je .file_add
 

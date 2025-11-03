@@ -32,7 +32,7 @@ kern/lib/bufcpy.s \
 kern/lib/bufzero.s \
 \
 kern/dbg/dbg_args.s \
-kern/dbg/dbg_paths.s \
+kern/dbg/dbg_path_cv.s \
 kern/dbg/dbg_curs.s \
 kern/dbg/dbg_buf.s \
 kern/dbg/dbg_trace.s \
@@ -64,17 +64,9 @@ fs/de/de_add.s \
 fs/de/de_add_dots.s \
 fs/de/de_seek.s \
 \
-fs/de/add_dentry.s \
-fs/de/lookup_dentry.s \
-\
 fs/bm/bm_alloc.s \
 fs/bm/bm_clr.s \
 fs/bm/bm_set.s \
-\
-fs/path/path.s \
-fs/path/read_paths.s \
-fs/path/tok_paths.s \
-fs/path/build_paths.s \
 \
 fs/lib/fsp_init.s \
 fs/lib/fsp_read.s \
