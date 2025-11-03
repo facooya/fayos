@@ -4,14 +4,14 @@
 #
 # Get bottom directory inum
 
-.include "fs/dentry.s"
-.include "fs/inode.s"
+.include "fs/fs.s"
+.include "fs/de.s"
 .section .text
 .code16
 .global get_bottom_dir
 
 # get_bottom_dir(*inum)
-# <ret> tmp_inum bottom dir inum
+# <ret> tmp_inum = bottom dir inum
 get_bottom_dir:
 	push %bp
 	mov %sp, %bp
@@ -23,125 +23,102 @@ get_bottom_dir:
 	mov 0x04(%bp), %si
 	mov (%si), %ax
 	mov %ax, (tmp_inum)
-	mov 0x02(%si), %ax
-	mov %ax, (tmp_inum+0x02)
+	mov 0x02(%si), %dx
+	mov %dx, (tmp_inum+0x02)
 
 .down__lp:
-	push $tmp_inode
-	push $tmp_inum
-	call ind_read_old
-	add $0x04, %sp
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
 
-	mov $tmp_inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx
-
-	push $tmp_inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
 	add $0x02, %sp
-
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	# <dx:ax = seg:off>
 	mov %dx, %es
+	mov %ax, %bx
 
 	add $0x18, %bx
-	mov $0x18, %cx # rm_rec_len++
-	pop %dx # file_size--
+	mov $0x18, %cx # rm_rec_size (dots)
 
-	# {end} (file_size <= 0)
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %dx # f_size
+
+	# (file_size <= 0) ? {end}
 	sub $0x18, %dx
 	cmp $0x00, %dx
 	jle .down__end
 
 .find__lp:
-	# {step} (inum == 0)
-	mov %es:DE_INUM_OFF(%bx), %ax
+	# (inum == 0) ? {step}
+	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .find__lp_step
 
-	# (file_type == dir)
-	mov %es:DE_FILE_TYPE_OFF(%bx), %al
+	# (file_type == dir) ? {chk}
+	mov %es:DE_OFF_FILE_TYPE(%bx), %al
 	cmp $0x40, %al
 	je .find__chk
 
 .find__lp_step:
-	mov %es:DE_REC_LEN_OFF(%bx), %ax
+	mov %es:DE_OFF_REC_SIZE(%bx), %ax
 	add %ax, %bx
 
-	add %ax, %cx # rm_rec_len++
+	add %ax, %cx # rm_rec_size++
 
-	# {end} (file_size <= 0)
+	# (file_size <= 0) ? {end} : {lp}
 	sub %ax, %dx # file_size--
 	cmp $0x00, %dx
 	jle .down__end
-
-	# {lp}
 	jmp .find__lp
 
 .find__chk:
-	push %dx
-	push %cx
+	push %dx # [s.0:f_size]
+	push %cx # [s.1:rm_rec_size]
 
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %ax, (tmp_dir_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
-	mov %ax, (tmp_dir_inum+0x02)
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	mov %dx, (tmp_dir_inum+0x02)
 
-	push $tmp_inode
-	push $tmp_dir_inum
-	call ind_read_old
-	add $0x04, %sp
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
 
 	# (file_size == dots)
-	mov $tmp_inode, %si
-	mov I_FILE_SIZE_OFF(%si), %ax
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
 	cmp $0x18, %ax
 	je .find__continue
 	jmp .down__continue
 
 .find__continue:
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
+	mov %ax, %bx
 
-	pop %cx # rm_rec_len++
-	pop %dx # file_size--
+	pop %cx # [s.1:rm_rec_size]
+	pop %dx # [s.0:f_size]
 
 	add %cx, %bx
 	jmp .find__lp_step
 
 .down__continue:
-	pop %ax # rm_rec_len++
-	pop %ax # file_size--
+	pop %ax # [s.1:rm_rec_size]
+	pop %ax # [s.0:f_size]
 
 	mov (tmp_dir_inum), %ax
 	mov %ax, (tmp_inum)
 	mov (tmp_dir_inum+0x02), %ax
 	mov %ax, (tmp_inum+0x02)
-
 	jmp .down__lp
 
 .down__end:

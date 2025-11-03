@@ -4,6 +4,8 @@
 #
 # Remove empty directory base inum
 
+.include "fs/fs.s"
+.include "fs/de.s"
 .include "fs/dentry.s"
 .include "fs/inode.s"
 .section .text
@@ -19,111 +21,83 @@ rm_dir:
 	push %di
 	push %bx
 
-	push $tmp_inode
-	push 0x04(%bp)
-	call ind_read_old
-	add $0x04, %sp
+	mov 0x04(%bp), %si
+	mov (%si), %ax
+	mov 0x02(%si), %dx
 
-	mov $tmp_inode, %si
-	mov I_FILE_SIZE_OFF(%si), %dx
-	push %dx
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call disk_read_fsp
+	add $0x06, %sp
 
-	mov $tmp_inode, %si
-	mov $0x18, I_FILE_SIZE_OFF(%si)
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
 
-	push $tmp_inode
-	push 0x04(%bp)
-	call ind_upd
-	add $0x04, %sp
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_IND_FILE_SIZE(%si), %dx
+	mov $0x18, %ax
+	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
 
-	push $tmp_inode
-	call set_dap_blk_lba
+	push $fsp+FSP_OFF_TMP
+	call fsp_write
 	add $0x02, %sp
 
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
-	mov %ax, %bx
-	mov %dx, %es
-
-	pop %dx
-	mov $0x18, %cx # rm_rec_len++
-	sub $0x18, %dx # file_size--
+	mov $0x18, %cx # rm_rec_size (dots)
+	sub $0x18, %dx # f_size (dots)
 
 .clear__lp:
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_INUM_OFF+0x02(%bx), %ax
+	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .clear__lp_step
 
-	push %cx
-	push %dx
+	push %cx # [s.0:rm_rec_size]
+	push %dx # [s.1:f_size]
 
-	mov %es:DE_INUM_OFF(%bx), %ax
+	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %ax, (clear_inum)
-	mov %es:DE_INUM_OFF+0x02(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %ax
 	mov %ax, (clear_inum+0x02)
 
 	xor %ax, %ax
-	mov %ax, %es:DE_INUM_OFF(%bx)
-	mov %ax, %es:DE_INUM_OFF+0x02(%bx)
+	mov %ax, %es:DE_OFF_INUM(%bx)
+	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_write_sect
-	add $0x0A, %sp
+	push $fsp+FSP_OFF_TMP
+	call disk_write_fsp
+	add $0x02, %sp
 
 	push $clear_inum
 	call ind_clr
 	add $0x02, %sp
 
-	pop %dx
-	pop %cx
+	pop %dx # [s.1:f_size]
+	pop %cx # [s.0:rm_rec_size]
 
 .clear__lp_step:
 	mov %es:DE_REC_LEN_OFF(%bx), %ax
-	add %ax, %cx # rm_rec_len++
-	sub %ax, %dx # file_size--
+	add %ax, %cx # rm_rec_size++
+	sub %ax, %dx # f_size--
 
 	# (file_size <= 0)
 	cmp $0x00, %dx
 	jle .clear__end
 
-	push %cx
-	push %dx
-	mov $dap, %bx
-	push $0x08 # sect_cnt
-	mov 0x08(%bx), %ax
-	push %ax # lba_lo
-	mov 0x0A(%bx), %ax
-	push %ax # lba_hi
-	mov 0x04(%bx), %ax
-	push %ax # off
-	mov 0x06(%bx), %ax
-	push %ax # seg
-	call ata_read_sect
-	add $0x0A, %sp
+	push %cx # [s.f0:rm_rec_size]
+	push %dx # [s.f1:f_size]
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %ax, %bx
 	mov %dx, %es
-	pop %dx
-	pop %cx
+	pop %dx # [s.f1:f_size]
+	pop %cx # [s.f0:rm_rec_size]
 
 	add %cx, %bx # rm_rec_len
 	jmp .clear__lp

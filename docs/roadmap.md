@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- rmdir libs update
 
 ## PRIORITY
 - remove bufzero, bufcmp
