@@ -5,8 +5,7 @@
 # [Histroy] Update command line
 
 .include "fs/fs.s"
-.include "fs/inode.s"
-.include "fs/dentry.s"
+.include "fs/de.s"
 .section .data
 .name_hist: .asciz ".history"
 .section .text
@@ -49,8 +48,8 @@ hist_upd_cl:
 	add %ax, %bx
 
 	# {{{ read history file
-	mov %es:DE_INUM_OFF(%bx), %ax
-	mov %es:DE_INUM_OFF+0x02(%bx), %dx
+	mov %es:DE_OFF_INUM(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 	push %ax
 	push %dx
 	push $fsp+FSP_OFF_TMP

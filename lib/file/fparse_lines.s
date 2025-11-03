@@ -6,7 +6,6 @@
 
 .include "chr.s"
 .include "fs/fs.s"
-.include "fs/inode.s"
 .section .data
 .global file_lines
 .global file_linev

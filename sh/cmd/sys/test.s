@@ -6,7 +6,6 @@
 
 .include "drv/disk.s"
 .include "fs/ind.s"
-.include "fs/dentry.s"
 .include "fs/sb.s"
 .section .data
 .str: .asciz "Hello world Hello World 2 Hello world 3 Hello world 4 Hello world 5 Hello world 6 Hello world 7\r\n"

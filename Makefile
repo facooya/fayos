@@ -20,10 +20,6 @@ SRCS_KERN = \
 kern/kern.s \
 kern/kern_data.s \
 \
-kern/disk/dap.s \
-kern/disk/dap_utils.s \
-kern/disk/set_dap_blk_lba.s \
-\
 kern/mem/mem_data.s \
 kern/mem/mem_alloc.s \
 kern/mem/mem_free.s \
@@ -55,10 +51,7 @@ fs/sb/sb_set_bm.s \
 fs/sb/sb_write_dpi.s \
 \
 fs/ind/ind_add.s \
-\
 fs/ind/ind_clr.s \
-fs/ind/ind_read_old.s \
-fs/ind/ind_upd.s \
 \
 fs/de/de_add.s \
 fs/de/de_add_dots.s \
@@ -71,10 +64,12 @@ fs/bm/bm_set.s \
 fs/lib/fsp_init.s \
 fs/lib/fsp_read.s \
 fs/lib/fsp_write.s \
+\
 fs/lib/fs_path.s \
 fs/lib/fs_tok_path.s \
 fs/lib/fs_build_path.s \
 fs/lib/fs_read_path.s \
+\
 fs/lib/fs_blk_to_lba.s
 
 # Shell

@@ -4,8 +4,6 @@
 #
 # [Keyborad] Arrow key up
 
-.include "fs/inode.s"
-.include "fs/dentry.s"
 .section .text
 .code16
 .global kbd_key_up

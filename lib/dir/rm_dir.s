@@ -6,8 +6,6 @@
 
 .include "fs/fs.s"
 .include "fs/de.s"
-.include "fs/dentry.s"
-.include "fs/inode.s"
 .section .text
 .code16
 .global rm_dir
@@ -80,7 +78,7 @@ rm_dir:
 	pop %cx # [s.0:rm_rec_size]
 
 .clear__lp_step:
-	mov %es:DE_REC_LEN_OFF(%bx), %ax
+	mov %es:DE_OFF_REC_SIZE(%bx), %ax
 	add %ax, %cx # rm_rec_size++
 	sub %ax, %dx # f_size--
 
