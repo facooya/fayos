@@ -41,15 +41,16 @@ fs_rm:
 	mov $fsp+FSP_OFF_TMP, %si
 	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax
-	push %dx
-	push %si
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push %si # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
-	push %si
+	push %si # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
@@ -96,8 +97,8 @@ fs_rm:
 	push $fsp+FSP_OFF_BASE # (fsp &dst) HACK
 	call fsp_read
 	add $0x06, %sp
-	pop %dx # [s.f1:rec_size]
-	pop %cx # [s.f0:f_size]
+	pop %cx # [s.f1:rec_size]
+	pop %dx # [s.f0:f_size]
 
 	# (f_size == dots) ? {find_step} : {down_lp}
 	mov $fsp+FSP_OFF_BASE, %di # HACK

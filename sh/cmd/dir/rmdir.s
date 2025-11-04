@@ -11,7 +11,6 @@
 .code16
 .global cmd_rmdir
 
-# TODO: not found, not dir !!!!!!!!!!!!!
 # cmd_rmdir()
 cmd_rmdir:
 	push %es

@@ -1,12 +1,10 @@
 # Roadmap
 ## WIP
-- rmdir libs update
 
 ## PRIORITY
 - remove bufzero, bufcmp
-- remove old file for path system
 - all in one path
-- ind clr use fsp, ind add use file type
+- ind add use file type
 
 ## TODO
 - support relative path

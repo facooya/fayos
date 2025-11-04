@@ -165,9 +165,6 @@ int/irq_kbd.s
 SRCS_LIB = \
 lib/re.s \
 \
-lib/dir/get_bottom_dir.s \
-lib/dir/rm_dir.s \
-\
 lib/file/fparse_lines.s \
 \
 lib/err/emsg_common.s \
