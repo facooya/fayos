@@ -43,6 +43,7 @@ SRCS_FS = \
 fs/fs_data.s \
 fs/fs_open.s \
 fs/fs_add.s \
+fs/fs_rm.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \

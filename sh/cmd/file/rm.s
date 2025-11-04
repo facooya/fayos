@@ -94,9 +94,10 @@ cmd_rm:
 	call disk_write_fsp
 	add $0x02, %sp
 
-	push $clear_inum
+	push (clear_inum)
+	push (clear_inum+0x02)
 	call ind_clr
-	add $0x02, %sp
+	add $0x04, %sp
 	# }}}
 	jmp .done
 
@@ -144,9 +145,10 @@ cmd_rm:
 	call disk_write_fsp
 	add $0x02, %sp
 
-	push $clear_inum
+	push (clear_inum)
+	push (clear_inum+0x02)
 	call ind_clr
-	add $0x02, %sp
+	add $0x04, %sp
 	# }}}
 	jmp .done
 

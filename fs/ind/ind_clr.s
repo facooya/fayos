@@ -10,7 +10,7 @@
 .code16
 .global ind_clr
 
-# ind_clr(*inum)
+# ind_clr(ub16 inum_hi, ub16 inum_lo)
 ind_clr:
 	push %bp
 	mov %sp, %bp
@@ -25,8 +25,7 @@ ind_clr:
 
 	# calc inode # TODO: low, high
 	xor %dx, %dx
-	mov 0x04(%bp), %si # *inum
-	mov (%si), %ax # inum_lo
+	mov 0x06(%bp), %ax # (inum_lo)
 	mov $IND_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
@@ -67,8 +66,7 @@ ind_clr:
 	call disk_write_dpi
 	add $0x02, %sp
 
-	mov 0x04(%bp), %si
-	mov (%si), %ax
+	mov 0x06(%bp), %ax # (inum_lo)
 	mov %ax, (ibnum)
 	push $ibnum
 	push %bx

@@ -69,6 +69,14 @@ cmd_rmdir:
 	add $0x02, %si
 	add %ax, %si
 
+	# { TEST
+	push %si # (&name)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
+	call fs_rm
+	add $0x04, %sp
+	# }
+	jmp .done
+
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &dst)
 	call de_seek
@@ -244,9 +252,10 @@ cmd_rmdir:
 	call disk_write_fsp
 	add $0x02, %sp
 
-	push $clear_inum
+	push (clear_inum)
+	push (clear_inum+0x02)
 	call ind_clr
-	add $0x02, %sp
+	add $0x04, %sp
 
 	jmp .done
 
