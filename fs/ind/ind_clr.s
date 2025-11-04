@@ -62,9 +62,9 @@ ind_clr:
 	# }}}
 
 	# {{{ clear inum bit
-	push $dpi+DPI_OFF_IBM
-	call disk_write_dpi
-	add $0x02, %sp
+	mov $(DISK_IBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
 	mov 0x06(%bp), %ax # (inum_lo)
 	mov %ax, (ibnum)

@@ -1,6 +1,5 @@
 # Issues
 ## WIP
-- ind clr check
 
 ## FIXME
 - ps1 path issue `mkdir a; cd a; cd /..;`

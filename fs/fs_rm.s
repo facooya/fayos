@@ -161,6 +161,7 @@ fs_rm:
 
 .dir__rm_step:
 	mov %es:DE_OFF_REC_SIZE(%bx), %ax
+	add %ax, %bx
 	add %ax, %cx
 	sub %ax, %dx
 
