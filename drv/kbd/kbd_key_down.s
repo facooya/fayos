@@ -31,10 +31,16 @@ kbd_key_down:
 	call bufzero
 	add $0x02, %sp
 
-	push $cl_hist_lbuf
-	push $cl_lbuf
-	call bufcpy
-	add $0x04, %sp
+	xor %ax, %ax
+	mov (cl_hist_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push $cl_hist_lbuf # (*s_off)
+	push %ax # (*s_seg)
+	push $cl_lbuf # (*d_off)
+	push %ax # (*d_seg)
+	call mem_cpy
+	add $0x0A, %sp
 
 	call vga_clr_line
 

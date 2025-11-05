@@ -36,10 +36,16 @@ kbd_key_up:
 	call bufzero
 	add $0x02, %sp
 
-	push $cl_lbuf
-	push $cl_hist_lbuf
-	call bufcpy
-	add $0x04, %sp
+	xor %ax, %ax
+	mov (cl_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push $cl_lbuf # (*s_off)
+	push %ax # (*s_seg)
+	push $cl_hist_lbuf # (*d_off)
+	push %ax # (*d_seg)
+	call mem_cpy
+	add $0x0A, %sp
 
 .cont:
 	call hist_upd_cl

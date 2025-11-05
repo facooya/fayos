@@ -24,7 +24,6 @@ kern/mem/mem_data.s \
 kern/mem/mem_alloc.s \
 kern/mem/mem_free.s \
 \
-kern/lib/bufcpy.s \
 kern/lib/bufzero.s \
 \
 kern/dbg/dbg_args.s \
