@@ -159,9 +159,15 @@ exec_cmd:
 
 # {DONE}
 .done:
-	push $write_buf
-	call bufzero
-	add $0x02, %sp
+	xor %ax, %ax
+	mov (write_buf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $write_buf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
 	pop %bx
 	pop %di

@@ -27,18 +27,26 @@ kbd_key_down:
 	jmp .cont
 
 .load:
-	push $cl_lbuf
-	call bufzero
-	add $0x02, %sp
+	# zero
+	xor %ax, %ax
+	mov (cl_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_lbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
+	# cpy
 	xor %ax, %ax
 	mov (cl_hist_lbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
-	push $cl_hist_lbuf # (*s_off)
-	push %ax # (*s_seg)
-	push $cl_lbuf # (*d_off)
-	push %ax # (*d_seg)
+	push $cl_hist_lbuf # (&s_off)
+	push %ax # (&s_seg)
+	push $cl_lbuf # (&d_off)
+	push %ax # (&d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

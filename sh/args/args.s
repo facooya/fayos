@@ -68,9 +68,15 @@ proc_args:
 
 .exit:
 	# {zero}
-	push $cl_lbuf
-	call bufzero
-	add $0x02, %sp
+	xor %ax, %ax
+	mov (cl_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_lbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 	call ._zero
 
 	mov $0x01, %ax
@@ -85,9 +91,15 @@ proc_args:
 	ret
 
 ._zero:
-	push $tmp_buf
-	call bufzero
-	add $0x02, %sp
+	xor %ax, %ax
+	mov (tmp_buf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $tmp_buf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
 	call clear_redir_buf
 

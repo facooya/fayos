@@ -32,10 +32,18 @@ kbd_key_up:
 	test %ax, %ax
 	jz .cont
 
-	push $cl_hist_lbuf
-	call bufzero
-	add $0x02, %sp
+	# zero
+	xor %ax, %ax
+	mov (cl_hist_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_hist_lbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
+	# cpy
 	xor %ax, %ax
 	mov (cl_lbuf), %cx
 	add $0x02, %cx

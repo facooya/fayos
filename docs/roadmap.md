@@ -2,7 +2,6 @@
 ## WIP
 
 ## PRIORITY
-- remove bufzero, bufcmp
 - all in one path
 - ind add use file type
 

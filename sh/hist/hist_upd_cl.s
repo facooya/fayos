@@ -72,9 +72,15 @@ hist_upd_cl:
 	# }}}
 
 	# {{{ clear
-	push $cl_lbuf
-	call bufzero
-	add $0x02, %sp
+	xor %ax, %ax
+	mov (cl_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_lbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
 	call vga_clr_line
 

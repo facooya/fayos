@@ -164,6 +164,17 @@ history:
 	# upd hist_idx
 	mov (file_lines), %ax
 	mov %ax, (hist_idx)
+
+	# zero
+	xor %ax, %ax
+	mov (cl_hist_lbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_hist_lbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 	# }}}
 	# }}}}}
 

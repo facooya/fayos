@@ -17,9 +17,16 @@ fs_tok_path:
 	push %si
 	push %di
 
-	push $path_sbuf
-	call bufzero
-	add $0x02, %sp
+	# zero
+	xor %ax, %ax
+	mov (path_sbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $path_sbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
 
 	# {init.lp}
 	mov 0x04(%bp), %si
