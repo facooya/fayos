@@ -2,6 +2,7 @@
 ## WIP
 
 ## PRIORITY
+- cleanup to file system data
 - all in one path
 - ps1 update
 

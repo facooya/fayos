@@ -39,7 +39,7 @@ cmd_mkdir:
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
 	# (pathc == 1) ? {err}
 	push %si # [s.1:cl_lbuf]
@@ -51,16 +51,16 @@ cmd_mkdir:
 	pop %ax # [s.0:fs_path()]
 	pop %si # [s.1:cl_lbuf]
 
-	# (fs_path() == 1) ? {err}
+	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (fs_path() != 2) ? {err}
+	# (fs_path() != neq_last) ? {err}
 	cmp $0x02, %ax
 	jne .err_name_dup
 	# }}}
 
-	push $F_TYPE_DIR
+	push $F_TYPE_DIR # (f_type)
 	call ind_add
 	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
@@ -90,7 +90,7 @@ cmd_mkdir:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x40 # (f_type)
+	push $F_TYPE_DIR # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
@@ -115,15 +115,16 @@ cmd_mkdir:
 
 .path_pass:
 	mov $fsp+FSP_OFF_CUR, %di
-	push FSP_OFF_INUM(%di)
-	push FSP_OFF_INUM+0x02(%di)
-	push $fsp+FSP_OFF_CUR
+	push FSP_OFF_INUM(%di) # (inum_lo)
+	push FSP_OFF_INUM+0x02(%di) # (inum_hi)
+	push $fsp+FSP_OFF_CUR # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
@@ -132,9 +133,9 @@ cmd_mkdir:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = true:off, false:1>
+	# <ax = eq:off, neq:1>
 
-	# (de_seek() != false) ? {err} : {run}
+	# (de_seek() != neq) ? {err} : {run}
 	cmp $0x01, %ax
 	jnz .err_name_dup
 	jmp .run
@@ -162,8 +163,7 @@ cmd_mkdir:
 	add $0x02, %si
 	add %ax, %si
 
-	mov $0x40, %ax
-	push %ax # (f_type)
+	push $F_TYPE_DIR # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)

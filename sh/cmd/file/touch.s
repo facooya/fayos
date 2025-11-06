@@ -77,13 +77,14 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si
 
-	push $fsp+FSP_OFF_DIR
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x80 # (f_type)
+	push $F_TYPE_FILE # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
@@ -112,16 +113,16 @@ cmd_touch:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = true:off, false:1>
+	# <ax = {eq:off, neq:1}>
 
-	# (de_seek() != false) ? {err} : {run}
+	# (de_seek() != neq) ? {err} : {run}
 	cmp $0x01, %ax
 	jnz .err_name_dup
 	jmp .run
 	# }}}
 
 .run:
-	push $F_TYPE_FILE
+	push $F_TYPE_FILE # (f_type)
 	call ind_add
 	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
@@ -140,8 +141,7 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si
 
-	mov $0x80, %ax
-	push %ax # (f_type)
+	push $F_TYPE_FILE # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)

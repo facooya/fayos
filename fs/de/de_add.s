@@ -51,7 +51,7 @@ de_add:
 
 	# write info
 	mov 0x0A(%bp), %ax # (f_type)
-	mov %al, %es:DE_OFF_FILE_TYPE(%bx)
+	mov %al, %es:DE_OFF_F_TYPE(%bx)
 	mov 0x08(%bp), %si # (*name_str)
 	push %si
 	xor %ax, %ax

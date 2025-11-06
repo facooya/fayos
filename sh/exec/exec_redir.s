@@ -100,7 +100,7 @@ exec_redir:
 	# }}}
 
 	# (file_type != file) ? {err} : {run}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
 	cmp $0x80, %al
 	jne .err_file_type
 

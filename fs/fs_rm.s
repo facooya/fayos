@@ -32,7 +32,7 @@ fs_rm:
 	# <ax = {true:off, false:1}>
 	add %ax, %bx
 
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
 	cmp $0x40, %al
 	je .dir__down
 	jmp .done # HACK TODO: file
@@ -71,7 +71,7 @@ fs_rm:
 	jz .dir__find_step
 
 	# (f_type == dir) ? {chk}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
 	cmp $0x40, %al
 	je .dir__find_chk
 	jmp .dir__find_step

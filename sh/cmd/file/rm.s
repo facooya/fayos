@@ -40,7 +40,7 @@ cmd_rm:
 	call fs_path
 	add $0x02, %sp
 	# <mod: fsp &dir, fsp &base>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
 	# (fs_path() == 1) ? {err}
 	cmp $0x01, %ax
@@ -67,16 +67,16 @@ cmd_rm:
 	add $0x02, %si
 	add %ax, %si
 
-	push %si
-	push $fsp+FSP_OFF_DIR
+	push %si # (&name)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}>
+	# <ax = {eq:off, neq:1}>
 	add %ax, %bx
 
 	# (file_type != file) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x80, %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_FILE, %al
 	jne .err_file_type
 
 	# {{{ remove
@@ -114,19 +114,19 @@ cmd_rm:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
+	# <ax = {eq:off, neq:1}>
 
-	# (de_seek() == false) ? {err} : {run}
+	# (de_seek() == neq) ? {err} : {run}
 	cmp $0x01, %ax
 	je .err_file_no
 	add %ax, %bx
 	jmp .run
 	# }}}
 
-# {TASK}
 .run:
-	# (file_type != file) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x80, %al
+	# (f_type != file) ? {err}
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_FILE, %al
 	jne .err_file_type
 
 	# {{{

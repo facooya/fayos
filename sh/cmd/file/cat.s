@@ -40,13 +40,13 @@ cmd_cat:
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() == 1) ? {err}
+	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (fs_path() == 2) ? {err}
+	# (fs_path() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_file_no
 	# }}}
@@ -61,16 +61,16 @@ cmd_cat:
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
 
-	push %cx
-	push %bx
-	push %es
+	push %cx # (size)
+	push %bx # (&off)
+	push %es # (&seg)
 	call putns
 	add $0x06, %sp
 	jmp .done
 
 .path_pass:
 	# {{{ de seek
-	push $fsp+FSP_OFF_CUR
+	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -87,9 +87,9 @@ cmd_cat:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}>
+	# <ax = {eq:off, neq:1}>
 
-	# (de_seek() == false) ? {err} : {run}
+	# (de_seek() == neq) ? {err} : {run}
 	cmp $0x01, %ax
 	je .err_file_no
 	add %ax, %bx
@@ -97,9 +97,9 @@ cmd_cat:
 	# }}}
 
 .run:
-	# (file_type != file) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x80, %al
+	# (f_type != file) ? {err}
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_FILE, %al
 	jne .err_file_type
 
 	mov %es:DE_OFF_INUM(%bx), %ax
@@ -120,9 +120,9 @@ cmd_cat:
 	# putns
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
-	push %cx
-	push %bx
-	push %es
+	push %cx # (size)
+	push %bx # (&off)
+	push %es # (&seg)
 	call putns
 	add $0x06, %sp
 	jmp .done

@@ -115,7 +115,7 @@ fs_read_path:
 	sub $0x01, %cx
 	test %cx, %cx
 	jz .done__last
-	jmp .err_inv_path
+	jmp .exit
 
 # {DONE}
 .done:
@@ -151,16 +151,3 @@ fs_read_path:
 	pop %si
 	pop %es
 	ret
-
-# {ERR}
-.err_inv_path:
-	push $emsg_inv_path
-	call vga_puts
-	add $0x02, %sp
-
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-
-	jmp .exit

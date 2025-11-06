@@ -42,17 +42,23 @@ cmd_cd:
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() != done) ? {err}
-	test %ax, %ax
-	jnz .err_inv_path
+	# (fs_path() == exit) ? {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+	# (fs_path() == neq_last) ? {err}
+	cmp $0x02, %ax
+	je .err_dir_no
 	# }}}
 
-	# TODO: dir chk
-
-	# upd
 	mov $fsp+FSP_OFF_BASE, %si
+
+	# (f_type != dir) ? {err}
+	mov FSP_OFF_F_TYPE(%si), %ax
+	cmp $F_TYPE_DIR, %ax
+	jne .err_dir_type
+
 	push FSP_OFF_INUM(%si)
 	push FSP_OFF_INUM+0x02(%si)
 	push $fsp+FSP_OFF_CUR
@@ -74,18 +80,17 @@ cmd_cd:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}>
+	# <ax = {eq:off, neq:1}>
 
-	# (de_seek() == no_match)
-	# ? {err} : off+=ax;{run}
+	# (de_seek() == neq) ? {err} : {run}
 	cmp $0x01, %ax
 	je .err_dir_no
 	add %ax, %bx
 	# }}}
 
 	# (file_type != dir) ? {err} : {run}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x40, %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
 	# upd

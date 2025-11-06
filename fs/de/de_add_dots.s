@@ -37,7 +37,7 @@ de_add_dots:
 
 	# write info
 	mov $DE_DOT_INFO, %ax
-	mov %ah, %es:DE_OFF_FILE_TYPE(%bx)
+	mov %ah, %es:DE_OFF_F_TYPE(%bx)
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 
 	# write rec_size
@@ -73,7 +73,7 @@ de_add_dots:
 
 	# write info
 	mov $DE_DOTS_INFO, %ax
-	mov %ah, %es:DE_OFF_FILE_TYPE(%bx)
+	mov %ah, %es:DE_OFF_F_TYPE(%bx)
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 
 	# write rec_size

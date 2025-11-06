@@ -34,13 +34,13 @@ cmd_ls:
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() == 1) ? {err}
+	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
 
-	# (fs_path() == 2) ? {err}
+	# (fs_path() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_dir_no
 	# }}}
@@ -100,19 +100,19 @@ cmd_ls:
 
 	# {{{ cl_lbuf[argv[1]]
 	# (file_type != dir) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x40, %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
 	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax
-	push %dx
-	push $fsp+FSP_OFF_TMP
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
-	push $fsp+FSP_OFF_TMP
+	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -141,16 +141,16 @@ cmd_ls:
 	mov %es:DE_OFF_NAME_SIZE(%bx), %cl
 
 .run__name_lp:
-	# (name_len == 0) ? {end}
+	# (name_size == 0) ? {end}
 	test %cx, %cx
 	jz .run__name_end
 
-	# copy
+	# cpy
 	mov %es:(%si), %al
 	call putc
 
-	add $0x01, %si
-	sub $0x01, %cx
+	inc %si
+	dec %cx
 	jmp .run__name_lp
 
 .run__name_end:
@@ -163,7 +163,7 @@ cmd_ls:
 	add %ax, %bx
 	sub %ax, %dx # file_size--
 
-	# (file_size <= 0) ? {done} : {lp}
+	# (f_size <= 0) ? {done} : {lp}
 	cmp $0x00, %dx
 	jle .done
 	jmp .run__lp

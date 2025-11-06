@@ -36,15 +36,18 @@ cmd_rmdir:
 	jne .path_pass
 
 	# {{{ path
-	push %si
+	push %si # (&name)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() != done) ? {err}
-	test %ax, %ax
-	jnz .err_inv_path
+	# (fs_path() == exit) ? {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+	# (fs_path() == neq_last) ? {err}
+	cmp $0x02, %ax
+	je .err_dir_no
 
 	# (pathc == 1) ? {err}
 	mov $path_cv, %si
@@ -73,12 +76,12 @@ cmd_rmdir:
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}>
+	# <ax = {eq:off, neq:1}>
 	add %ax, %bx
 
 	# (f_type != dir) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x40, %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
 	push %si # (&name)
@@ -99,16 +102,16 @@ cmd_rmdir:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
-	# <ax = {true:off, false:1}>
+	# <ax = {eq:off, neq:1}>
 	
-	# (de_seek() == false) ? {err}
+	# (de_seek() == neq) ? {err}
 	cmp $0x01, %ax
 	je .err_dir_no
 	add %ax, %bx
 
 	# (f_type != dir) ? {err}
-	mov %es:DE_OFF_FILE_TYPE(%bx), %al
-	cmp $0x40, %al
+	mov %es:DE_OFF_F_TYPE(%bx), %al
+	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
 	push %si # (&name)
