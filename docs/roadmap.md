@@ -3,7 +3,7 @@
 
 ## PRIORITY
 - all in one path
-- ind add use file type
+- ps1 update
 
 ## TODO
 - support relative path

@@ -99,7 +99,7 @@ history:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	mov FSP_OFF_F_SIZE(%si), %ax
 	add %ax, %bx
 
 .append:
@@ -140,9 +140,9 @@ history:
 
 	# {{{ update .history size
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	mov FSP_OFF_F_SIZE(%si), %ax
 	add %cx, %ax
-	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %ax, FSP_OFF_F_SIZE(%si)
 	push %si
 	call fsp_write
 	add $0x02, %sp

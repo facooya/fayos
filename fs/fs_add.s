@@ -16,7 +16,9 @@ fs_add:
 	mov %sp, %bp
 	push %si
 
+	push $F_TYPE_DIR
 	call ind_add
+	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
 
 	push %ax # (inum_lo)
@@ -34,9 +36,9 @@ fs_add:
 	# <ax = rec_size>
 
 	mov $fsp+FSP_OFF_CUR, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp

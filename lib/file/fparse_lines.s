@@ -31,7 +31,7 @@ fparse_lines:
 	mov %ax, %es
 	mov 0x06(%bp), %bx
 	mov 0x08(%bp), %si # (fsp *src)
-	mov FSP_OFF_IND_FILE_SIZE(%si), %dx
+	mov FSP_OFF_F_SIZE(%si), %dx
 
 	mov $file_linev, %di
 	xor %ax, %ax

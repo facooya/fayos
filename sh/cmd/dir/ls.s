@@ -53,7 +53,7 @@ cmd_ls:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_BASE, %di
-	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
+	mov FSP_OFF_F_SIZE(%di), %dx # f_size
 	jmp .run
 
 .path_pass:
@@ -70,7 +70,7 @@ cmd_ls:
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov FSP_OFF_IND_FILE_SIZE(%di), %dx # f_size
+	mov FSP_OFF_F_SIZE(%di), %dx # f_size
 
 	# {{{ argc 1
 	# (argc == 1) ? {run} : de_seek()
@@ -120,7 +120,7 @@ cmd_ls:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %dx # f_size
+	mov FSP_OFF_F_SIZE(%si), %dx # f_size
 	jmp .run
 	# }}}
 

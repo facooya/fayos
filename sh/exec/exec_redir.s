@@ -69,7 +69,7 @@ exec_redir:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx # f_size
+	mov FSP_OFF_F_SIZE(%si), %cx # f_size
 	xor %ax, %ax
 	push %bx
 	jmp .run
@@ -120,7 +120,7 @@ exec_redir:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	xor %ax, %ax
 	push %bx
 	jmp .run
@@ -168,7 +168,7 @@ exec_redir:
 
 .run__end:
 	mov $fsp+FSP_OFF_TMP, %si
-	mov %dx, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %dx, FSP_OFF_F_SIZE(%si)
 	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call fsp_write
 	add $0x02, %sp

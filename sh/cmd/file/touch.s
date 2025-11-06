@@ -54,7 +54,9 @@ cmd_touch:
 	jne .err_name_dup
 	# }}}
 
+	push $F_TYPE_FILE
 	call ind_add
+	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
 
 	push %ax # (inum_lo)
@@ -90,9 +92,9 @@ cmd_touch:
 	# <ax = rec_size>
 
 	mov $fsp+FSP_OFF_DIR, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp
@@ -119,7 +121,9 @@ cmd_touch:
 	# }}}
 
 .run:
+	push $F_TYPE_FILE
 	call ind_add
+	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
 
 	mov $fsp+FSP_OFF_TMP, %si
@@ -146,9 +150,9 @@ cmd_touch:
 	# <ax = rec_size>
 
 	mov $fsp+FSP_OFF_CUR, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp

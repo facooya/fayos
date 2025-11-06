@@ -23,17 +23,17 @@ dbg_fsp:
 
 	mov 0x04(%bp), %si
 
-	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	mov FSP_OFF_F_SIZE(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp
 
-	mov FSP_OFF_IND_FILE_TYPE(%si), %ax
+	mov FSP_OFF_F_TYPE(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp
 
-	mov FSP_OFF_IND_BLK_0(%si), %ax
+	mov FSP_OFF_BLK_0(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp

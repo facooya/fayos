@@ -6,8 +6,8 @@
 
 .equ IND_SIZE, 0x20
 
-.equ IND_OFF_FILE_SIZE, 0x00
-.equ IND_OFF_FILE_TYPE, 0x02
+.equ IND_OFF_F_SIZE, 0x00
+.equ IND_OFF_F_TYPE, 0x02
 .equ IND_OFF_BLK_LEN, 0x03
 
 .equ IND_OFF_BLK_0, 0x04

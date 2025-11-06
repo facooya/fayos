@@ -11,7 +11,9 @@
 
 # sb_make_root()
 sb_make_root:
+	push $F_TYPE_DIR # (f_type)
 	call ind_add
+	add $0x02, %sp
 	# <dx:ax = inum_hi:inum_lo>
 
 	call fsp_init

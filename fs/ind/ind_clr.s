@@ -5,6 +5,7 @@
 # [Index Node] Clear index node
 
 .include "drv/disk.s"
+.include "fs/fs.s"
 .include "fs/ind.s"
 .section .text
 .code16
@@ -36,9 +37,12 @@ ind_clr:
 
 	# clear block # TODO: clear all block
 	xor %ax, %ax
-	mov %ax, %es:IND_OFF_FILE_SIZE(%bx)
+	mov %ax, %es:IND_OFF_F_SIZE(%bx)
 	mov %ax, %es:IND_OFF_BLK_0(%bx)
 	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
+
+	mov $F_TYPE_RM, %ax
+	mov %ax, %es:IND_OFF_F_TYPE(%bx)
 
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi

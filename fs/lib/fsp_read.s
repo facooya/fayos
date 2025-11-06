@@ -62,8 +62,8 @@ fsp_read:
 	mov 0x04(%bp), %di
 
 	# set lba
-	push FSP_OFF_IND_BLK_0(%di)
-	push FSP_OFF_IND_BLK_0+0x02(%di)
+	push FSP_OFF_BLK_0(%di)
+	push FSP_OFF_BLK_0+0x02(%di)
 	call fs_blk_to_lba
 	add $0x04, %sp
 	# <dx:ax = lba_hi:lba_lo>

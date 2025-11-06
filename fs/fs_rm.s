@@ -57,7 +57,7 @@ fs_rm:
 	add $0x18, %bx
 	mov $0x18, %cx
 
-	mov FSP_OFF_IND_FILE_SIZE(%si), %dx
+	mov FSP_OFF_F_SIZE(%si), %dx
 	sub $0x18, %dx
 	cmp $0x00, %dx
 	jle .dir__rm
@@ -102,7 +102,7 @@ fs_rm:
 
 	# (f_size == dots) ? {find_step} : {down_lp}
 	mov $fsp+FSP_OFF_BASE, %di # HACK
-	mov FSP_OFF_IND_FILE_SIZE(%di), %ax
+	mov FSP_OFF_F_SIZE(%di), %ax
 	cmp $0x18, %ax
 	je .dir__find_step
 	jmp .dir__down
@@ -117,9 +117,9 @@ fs_rm:
 	mov %ax, %bx
 
 	# { pre upd
-	mov FSP_OFF_IND_FILE_SIZE(%si), %dx
+	mov FSP_OFF_F_SIZE(%si), %dx
 	mov $0x18, %ax
-	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %ax, FSP_OFF_F_SIZE(%si)
 
 	push %ax # [s.f0:dots_size]
 	push %dx # [s.f1:f_size]

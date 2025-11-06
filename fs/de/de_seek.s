@@ -33,7 +33,7 @@ de_seek:
 	mov %ax, %bx
 
 	mov 0x04(%bp), %si # (fsp *src)
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx # file_size
+	mov FSP_OFF_F_SIZE(%si), %cx # file_size
 
 	push %cx # [s.f0:file_size]
 	mov 0x06(%bp), %si # (*name)

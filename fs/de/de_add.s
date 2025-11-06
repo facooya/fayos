@@ -28,7 +28,7 @@ de_add:
 	push %bx
 
 	mov 0x06(%bp), %si # (fsp *src)
-	mov FSP_OFF_IND_FILE_SIZE(%si), %ax
+	mov FSP_OFF_F_SIZE(%si), %ax
 	push %ax # [s.0:file_size]
 
 	push %si # (fsp *src)

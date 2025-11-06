@@ -59,7 +59,7 @@ cmd_cat:
 	mov %ax, %bx
 
 	mov $fsp+FSP_OFF_BASE, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 
 	push %cx
 	push %bx
@@ -119,7 +119,7 @@ cmd_cat:
 
 	# putns
 	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	push %cx
 	push %bx
 	push %es

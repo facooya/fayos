@@ -60,7 +60,7 @@ de_add_dots:
 
 	pop %ax # [s.0:rec_size]
 	mov 0x04(%bp), %si # (fsp *dst)
-	mov %ax, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %ax, FSP_OFF_F_SIZE(%si)
 	add %ax, %bx
 
 	# {{{ dots
@@ -96,9 +96,9 @@ de_add_dots:
 
 	pop %ax # [s.0:rec_size]
 	mov 0x04(%bp), %si # (fsp *dst)
-	mov FSP_OFF_IND_FILE_SIZE(%si), %cx
+	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
-	mov %cx, FSP_OFF_IND_FILE_SIZE(%si)
+	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp

@@ -10,12 +10,14 @@
 .code16
 .global ind_add
 
-# ind_add()
+# ind_add(ub16 f_type)
 # <mod> blk bitmap
 # <mod> inum bitmap
 # <mod> inode table
 # <ret> dx:ax = inum_hi:inum_lo
 ind_add:
+	push %bp
+	mov %sp, %bp
 	push %es
 	push %si
 	push %bx
@@ -61,6 +63,10 @@ ind_add:
 	mov (bbnum), %ax
 	mov %ax, %es:IND_OFF_BLK_0(%bx)
 
+	# f_type
+	mov 0x04(%bp), %ax # (f_type)
+	mov %ax, %es:IND_OFF_F_TYPE(%bx)
+
 	# write inode table
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi
@@ -105,4 +111,5 @@ ind_add:
 	pop %bx
 	pop %si
 	pop %es
+	pop %bp
 	ret
