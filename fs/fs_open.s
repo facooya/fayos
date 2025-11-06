@@ -26,7 +26,6 @@ fs_open:
 
 .fd:
 	xor %cx, %cx
-	mov $ft, %di
 
 .fd__lp:
 	# (fflg == 0) ? {end} : {lp}
@@ -39,8 +38,6 @@ fs_open:
 	jmp .fd__lp
 
 .fd__end:
-	mov %cx, (fd)
-
 	jmp .file_add
 
 	# TEST

@@ -81,9 +81,11 @@ cmd_rm:
 
 	# {{{ remove
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %ax, (clear_inum)
-	mov %es:DE_OFF_INUM+0x02(%bx), %ax
-	mov %ax, (clear_inum+0x02)
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	call ind_clr
+	add $0x04, %sp
 
 	# clear inum
 	xor %ax, %ax
@@ -93,11 +95,6 @@ cmd_rm:
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_write_fsp
 	add $0x02, %sp
-
-	push (clear_inum)
-	push (clear_inum+0x02)
-	call ind_clr
-	add $0x04, %sp
 	# }}}
 	jmp .done
 
@@ -131,9 +128,11 @@ cmd_rm:
 
 	# {{{
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %ax, (clear_inum)
-	mov %es:DE_OFF_INUM+0x02(%bx), %ax
-	mov %ax, (clear_inum+0x02)
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	call ind_clr
+	add $0x04, %sp
 
 	# clear inum
 	xor %ax, %ax
@@ -144,11 +143,6 @@ cmd_rm:
 	push $fsp+FSP_OFF_CUR
 	call disk_write_fsp
 	add $0x02, %sp
-
-	push (clear_inum)
-	push (clear_inum+0x02)
-	call ind_clr
-	add $0x04, %sp
 	# }}}
 	jmp .done
 

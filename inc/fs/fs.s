@@ -50,12 +50,3 @@
 .equ FSP_OFF_ROOT, FSP_SIZE*0x05
 .equ FSP_OFF_HIST, FSP_SIZE*0x06
 # }
-
-.macro FS_INIT_INUM
-	mov $(FS_ROOT_INUM&0xFFFF), %ax
-	mov %ax, (root_inum)
-	mov %ax, (inum)
-	mov $(FS_ROOT_INUM>>0x10), %ax
-	mov %ax, (root_inum+0x02)
-	mov %ax, (inum+0x02)
-.endm

@@ -85,12 +85,10 @@ sb_run:
 	call disk_load_dpi
 	call sb_set_bm
 
-	FS_INIT_INUM
 	call sb_make_root
 	jmp .done
 
 .run__init:
-	FS_INIT_INUM
 	call disk_set_dpi
 	call disk_load_dpi
 

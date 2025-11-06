@@ -137,24 +137,8 @@ exec_cmd:
 	# {end.done}
 	jmp .done
 
-# {TASK}
 .redir:
-	# save inum
-	mov (inum), %ax
-	push %ax
-	mov (inum+0x02), %ax
-	push %ax
-
-	# call
 	call exec_redir
-
-	# restore inum
-	pop %ax
-	mov %ax, (inum+0x02)
-	pop %ax
-	mov %ax, (inum)
-
-	# {end.done}
 	jmp .done
 
 # {DONE}
