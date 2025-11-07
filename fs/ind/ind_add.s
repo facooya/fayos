@@ -44,6 +44,7 @@ ind_add:
 	push %es
 	call bm_alloc
 	add $0x06, %sp
+	# <ax = bit_num>
 	push %ax # [s.ret0:inum_lo]
 	# }}}
 

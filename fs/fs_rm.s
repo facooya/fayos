@@ -11,6 +11,7 @@
 .global fs_rm
 
 # fs_rm(fsp *src, ub8 *name)
+# <ret> ax = {done:0, exit:1}
 fs_rm:
 	push %bp
 	mov %sp, %bp
@@ -32,10 +33,19 @@ fs_rm:
 	# <ax = {true:off, false:1}>
 	add %ax, %bx
 
+	# (f_type == dir) ? {dir}
 	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $0x40, %al
+	cmp $F_TYPE_DIR, %al
 	je .dir__down
-	jmp .done # HACK TODO: file
+	# (f_type == file) ? {file} : {exit}
+	cmp $F_TYPE_FILE, %al
+	je .file__rm
+	jmp .exit
+
+.file__rm:
+	mov %es:DE_OFF_INUM(%bx), %ax
+	mov %es:DE_OFF_INUM+0x02(%bx), %dx
+	jmp .last__rm
 
 .dir__down:
 	mov $fsp+FSP_OFF_TMP, %si
@@ -196,6 +206,7 @@ fs_rm:
 	cmp %dx, %cx
 	jne .dir__down
 
+.last__rm:
 	push %ax # (inum_lo)
 	push %dx # (inum_hi)
 	call ind_clr
@@ -211,7 +222,11 @@ fs_rm:
 	add $0x02, %sp
 	jmp .done
 
+.exit:
+	mov $0x01, %ax # <ret.1:ret_code>
+
 .done:
+	xor %ax, %ax # <ret.0:ret_code>
 	pop %bx
 	pop %di
 	pop %si

@@ -45,18 +45,10 @@ cmd_rm:
 	# (fs_path() == 1) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-
 	# (fs_path() == 2) ? {err}
 	cmp $0x02, %ax
 	je .err_file_no
 	# }}}
-
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
 
 	mov $path_cv, %si
 	mov (%si), %ax # pathc
@@ -69,81 +61,15 @@ cmd_rm:
 
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call de_seek
+	call fs_rm
 	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-	add %ax, %bx
-
-	# (file_type != file) ? {err}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_FILE, %al
-	jne .err_file_type
-
-	# {{{ remove
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	call ind_clr
-	add $0x04, %sp
-
-	# clear inum
-	xor %ax, %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
-
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call disk_write_fsp
-	add $0x02, %sp
-	# }}}
 	jmp .done
 
 .path_pass:
-	# {{{ de_seek
-	push $fsp+FSP_OFF_CUR
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
 	push %si # (&name)
 	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
+	call fs_rm
 	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-
-	# (de_seek() == neq) ? {err} : {run}
-	cmp $0x01, %ax
-	je .err_file_no
-	add %ax, %bx
-	jmp .run
-	# }}}
-
-.run:
-	# (f_type != file) ? {err}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_FILE, %al
-	jne .err_file_type
-
-	# {{{
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	call ind_clr
-	add $0x04, %sp
-
-	# clear inum
-	xor %ax, %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
-
-	# write
-	push $fsp+FSP_OFF_CUR
-	call disk_write_fsp
-	add $0x02, %sp
-	# }}}
 	jmp .done
 
 # {DONE}
