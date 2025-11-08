@@ -56,6 +56,7 @@ fs_read_path:
 	mov FSP_OFF_INUM(%di), %ax
 	mov FSP_OFF_INUM+0x02(%di), %dx
 
+	push %cx # [s.f2:pathc]
 	push %ax # [s.f0:inum_lo]
 	push %dx # [s.f1:inum_hi]
 	push %ax # (inum_lo)
@@ -65,7 +66,8 @@ fs_read_path:
 	add $0x06, %sp
 	pop %dx # [s.f1:inum_hi]
 	pop %ax # [s.f0:inum_lo]
-	jmp .done
+	pop %cx # [s.f2:pathc]
+	jmp .lp
 
 .abs:
 	mov $(FS_ROOT_INUM>>0x10), %dx

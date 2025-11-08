@@ -33,22 +33,16 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
 	# (fs_path() == 1) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-
 	# (fs_path() != 2) ? {err}
 	cmp $0x02, %ax
 	jne .err_name_dup
@@ -93,63 +87,6 @@ cmd_touch:
 	# <ax = rec_size>
 
 	mov $fsp+FSP_OFF_DIR, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, FSP_OFF_F_SIZE(%si)
-	push %si # (fsp &src)
-	call fsp_write
-	add $0x02, %sp
-	jmp .done
-
-.path_pass:
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	# {{{ de seek
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-
-	# (de_seek() != neq) ? {err} : {run}
-	cmp $0x01, %ax
-	jnz .err_name_dup
-	jmp .run
-	# }}}
-
-.run:
-	push $F_TYPE_FILE # (f_type)
-	call ind_add
-	add $0x02, %sp
-	# <dx:ax = inum_hi:inum_lo>
-
-	mov $fsp+FSP_OFF_TMP, %si
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	push %si # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	# {{{ add dentry
-	mov $args, %si
-	mov 0x06(%si), %ax
-	mov $cl_lbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	push $F_TYPE_FILE # (f_type)
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call de_add
-	add $0x08, %sp
-	# <ax = rec_size>
-
-	mov $fsp+FSP_OFF_CUR, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
 	mov %cx, FSP_OFF_F_SIZE(%si)
