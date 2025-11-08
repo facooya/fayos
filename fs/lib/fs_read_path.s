@@ -16,7 +16,7 @@
 # fs_read_path()
 # <req> fsp *root, path_cv, path_sbuf
 # <mod> (fsp *dir, *base)
-# <ret> ax = {done:0, exit:1, ne_last:2}
+# <ret> ax = {done:0, exit:1, neq_last:2}
 fs_read_path:
 	push %es
 	push %si
@@ -27,9 +27,9 @@ fs_read_path:
 	mov (%si), %cx # pathc
 	add $0x02, %si # skip pathc
 
-	# (pathc == 1) ? {root}
+	# (pathc == 1) ? {single}
 	cmp $0x01, %cx
-	je .root
+	je .single
 
 	mov $path_sbuf, %di
 	add $0x02, %di
@@ -39,24 +39,32 @@ fs_read_path:
 	mov (%di), %al # pathv[0]
 	cmp $CHR_SL, %al
 	je .abs
-	jmp .lp
+	jmp .cur
 
-	# TODO: relative path
+.single:
+	# (pathv[0] == slash) ? {root} : {cur}
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	je .single__root
+	mov $fsp+FSP_OFF_CUR, %di
+	jmp .single__run
 
-.root:
+.single__root:
 	mov $fsp+FSP_OFF_ROOT, %di
+
+.single__run:
 	mov FSP_OFF_INUM(%di), %ax
 	mov FSP_OFF_INUM+0x02(%di), %dx
 
-	push %ax
-	push %dx
-	push %ax
-	push %dx
-	push $fsp+FSP_OFF_DIR
+	push %ax # [s.f0:inum_lo]
+	push %dx # [s.f1:inum_hi]
+	push %ax # (inum_lo)
+	push %dx # (inum_hi)
+	push $fsp+FSP_OFF_DIR # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
-	pop %dx
-	pop %ax
+	pop %dx # [s.f1:inum_hi]
+	pop %ax # [s.f0:inum_lo]
 	jmp .done
 
 .abs:
@@ -66,6 +74,13 @@ fs_read_path:
 	# skip pathv[0]
 	add $0x02, %si
 	sub $0x01, %cx
+	jmp .lp
+
+.cur:
+	mov $fsp+FSP_OFF_CUR, %di
+	mov FSP_OFF_INUM(%di), %ax
+	mov FSP_OFF_INUM+0x02(%di), %dx
+	jmp .lp
 
 .lp:
 	# (pathc == 0) ? {done}

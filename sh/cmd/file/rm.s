@@ -30,11 +30,6 @@ cmd_rm:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
@@ -61,13 +56,6 @@ cmd_rm:
 
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call fs_rm
-	add $0x04, %sp
-	jmp .done
-
-.path_pass:
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
 	call fs_rm
 	add $0x04, %sp
 	jmp .done
