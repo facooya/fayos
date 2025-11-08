@@ -30,31 +30,45 @@ cmd_rmdir:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
-
-	# (fs_path() == exit) ? {err}
-	cmp $0x01, %ax
-	je .err_inv_path
-	# (fs_path() == neq_last) ? {err}
-	cmp $0x02, %ax
-	je .err_dir_no
+	mov %ax, %cx
 
 	# (pathc == 1) ? {err}
 	mov $path_cv, %si
-	mov (%si), %cx
-	cmp $0x01, %cx
-	je .err_dir_root
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .single__chk
+	jmp .single__ok
+
+.single__chk:
+	mov $path_sbuf, %si
+	add $0x02, %si
+	mov (%si), %ax
+	cmp $0x002E, %ax
+	je .err_dir_self
+	cmp $0x2E2E, %ax
+	je .single__chk_par
+	jmp .single__ok
 	# }}}
+
+.single__chk_par:
+	mov 0x02(%si), %al
+	test %al, %al
+	jz .err_dir_self
+	jmp .single__ok
+
+.single__ok:
+	# (fs_path() == exit) ? {err}
+	cmp $0x01, %cx
+	je .err_inv_path
+	# (fs_path() == neq_last) ? {err}
+	cmp $0x02, %cx
+	je .err_dir_no
 
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
@@ -90,36 +104,6 @@ cmd_rmdir:
 	add $0x04, %sp
 	jmp .done
 
-.path_pass:
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-	
-	# (de_seek() == neq) ? {err}
-	cmp $0x01, %ax
-	je .err_dir_no
-	add %ax, %bx
-
-	# (f_type != dir) ? {err}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_DIR, %al
-	jne .err_dir_type
-
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call fs_rm
-	add $0x04, %sp
-	jmp .done
-
 # {DONE}
 .done:
 	xor %ax, %ax
@@ -147,6 +131,10 @@ cmd_rmdir:
 
 .err_dir_root:
 	push $emsg_dir_root
+	jmp .err_hdl
+
+.err_dir_self:
+	push $emsg_dir_self
 	jmp .err_hdl
 
 .err_inv_path:

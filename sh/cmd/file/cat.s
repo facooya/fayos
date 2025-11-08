@@ -30,11 +30,6 @@ cmd_cat:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
@@ -61,65 +56,6 @@ cmd_cat:
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
 
-	push %cx # (size)
-	push %bx # (&off)
-	push %es # (&seg)
-	call putns
-	add $0x06, %sp
-	jmp .done
-
-.path_pass:
-	# {{{ de seek
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
-	mov $args, %si
-	mov 0x06(%si), %ax # argv[1]
-	mov $cl_lbuf, %si
-	add $0x02, %si
-	add %ax, %si # cl_lbuf[argv[1]]
-
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-
-	# (de_seek() == neq) ? {err} : {run}
-	cmp $0x01, %ax
-	je .err_file_no
-	add %ax, %bx
-	jmp .run
-	# }}}
-
-.run:
-	# (f_type != file) ? {err}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_FILE, %al
-	jne .err_file_type
-
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_TMP # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
-	# putns
-	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
 	push %cx # (size)
 	push %bx # (&off)
 	push %es # (&seg)

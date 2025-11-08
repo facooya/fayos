@@ -19,6 +19,7 @@
 .global emsg_dir_type
 .global emsg_dir_dup
 .global emsg_dir_root
+.global emsg_dir_self
 
 .global emsg_name_dup
 .global emsg_inv_path
@@ -38,6 +39,7 @@ emsg_dir_no: .asciz "Directory not found."
 emsg_dir_type: .asciz "Not a directory."
 emsg_dir_dup: .asciz "Directory already exists."
 emsg_dir_root: .asciz "Directory is root."
+emsg_dir_self: .asciz "Can't remove this directory."
 
 emsg_name_dup: .asciz "Name already exists."
 emsg_inv_path: .asciz "Invalid path."
