@@ -29,108 +29,16 @@ cmd_mkdir:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# {{{ path
-	push %si # (&name)
-	call fs_path
-	add $0x02, %sp
-	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, neq_last:2}>
-	mov %ax, %cx
-
-	# (pathc == 1) ? {chk}
-	mov $path_cv, %si
-	mov (%si), %ax
-	cmp $0x01, %ax
-	je .single__chk
-	jmp .single__ok
-
-.single__chk:
-	mov $path_sbuf, %si
-	add $0x02, %si
-	mov (%si), %al
-
-	# (single_chr == slash) ? {err}
-	cmp $CHR_SL, %al
-	je .err_dir_root
-	jmp .single__ok
-
-.single__ok:
-	# (fs_path() == exit) ? {err}
-	cmp $0x01, %cx
-	je .err_inv_path
-	# (fs_path() != neq_last) ? {err}
-	cmp $0x02, %cx
-	jne .err_name_dup
-	# }}}
-
 	push $F_TYPE_DIR # (f_type)
-	call ind_add
-	add $0x02, %sp
-	# <dx:ax = inum_hi:inum_lo>
-
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	# {{{ de add
-	mov $path_cv, %si
-	mov (%si), %cx # pathc
-	add $0x02, %si
-	add %cx, %si
-	add %cx, %si
-	sub $0x02, %si # pathv[last]
-
-	mov (%si), %ax
-	mov $path_sbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	push $fsp+FSP_OFF_DIR
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $F_TYPE_DIR # (f_type)
-	push %si # (&name)
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call de_add
-	add $0x08, %sp
-	# <ax = rec_size>
-
-	mov $fsp+FSP_OFF_DIR, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, FSP_OFF_F_SIZE(%si)
-	push %si # (fsp &src)
-	call fsp_write
-	add $0x02, %sp
-
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call de_add_dots
+	push %si # (&path)
+	call fs_add
 	add $0x04, %sp
-	# }}}
+	# <ax = {done:0, false:1}>
 
-	# { upd f_size if fsp_dir is fsp_cur, fsp_par
-	mov $fsp+FSP_OFF_CUR, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
-
-	mov $fsp+FSP_OFF_PAR, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_PAR
-	call fsp_read
-	add $0x06, %sp
-	# }
-	jmp .done
+	# (fs_add() == done) ? {done} : {exit}
+	test %ax, %ax
+	jz .done
+	jmp .exit
 
 # {DONE}
 .done:
@@ -151,18 +59,6 @@ cmd_mkdir:
 # {ERR}
 .err_arg_req:
 	push $emsg_arg_req
-	jmp .err_hdl
-
-.err_dir_root:
-	push $emsg_dir_root
-	jmp .err_hdl
-
-.err_inv_path:
-	push $emsg_inv_path
-	jmp .err_hdl
-
-.err_name_dup:
-	push $emsg_name_dup
 	jmp .err_hdl
 
 .err_hdl:

@@ -39,6 +39,7 @@ cmd_touch:
 	add $0x04, %sp
 	# <ax = {done:0, false:1}>
 
+	# (fs_add() == done) ? {done} : {exit}
 	test %ax, %ax
 	jz .done
 	jmp .exit
@@ -62,14 +63,6 @@ cmd_touch:
 # {ERR}
 .err_arg_req:
 	push $emsg_arg_req
-	jmp .err_hdl
-
-.err_name_dup:
-	push $emsg_name_dup
-	jmp .err_hdl
-
-.err_inv_path:
-	push $emsg_inv_path
 	jmp .err_hdl
 
 .err_hdl:

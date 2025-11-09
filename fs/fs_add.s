@@ -36,6 +36,8 @@ fs_add:
 	jne .err_name_dup
 	# }}}
 
+	# TODO: target name chk (/,\,...)
+
 	push 0x06(%bp) # (f_type)
 	call ind_add
 	add $0x02, %sp
