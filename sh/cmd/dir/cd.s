@@ -32,11 +32,6 @@ cmd_cd:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
@@ -66,71 +61,6 @@ cmd_cd:
 	add $0x06, %sp
 
 	call build_ps1_path
-	jmp .ps
-
-.path_pass:
-	# {{{
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {eq:off, neq:1}>
-
-	# (de_seek() == neq) ? {err} : {run}
-	cmp $0x01, %ax
-	je .err_dir_no
-	add %ax, %bx
-	# }}}
-
-	# (file_type != dir) ? {err} : {run}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_DIR, %al
-	jne .err_dir_type
-
-	# upd
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax
-	push %dx
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
-
-	# {{{ add ps1 path
-	mov $args, %si
-	mov 0x06(%si), %ax # argv[1]
-	mov $cl_lbuf, %si
-	add $0x02, %si
-	add %ax, %si # cl_lbuf[argv[1]]
-
-	# (arg == dots) ? {sub}
-	mov (%si), %ax
-	cmp $0x2E2E, %ax
-	je .ps__sub
-
-	# (arg == dot) ? {pass}
-	cmp $0x002E, %ax
-	je .ps__pass
-
-	push %si
-	xor %ax, %ax
-	push %ax
-	call mem_size
-	add $0x04, %sp
-
-	push %ax
-	push %si
-	xor %ax, %ax
-	push %ax
-	call add_ps1_path
-	add $0x06, %sp
-	# }}}
 	jmp .ps
 
 .ps:
