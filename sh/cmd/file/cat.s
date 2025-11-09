@@ -40,11 +40,16 @@ cmd_cat:
 	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-
 	# (fs_path() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_file_no
 	# }}}
+
+	# (f_type != file) ? {err}
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_TYPE(%si), %ax
+	cmp $F_TYPE_FILE, %ax
+	jne .err_file_type
 
 	push $fsp+FSP_OFF_BASE # (fsp &src)
 	call disk_read_fsp

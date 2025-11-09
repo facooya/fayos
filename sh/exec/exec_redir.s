@@ -31,13 +31,7 @@ exec_redir:
 	je .type__write
 	jmp .err_redir_type
 
-# {TASK}
 .type__write:
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
-
 	# {{{ path
 	push %si # (&name)
 	call fs_path
@@ -50,7 +44,11 @@ exec_redir:
 	jnz .err_inv_path
 	# }}}
 
-	# TODO: file type chk
+	# (f_type != file) ? {err}
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_TYPE(%si), %ax
+	cmp $F_TYPE_FILE, %ax
+	jne .err_file_type
 
 	xor %ax, %ax
 	push $FSP_SIZE # (size)
@@ -71,58 +69,6 @@ exec_redir:
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_F_SIZE(%si), %cx # f_size
 	xor %ax, %ax
-	push %bx
-	jmp .run
-
-.path_pass:
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %ax, %bx
-	mov %dx, %es
-
-	# {{{ de_seek
-	mov $redir_buf, %si
-	mov (%si), %ax # type:len
-	add $0x02, %si
-
-	push %si # (&name)
-	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {true:off, false:1}>
-
-	# (de_seek() == false) ? {err}
-	cmp $0x01, %ax
-	je .err_file_no
-	add %ax, %bx
-	# }}}
-
-	# (file_type != file) ? {err} : {run}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $0x80, %al
-	jne .err_file_type
-
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax
-	push %dx
-	push $fsp+FSP_OFF_TMP
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_TMP
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
-	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
-	xor %ax, %ax
-	push %bx
 	jmp .run
 
 .run:
@@ -138,7 +84,7 @@ exec_redir:
 	jmp .run__clear_lp
 
 .run__clear_end:
-	pop %bx # s.1
+	mov FSP_OFF_DISK_MEM(%si), %bx
 	xor %dx, %dx # file_size
 	mov $write_buf, %si
 	mov (%si), %cx # buf.len
@@ -160,11 +106,11 @@ exec_redir:
 	jmp .run__write_lp
 
 .run__write_end:
-	push %dx
+	push %dx # [s.f0:f_size]
 	push $fsp+FSP_OFF_TMP
 	call disk_write_fsp
 	add $0x02, %sp
-	pop %dx
+	pop %dx # [s.f0:f_size]
 
 .run__end:
 	mov $fsp+FSP_OFF_TMP, %si
