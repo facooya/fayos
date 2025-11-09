@@ -56,8 +56,7 @@ history:
 	jmp .save
 
 .create:
-	mov $0x80, %ax
-	push %ax # (f_type)
+	push $F_TYPE_FILE # (f_type)
 	push $.fname_hist # (&name)
 	call fs_add
 	add $0x04, %sp
