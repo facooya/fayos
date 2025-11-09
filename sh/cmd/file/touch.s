@@ -86,6 +86,7 @@ cmd_touch:
 	add $0x08, %sp
 	# <ax = rec_size>
 
+	# upd f_size
 	mov $fsp+FSP_OFF_DIR, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
 	add %ax, %cx
@@ -93,6 +94,22 @@ cmd_touch:
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp
+
+	# { upd f_size if fsp_dir is fsp_cur, fsp_par
+	mov $fsp+FSP_OFF_CUR, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
+
+	mov $fsp+FSP_OFF_PAR, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_PAR
+	call fsp_read
+	add $0x06, %sp
+	# }
 	jmp .done
 
 # {DONE}

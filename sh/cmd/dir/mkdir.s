@@ -114,6 +114,22 @@ cmd_mkdir:
 	call de_add_dots
 	add $0x04, %sp
 	# }}}
+
+	# { upd f_size if fsp_dir is fsp_cur, fsp_par
+	mov $fsp+FSP_OFF_CUR, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_CUR
+	call fsp_read
+	add $0x06, %sp
+
+	mov $fsp+FSP_OFF_PAR, %si
+	push FSP_OFF_INUM(%si)
+	push FSP_OFF_INUM+0x02(%si)
+	push $fsp+FSP_OFF_PAR
+	call fsp_read
+	add $0x06, %sp
+	# }
 	jmp .done
 
 # {DONE}

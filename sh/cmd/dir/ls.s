@@ -19,15 +19,16 @@ cmd_ls:
 	push %bx
 
 	mov $args, %si
+
+	# (argc == 1) ? {cmd_only}
+	mov (%si), %ax # argc
+	cmp $0x01, %ax
+	je .cmd_only
+
 	mov 0x06(%si), %ax # argv[1]
 	mov $cl_lbuf, %si
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
-
-	# (path_buf[0] != slash) ? {pass}
-	mov (%si), %al
-	cmp $CHR_SL, %al
-	jne .path_pass
 
 	# {{{ path
 	push %si # (&name)
@@ -39,11 +40,16 @@ cmd_ls:
 	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-
 	# (fs_path() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_dir_no
 	# }}}
+
+	# (f_type != dir) ? {err}
+	mov $fsp+FSP_OFF_BASE, %di
+	mov FSP_OFF_F_TYPE(%di), %al
+	cmp $F_TYPE_DIR, %al
+	jne .err_dir_type
 
 	push $fsp+FSP_OFF_BASE # (fsp &src)
 	call disk_read_fsp
@@ -56,73 +62,17 @@ cmd_ls:
 	mov FSP_OFF_F_SIZE(%di), %dx # f_size
 	jmp .run
 
-.path_pass:
-	mov $fsp+FSP_OFF_CUR, %di
-	push FSP_OFF_INUM(%di)
-	push FSP_OFF_INUM+0x02(%di)
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_CUR
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	mov FSP_OFF_F_SIZE(%di), %dx # f_size
-
-	# {{{ argc 1
-	# (argc == 1) ? {run} : de_seek()
-	mov $args, %si
-	mov (%si), %ax
-	cmp $0x01, %ax
-	je .run
-	# }}}
-
-	# {{{ de seek
-	mov 0x06(%si), %ax # argv[1]
-	mov $cl_lbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	push %si # (&name)
+.cmd_only:
 	push $fsp+FSP_OFF_CUR # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {true:off, false:1}>
-
-	# (de_seek() == false) ? {err}
-	cmp $0x01, %ax
-	je .err_dir_no
-	add %ax, %bx
-	# }}}
-
-	# {{{ cl_lbuf[argv[1]]
-	# (file_type != dir) ? {err}
-	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $F_TYPE_DIR, %al
-	jne .err_dir_type
-
-	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_F_SIZE(%si), %dx # f_size
+	mov $fsp+FSP_OFF_CUR, %di
+	mov FSP_OFF_F_SIZE(%di), %dx # f_size
 	jmp .run
-	# }}}
 
 .run:
 .run__lp:
