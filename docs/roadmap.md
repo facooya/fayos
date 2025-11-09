@@ -2,7 +2,6 @@
 ## WIP
 
 ## PRIORITY
-- all in one path
 - ps1 update
 
 ## TODO

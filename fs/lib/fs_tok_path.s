@@ -39,7 +39,6 @@ fs_tok_path:
 	cmp $CHR_SL, %al
 	jne .lp
 
-	# TODO: relative path
 	# first slash
 	mov $CHR_SL, %al
 	mov %al, (%di)

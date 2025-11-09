@@ -33,84 +33,15 @@ cmd_touch:
 	add $0x02, %si
 	add %ax, %si # cl_lbuf[argv[1]]
 
-	# {{{ path
-	push %si # (&name)
-	call fs_path
-	add $0x02, %sp
-	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, neq_last:2}>
-
-	# (fs_path() == 1) ? {err}
-	cmp $0x01, %ax
-	je .err_inv_path
-	# (fs_path() != 2) ? {err}
-	cmp $0x02, %ax
-	jne .err_name_dup
-	# }}}
-
-	push $F_TYPE_FILE
-	call ind_add
-	add $0x02, %sp
-	# <dx:ax = inum_hi:inum_lo>
-
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call fsp_read
-	add $0x06, %sp
-
-	mov $path_cv, %si
-	mov (%si), %cx # pathc
-	add $0x02, %si
-	add %cx, %si
-	add %cx, %si
-	sub $0x02, %si # pathv[last]
-
-	mov (%si), %ax
-	mov $path_sbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
 	push $F_TYPE_FILE # (f_type)
-	push %si # (&name)
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call de_add
-	add $0x08, %sp
-	# <ax = rec_size>
+	push %si # (&path)
+	call fs_add
+	add $0x04, %sp
+	# <ax = {done:0, false:1}>
 
-	# upd f_size
-	mov $fsp+FSP_OFF_DIR, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, FSP_OFF_F_SIZE(%si)
-	push %si # (fsp &src)
-	call fsp_write
-	add $0x02, %sp
-
-	# { upd f_size if fsp_dir is fsp_cur, fsp_par
-	mov $fsp+FSP_OFF_CUR, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_CUR
-	call fsp_read
-	add $0x06, %sp
-
-	mov $fsp+FSP_OFF_PAR, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_PAR
-	call fsp_read
-	add $0x06, %sp
-	# }
-	jmp .done
+	test %ax, %ax
+	jz .done
+	jmp .exit
 
 # {DONE}
 .done:

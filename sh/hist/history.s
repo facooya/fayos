@@ -10,11 +10,11 @@
 .include "fs/de.s"
 .include "fs/ind.s"
 
-# TODO: history/cache.s
 .section .data
 .global hist_idx
 hist_idx: .word 0x00
 .fname_hist: .asciz ".history"
+.fpath_hist: .asciz "/.history"
 
 .section .text
 .code16
@@ -57,7 +57,7 @@ history:
 
 .create:
 	push $F_TYPE_FILE # (f_type)
-	push $.fname_hist # (&name)
+	push $.fpath_hist # (&name)
 	call fs_add
 	add $0x04, %sp
 	jmp .save
