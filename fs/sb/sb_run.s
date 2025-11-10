@@ -85,13 +85,24 @@ sb_run:
 	call disk_load_dpi
 	call sb_set_bm
 
-	call sb_make_root
+	# { make root dir
+	push $F_TYPE_DIR # (f_type)
+	call ind_add
+	add $0x02, %sp
+	# <dx:ax = inum_hi:inum_lo>
+
+	call fsp_init
+	push $fsp+FSP_OFF_CUR # (fsp &src)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
+	call de_add_dots
+	add $0x04, %sp
+	call fsp_init
+	# }
 	jmp .done
 
 .run__init:
 	call disk_set_dpi
 	call disk_load_dpi
-
 	call fsp_init
 	jmp .done
 

@@ -45,7 +45,6 @@ fs/fs_path.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
-fs/sb/sb_make_root.s \
 fs/sb/sb_set_bm.s \
 fs/sb/sb_write_dpi.s \
 \
