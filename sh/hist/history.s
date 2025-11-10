@@ -13,7 +13,6 @@
 .section .data
 .global hist_idx
 hist_idx: .word 0x00
-.fname_hist: .asciz ".history"
 .fpath_hist: .asciz "/.history"
 
 .section .text
@@ -28,31 +27,30 @@ history:
 	push %di
 	push %bx
 
-	mov $fsp+FSP_OFF_ROOT, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_ROOT
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_ROOT
-	call disk_read_fsp
+	# { path
+	push $.fpath_hist # (&path)
+	call fs_path
 	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	push $.fname_hist # (&name)
-	push $fsp+FSP_OFF_ROOT # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {true:off, false:1}
-
-	# (de_seek == false) ? {create}
-	cmp $0x01, %ax
+	# (fs_path() == neq_last) ? {create}
+	cmp $0x02, %ax
 	je .create
+	# (fs_path() != done) ? {done} : {save}
+	test %ax, %ax
+	jnz .done
+	# }
 
-	add %ax, %bx
+	# cpy base -> tmp
+	xor %ax, %ax
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_BASE # (&s_off)
+	push %ax # (&s_seg)
+	push $fsp+FSP_OFF_TMP # (&d_off)
+	push %ax # (&d_seg)
+	call mem_cpy
+	add $0x0A, %sp
 	jmp .save
 
 .create:
@@ -60,40 +58,14 @@ history:
 	push $.fpath_hist # (&name)
 	call fs_add
 	add $0x04, %sp
+	# <mod: fsp *tmp>
 	jmp .save
 
 .save:
-	mov $fsp+FSP_OFF_ROOT, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_ROOT
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_ROOT
+	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $.fname_hist # (&name)
-	push $fsp+FSP_OFF_ROOT # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {true:off, false:1}>
-	add %ax, %bx
-
-	mov %es:DE_OFF_INUM(%bx), %ax
-	push %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %ax
-	push %ax
-	push $fsp+FSP_OFF_TMP
-	call fsp_read
-	add $0x06, %sp
-
-	push $fsp+FSP_OFF_TMP
-	call disk_read_fsp
-	add $0x02, %sp
+	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 

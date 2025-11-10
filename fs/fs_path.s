@@ -11,7 +11,7 @@
 # fs_path(ub8 *path)
 # <req> fsp *root
 # <mod> (fsp *dir, *base), path_cv, path_sbuf
-# <ret> ax = {done:0, exit:1, ne_last:2}
+# <ret> ax = {done:0, exit:1, neq_last:2}
 fs_path:
 	push %bp
 	mov %sp, %bp
