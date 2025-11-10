@@ -27,7 +27,7 @@ kern/mem/mem_free.s \
 kern/dbg/dbg_args.s \
 kern/dbg/dbg_path_cv.s \
 kern/dbg/dbg_curs.s \
-kern/dbg/dbg_buf.s \
+kern/dbg/dbg_sbuf.s \
 kern/dbg/dbg_trace.s \
 kern/dbg/dbg_utils.s \
 kern/dbg/dbg_fsp.s \
@@ -92,19 +92,19 @@ sh/ps/prompt.s \
 \
 sh/cmd/cmd_map.s \
 \
-sh/cmd/sys/test.s \
-sh/cmd/sys/echo.s \
-sh/cmd/sys/help.s \
-sh/cmd/sys/clear.s \
+sh/cmd/sys/cmd_test.s \
+sh/cmd/sys/cmd_echo.s \
+sh/cmd/sys/cmd_help.s \
+sh/cmd/sys/cmd_clear.s \
 \
-sh/cmd/file/cat.s \
-sh/cmd/file/rm.s \
-sh/cmd/file/touch.s \
+sh/cmd/file/cmd_cat.s \
+sh/cmd/file/cmd_rm.s \
+sh/cmd/file/cmd_touch.s \
 \
-sh/cmd/dir/cd.s \
-sh/cmd/dir/ls.s \
-sh/cmd/dir/mkdir.s \
-sh/cmd/dir/rmdir.s
+sh/cmd/dir/cmd_cd.s \
+sh/cmd/dir/cmd_ls.s \
+sh/cmd/dir/cmd_mkdir.s \
+sh/cmd/dir/cmd_rmdir.s
 
 # Driver
 SRCS_DRV = \

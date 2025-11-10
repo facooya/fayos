@@ -2,17 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug buffer
+# [Debug] Size buffer
 
 .include "chr.s"
-
 .section .text
 .code16
-.global dbg_buf
-.global dbg_redir_buf
+.global dbg_sbuf
 
-# dbg_buf(buf)
-dbg_buf:
+# dbg_sbuf(&sbuf)
+dbg_sbuf:
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -64,75 +62,6 @@ dbg_buf:
 	pop %bp
 	ret
 
-# dbg_redir_buf()
-# <INFO>
-# hdr:data
-# <REQ>
-# hdr = type:len
-# ax = hdr
-dbg_redir_buf:
-	push %si
-	push %di
-	push %bx
-	push %cx
-
-	mov $redir_hsbuf, %si
-	mov (%si), %cx # redir.hdr
-	
-	# {{{ out
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-	call dbg_line
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-
-	# type
-	mov %ch, %al # redir.type
-	add $0x30, %al
-	call vga_putc
-	mov $CHR_COL, %al
-	call vga_putc
-
-	# len
-	mov %cl, %al # redir.len
-	add $0x30, %al
-	call vga_putc
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-	# }}}
-
-	# {{{
-	mov (%si), %ax # redir.hdr
-	add $0x02, %si
-
-	xor %cx, %cx
-	mov %al, %cl # redir.len
-	call ._data
-
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-	call dbg_line
-	mov $CHR_CR, %al
-	call vga_putc
-	mov $CHR_LF, %al
-	call vga_putc
-	# }}}
-
-	pop %si
-	pop %di
-	pop %bx
-	pop %cx
-	ret
-
-# {TASK}
 ._data:
 	# {end} (buf.len == 0)
 	test %cx, %cx # buf.len
