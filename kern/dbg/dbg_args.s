@@ -36,7 +36,7 @@ dbg_args:
 	call vga_putc
 
 	# {init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %bx
 	add $0x02, %si
 
@@ -107,7 +107,7 @@ dbg_args:
 
 	# {{{
 	# {init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # skip len
 
 	# calc offset

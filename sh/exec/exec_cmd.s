@@ -34,7 +34,7 @@ exec_cmd:
 # di:cx = (map) chr:len
 .map:
 	# {{{ len
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # *buf_data
 
 	push %es
@@ -120,13 +120,13 @@ exec_cmd:
 	jnz .done
 
 	# {task} (redir.hdr != 0)
-	mov $redir_buf, %si
+	mov $redir_hsbuf, %si
 	mov (%si), %cx
 	test %cx, %cx
 	jnz .redir
 
 	# print
-	mov $write_buf, %si
+	mov $write_sbuf, %si
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
 
@@ -144,11 +144,11 @@ exec_cmd:
 # {DONE}
 .done:
 	xor %ax, %ax
-	mov (write_buf), %cx
+	mov (write_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $write_buf # (&off)
+	push $write_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp

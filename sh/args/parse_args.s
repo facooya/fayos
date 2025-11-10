@@ -22,7 +22,7 @@ parse_args:
 
 	# {{{
 	# {init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # skip len
 
 	mov $args, %di
@@ -179,7 +179,7 @@ parse_args:
 
 # {TASK}
 # <INFO>
-# di = &redir_buf
+# di = &redir_hsbuf
 # dx = offset
 # <REQ>
 # (*si == null)
@@ -187,7 +187,7 @@ parse_args:
 .redir:
 	# {init}
 	xor %dx, %dx
-	mov $redir_buf, %di
+	mov $redir_hsbuf, %di
 	mov %ah, %dh # redir.type
 	add $0x02, %di # skip type+len
 
@@ -228,7 +228,7 @@ parse_args:
 
 .redir__end:
 	# store hdr
-	mov $redir_buf, %di
+	mov $redir_hsbuf, %di
 	mov %dx, (%di) # redir.hdr
 
 	# {{{ chk err

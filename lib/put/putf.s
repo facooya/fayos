@@ -22,7 +22,7 @@ putf:
 	mov 0x04(%bp), %ax
 	mov %ax, %es
 	mov 0x06(%bp), %si # str
-	mov $write_buf, %di
+	mov $write_sbuf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
 	add %bx, %di # buf.in
@@ -37,7 +37,7 @@ putf:
 	cmp $CHR_BSL, %al
 	je .hdl__bsl
 
-	# store in write_buffer
+	# store in write_sbuf
 	mov %al, (%di)
 
 	# {lp}
@@ -83,8 +83,8 @@ putf:
 	jmp .lp
 
 .end:
-	# store len
-	mov $write_buf, %di
+	# store size
+	mov $write_sbuf, %di
 	mov %bx, (%di)
 	jmp .epil
 

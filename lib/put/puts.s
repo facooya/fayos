@@ -21,7 +21,7 @@ puts:
 	mov 0x04(%bp), %ax
 	mov %ax, %es
 	mov 0x06(%bp), %si # str
-	mov $write_buf, %di
+	mov $write_sbuf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
 	add %bx, %di # buf.in
@@ -32,7 +32,7 @@ puts:
 	test %al, %al
 	jz .done
 
-	# store in write_buffer
+	# store in write_sbuf
 	mov %al, (%di)
 
 	# {lp}
@@ -43,7 +43,7 @@ puts:
 	
 .done:
 	# store len
-	mov $write_buf, %di
+	mov $write_sbuf, %di
 	mov %bx, (%di)
 
 	pop %bx

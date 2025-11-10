@@ -37,14 +37,14 @@ _start:
 	add $0x02, %sp
 
 	call vga_init_curs
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si
 
 	call ps2_init
 	jmp .run
 
 # run()
-# <req> (*si == cl_lbuf.data)
+# <req> (*si == cl_sbuf.data)
 .run:
 	sti
 	hlt

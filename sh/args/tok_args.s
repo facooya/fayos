@@ -11,8 +11,8 @@
 
 # tok_args()
 # <INFO>
-# bx:si = (cl_lbuf) len:&data
-# cx:di = (tmp_buf) len:&data
+# bx:si = (cl_sbuf) size:&data
+# cx:di = (tmp_sbuf) size:&data
 # <RET>
 # ax = 0:true, 1:exit, 2:skip
 tok_args:
@@ -21,11 +21,11 @@ tok_args:
 	push %bx
 
 	# {{{ init
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %bx # len
 	add $0x02, %si
 
-	mov $tmp_buf, %di
+	mov $tmp_sbuf, %di
 	add $0x02, %di
 
 	xor %cx, %cx # tmp.len
@@ -122,7 +122,7 @@ tok_args:
 	sub $0x01, %cx
 
 .tok_chr_hs:
-	# (cl_lbuf[i-1] != back_slash) ? {cpy_buf}
+	# (cl_sbuf[i-1] != back_slash) ? {cpy_buf}
 	mov -0x01(%si), %al
 	cmp $CHR_BSL, %al
 	jne .cpy_buf
@@ -211,11 +211,11 @@ tok_args:
 .cpy_buf:
 	push %cx
 	xor %ax, %ax
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_lbuf # (&off)
+	push $cl_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
@@ -227,18 +227,18 @@ tok_args:
 	add $0x01, %cx # tmp.len
 
 	# {{{
-	mov $tmp_buf, %di
+	mov $tmp_sbuf, %di
 	mov %cx, (%di) # store len
 	add $0x02, %di # skip len
 
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov %cx, (%si) # store len
 	add $0x02, %si # skip len
 	# }}}
 
 # <PRE>
 # si = &raw.data
-# cx:di = (tmp_buf) len:&data
+# cx:di = (tmp_sbuf) size:data
 .cpy_buf__lp:
 	# {end} (tmp.len == 0)
 	test %cx, %cx

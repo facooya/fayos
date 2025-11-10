@@ -14,7 +14,7 @@
 
 # hist_upd_cl()
 # <req> hist_idx, file_lines
-# <mod> cl_lbuf, curs
+# <mod> cl_sbuf, curs
 # <ret> ax = cl_pos
 hist_upd_cl:
 	push %es
@@ -73,11 +73,11 @@ hist_upd_cl:
 
 	# {{{ clear
 	xor %ax, %ax
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_lbuf # (&off)
+	push $cl_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
@@ -99,7 +99,7 @@ hist_upd_cl:
 	add %ax, %di
 	mov (%di), %dx # line_size
 
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov %dx, (%si)
 	add $0x02, %si
 
@@ -109,7 +109,7 @@ hist_upd_cl:
 	add %ax, %di
 	mov (%di), %dx # tgt_line
 	add %dx, %bx # hist_file
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 
 .lp:
 	# (len == 0) ? {end}
@@ -126,7 +126,7 @@ hist_upd_cl:
 
 .end:
 	# {{{ upd disp
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 

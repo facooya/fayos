@@ -26,9 +26,9 @@ cmd_ls:
 	je .cmd_only
 
 	mov 0x06(%si), %ax # argv[1]
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si
-	add %ax, %si # cl_lbuf[argv[1]]
+	add %ax, %si # cl_sbuf[argv[1]]
 
 	# {{{ path
 	push %si # (&name)

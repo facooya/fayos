@@ -18,17 +18,17 @@ putc:
 	push %bx
 
 	# {init}
-	mov $write_buf, %si
-	mov (%si), %bx # buf.len
-	add $0x02, %si # skip len
+	mov $write_sbuf, %si
+	mov (%si), %bx # buf.size
+	add $0x02, %si # skip size
 	add %bx, %si # buf.in
 
 	# store data
 	mov %al, (%si)
 	add $0x01, %bx
 
-	# store len
-	mov $write_buf, %si
+	# store size
+	mov $write_sbuf, %si
 	mov %bx, (%si)
 
 	pop %bx
@@ -41,9 +41,9 @@ putnl:
 	push %bx
 
 	# {init}
-	mov $write_buf, %si
-	mov (%si), %bx # buf.len
-	add $0x02, %si # skip len
+	mov $write_sbuf, %si
+	mov (%si), %bx # buf.size
+	add $0x02, %si # skip size
 	add %bx, %si # buf.in
 
 	# store data
@@ -56,8 +56,8 @@ putnl:
 	mov %al, (%si)
 	add $0x01, %bx
 
-	# store len
-	mov $write_buf, %si
+	# store size
+	mov $write_sbuf, %si
 	mov %bx, (%si)
 
 	pop %bx
@@ -70,9 +70,9 @@ putsp:
 	push %bx
 
 	# {init}
-	mov $write_buf, %si
-	mov (%si), %bx # buf.len
-	add $0x02, %si # skip len
+	mov $write_sbuf, %si
+	mov (%si), %bx # buf.size
+	add $0x02, %si # skip size
 	add %bx, %si # buf.in
 
 	# store data
@@ -80,8 +80,8 @@ putsp:
 	mov %al, (%si)
 	add $0x01, %bx
 
-	# store len
-	mov $write_buf, %si
+	# store size
+	mov $write_sbuf, %si
 	mov %bx, (%si)
 
 	pop %bx

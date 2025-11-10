@@ -16,7 +16,7 @@
 
 # cmd_echo()
 # <INFO>
-# si = &cl_lbuf
+# si = &cl_sbuf
 # di = &args
 # bx = opt_flag
 # cx = argc
@@ -47,7 +47,7 @@ cmd_echo:
 
 	# {{{
 	# {init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # skip len
 
 	# {init}
@@ -137,7 +137,7 @@ cmd_echo:
 # (*di == arg_idx)
 .run:
 	# {init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si
 
 	mov (%di), %ax # arg_idx
@@ -180,7 +180,7 @@ cmd_echo:
 	call putsp
 
 	# {lp.init}
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # skip len
 
 	# {lp.step}

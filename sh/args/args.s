@@ -26,7 +26,7 @@ args: .zero 0x100
 proc_args:
 	push %si
 
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 
@@ -69,11 +69,11 @@ proc_args:
 .exit:
 	# {zero}
 	xor %ax, %ax
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_lbuf # (&off)
+	push $cl_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
@@ -92,11 +92,11 @@ proc_args:
 
 ._zero:
 	xor %ax, %ax
-	mov (tmp_buf), %cx
+	mov (tmp_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $tmp_buf # (&off)
+	push $tmp_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp

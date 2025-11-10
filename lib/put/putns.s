@@ -22,9 +22,9 @@ putns:
 	mov %ax, %es
 	mov 0x06(%bp), %si # str
 	mov 0x08(%bp), %cx # n
-	mov $write_buf, %di
-	mov (%di), %bx # buf.len
-	add $0x02, %di # skip len
+	mov $write_sbuf, %di
+	mov (%di), %bx # buf.size
+	add $0x02, %di # skip size
 	add %bx, %di # buf.in
 
 .lp:
@@ -32,7 +32,7 @@ putns:
 	test %cx, %cx
 	jz .done
 
-	# copy in write_buffer
+	# copy in write_sbuf
 	mov %es:(%si), %al
 	mov %al, (%di)
 
@@ -44,8 +44,8 @@ putns:
 	jmp .lp
 	
 .done:
-	# store len
-	mov $write_buf, %di
+	# store size
+	mov $write_sbuf, %di
 	mov %bx, (%di)
 
 	pop %bx

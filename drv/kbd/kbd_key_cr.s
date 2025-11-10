@@ -9,8 +9,8 @@
 .global kbd_key_cr
 
 # kbd_key_cr()
-# <req> cl_lbuf
-# <ret> cl_lbuf
+# <req> cl_sbuf
+# <ret> cl_sbuf
 kbd_key_cr:
 	call exec_cmd
 
@@ -21,15 +21,15 @@ kbd_key_cr:
 	call vga_init_curs
 
 	xor %ax, %ax
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_lbuf # (&off)
+	push $cl_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
 
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	add $0x02, %si # skip len
 	ret

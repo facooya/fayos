@@ -21,11 +21,11 @@ kbd_key_bs:
 	sub $0x01, %ax
 	mov %ax, (curs+0x02)
 
-	# dec cl_lbuf
+	# dec cl_sbuf
 	sub $0x01, %si # raw.data
-	mov (cl_lbuf), %ax # raw.len
+	mov (cl_sbuf), %ax # raw.len
 	sub $0x01, %ax
-	mov %ax, (cl_lbuf)
+	mov %ax, (cl_sbuf)
 	# }}}
 
 	# {task} (raw.data+1 != null)

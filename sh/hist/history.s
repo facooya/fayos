@@ -21,7 +21,7 @@ hist_idx: .word 0x00
 .global history
 
 # history()
-# <req> cl_lbuf
+# <req> cl_sbuf
 history:
 	push %es
 	push %si
@@ -102,7 +102,7 @@ history:
 	add %ax, %bx
 
 .append:
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %cx # buf.len
 	push %cx # [s.4] buf.len
 	add $0x02, %si # skip len
@@ -166,11 +166,11 @@ history:
 
 	# zero
 	xor %ax, %ax
-	mov (cl_hist_lbuf), %cx
+	mov (cl_hist_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_hist_lbuf # (&off)
+	push $cl_hist_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp

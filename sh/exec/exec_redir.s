@@ -19,7 +19,7 @@ exec_redir:
 	push %bx
 
 	# init
-	mov $redir_buf, %si
+	mov $redir_hsbuf, %si
 	mov (%si), %ax # type:len
 	add $0x02, %si
 
@@ -86,7 +86,7 @@ exec_redir:
 .run__clear_end:
 	mov FSP_OFF_DISK_MEM(%si), %bx
 	xor %dx, %dx # file_size
-	mov $write_buf, %si
+	mov $write_sbuf, %si
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len
 

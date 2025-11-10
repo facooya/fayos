@@ -29,23 +29,23 @@ kbd_key_down:
 .load:
 	# zero
 	xor %ax, %ax
-	mov (cl_lbuf), %cx
+	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_lbuf # (&off)
+	push $cl_sbuf # (&off)
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
 
 	# cpy
 	xor %ax, %ax
-	mov (cl_hist_lbuf), %cx
+	mov (cl_hist_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
-	push $cl_hist_lbuf # (&s_off)
+	push $cl_hist_sbuf # (&s_off)
 	push %ax # (&s_seg)
-	push $cl_lbuf # (&d_off)
+	push $cl_sbuf # (&d_off)
 	push %ax # (&d_seg)
 	call mem_cpy
 	add $0x0A, %sp
@@ -58,7 +58,7 @@ kbd_key_down:
 
 	call vga_init_curs
 
-	mov $cl_lbuf, %si
+	mov $cl_sbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 

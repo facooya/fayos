@@ -76,7 +76,7 @@ dbg_redir_buf:
 	push %bx
 	push %cx
 
-	mov $redir_buf, %si
+	mov $redir_hsbuf, %si
 	mov (%si), %cx # redir.hdr
 	
 	# {{{ out
