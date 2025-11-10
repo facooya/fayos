@@ -17,15 +17,15 @@ fs_path:
 	mov %sp, %bp
 
 	push 0x04(%bp) # (&path)
-	call fs_tok_path
+	call path_tok
 	add $0x02, %sp
 	# <mod: path_sbuf>
 
-	call fs_build_path
+	call path_build
 	# <req: path_sbuf>
 	# <mod: path_cv>
 
-	call fs_read_path
+	call path_read
 	# <mod: (fsp *dir, *base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 

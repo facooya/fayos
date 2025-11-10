@@ -27,7 +27,7 @@ fsp_init:
 
 	push FSP_OFF_BLK_0(%di)
 	push FSP_OFF_BLK_0+0x02(%di)
-	call fs_blk_to_lba
+	call fsp_blk_to_lba
 	add $0x04, %sp
 	mov %dx, FSP_OFF_DISK_LBA+0x02(%di)
 	mov %ax, FSP_OFF_DISK_LBA(%di)

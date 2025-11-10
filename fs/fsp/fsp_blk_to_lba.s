@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [File System] Block number to logical block address
+# [File System Packet] Block number to logical block address
 
 .include "drv/disk.s"
 .include "fs/sb.s"
 .section .text
 .code16
-.global fs_blk_to_lba
+.global fsp_blk_to_lba
 
-# fs_blk_to_lba(ub16 blk_num_hi, ub16 blk_num_lo)
+# fsp_blk_to_lba(ub16 blk_num_hi, ub16 blk_num_lo)
 # <ret> dx:ax = lba_hi:lba_lo
-fs_blk_to_lba:
+fsp_blk_to_lba:
 	push %bp
 	mov %sp, %bp
 	push %es

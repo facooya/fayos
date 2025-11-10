@@ -2,16 +2,16 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [File System] Tokenize path
+# [Path] Tokenize path
 
 .include "chr.s"
 .section .text
 .code16
-.global fs_tok_path
+.global path_tok
 
-# fs_tok_path(ub8 *path)
+# path_tok(ub8 *path)
 # <mod> path_sbuf
-fs_tok_path:
+path_tok:
 	push %bp
 	mov %sp, %bp
 	push %si

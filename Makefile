@@ -41,6 +41,7 @@ fs/fs_data.s \
 fs/fs_open.s \
 fs/fs_add.s \
 fs/fs_rm.s \
+fs/fs_path.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
@@ -59,16 +60,14 @@ fs/bm/bm_alloc.s \
 fs/bm/bm_clr.s \
 fs/bm/bm_set.s \
 \
-fs/lib/fsp_init.s \
-fs/lib/fsp_read.s \
-fs/lib/fsp_write.s \
+fs/path/path_tok.s \
+fs/path/path_build.s \
+fs/path/path_read.s \
 \
-fs/lib/fs_path.s \
-fs/lib/fs_tok_path.s \
-fs/lib/fs_build_path.s \
-fs/lib/fs_read_path.s \
-\
-fs/lib/fs_blk_to_lba.s
+fs/fsp/fsp_init.s \
+fs/fsp/fsp_read.s \
+fs/fsp/fsp_write.s \
+fs/fsp/fsp_blk_to_lba.s
 
 # Shell
 SRCS_SH = \

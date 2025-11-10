@@ -2,16 +2,16 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [File System] Build path count, vector
+# [Path] Build path count, vector
 
 .section .text
 .code16
-.global fs_build_path
+.global path_build
 
-# fs_build_path()
+# path_build()
 # <req> path_sbuf
 # <mod> path_cv
-fs_build_path:
+path_build:
 	push %si
 	push %di
 	push %bx

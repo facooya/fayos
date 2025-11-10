@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [File System] Read path
+# [Path] Read path
 
 .include "chr.s"
 .include "drv/disk.s"
@@ -11,13 +11,13 @@
 .include "fs/de.s"
 .section .text
 .code16
-.global fs_read_path
+.global path_read
 
-# fs_read_path()
+# path_read()
 # <req> fsp *root, path_cv, path_sbuf
 # <mod> (fsp *dir, *base)
 # <ret> ax = {done:0, exit:1, neq_last:2}
-fs_read_path:
+path_read:
 	push %es
 	push %si
 	push %di
