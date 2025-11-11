@@ -24,6 +24,7 @@
 - OBF, IBF timeout error
 
 ## Command
+- pwd
 - cp
 - mv
 - printf

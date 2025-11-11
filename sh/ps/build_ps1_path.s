@@ -5,6 +5,7 @@
 # Build prompt-string-1 path
 
 .include "chr.s"
+.include "fs/fs.s"
 .section .text
 .code16
 .global build_ps1_path
@@ -16,47 +17,45 @@ build_ps1_path:
 	push %di
 	push %bx
 
+	call dbg_path_cv
+
 	mov $path_cv, %bx
 	mov (%bx), %cx
 	add $0x02, %bx
 
 	# {{{ clear
-	push %cx # [s.0:pathc]
 	mov $ps1_path, %di
-	push %di
+	push %cx # [s.0:pathc]
 	xor %ax, %ax
-	push %ax
+	push %di # (&off)
+	push %ax # (&seg)
 	call mem_size
 	add $0x04, %sp
 
-	push %ax
+	push %ax # (size)
 	xor %ax, %ax
-	push %ax
-	push %di
-	push %ax
+	push %ax # (value
+	push %di # (&off)
+	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
 	pop %cx # [s.0:pathc]
 	# }}}
 
-	mov $path_sbuf, %si
-	add $0x02, %si
-	mov $path_sbuf, %bx
-	add $0x02, %bx
 	jmp .lp2
 
 .lp2:
+	mov (%bx), %ax
+	mov $path_sbuf, %si
+	add $0x02, %si
+	mov %ax, %si
+
 	mov (%si), %al
 	cmp $CHR_PRD, %al
-	je .prd__chk
+	je .dot__chk
+	jmp .add
 
-	test %al, %al
-	jz .add
-
-	inc %si
-	jmp .lp2
-
-.prd__chk:
+.dot__chk:
 	mov 0x01(%si), %ax
 	cmp $0x002E, %ax
 	je .sub
@@ -69,14 +68,12 @@ build_ps1_path:
 	dec %cx
 	test %cx, %cx
 	jz .end
-
-	mov %bx, %si
 	jmp .lp2
 
 .add:
 	push %cx # [s.f1:pathc]
 	xor %ax, %ax
-	push %bx # (&off)
+	push %si # (&off)
 	push %ax # (&seg)
 	call mem_size
 	add $0x04, %sp
@@ -84,33 +81,23 @@ build_ps1_path:
 	push %ax # [s.f0:size]
 	push %ax # (size)
 	xor %ax, %ax
-	push %bx # (&off)
+	push %si # (&off)
 	push %ax # (&seg)
 	call add_ps1_path
 	add $0x06, %sp
 	pop %ax # [s.f0:size]
 	pop %cx # [s.f1:pathc]
 
-	dec %cx
-	test %cx, %cx
-	jz .end
-
 	add $0x02, %bx
-	mov %bx, %si
-	jmp .lp2
+	jmp .end__chk
 
 .sub:
 	push %cx # [s.f1:pathc]
 	call sub_ps1_path
 	pop %cx # [s.f1:pathc]
 
-	dec %cx
-	test %cx, %cx
-	jz .end
-
-	#add $0x02, %bx
-	#mov %bx, %si
-	jmp .lp2
+	add $0x02, %bx
+	jmp .end__chk
 
 	# (pathc == 1) ? {root} : {lp}
 	cmp $0x01, %cx
