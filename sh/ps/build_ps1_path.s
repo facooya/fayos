@@ -41,13 +41,109 @@ build_ps1_path:
 
 	mov $path_sbuf, %si
 	add $0x02, %si
+	mov $path_sbuf, %bx
+	add $0x02, %bx
+	jmp .lp2
+
+.lp2:
+	mov (%si), %al
+	cmp $CHR_PRD, %al
+	je .prd__chk
+
+	test %al, %al
+	jz .add
+
+	inc %si
+	jmp .lp2
+
+.prd__chk:
+	mov 0x01(%si), %ax
+	cmp $0x002E, %ax
+	je .sub
+
+	test %al, %al
+	jz .end__chk
+	jmp .add
+
+.end__chk:
+	dec %cx
+	test %cx, %cx
+	jz .end
+
+	mov %bx, %si
+	jmp .lp2
+
+.add:
+	push %cx # [s.f1:pathc]
+	xor %ax, %ax
+	push %bx # (&off)
+	push %ax # (&seg)
+	call mem_size
+	add $0x04, %sp
+
+	push %ax # [s.f0:size]
+	push %ax # (size)
+	xor %ax, %ax
+	push %bx # (&off)
+	push %ax # (&seg)
+	call add_ps1_path
+	add $0x06, %sp
+	pop %ax # [s.f0:size]
+	pop %cx # [s.f1:pathc]
+
+	dec %cx
+	test %cx, %cx
+	jz .end
+
+	add $0x02, %bx
+	mov %bx, %si
+	jmp .lp2
+
+.sub:
+	push %cx # [s.f1:pathc]
+	call sub_ps1_path
+	pop %cx # [s.f1:pathc]
+
+	dec %cx
+	test %cx, %cx
+	jz .end
+
+	#add $0x02, %bx
+	#mov %bx, %si
+	jmp .lp2
 
 	# (pathc == 1) ? {root} : {lp}
 	cmp $0x01, %cx
-	je .root
+	je .single
+
+	mov $CHR_SL, %al
+	mov %al, (%di)
+	add $0x01, %di
 	jmp .lp
 
-.root:
+.single:
+	mov (%si), %ax
+	cmp $0x002F, %ax
+	je .single__root
+
+	cmp $0x002E, %ax
+	je .single__dot
+
+	cmp $0x2E2E, %ax
+	je .single__dots_chk
+
+	mov $CHR_SL, %al
+	mov %al, (%di)
+	add $0x01, %di
+	jmp .lp
+
+.single__dots_chk:
+	mov 0x02(%si), %al
+	test %al, %al
+	jz .single__dots
+	jmp .lp
+
+.single__root:
 	mov $CHR_SL, %al
 	mov %al, (%di)
 	add $0x01, %di
@@ -56,6 +152,22 @@ build_ps1_path:
 	mov %al, (%di)
 	add $0x01, %di
 	jmp .done
+
+.single__dot:
+	# (pathc == 0) ? {end} : {lp}
+	sub $0x01, %cx
+	test %cx, %cx
+	jz .end
+	add $0x02, %si
+	jmp .lp
+
+.single__dots:
+	call sub_ps1_path
+	# (pathc == 0) ? {end}
+	sub $0x01, %cx
+	test %cx, %cx
+	jz .end
+	jmp .lp
 
 .lp:
 	# (path_buf[i] == slash) ? {chk}

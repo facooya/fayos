@@ -54,14 +54,15 @@ cmd_cd:
 	cmp $F_TYPE_DIR, %ax
 	jne .err_dir_type
 
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_CUR
+	push FSP_OFF_INUM(%si) # (inum_lo)
+	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push $fsp+FSP_OFF_CUR # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
 
 	call build_ps1_path
-	jmp .ps
+	jmp .ps__ps1
+	#jmp .ps
 
 .ps:
 	# {{{ prompt

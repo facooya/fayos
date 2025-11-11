@@ -14,8 +14,6 @@ sub_ps1_path:
 	push %si
 	push %di
 
-	mov $ps1_path, %si
-	
 	push %si
 	xor %ax, %ax
 	push %ax
