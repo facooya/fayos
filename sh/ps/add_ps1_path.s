@@ -21,6 +21,10 @@ add_ps1_path:
 	mov 0x06(%bp), %si
 	mov $ps1_path, %di
 
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	je .done
+
 	push %di
 	xor %ax, %ax
 	push %ax
@@ -56,6 +60,7 @@ add_ps1_path:
 	mov %al, (%di)
 	add $0x01, %di
 
+.done:
 	pop %di
 	pop %si
 	pop %es
