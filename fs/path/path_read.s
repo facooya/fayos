@@ -43,7 +43,9 @@ path_read:
 
 .single:
 	# (pathv[0] == slash) ? {root} : {cur}
-	mov (%si), %al
+	mov $path_sbuf, %di
+	add $0x02, %di
+	mov (%di), %al
 	cmp $CHR_SL, %al
 	je .single__root
 	mov $fsp+FSP_OFF_CUR, %di
@@ -51,6 +53,7 @@ path_read:
 
 .single__root:
 	mov $fsp+FSP_OFF_ROOT, %di
+	dec %cx
 
 .single__run:
 	mov FSP_OFF_INUM(%di), %ax
