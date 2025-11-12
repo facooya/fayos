@@ -20,7 +20,26 @@ build_ps1_path:
 	mov $path_cv, %bx
 	mov (%bx), %cx # pathc
 	add $0x02, %bx
+
+	cmp $0x01, %cx
+	je .root__chk
 	jmp .lp
+
+.root__chk:
+	mov $path_sbuf, %si
+	add $0x02, %si
+	mov (%si), %al
+	cmp $CHR_SL, %al
+	je .root
+	jmp .lp
+
+.root:
+	mov $ps1_path, %di
+	mov $CHR_SL, %al
+	mov %al, (%di)
+	xor %al, %al
+	mov %al, 0x01(%di)
+	jmp .done
 
 .lp:
 	mov (%bx), %ax

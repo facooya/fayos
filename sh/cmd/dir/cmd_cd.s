@@ -61,37 +61,7 @@ cmd_cd:
 	add $0x06, %sp
 
 	call build_ps1_path
-	jmp .ps__ps1
-	#jmp .ps
-
-.ps:
-	# {{{ prompt
-	mov $args, %si
-	mov 0x06(%si), %ax # argv[1]
-	mov $cl_sbuf, %si
-	add $0x02, %si
-	add %ax, %si # cl_sbuf[argv[1]]
-	mov (%si), %ax
-
-	# (arg == dots) ? {sub}
-	cmp $0x2E2E, %ax
-	je .ps__sub
-
-	# (arg == dot) ? {pass} : {ps1}
-	cmp $0x002E, %ax
-	je .ps__pass
-	jmp .ps__ps1
-
-.ps__sub:
-	call sub_ps1_path
 	call build_ps1
-	jmp .ps__pass
-
-.ps__ps1:
-	call build_ps1
-
-.ps__pass:
-	# }}}
 	jmp .done
 
 # {DONE}
