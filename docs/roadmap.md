@@ -2,7 +2,6 @@
 ## WIP
 
 ## PRIORITY
-- ps1 update
 
 ## TODO
 - support multi arguments - touch, mkdir, rm, rmdir

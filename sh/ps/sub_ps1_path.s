@@ -14,13 +14,13 @@ sub_ps1_path:
 	push %si
 	push %di
 
-	push %si
+	mov $ps1_path, %si
 	xor %ax, %ax
-	push %ax
+	push %si # (&off)
+	push %ax # (&seg)
 	call mem_size
 	add $0x04, %sp
 	add %ax, %si
-
 	sub $0x01, %si
 
 .lp:
@@ -38,8 +38,8 @@ sub_ps1_path:
 
 .end:
 	mov $ps1_path, %di
-	push %di
 	xor %ax, %ax
+	push %di
 	push %ax
 	call mem_size
 	add $0x04, %sp
