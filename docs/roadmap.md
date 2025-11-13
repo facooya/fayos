@@ -1,11 +1,11 @@
 # Roadmap
 ## WIP
+- support multi arguments - touch, mkdir, rm, rmdir
 
 ## PRIORITY
 
 ## TODO
-- support multi arguments - touch, mkdir, rm, rmdir
-- lookup dentry size optimize
+- dentry size optimize
 - redir append mode, insert mode
 - file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 - calculate low, high address
