@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- support multi arguments - touch, mkdir, rm, rmdir
+- support multi arguments - mkdir, rmdir
 
 ## PRIORITY
 

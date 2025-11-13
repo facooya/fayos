@@ -18,24 +18,34 @@ cmd_rm:
 	push %di
 	push %bx
 
-	mov $args, %si
+	mov $args, %di
 
 	# (argc == 1) ? {err}
-	mov (%si), %ax
-	cmp $0x01, %ax
+	mov (%di), %cx
+	add $0x02, %di
+	cmp $0x01, %cx
 	je .err_arg_req
+	add $0x04, %di # skip opt_c, cmd
+	dec %cx # tgt_c
 
-	mov 0x06(%si), %ax # argv[1]
+.lp:
+	# (tgt_c == 0) ? {done}
+	test %cx, %cx
+	jz .done
+
+	mov (%di), %ax # argv[1]
 	mov $cl_sbuf, %si
 	add $0x02, %si
 	add %ax, %si # cl_sbuf[argv[1]]
 
+	push %cx # [s.f0:tgt_c]
 	# {{{ path
 	push %si # (&name)
 	call fs_path
 	add $0x02, %sp
 	# <mod: fsp &dir, fsp &base>
 	# <ax = {done:0, exit:1, neq_last:2}>
+	pop %cx # [s.f0:tgt_c]
 
 	# (fs_path() == 1) ? {err}
 	cmp $0x01, %ax
@@ -54,11 +64,16 @@ cmd_rm:
 	add $0x02, %si
 	add %ax, %si
 
+	push %cx # [s.f0:tgt_c]
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call fs_rm
 	add $0x04, %sp
-	jmp .done
+	pop %cx # [s.f0:tgt_c]
+
+	add $0x02, %di
+	dec %cx
+	jmp .lp
 
 # {DONE}
 .done:
