@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Build prompt string
+# [Prompt String 1] Build prompt string
 
 .include "chr.s"
 .section .text
 .code16
-.global build_ps1
+.global ps1_build
 
-# build_ps1()
-build_ps1:
+# ps1_build()
+ps1_build:
 	push %si
 	push %di
 

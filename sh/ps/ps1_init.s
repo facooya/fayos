@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Initial prompt-string-1 path
+# [Prompt String 1] Initial prompt-string-1 path
 
 .include "chr.s"
 .section .text
 .code16
-.global init_ps1
+.global ps1_init
 
-# init_ps1()
-init_ps1:
+# ps1_init()
+ps1_init:
 	push %di
 
 	mov $ps1_path, %di

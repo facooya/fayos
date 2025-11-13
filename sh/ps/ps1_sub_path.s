@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Remove current directory name at path
+# [Prompt String 1] Remove current directory name at path
 
 .include "chr.s"
 .section .text
 .code16
-.global sub_ps1_path
+.global ps1_sub_path
 
-# sub_ps1_path()
-sub_ps1_path:
+# ps1_sub_path()
+ps1_sub_path:
 	push %si
 	push %di
 

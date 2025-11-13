@@ -60,8 +60,8 @@ cmd_cd:
 	call fsp_read
 	add $0x06, %sp
 
-	call build_ps1_path
-	call build_ps1
+	call ps1_build_path
+	call ps1_build
 	jmp .done
 
 # {DONE}

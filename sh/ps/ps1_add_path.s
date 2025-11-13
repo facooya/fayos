@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Add directory name at path
+# [Prompt String 1] Add directory name at path
 
 .include "chr.s"
 .section .text
 .code16
-.global add_ps1_path
+.global ps1_add_path
 
-# add_ps1_path(*seg, *off, num)
-add_ps1_path:
+# ps1_add_path(*seg, *off, num)
+ps1_add_path:
 	push %bp
 	mov %sp, %bp
 	push %es

@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Prompt "[ps1_name]:[ps1_path]# "
+# [Prompt String] Prompt "[ps1_name]:[ps1_path]# "
 
 .section .data
 .global ps1

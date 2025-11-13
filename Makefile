@@ -81,12 +81,12 @@ sh/exec/exec_redir.s \
 sh/hist/history.s \
 sh/hist/hist_upd_cl.s \
 \
-sh/ps/add_ps1_path.s \
-sh/ps/sub_ps1_path.s \
-sh/ps/build_ps1_path.s \
-sh/ps/build_ps1.s \
-sh/ps/init_ps1.s \
-sh/ps/prompt.s \
+sh/ps/ps_data.s \
+sh/ps/ps1_init.s \
+sh/ps/ps1_build.s \
+sh/ps/ps1_build_path.s \
+sh/ps/ps1_add_path.s \
+sh/ps/ps1_sub_path.s \
 \
 sh/cmd/cmd_map.s \
 \

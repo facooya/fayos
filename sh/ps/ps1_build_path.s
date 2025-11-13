@@ -2,17 +2,17 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Build prompt-string-1 path
+# [Prompt String 1] Build prompt-string-1 path
 
 .include "chr.s"
 .include "fs/fs.s"
 .section .text
 .code16
-.global build_ps1_path
+.global ps1_build_path
 
-# build_ps1_path()
+# ps1_build_path()
 # <req> path_cv, path_sbuf
-build_ps1_path:
+ps1_build_path:
 	push %si
 	push %di
 	push %bx
@@ -79,7 +79,7 @@ build_ps1_path:
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)
-	call add_ps1_path
+	call ps1_add_path
 	add $0x06, %sp
 	pop %cx # [s.f1:pathc]
 
@@ -88,7 +88,7 @@ build_ps1_path:
 
 .sub:
 	push %cx # [s.f1:pathc]
-	call sub_ps1_path
+	call ps1_sub_path
 	pop %cx # [s.f1:pathc]
 
 	add $0x02, %bx
