@@ -18,25 +18,34 @@ cmd_rmdir:
 	push %di
 	push %bx
 
-	mov $args, %si
+	mov $args, %di
 
 	# (argc == 1) ? {err}
-	mov (%si), %ax
-	cmp $0x01, %ax
+	mov (%di), %cx
+	cmp $0x01, %cx
 	je .err_arg_req
+	add $0x06, %di # skip arg_c, opt_c, cmd
+	dec %cx # tgt_c
 
-	mov 0x06(%si), %ax # argv[1]
+.lp:
+	# (tgt_c == 0) ? {done}
+	test %cx, %cx
+	jz .done
+
+	mov (%di), %ax # argv[1+i]
 	mov $cl_sbuf, %si
 	add $0x02, %si
-	add %ax, %si # cl_sbuf[argv[1]]
+	add %ax, %si # cl_sbuf[argv[1+i]]
 
 	# {{{ path
+	push %cx # [s.f0:tgt_c]
 	push %si # (&name)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
-	mov %ax, %cx
+	mov %ax, %dx
+	pop %cx # [s.f0:tgt_c]
 
 	# (pathc == 1) ? {err}
 	mov $path_cv, %si
@@ -64,12 +73,13 @@ cmd_rmdir:
 
 .single__ok:
 	# (fs_path() == exit) ? {err}
-	cmp $0x01, %cx
+	cmp $0x01, %dx
 	je .err_inv_path
 	# (fs_path() == neq_last) ? {err}
-	cmp $0x02, %cx
+	cmp $0x02, %dx
 	je .err_dir_no
 
+	push %cx # [s.0:tgt_c]
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
@@ -92,17 +102,23 @@ cmd_rmdir:
 	add $0x04, %sp
 	# <ax = {eq:off, neq:1}>
 	add %ax, %bx
+	pop %cx # [s.0:tgt_c]
 
 	# (f_type != dir) ? {err}
 	mov %es:DE_OFF_F_TYPE(%bx), %al
 	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
+	push %cx # [s.f0:tgt_c]
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call fs_rm
 	add $0x04, %sp
-	jmp .done
+	pop %cx # [s.f0:tgt_c]
+
+	add $0x02, %di
+	dec %cx
+	jmp .lp
 
 # {DONE}
 .done:

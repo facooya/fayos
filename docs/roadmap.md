@@ -3,6 +3,7 @@
 - support multi arguments - mkdir, rmdir
 
 ## PRIORITY
+- update fs\_rm(\*path, \*f\_type)
 
 ## TODO
 - dentry size optimize
