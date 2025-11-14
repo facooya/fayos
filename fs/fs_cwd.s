@@ -2,23 +2,24 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Prompt String 1] Build prompt-string-1 path
+# [File System] Update current-working-directory
 
 .include "chr.s"
 .include "fs/fs.s"
 .section .text
 .code16
-.global ps1_build_path
+.global fs_cwd
 
-# ps1_build_path()
+# fs_cwd()
 # <req> path_cv, path_sbuf
-ps1_build_path:
+# <mod> cwd
+fs_cwd:
 	push %si
 	push %di
 	push %bx
 
 	mov $path_cv, %bx
-	mov (%bx), %cx # pathc
+	mov (%bx), %cx # path_c
 	add $0x02, %bx
 
 	cmp $0x01, %cx
@@ -34,7 +35,7 @@ ps1_build_path:
 	jmp .lp
 
 .root:
-	mov $ps1_path, %di
+	mov $cwd, %di
 	mov $CHR_SL, %al
 	mov %al, (%di)
 	xor %al, %al
@@ -68,7 +69,7 @@ ps1_build_path:
 	jmp .lp
 
 .add:
-	push %cx # [s.f1:pathc]
+	push %cx # [s.f1:path_c]
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)
@@ -79,17 +80,17 @@ ps1_build_path:
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)
-	call ps1_add_path
+	call cwd_add
 	add $0x06, %sp
-	pop %cx # [s.f1:pathc]
+	pop %cx # [s.f1:path_c]
 
 	add $0x02, %bx
 	jmp .end__chk
 
 .sub:
-	push %cx # [s.f1:pathc]
-	call ps1_sub_path
-	pop %cx # [s.f1:pathc]
+	push %cx # [s.f1:path_c]
+	call cwd_sub
+	pop %cx # [s.f1:path_c]
 
 	add $0x02, %bx
 	jmp .end__chk

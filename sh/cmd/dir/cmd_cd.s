@@ -33,7 +33,7 @@ cmd_cd:
 	add %ax, %si # cl_sbuf[argv[1]]
 
 	# {{{ path
-	push %si # (&name)
+	push %si # (&path)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
@@ -47,8 +47,13 @@ cmd_cd:
 	je .err_dir_no
 	# }}}
 
-	mov $fsp+FSP_OFF_BASE, %si
+	push %si # (&path)
+	call fs_cwd
+	add $0x02, %sp
+	# <mod: cwd>
 
+	# { %si
+	mov $fsp+FSP_OFF_BASE, %si
 	# (f_type != dir) ? {err}
 	mov FSP_OFF_F_TYPE(%si), %ax
 	cmp $F_TYPE_DIR, %ax
@@ -59,8 +64,17 @@ cmd_cd:
 	push $fsp+FSP_OFF_CUR # (fsp &dst)
 	call fsp_read
 	add $0x06, %sp
+	# }
 
-	call ps1_build_path
+	# { %si
+	mov $fsp+FSP_OFF_DIR, %si
+	push FSP_OFF_INUM(%si) # (inum_lo)
+	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push $fsp+FSP_OFF_PAR # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+	# }
+
 	call ps1_build
 	jmp .done
 

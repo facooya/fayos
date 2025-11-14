@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Prompt String 1] Add directory name at path
+# [Current Working Directory] Add path
 
 .include "chr.s"
 .section .text
 .code16
-.global ps1_add_path
+.global cwd_add
 
-# ps1_add_path(*seg, *off, num)
-ps1_add_path:
+# cwd_add(*seg, *off, num)
+cwd_add:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -19,7 +19,7 @@ ps1_add_path:
 
 	mov 0x04(%bp), %es
 	mov 0x06(%bp), %si
-	mov $ps1_path, %di
+	mov $cwd, %di
 
 	mov (%si), %al
 	cmp $CHR_SL, %al
@@ -32,7 +32,7 @@ ps1_add_path:
 	add $0x04, %sp
 	add %ax, %di
 
-	# {pass} (*(ps1_path--) == SL)
+	# {pass} (*(cwd--) == SL)
 	mov -0x01(%di), %al
 	cmp $CHR_SL, %al
 	je .pass

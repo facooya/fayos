@@ -2,18 +2,18 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Prompt String 1] Initial prompt-string-1 path
+# [Current Working Directory] Initial path
 
 .include "chr.s"
 .section .text
 .code16
-.global ps1_init
+.global cwd_init
 
-# ps1_init()
-ps1_init:
+# cwd_init()
+cwd_init:
 	push %di
 
-	mov $ps1_path, %di
+	mov $cwd, %di
 	mov $CHR_SL, %al
 	mov %al, (%di)
 	add $0x01, %di

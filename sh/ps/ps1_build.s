@@ -51,7 +51,7 @@ ps1_build:
 	mov %al, (%di)
 	add $0x01, %di
 
-	mov $ps1_path, %si
+	mov $cwd, %si
 
 .path__lp:
 	mov (%si), %al

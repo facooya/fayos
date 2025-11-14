@@ -2,19 +2,19 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Prompt String 1] Remove current directory name at path
+# [Current Working Directory] Sub path
 
 .include "chr.s"
 .section .text
 .code16
-.global ps1_sub_path
+.global cwd_sub
 
-# ps1_sub_path()
-ps1_sub_path:
+# cwd_sub()
+cwd_sub:
 	push %si
 	push %di
 
-	mov $ps1_path, %si
+	mov $cwd, %si
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)
@@ -37,7 +37,7 @@ ps1_sub_path:
 	jmp .lp
 
 .end:
-	mov $ps1_path, %di
+	mov $cwd, %di
 	xor %ax, %ax
 	push %di
 	push %ax

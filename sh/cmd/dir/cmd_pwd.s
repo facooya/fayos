@@ -12,7 +12,7 @@
 cmd_pwd:
 	push %si
 
-	mov $ps1_path, %si
+	mov $cwd, %si
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)

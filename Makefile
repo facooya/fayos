@@ -42,6 +42,7 @@ fs/fs_open.s \
 fs/fs_add.s \
 fs/fs_rm.s \
 fs/fs_path.s \
+fs/fs_cwd.s \
 \
 fs/sb/sb_run.s \
 fs/sb/sb_alloc_lba.s \
@@ -63,6 +64,10 @@ fs/path/path_tok.s \
 fs/path/path_build.s \
 fs/path/path_read.s \
 \
+fs/cwd/cwd_init.s \
+fs/cwd/cwd_add.s \
+fs/cwd/cwd_sub.s \
+\
 fs/fsp/fsp_init.s \
 fs/fsp/fsp_read.s \
 fs/fsp/fsp_write.s \
@@ -82,11 +87,7 @@ sh/hist/history.s \
 sh/hist/hist_upd_cl.s \
 \
 sh/ps/ps_data.s \
-sh/ps/ps1_init.s \
 sh/ps/ps1_build.s \
-sh/ps/ps1_build_path.s \
-sh/ps/ps1_add_path.s \
-sh/ps/ps1_sub_path.s \
 \
 sh/cmd/cmd_map.s \
 \

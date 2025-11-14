@@ -29,7 +29,7 @@ _start:
 	mov $CHR_LF, %al
 	call vga_putc
 
-	call ps1_init
+	call cwd_init
 	call ps1_build
 
 	push $ps1
