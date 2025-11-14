@@ -1,9 +1,8 @@
 # Roadmap
 ## WIP
-- support multi arguments - mkdir, rmdir
+- update fs\_rm(\*path, \*f\_type)
 
 ## PRIORITY
-- update fs\_rm(\*path, \*f\_type)
 
 ## TODO
 - dentry size optimize
