@@ -4,13 +4,14 @@
 #
 # [File System] Remove directory or file
 
+.include "chr.s"
 .include "fs/fs.s"
 .include "fs/de.s"
 .section .text
 .code16
 .global fs_rm
 
-# fs_rm(fsp *src, ub8 *name)
+# fs_rm(ub8 *path, ub16 f_type)
 # <ret> ax = {done:0, exit:1}
 fs_rm:
 	push %bp
@@ -19,15 +20,64 @@ fs_rm:
 	push %di
 	push %bx
 
-	push 0x04(%bp) # (fsp &src)
+	# {{{ path
+	push 0x04(%bp) # (&path)
+	call fs_path
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (fs_path() == exit) ? {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+	# (fs_path() != neq_last) ? {pass}
+	cmp $0x02, %ax
+	jne .pass
+
+	# (f_type == file) ? {err.file}
+	mov 0x06(%bp), %ax
+	cmp $F_TYPE_FILE, %ax
+	je .err_file_no
+	# (f_type == dir) ? {err.dir} : {err.path}
+	cmp $F_TYPE_DIR, %ax
+	je .err_dir_no
+	jmp .err_inv_path
+	# }}}
+
+.err_type:
+	mov 0x06(%bp), %ax
+	cmp $F_TYPE_FILE, %ax
+	je .err_file_type
+	cmp $F_TYPE_DIR, %ax
+	je .err_dir_type
+	jmp .exit
+
+.pass:
+	xor %ax, %ax
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_TYPE(%si), %al
+	mov 0x06(%bp), %cx
+	cmp %ax, %cx
+	jne .err_type
+
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	push 0x06(%bp) # (&name)
-	push 0x04(%bp) # (fsp &src)
+	mov $path_cv, %si
+	mov (%si), %ax # pathc
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax # pathv[last]
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si # name
+
+	push %si # (&name)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
 	# <ax = {true:off, false:1}>
@@ -36,7 +86,8 @@ fs_rm:
 	# (f_type == dir) ? {dir}
 	mov %es:DE_OFF_F_TYPE(%bx), %al
 	cmp $F_TYPE_DIR, %al
-	je .dir__down
+	je .dir__chk
+
 	# (f_type == file) ? {file} : {exit}
 	cmp $F_TYPE_FILE, %al
 	je .file__rm
@@ -46,6 +97,31 @@ fs_rm:
 	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 	jmp .last__rm
+
+.dir__chk:
+	# (path_c == 1) ? {err}
+	mov $path_cv, %si
+	mov (%si), %ax
+	cmp $0x01, %ax
+	je .dir__dot_chk
+	jmp .dir__down
+
+.dir__dot_chk:
+	mov $path_sbuf, %si
+	add $0x02, %si
+	mov (%si), %ax
+	cmp $0x002E, %ax
+	je .err_dir_self
+	cmp $0x2E2E, %ax
+	je .dir__dots_chk
+	jmp .dir__down
+	# }}}
+
+.dir__dots_chk:
+	mov 0x02(%si), %al
+	test %al, %al
+	jz .err_dir_self
+	jmp .dir__down
 
 .dir__down:
 	mov $fsp+FSP_OFF_TMP, %si
@@ -82,7 +158,7 @@ fs_rm:
 
 	# (f_type == dir) ? {chk}
 	mov %es:DE_OFF_F_TYPE(%bx), %al
-	cmp $0x40, %al
+	cmp $F_TYPE_DIR, %al
 	je .dir__find_chk
 	jmp .dir__find_step
 
@@ -181,15 +257,24 @@ fs_rm:
 	jmp .dir__rm_lp
 
 .dir__rm_end:
-	push 0x04(%bp) # (fsp &src)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	push 0x06(%bp) # (&name)
-	push 0x04(%bp) # (fsp &src)
+	mov $path_cv, %si
+	mov (%si), %ax
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si
+
+	push %si # (&name)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call de_seek
 	add $0x04, %sp
 	# <ax = {true:off, false:1}>
@@ -217,18 +302,57 @@ fs_rm:
 	mov %ax, %es:DE_OFF_INUM(%bx)
 	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
-	push 0x04(%bp) # (fsp &src)
+	push $fsp+FSP_OFF_DIR
 	call disk_write_fsp
 	add $0x02, %sp
 	jmp .done
 
-.exit:
-	mov $0x01, %ax # <ret.1:ret_code>
-
+# {DONE}
 .done:
 	xor %ax, %ax # <ret.0:ret_code>
+	jmp .epil
+
+.exit:
+	mov $0x01, %ax # <ret.1:ret_code>
+	jmp .epil
+
+.epil:
 	pop %bx
 	pop %di
 	pop %si
 	pop %bp
 	ret
+
+# {ERR}
+.err_inv_path:
+	push $emsg_inv_path
+	jmp .err_hdl
+
+.err_file_no:
+	push $emsg_file_no
+	jmp .err_hdl
+
+.err_file_type:
+	push $emsg_file_type
+	jmp .err_hdl
+
+.err_dir_no:
+	push $emsg_dir_no
+	jmp .err_hdl
+
+.err_dir_type:
+	push $emsg_dir_type
+	jmp .err_hdl
+
+.err_dir_self:
+	push $emsg_dir_self
+	jmp .err_hdl
+
+.err_hdl:
+	call vga_puts
+	add $0x02, %sp
+	mov $CHR_CR, %al
+	call vga_putc
+	mov $CHR_LF, %al
+	call vga_putc
+	jmp .exit

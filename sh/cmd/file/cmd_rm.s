@@ -39,38 +39,15 @@ cmd_rm:
 	add %ax, %si # cl_sbuf[argv[1]]
 
 	push %cx # [s.f0:tgt_c]
-	# {{{ path
-	push %si # (&name)
-	call fs_path
-	add $0x02, %sp
-	# <mod: fsp &dir, fsp &base>
-	# <ax = {done:0, exit:1, neq_last:2}>
-	pop %cx # [s.f0:tgt_c]
-
-	# (fs_path() == 1) ? {err}
-	cmp $0x01, %ax
-	je .err_inv_path
-	# (fs_path() == 2) ? {err}
-	cmp $0x02, %ax
-	je .err_file_no
-	# }}}
-
-	mov $path_cv, %si
-	mov (%si), %ax # pathc
-	add %ax, %si
-	add %ax, %si
-	mov (%si), %ax # pathv[last]
-	mov $path_sbuf, %si
-	add $0x02, %si
-	add %ax, %si
-
-	push %cx # [s.f0:tgt_c]
-	push %si # (&name)
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call fs_rm
+	push $F_TYPE_FILE # (f_type)
+	push %si # (&path) call fs_rm
 	add $0x04, %sp
+	# <ax = {done:0, false:1}>
 	pop %cx # [s.f0:tgt_c]
 
+	# (fs_rm() != done) ? {err} : {lp}
+	test %ax, %ax
+	jnz .exit
 	add $0x02, %di
 	dec %cx
 	jmp .lp
@@ -94,18 +71,6 @@ cmd_rm:
 # {ERR}
 .err_arg_req:
 	push $emsg_arg_req
-	jmp .err_hdl
-
-.err_inv_path:
-	push $emsg_inv_path
-	jmp .err_hdl
-
-.err_file_no:
-	push $emsg_file_no
-	jmp .err_hdl
-
-.err_file_type:
-	push $emsg_file_type
 	jmp .err_hdl
 
 .err_hdl:

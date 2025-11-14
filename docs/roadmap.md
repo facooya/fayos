@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- update fs\_rm(\*path, \*f\_type)
 
 ## PRIORITY
 
@@ -11,16 +10,18 @@
 - calculate low, high address
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 - scroll and restore many line feed
+- multi arguments already name exist error continue
 
 ## Feature
-- Tab: autocomplete file or dir
+- tab: autocomplete file or dir
 - ls: colorful file or dir, add option
-- Time
-- Color
-- Debug runtime
-- Using allocate memory and free - inode, dap, inum, ... `close()`
-- Record log, error log
+- time
+- color
+- debug runtime
+- using allocate memory and free
+- record log, error log
 - OBF, IBF timeout error
+- fs: block extends
 
 ## Command
 - pwd
@@ -33,9 +34,5 @@
 - poweroff
 
 ## Function
-- `fopen()` - file open, append, create
-- `fclose()` - file close
-- `opendir()` - dir open 
-- `closedir()` - dir close
 
 > Authors 2025 Facooya and Fanone Facooya
