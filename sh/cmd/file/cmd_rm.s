@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command remove - remove file
+# [Command] Remove file
 
 .include "chr.s"
 .include "fs/fs.s"

@@ -18,10 +18,12 @@ cmd_map:
 	.word cmd_help
 	.asciz "help"
 	# dir
-	.word cmd_cd
-	.asciz "cd"
+	.word cmd_pwd
+	.asciz "pwd"
 	.word cmd_ls
 	.asciz "ls"
+	.word cmd_cd
+	.asciz "cd"
 	.word cmd_mkdir
 	.asciz "mkdir"
 	.word cmd_rmdir

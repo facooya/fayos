@@ -24,7 +24,6 @@
 - fs: block extends
 
 ## Command
-- pwd
 - cp
 - mv
 - printf

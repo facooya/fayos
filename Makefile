@@ -96,11 +96,12 @@ sh/cmd/sys/cmd_help.s \
 sh/cmd/sys/cmd_clear.s \
 \
 sh/cmd/file/cmd_cat.s \
-sh/cmd/file/cmd_rm.s \
 sh/cmd/file/cmd_touch.s \
+sh/cmd/file/cmd_rm.s \
 \
-sh/cmd/dir/cmd_cd.s \
+sh/cmd/dir/cmd_pwd.s \
 sh/cmd/dir/cmd_ls.s \
+sh/cmd/dir/cmd_cd.s \
 sh/cmd/dir/cmd_mkdir.s \
 sh/cmd/dir/cmd_rmdir.s
 
