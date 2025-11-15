@@ -2,15 +2,15 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Regular Expression
+# [Regular Expression] Check alphabet
 
 .include "chr.s"
 .section .text
 .code16
-.global re_alpha
+.global regex_alpha
 
-# re_alpha(&chr)
-re_alpha:
+# regex_alpha(&chr)
+regex_alpha:
 	push %bp
 	mov %sp, %bp
 	push %si

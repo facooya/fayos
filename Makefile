@@ -160,8 +160,6 @@ int/irq_kbd.s
 
 # Library
 SRCS_LIB = \
-lib/re.s \
-\
 lib/file/fparse_lines.s \
 \
 lib/err/emsg_common.s \
@@ -176,7 +174,9 @@ lib/put/put_utils.s \
 lib/mem/mem_cmp.s \
 lib/mem/mem_cpy.s \
 lib/mem/mem_set.s \
-lib/mem/mem_size.s
+lib/mem/mem_size.s \
+\
+lib/regex/regex_alpha.s
 
 SRCS = \
 $(SRCS_KERN) \

@@ -34,11 +34,11 @@ parse_args:
 
 # {TASK}
 .cmd:
-	# re_alpha(&chr)
+	# regex_alpha(&chr)
 	# ret: ax = 0(true), ax = 1(false)
 	push %cx # argc
 	push %si # raw.data
-	call re_alpha
+	call regex_alpha
 	add $0x02, %sp
 	pop %cx # argc
 
@@ -92,10 +92,10 @@ parse_args:
 	test %al, %al
 	jz .opt__chk
 
-	# re_alpha(&chr)
+	# regex_alpha(&chr)
 	push %cx # argc
 	push %si # raw.data
-	call re_alpha
+	call regex_alpha
 	add $0x02, %sp
 	pop %cx # argc
 
