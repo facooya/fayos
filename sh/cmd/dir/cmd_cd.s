@@ -47,9 +47,8 @@ cmd_cd:
 	je .err_dir_no
 	# }}}
 
-	push %si # (&path)
 	call fs_cwd
-	add $0x02, %sp
+	# <req: path_cv, path_sbuf>
 	# <mod: cwd>
 
 	# { %si

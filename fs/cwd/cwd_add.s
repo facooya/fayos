@@ -9,7 +9,7 @@
 .code16
 .global cwd_add
 
-# cwd_add(*seg, *off, num)
+# cwd_add(*seg, *off, size)
 cwd_add:
 	push %bp
 	mov %sp, %bp
@@ -17,48 +17,48 @@ cwd_add:
 	push %si
 	push %di
 
-	mov 0x04(%bp), %es
-	mov 0x06(%bp), %si
+	mov 0x04(%bp), %es # (*seg)
+	mov 0x06(%bp), %si # (*off)
 	mov $cwd, %di
 
 	mov (%si), %al
 	cmp $CHR_SL, %al
 	je .done
 
-	push %di
 	xor %ax, %ax
-	push %ax
+	push %di # (&off)
+	push %ax # (&seg)
 	call mem_size
 	add $0x04, %sp
 	add %ax, %di
 
-	# {pass} (*(cwd--) == SL)
+	# (*(cwd--) == SL) ? {pass}
 	mov -0x01(%di), %al
 	cmp $CHR_SL, %al
 	je .pass
 
 	mov $CHR_SL, %al
 	mov %al, (%di)
-	add $0x01, %di
+	inc %di
 
 .pass:
 	# mem cpy
-	mov 0x08(%bp), %cx # num
-	push %cx
-	push %si
-	push %es
-	push %di
+	mov 0x08(%bp), %cx # size
 	xor %ax, %ax
-	push %ax
+	push %cx # (size)
+	push %si # (&s_off)
+	push %es # (&s_seg)
+	push %di # (&d_off)
+	push %ax # (&d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
 	# store last null
-	mov 0x08(%bp), %ax
+	mov 0x08(%bp), %ax # (size)
 	add %ax, %di
 	xor %ax, %ax
 	mov %al, (%di)
-	add $0x01, %di
+	inc %di
 
 .done:
 	pop %di

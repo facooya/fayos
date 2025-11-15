@@ -21,10 +21,10 @@ cwd_sub:
 	call mem_size
 	add $0x04, %sp
 	add %ax, %si
-	sub $0x01, %si
+	dec %si
 
 .lp:
-	# {end} (chr == SL)
+	# (chr == SL) ? {end}
 	mov (%si), %al
 	cmp $CHR_SL, %al
 	jz .end
@@ -32,15 +32,14 @@ cwd_sub:
 	xor %al, %al
 	mov %al, (%si)
 
-	# {lp}
-	sub $0x01, %si
+	dec %si
 	jmp .lp
 
 .end:
 	mov $cwd, %di
 	xor %ax, %ax
-	push %di
-	push %ax
+	push %di # (&off)
+	push %ax # (&seg)
 	call mem_size
 	add $0x04, %sp
 
@@ -49,7 +48,7 @@ cwd_sub:
 
 	xor %ax, %ax
 	mov %al, (%si)
-	add $0x01, %si
+	inc %si
 
 .pass__null:
 	pop %di

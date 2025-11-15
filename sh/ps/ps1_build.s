@@ -18,7 +18,7 @@ ps1_build:
 	mov $ps1, %di
 
 .zero__lp:
-	# {end} (*ps1[i] == null)
+	# (*ps1[i] == null) ? {end}
 	mov (%di), %al
 	test %al, %al
 	jz .zero__end
@@ -26,30 +26,28 @@ ps1_build:
 	xor %al, %al
 	mov %al, (%di)
 
-	# {lp}
-	add $0x01, %di
+	inc %di
 	jmp .zero__lp
 
 .zero__end:
 	mov $ps1, %di
 
 .name__lp:
-	# {end} (chr == null)
+	# (chr == null) ? {end}
 	mov (%si), %al
 	test %al, %al
 	jz .name__end
 
 	mov %al, (%di)
 
-	# {lp}
-	add $0x01, %si
-	add $0x01, %di
+	inc %si
+	inc %di
 	jmp .name__lp
 
 .name__end:
 	mov $CHR_COL, %al
 	mov %al, (%di)
-	add $0x01, %di
+	inc %di
 
 	mov $cwd, %si
 
@@ -60,18 +58,18 @@ ps1_build:
 
 	mov %al, (%di)
 
-	add $0x01, %si
-	add $0x01, %di
+	inc %si
+	inc %di
 	jmp .path__lp
 
 .path__end:
 	mov $CHR_HS, %al
 	mov %al, (%di)
-	add $0x01, %di
+	inc %di
 
 	mov $CHR_SP, %al
 	mov %al, (%di)
-	add $0x01, %di
+	inc %di
 
 	pop %di
 	pop %si
