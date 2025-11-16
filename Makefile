@@ -176,7 +176,8 @@ lib/mem/mem_cpy.s \
 lib/mem/mem_set.s \
 lib/mem/mem_size.s \
 \
-lib/regex/regex_alpha.s
+lib/regex/regex_alpha.s \
+lib/regex/regex_name.s
 
 SRCS = \
 $(SRCS_KERN) \

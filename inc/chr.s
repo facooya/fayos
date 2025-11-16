@@ -25,6 +25,7 @@
 
 .equ CHR_UC_A, 0x41
 .equ CHR_UC_Z, 0x5A 
+.equ CHR_US, 0x5F # underscroe
 
 .equ CHR_BSL, 0x5C # back slash
 

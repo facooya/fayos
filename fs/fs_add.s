@@ -36,7 +36,26 @@ fs_add:
 	jne .err_name_dup
 	# }}}
 
-	# TODO: target name chk (/,\,...)
+	# { chk name
+	mov $path_cv, %si
+	mov (%si), %ax # pathc
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax # pathv[last]
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si # name
+
+	xor %ax, %ax
+	push %si # (&off)
+	push %ax # (&seg)
+	call regex_name
+	add $0x04, %sp
+	# <ax = {true:0, false:1}>
+
+	cmp $0x01, %ax
+	je .err_name_inv
+	# }
 
 	push 0x06(%bp) # (f_type)
 	call ind_add
@@ -130,6 +149,10 @@ fs_add:
 # {ERR}
 .err_name_dup:
 	push $emsg_name_dup
+	jmp .err_hdl
+
+.err_name_inv:
+	push $emsg_name_inv
 	jmp .err_hdl
 
 .err_inv_path:

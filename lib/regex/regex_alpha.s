@@ -9,7 +9,7 @@
 .code16
 .global regex_alpha
 
-# regex_alpha(&chr)
+# regex_alpha(*chr)
 regex_alpha:
 	push %bp
 	mov %sp, %bp

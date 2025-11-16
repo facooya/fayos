@@ -328,6 +328,10 @@ fs_rm:
 	push $emsg_inv_path
 	jmp .err_hdl
 
+.err_name_inv:
+	push $emsg_name_inv
+	jmp .err_hdl
+
 .err_file_no:
 	push $emsg_file_no
 	jmp .err_hdl
