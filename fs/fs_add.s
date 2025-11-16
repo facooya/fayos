@@ -148,6 +148,25 @@ fs_add:
 
 # {ERR}
 .err_name_dup:
+	mov $path_cv, %si
+	mov (%si), %ax # pathc
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax # pathv[last]
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si # name
+
+	xor %ax, %ax
+	push %si # (&off)
+	call vga_puts
+	add $0x02, %sp
+
+	mov $CHR_COL, %al
+	call vga_putc
+	mov $CHR_SP, %al
+	call vga_putc
+
 	push $emsg_name_dup
 	jmp .err_hdl
 

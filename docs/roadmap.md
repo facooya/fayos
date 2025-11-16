@@ -9,7 +9,6 @@
 - calculate low, high address
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 - scroll and restore many line feed
-- multi arguments already name exist error continue
 
 ## Feature
 - tab: autocomplete file or dir

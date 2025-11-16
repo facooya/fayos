@@ -45,9 +45,6 @@ cmd_rmdir:
 	# <ax = {done:0, false:1}>
 	pop %cx # [s.f0:tgt_c]
 
-	# (fs_rm() != done) ? {err} : {lp}
-	test %ax, %ax
-	jnz .exit
 	add $0x02, %di
 	dec %cx
 	jmp .lp

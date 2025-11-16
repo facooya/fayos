@@ -49,9 +49,6 @@ cmd_touch:
 	# <ax = {done:0, false:1}>
 	pop %cx # [s.f0:tgtc]
 
-	# (fs_add() != done) ? {err} : {lp}
-	test %ax, %ax
-	jnz .exit
 	add $0x02, %di
 	dec %cx
 	jmp .lp

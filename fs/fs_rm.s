@@ -333,6 +333,7 @@ fs_rm:
 	jmp .err_hdl
 
 .err_file_no:
+	call ._err_print_name
 	push $emsg_file_no
 	jmp .err_hdl
 
@@ -341,6 +342,7 @@ fs_rm:
 	jmp .err_hdl
 
 .err_dir_no:
+	call ._err_print_name
 	push $emsg_dir_no
 	jmp .err_hdl
 
@@ -360,3 +362,24 @@ fs_rm:
 	mov $CHR_LF, %al
 	call vga_putc
 	jmp .exit
+
+._err_print_name:
+	mov $path_cv, %si
+	mov (%si), %ax # pathc
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %ax # pathv[last]
+	mov $path_sbuf, %si
+	add $0x02, %si
+	add %ax, %si # name
+
+	xor %ax, %ax
+	push %si # (&off)
+	call vga_puts
+	add $0x02, %sp
+
+	mov $CHR_COL, %al
+	call vga_putc
+	mov $CHR_SP, %al
+	call vga_putc
+	ret
