@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- file or dir name: allow ., \_, - (front disallow), disallow /, \, SP, #, all
 
 ## PRIORITY
 

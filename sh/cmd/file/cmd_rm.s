@@ -22,10 +22,9 @@ cmd_rm:
 
 	# (argc == 1) ? {err}
 	mov (%di), %cx
-	add $0x02, %di
 	cmp $0x01, %cx
 	je .err_arg_req
-	add $0x04, %di # skip opt_c, cmd
+	add $0x06, %di # skip arg_c, opt_c, cmd
 	dec %cx # tgt_c
 
 .lp:
@@ -40,7 +39,8 @@ cmd_rm:
 
 	push %cx # [s.f0:tgt_c]
 	push $F_TYPE_FILE # (f_type)
-	push %si # (&path) call fs_rm
+	push %si # (&path)
+	call fs_rm
 	add $0x04, %sp
 	# <ax = {done:0, false:1}>
 	pop %cx # [s.f0:tgt_c]
