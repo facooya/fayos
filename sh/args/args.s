@@ -60,9 +60,10 @@ proc_args:
 	call build_args
 
 	call parse_args
-	test %ax, %ax
-	jnz .exit
-
+	cmp $0x01, %ax
+	je .exit
+	cmp $0x02, %ax
+	je .done_redir
 	jmp .done
 	# }}}
 
@@ -80,6 +81,10 @@ proc_args:
 	call ._zero
 
 	mov $0x01, %ax
+	jmp .epil
+
+.done_redir:
+	mov $0x02, %ax
 	jmp .epil
 
 .done:

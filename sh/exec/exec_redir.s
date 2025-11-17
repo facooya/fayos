@@ -33,17 +33,37 @@ exec_redir:
 
 .type__write:
 	# {{{ path
-	push %si # (&name)
+	push %si # (&path)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
-	# <ax = {done:0, exit:1, ne_last:2}>
+	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() != done) ? {err}
+	# (fs_path() == exit) ? {err}
+	cmp $0x01, %ax
+	je .err_inv_path
+	# (fs_path() != neq_last) ? {add}
+	cmp $0x02, %ax
+	jne .type__skip_add
+
+	push $F_TYPE_FILE # (f_type)
+	push %si # (&path)
+	call fs_add
+	add $0x04, %sp
+
+	# upd
+	push %si # (&path)
+	call fs_path
+	add $0x02, %sp
+	# <mod: (fsp &dir, &base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	#(fs_path() != done) ? {err}
 	test %ax, %ax
 	jnz .err_inv_path
 	# }}}
 
+.type__skip_add:
 	# (f_type != file) ? {err}
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_TYPE(%si), %ax

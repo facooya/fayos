@@ -5,6 +5,7 @@
 # Parse for arguments, And calculation option count
 
 .include "chr.s"
+.include "fs/fs.s"
 .section .text
 .code16
 .global parse_args
@@ -34,6 +35,20 @@ parse_args:
 
 # {TASK}
 .cmd:
+	# { chk redir
+	dec %si
+	# ah = redir.type
+	mov 0x01(%si), %al
+	mov $0x11, %ah
+	cmp $CHR_GT, %al
+	je .redir
+	mov $0x13, %ah
+	cmp $CHR_LT, %al
+	je .redir
+	inc %si
+	# }
+
+.cmd__norm:
 	# regex_alpha(&chr)
 	# ret: ax = 0(true), ax = 1(false)
 	push %cx # argc
@@ -197,6 +212,28 @@ parse_args:
 # (*si == null)
 # ah = redir.type
 .redir:
+	# { clr
+	mov $redir_hsbuf, %di
+	mov (%di), %dx
+	add $0x02, %di
+	xor %dh, %dh
+
+	push %ax
+	push %cx
+	xor %cx, %cx
+	push %dx # (size)
+	push %cx # (value)
+	push %di # (&off)
+	push %cx # (&seg)
+	call mem_set
+	add $0x08, %sp
+	pop %cx
+	pop %ax
+
+	xor %dx, %dx
+	mov %dx, (redir_hsbuf)
+	# }
+
 	# {init}
 	xor %dx, %dx
 	mov $redir_hsbuf, %di
@@ -239,6 +276,12 @@ parse_args:
 	jmp .redir__lp
 
 .redir__end:
+	# store last null
+	xor %ax, %ax
+	mov %al, (%di)
+	inc %di
+	inc %dl
+
 	# store hdr
 	mov $redir_hsbuf, %di
 	mov %dx, (%di) # redir.hdr
@@ -261,6 +304,11 @@ parse_args:
 	mov %ax, (%di)
 	# }}}
 
+	# chk redir only
+	mov (redir_hsbuf), %ax
+	cmp $0x11, %ah
+	je .done_redir
+
 	# {end.done}
 	xor %ax, %ax
 	jmp .done
@@ -268,6 +316,12 @@ parse_args:
 # {DONE}
 .exit:
 	mov $0x01, %ax
+	jmp .done
+
+.done_redir:
+	sub $0x10, %ah
+	mov %ax, (redir_hsbuf)
+	mov $0x02, %ax
 	jmp .done
 
 .done:

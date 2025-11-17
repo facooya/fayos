@@ -20,10 +20,13 @@ exec_cmd:
 	mov $CHR_LF, %al
 	call vga_putc
 
-	# {end.done} (ret.code != 0)
+	# { proc_args
 	call proc_args
-	test %ax, %ax
-	jnz .done
+	cmp $0x01, %ax
+	je .done
+	cmp $0x02, %ax
+	je .redir
+	# }
 
 	# {task}
 	jmp .map
@@ -79,6 +82,7 @@ exec_cmd:
 	add %cx, %di # *map_chr
 	mov -0x02(%di), %ax # map_addr
 
+	# POINT!!!
 	# {end.err} (map_addr == null)
 	test %ax, %ax
 	jz .err_cmd_not
