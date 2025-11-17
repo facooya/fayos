@@ -49,6 +49,7 @@ dbg_args:
 	mov $args, %di
 	mov (%di), %cx # argc
 	add $0x02, %di # skip argc
+	push %cx # [s.0:argc]
 
 	# byte to ascii
 	mov %cx, %ax
@@ -79,6 +80,7 @@ dbg_args:
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
+	pop %cx # [s.0:argc]
 	jmp .argv
 
 # {TASK}
@@ -90,10 +92,14 @@ dbg_args:
 	xor %dx, %dx # idx
 
 .argv__lp:
+	push %cx # [s.0:argc]
+	push %dx # [s.1:idx]
 	# {{{ out str
 	push $.argv_str
 	call vga_puts
 	add $0x02, %sp
+	pop %dx # [s.1:idx]
+	push %dx # [s.1:idx]
 
 	# idx
 	mov %dl, %al # idx
@@ -118,6 +124,8 @@ dbg_args:
 	call vga_puts
 	add $0x02, %sp
 	# }}}
+	pop %dx # [s.1:idx]
+	pop %cx # [s.0:argc]
 
 	# {lp.step}
 	add $0x02, %di # argv
@@ -129,10 +137,15 @@ dbg_args:
 	jz .done
 
 	# {lp}
+	push %cx # [s.f0:argc]
+	push %dx # [s.f1:idx]
 	mov $CHR_CR, %al
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
+	pop %dx # [s.f1:idx]
+	pop %cx # [s.f0:argc]
+
 	jmp .argv__lp
 
 .done:

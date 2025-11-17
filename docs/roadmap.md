@@ -1,10 +1,10 @@
 # Roadmap
 ## WIP
+- redir: more write mode, create mode, append mode, insert mode
 
 ## PRIORITY
 
 ## TODO
-- redir append mode, insert mode
 - calculate low, high address
 
 ## Feature
