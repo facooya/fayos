@@ -140,6 +140,18 @@ parse_args:
 
 # {TASK}
 .arg:
+	# { chk redir
+	dec %si
+	# ah = redir.type
+	mov 0x01(%si), %al
+	mov $0x01, %ah
+	cmp $CHR_GT, %al
+	je .redir
+	mov $0x03, %ah
+	cmp $CHR_LT, %al
+	je .redir
+	# }
+
 # <REQ>
 # (*si != null)
 .arg__lp:
