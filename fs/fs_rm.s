@@ -12,6 +12,7 @@
 .global fs_rm
 
 # fs_rm(ub8 *path, ub16 f_type)
+# <mod?> fsp cur, path_cv
 # <ret> ax = {done:0, exit:1}
 fs_rm:
 	push %bp
@@ -305,7 +306,40 @@ fs_rm:
 	push $fsp+FSP_OFF_DIR
 	call disk_write_fsp
 	add $0x02, %sp
+
+	# {{{ chk cur
+	mov $fsp+FSP_OFF_CUR, %si
+	push FSP_OFF_INUM(%si) # (inum_lo)
+	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push $fsp+FSP_OFF_CUR # (fsp &dst)
+	call fsp_read
+	add $0x06, %sp
+
+	mov FSP_OFF_F_TYPE(%si), %al
+	cmp $F_TYPE_RM, %al
+	jne .done
+
+	# { upd cur
+	xor %ax, %ax
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_DIR # (&s_off)
+	push %ax # (&s_seg)
+	push $fsp+FSP_OFF_CUR # (&d_off)
+	push %ax # (&d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	mov (path_cv), %ax
+	dec %ax
+	mov %ax, (path_cv)
+	call fs_cwd
+	# <req: path_cv, path_sbuf>
+	# <mod: cwd>
+
+	call ps1_build
+	# }
 	jmp .done
+	# }}}
 
 # {DONE}
 .done:

@@ -4,11 +4,8 @@
 ## PRIORITY
 
 ## TODO
-- dentry size optimize
 - redir append mode, insert mode
 - calculate low, high address
-- support more key (num\_lock, fN, (ins, del, home, end, page up/down))
-- scroll and restore many line feed
 
 ## Feature
 - tab: autocomplete file or dir
@@ -20,6 +17,9 @@
 - record log, error log
 - OBF, IBF timeout error
 - fs: block extends
+- fs: dentry size optimize
+- scroll and restore many line feed
+- support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 
 ## Command
 - cp
