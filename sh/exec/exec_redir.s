@@ -42,9 +42,6 @@ exec_redir:
 	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-	# (fs_path() != neq_last) ? {add}
-	cmp $0x02, %ax
-	jne .type__skip_add
 
 	push $F_TYPE_FILE # (f_type)
 	push %si # (&path)
