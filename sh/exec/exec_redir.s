@@ -29,6 +29,8 @@ exec_redir:
 	# (redir_type == 1) ? {type.write} : {err}
 	cmp $0x01, %ah # type
 	je .type__write
+	cmp $0x02, %ah
+	je .type__write
 	jmp .err_redir_type
 
 .type__write:
@@ -60,7 +62,6 @@ exec_redir:
 	jnz .err_inv_path
 	# }}}
 
-.type__skip_add:
 	# (f_type != file) ? {err}
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_TYPE(%si), %ax
@@ -85,6 +86,13 @@ exec_redir:
 
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_F_SIZE(%si), %cx # f_size
+
+	#add %cx, %bx
+	#mov (redir_hsbuf), %ax
+	#cmp $0x02, %ah
+	#je .run__write_lp
+	#sub %cx, %bx
+
 	xor %ax, %ax
 	jmp .run
 
