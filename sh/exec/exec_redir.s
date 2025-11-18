@@ -26,14 +26,15 @@ exec_redir:
 	xor %cx, %cx
 	mov %al, %cl # buf.len
 
-	# (redir_type == 1) ? {type.write} : {err}
+	# (redir_type == write) ? {write}
 	cmp $0x01, %ah # type
-	je .type__write
+	je .find
+	# (redir_type == append) ? {append} : {err}
 	cmp $0x02, %ah
-	je .type__write
+	je .find
 	jmp .err_redir_type
 
-.type__write:
+.find:
 	# {{{ path
 	push %si # (&path)
 	call fs_path
@@ -44,6 +45,9 @@ exec_redir:
 	# (fs_path() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
+	# (fs_path() != neq_last) ? {skip}
+	cmp $0x02, %ax
+	jne .skip
 
 	push $F_TYPE_FILE # (f_type)
 	push %si # (&path)
@@ -62,6 +66,7 @@ exec_redir:
 	jnz .err_inv_path
 	# }}}
 
+.skip:
 	# (f_type != file) ? {err}
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_TYPE(%si), %ax
@@ -87,11 +92,12 @@ exec_redir:
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_F_SIZE(%si), %cx # f_size
 
-	#add %cx, %bx
-	#mov (redir_hsbuf), %ax
-	#cmp $0x02, %ah
-	#je .run__write_lp
-	#sub %cx, %bx
+	add %cx, %bx
+	mov %cx, %dx # f_size
+	mov (redir_hsbuf), %ax
+	cmp $0x02, %ah
+	je .run__append
+	sub %cx, %bx
 
 	xor %ax, %ax
 	jmp .run
@@ -110,7 +116,9 @@ exec_redir:
 
 .run__clear_end:
 	mov FSP_OFF_DISK_MEM(%si), %bx
-	xor %dx, %dx # file_size
+	xor %dx, %dx # f_size
+
+.run__append:
 	mov $write_sbuf, %si
 	mov (%si), %cx # buf.len
 	add $0x02, %si # skip len

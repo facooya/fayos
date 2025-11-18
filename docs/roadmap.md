@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- redir: append mode, insert mode
+- redir: append mode
 
 ## PRIORITY
 

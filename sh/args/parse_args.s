@@ -38,28 +38,20 @@ parse_args:
 	# { chk redir
 	dec %si
 	# ah = redir.type
-	mov 0x01(%si), %al
-	cmp $CHR_GT, %al
-	je .cmd__redir_chk
-	mov $0x13, %ah
-	cmp $CHR_LT, %al
+	mov 0x01(%si), %dx
+	mov $0x11, %ah
+	cmp $REDIR_WRITE, %dx
 	je .redir
+	mov $0x12, %ah
+	cmp $REDIR_APPEND, %dx
+	jne 1f
+	mov 0x03(%si), %al
+	test %al, %al
+	je .redir
+1:
 	inc %si
-	jmp .cmd__norm
 	# }
 
-.cmd__redir_chk:
-	mov 0x02(%si), %dx
-	mov $0x11, %ah
-	test %dl, %dl
-	jz .redir
-	mov $0x12, %ah
-	cmp $0x003E, %dx
-	je .redir
-	inc %si
-	jmp .cmd__norm
-
-.cmd__norm:
 	# regex_alpha(&chr)
 	# ret: ax = 0(true), ax = 1(false)
 	push %cx # argc
@@ -169,13 +161,17 @@ parse_args:
 	# { chk redir
 	dec %si
 	# ah = redir.type
-	mov 0x01(%si), %al
+	mov 0x01(%si), %dx
 	mov $0x01, %ah
-	cmp $CHR_GT, %al
+	cmp $REDIR_WRITE, %dx
 	je .redir
-	mov $0x03, %ah
-	cmp $CHR_LT, %al
+	mov $0x02, %ah
+	cmp $REDIR_APPEND, %dx
+	jne 1f
+	mov 0x03(%si), %al
+	test %al, %al
 	je .redir
+1:
 	# }
 	inc %si
 
@@ -199,13 +195,17 @@ parse_args:
 
 	# {task}
 	# ah = redir.type
-	mov 0x01(%si), %al
+	mov 0x01(%si), %dx
 	mov $0x01, %ah
-	cmp $CHR_GT, %al
+	cmp $REDIR_WRITE, %dx
 	je .redir
-	mov $0x03, %ah
-	cmp $CHR_LT, %al
+	mov $0x02, %ah
+	cmp $REDIR_APPEND, %dx
+	jne 1f
+	mov 0x03(%si), %al
+	test %al, %al
 	je .redir
+1:
 
 	# {lp}
 	add $0x01, %si
@@ -230,8 +230,8 @@ parse_args:
 	add $0x02, %di
 	xor %dh, %dh
 
-	push %ax
-	push %cx
+	push %ax # [s.f0:type]
+	push %cx # [s.f1:arg_c]
 	xor %cx, %cx
 	push %dx # (size)
 	push %cx # (value)
@@ -239,8 +239,8 @@ parse_args:
 	push %cx # (&seg)
 	call mem_set
 	add $0x08, %sp
-	pop %cx
-	pop %ax
+	pop %cx # [s.f1:arg_c]
+	pop %ax # [s.f0:type]
 
 	xor %dx, %dx
 	mov %dx, (redir_hsbuf)
@@ -256,15 +256,15 @@ parse_args:
 	add $0x02, %si # skip null+redir.type
 	sub $0x01, %cx # argc
 
-	# {
-	#cmp $0x12, %dh
-	#je 1f
-	#cmp $0x02, %dh
-	#je 1f
-	#jmp 2f
-#1:
-	#add $0x01, %si
-#2:
+	# { redir append
+	cmp $0x12, %dh
+	je 1f
+	cmp $0x02, %dh
+	je 1f
+	jmp 2f
+1:
+	add $0x01, %si
+2:
 	# }
 
 	# {end.err} (chr != 0)
