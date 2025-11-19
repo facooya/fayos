@@ -31,15 +31,17 @@ ind_clr:
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
+	# { clr blk
+	# TODO: clear all block
 	# clear_bit(mem, bitnum)
-	mov %es:IND_OFF_BLK_0(%bx), %ax
+	mov %es:IND_OFF_BLK(%bx), %ax
 	mov %ax, (bbnum)
 
-	# clear block # TODO: clear all block
+	# clr blk
 	xor %ax, %ax
 	mov %ax, %es:IND_OFF_F_SIZE(%bx)
-	mov %ax, %es:IND_OFF_BLK_0(%bx)
-	mov %ax, %es:IND_OFF_BLK_0+0x02(%bx)
+	mov %ax, %es:IND_OFF_BLK(%bx)
+	# }
 
 	mov $F_TYPE_RM, %ax
 	mov %ax, %es:IND_OFF_F_TYPE(%bx)

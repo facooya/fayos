@@ -10,21 +10,24 @@
 .code16
 .global sb_alloc_lba
 
-# sb_alloc_lba(seg, off)
+# sb_alloc_lba(ub16 *seg, ub16 *off)
 sb_alloc_lba:
 	push %bp
 	mov %sp, %bp
 	push %es
 	push %bx
 
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (*seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx
+	mov 0x06(%bp), %bx # (*off)
 
 	mov %es:SB_OFF_TOT_SECT(%bx), %ax
-	# TODO: mov DP_LBA_SIZE_OFF+0x02(%bx), %ax
-	# TODO: calcluate high lba
+	mov %es:SB_OFF_TOT_SECT+0x02(%bx), %dx
+	test %dx, %dx
+	jz .low
+	# TODO: log over 16-bit
 
+.low:
 	# {{{
 	# bbs
 	xor %dx, %dx

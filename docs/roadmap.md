@@ -1,11 +1,10 @@
 # Roadmap
 ## WIP
-- redir: append mode
+- change all 16-bit like inum 16-bit, total sector 16-bit
 
 ## PRIORITY
 
 ## TODO
-- calculate low, high address
 
 ## Feature
 - tab: autocomplete file or dir

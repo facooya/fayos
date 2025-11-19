@@ -33,7 +33,7 @@ dbg_fsp:
 	call dbg_reg
 	add $0x02, %sp
 
-	mov FSP_OFF_BLK_0(%si), %ax
+	mov FSP_OFF_BLK(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp

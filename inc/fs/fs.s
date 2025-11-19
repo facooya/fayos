@@ -21,25 +21,19 @@
 .equ FSP_OFF_DISK, 0x28
 
 # Inode
-.equ FSP_OFF_F_SIZE, 0x00
-.equ FSP_OFF_F_TYPE, 0x02
-.equ FSP_OFF_BLK_SIZE, 0x03
-.equ FSP_OFF_BLK_0, 0x04
-.equ FSP_OFF_BLK_1, FSP_OFF_BLK_0+0x04
-.equ FSP_OFF_BLK_2, FSP_OFF_BLK_1+0x04
-.equ FSP_OFF_BLK_3, FSP_OFF_BLK_2+0x04
-.equ FSP_OFF_BLK_4, FSP_OFF_BLK_3+0x04
-.equ FSP_OFF_BLK_5, FSP_OFF_BLK_4+0x04
-.equ FSP_OFF_BLK_6, FSP_OFF_BLK_5+0x04
+.equ FSP_OFF_F_SIZE, 0x00 # [2-byte]
+.equ FSP_OFF_F_TYPE, 0x02 # [1-byte]
+.equ FSP_OFF_BLK_SIZE, 0x03 # [1-byte]
+.equ FSP_OFF_BLK, 0x04 # [2-byte] * 14
 
 # Info
-.equ FSP_OFF_IND_PTR, 0x20
-.equ FSP_OFF_INUM, 0x24
+.equ FSP_OFF_IND_PTR, 0x20 # [4-byte]
+.equ FSP_OFF_INUM, 0x24 # [2-byte]
 
 # Disk
-.equ FSP_OFF_DISK_SECT_CNT, 0x28
-.equ FSP_OFF_DISK_MEM, 0x2A
-.equ FSP_OFF_DISK_LBA, 0x2E
+.equ FSP_OFF_DISK_SECT_CNT, 0x28 # [2-byte]
+.equ FSP_OFF_DISK_MEM, 0x2A # [4-byte]
+.equ FSP_OFF_DISK_LBA, 0x2E # [2-byte]
 
 # Access
 .equ FSP_OFF_CUR, 0x00

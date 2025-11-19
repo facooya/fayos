@@ -25,11 +25,10 @@ fsp_init:
 	mov $(DISK_CUR_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)
 	mov $(DISK_CUR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 
-	push FSP_OFF_BLK_0(%di)
-	push FSP_OFF_BLK_0+0x02(%di)
+	push FSP_OFF_BLK(%di)
 	call fsp_blk_to_lba
-	add $0x04, %sp
-	mov %dx, FSP_OFF_DISK_LBA+0x02(%di)
+	add $0x02, %sp
+	# <ax = lba>
 	mov %ax, FSP_OFF_DISK_LBA(%di)
 
 	xor %ax, %ax

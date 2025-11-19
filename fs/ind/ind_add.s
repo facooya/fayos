@@ -60,9 +60,9 @@ ind_add:
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
-	# write blk # TODO: LO,HI
+	# write blk
 	mov (bbnum), %ax
-	mov %ax, %es:IND_OFF_BLK_0(%bx)
+	mov %ax, %es:IND_OFF_BLK(%bx)
 
 	# f_type
 	mov 0x04(%bp), %ax # (f_type)

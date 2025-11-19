@@ -28,10 +28,8 @@ fsp_write:
 	mov FSP_OFF_F_SIZE(%si), %ax
 	mov %ax, %es:IND_OFF_F_SIZE(%di)
 
-	mov FSP_OFF_BLK_0(%si), %ax
-	mov %ax, %es:IND_OFF_BLK_0(%di)
-	mov FSP_OFF_BLK_0+0x02(%si), %ax
-	mov %ax, %es:IND_OFF_BLK_0+0x02(%di)
+	mov FSP_OFF_BLK(%si), %ax
+	mov %ax, %es:IND_OFF_BLK(%di)
 
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi
