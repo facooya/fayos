@@ -127,12 +127,10 @@ fs_rm:
 .dir__down:
 	mov $fsp+FSP_OFF_TMP, %si
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	push %si # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push %si # (fsp &src)
 	call disk_read_fsp
@@ -179,11 +177,10 @@ fs_rm:
 	push %cx # [s.f1:rec_size]
 	mov %es:DE_OFF_INUM(%bx), %ax
 	mov %es:DE_OFF_INUM(%bx), %dx
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	push $fsp+FSP_OFF_BASE # (fsp &dst) HACK
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 	pop %cx # [s.f1:rec_size]
 	pop %dx # [s.f0:f_size]
 
@@ -309,11 +306,10 @@ fs_rm:
 
 	# {{{ chk cur
 	mov $fsp+FSP_OFF_CUR, %si
-	push FSP_OFF_INUM(%si) # (inum_lo)
-	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push FSP_OFF_INUM(%si) # (inum)
 	push $fsp+FSP_OFF_CUR # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	mov FSP_OFF_F_TYPE(%si), %al
 	cmp $F_TYPE_RM, %al

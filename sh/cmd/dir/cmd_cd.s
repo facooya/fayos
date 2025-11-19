@@ -58,20 +58,18 @@ cmd_cd:
 	cmp $F_TYPE_DIR, %ax
 	jne .err_dir_type
 
-	push FSP_OFF_INUM(%si) # (inum_lo)
-	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push FSP_OFF_INUM(%si) # (inum)
 	push $fsp+FSP_OFF_CUR # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 	# }
 
 	# { %si
 	mov $fsp+FSP_OFF_DIR, %si
-	push FSP_OFF_INUM(%si) # (inum_lo)
-	push FSP_OFF_INUM+0x02(%si) # (inum_hi)
+	push FSP_OFF_INUM(%si) # (inum)
 	push $fsp+FSP_OFF_PAR # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 	# }
 
 	call ps1_build

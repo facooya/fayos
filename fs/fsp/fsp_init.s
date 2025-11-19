@@ -15,11 +15,10 @@ fsp_init:
 	push %di
 
 	mov $fsp+FSP_OFF_CUR, %di
-	push $(FS_ROOT_INUM&0xFFFF)
-	push $(FS_ROOT_INUM>>0x10)
+	push $FS_ROOT_INUM
 	push %di # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	mov $DISK_BLK_SECT_CNT, FSP_OFF_DISK_SECT_CNT(%di)
 	mov $(DISK_CUR_MEM>>0x10), FSP_OFF_DISK_MEM+0x02(%di)

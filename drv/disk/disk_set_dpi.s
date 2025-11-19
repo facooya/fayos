@@ -37,8 +37,6 @@ disk_set_dpi:
 	mov %es:DP_OFF_MEM(%si), %ax
 	mov %ax, %es:DP_OFF_MEM(%di)
 
-	mov %es:DP_OFF_LBA+0x02(%si), %ax
-	mov %ax, %es:DP_OFF_LBA(%di)
 	mov %es:DP_OFF_LBA(%si), %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 

@@ -60,7 +60,7 @@ de_seek:
 	# (inum == 0) ? {lp.step}
 	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_OFF_INUM+0x02(%bx), %ax
+	#or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .lp__step
 
 	push %cx # [s.f0:file_size]

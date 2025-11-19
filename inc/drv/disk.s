@@ -36,4 +36,4 @@
 
 .equ DP_OFF_SECT_CNT, 0x00 # [2-byte]
 .equ DP_OFF_MEM, 0x02 # [4-byte]
-.equ DP_OFF_LBA, 0x06 # [4-byte]
+.equ DP_OFF_LBA, 0x06 # [2-byte]

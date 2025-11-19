@@ -82,7 +82,6 @@ exec_cmd:
 	add %cx, %di # *map_chr
 	mov -0x02(%di), %ax # map_addr
 
-	# POINT!!!
 	# {end.err} (map_addr == null)
 	test %ax, %ax
 	jz .err_cmd_not

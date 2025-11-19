@@ -23,7 +23,7 @@ sb_run:
 	push %bx
 
 	push $DISK_SB_SECT_CNT # (sect_cnt)
-	push DISK_SB_LBA # (lba)
+	push $DISK_SB_LBA # (lba)
 	push $(DISK_SB_MEM&0xFFFF) # (&off)
 	push $(DISK_SB_MEM>>0x10) # (&seg)
 	call ata_read_sect
@@ -87,7 +87,7 @@ sb_run:
 	push $F_TYPE_DIR # (f_type)
 	call ind_add
 	add $0x02, %sp
-	# <dx:ax = inum_hi:inum_lo>
+	# <ax = inum>
 
 	call fsp_init
 	push $fsp+FSP_OFF_CUR # (fsp &src)

@@ -23,11 +23,10 @@ hist_upd_cl:
 	push %bx
 
 	mov $fsp+FSP_OFF_ROOT, %si
-	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
-	push $fsp+FSP_OFF_ROOT
+	push FSP_OFF_INUM(%si) # (inum)
+	push $fsp+FSP_OFF_ROOT # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $fsp+FSP_OFF_ROOT
 	call disk_read_fsp
@@ -49,12 +48,10 @@ hist_upd_cl:
 
 	# {{{ read history file
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
-	push %ax
-	push %dx
-	push $fsp+FSP_OFF_TMP
+	push %ax # (inum)
+	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $fsp+FSP_OFF_TMP
 	call disk_read_fsp

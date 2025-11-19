@@ -11,7 +11,7 @@
 .code16
 .global fsp_read
 
-# fsp_read(fsp *dst, ub16 inum_hi, ub16 inum_lo)
+# fsp_read(fsp *dst, ub16 inum)
 fsp_read:
 	push %bp
 	mov %sp, %bp
@@ -22,9 +22,7 @@ fsp_read:
 
 	# save inum
 	mov 0x04(%bp), %di # (fsp *dsp)
-	mov 0x06(%bp), %ax # (inum_hi)
-	mov %ax, FSP_OFF_INUM+0x02(%di)
-	mov 0x08(%bp), %ax # (inum_lo)
+	mov 0x06(%bp), %ax # (inum)
 	mov %ax, FSP_OFF_INUM(%di)
 
 	# { save ptr
@@ -33,7 +31,7 @@ fsp_read:
 	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	xor %dx, %dx
-	mov 0x08(%bp), %ax # (inum_lo)
+	mov 0x06(%bp), %ax # (inum)
 	mov $IND_SIZE, %cx
 	mul %cx
 	add %ax, %bx
@@ -59,7 +57,7 @@ fsp_read:
 	jmp .ind__lp
 
 .ind__end:
-	mov 0x04(%bp), %di
+	mov 0x04(%bp), %di # (fsp *dst)
 
 	# set lba
 	push FSP_OFF_BLK(%di)

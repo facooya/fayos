@@ -57,24 +57,19 @@ path_read:
 
 .single__run:
 	mov FSP_OFF_INUM(%di), %ax
-	mov FSP_OFF_INUM+0x02(%di), %dx
 
 	push %cx # [s.f2:pathc]
-	push %ax # [s.f0:inum_lo]
-	push %dx # [s.f1:inum_hi]
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # [s.f0:inum]
+	push %ax # (inum)
 	push $fsp+FSP_OFF_DIR # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
-	pop %dx # [s.f1:inum_hi]
-	pop %ax # [s.f0:inum_lo]
+	add $0x04, %sp
+	pop %ax # [s.f0:inum]
 	pop %cx # [s.f2:pathc]
 	jmp .lp
 
 .abs:
-	mov $(FS_ROOT_INUM>>0x10), %dx
-	mov $(FS_ROOT_INUM&0xFFFF), %ax
+	mov $FS_ROOT_INUM, %ax
 
 	# skip pathv[0]
 	add $0x02, %si
@@ -84,7 +79,6 @@ path_read:
 .cur:
 	mov $fsp+FSP_OFF_CUR, %di
 	mov FSP_OFF_INUM(%di), %ax
-	mov FSP_OFF_INUM+0x02(%di), %dx
 	jmp .lp
 
 .lp:
@@ -93,11 +87,10 @@ path_read:
 	jz .done
 
 	push %cx # [s.0:pathc]
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	push $fsp+FSP_OFF_DIR # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	call disk_read_fsp
@@ -124,7 +117,6 @@ path_read:
 	# }}}
 
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 
 	# {lp}
 	add $0x02, %si
@@ -139,11 +131,10 @@ path_read:
 
 # {DONE}
 .done:
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	push $fsp+FSP_OFF_BASE # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	xor %ax, %ax
 	jmp .epil

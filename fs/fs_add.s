@@ -60,13 +60,12 @@ fs_add:
 	push 0x06(%bp) # (f_type)
 	call ind_add
 	add $0x02, %sp
-	# <dx:ax = inum_hi:inum_lo>
+	# <ax = inum>
 
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	# { de_add
 	mov $path_cv, %si
@@ -105,17 +104,15 @@ fs_add:
 	# { upd f_size if fsp_dir is fsp_cur, fsp_par
 	mov $fsp+FSP_OFF_CUR, %si
 	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
 	push $fsp+FSP_OFF_CUR
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 
 	mov $fsp+FSP_OFF_PAR, %si
 	push FSP_OFF_INUM(%si)
-	push FSP_OFF_INUM+0x02(%si)
 	push $fsp+FSP_OFF_PAR
 	call fsp_read
-	add $0x06, %sp
+	add $0x04, %sp
 	# }
 
 	# (f_type != dir) ? {done} : {add_dots}

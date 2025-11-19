@@ -14,7 +14,7 @@
 # <mod> blk bitmap
 # <mod> inum bitmap
 # <mod> inode table
-# <ret> dx:ax = inum_hi:inum_lo
+# <ret> ax = inum
 ind_add:
 	push %bp
 	mov %sp, %bp
@@ -45,7 +45,7 @@ ind_add:
 	call bm_alloc
 	add $0x06, %sp
 	# <ax = bit_num>
-	push %ax # [s.ret0:inum_lo]
+	push %ax # [s.ret0:inum]
 	# }}}
 
 	# {{{ read/write inode table
@@ -53,7 +53,7 @@ ind_add:
 	mov %ax, %es
 	mov $(DISK_IT_MEM&0xFFFF), %bx
 
-	# calc inode # TODO: LO,HI
+	# calc inode
 	xor %dx, %dx
 	mov (ibnum), %ax
 	mov $IND_SIZE, %cx
@@ -106,8 +106,7 @@ ind_add:
 	add $0x02, %sp
 	# }}}
 
-	xor %dx, %dx # <ret:inum_hi>
-	pop %ax # [s.ret0:inum_lo]
+	pop %ax # [s.ret0:inum] <ret:inum>
 
 	pop %bx
 	pop %si
