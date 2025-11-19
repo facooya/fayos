@@ -22,13 +22,12 @@ sb_run:
 	push %si
 	push %bx
 
-	push $DISK_SB_SECT_CNT # sect_cnt
-	push $(DISK_SB_LBA&0xFFFF) # lba_lo
-	push $(DISK_SB_LBA>>0x10) # lba_hi
-	push $(DISK_SB_MEM&0xFFFF) # off
-	push $(DISK_SB_MEM>>0x10) # seg
+	push $DISK_SB_SECT_CNT # (sect_cnt)
+	push DISK_SB_LBA # (lba)
+	push $(DISK_SB_MEM&0xFFFF) # (&off)
+	push $(DISK_SB_MEM>>0x10) # (&seg)
 	call ata_read_sect
-	add $0x0A, %sp
+	add $0x08, %sp
 	mov $(DISK_SB_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_SB_MEM&0xFFFF), %bx
@@ -72,13 +71,12 @@ sb_run:
 
 	call sb_write_dpi
 
-	push $DISK_SB_SECT_CNT # sect_cnt
-	push $(DISK_SB_LBA&0xFFFF) # lba_lo
-	push $(DISK_SB_LBA>>0x10) # lba_hi
-	push $(DISK_SB_MEM&0xFFFF) # off
-	push $(DISK_SB_MEM>>0x10) # seg
+	push $DISK_SB_SECT_CNT # (sect_cnt)
+	push $DISK_SB_LBA # (lba)
+	push $(DISK_SB_MEM&0xFFFF) # (&off)
+	push $(DISK_SB_MEM>>0x10) # (&seg)
 	call ata_write_sect
-	add $0x0A, %sp
+	add $0x08, %sp
 	# }}}
 
 	call disk_set_dpi

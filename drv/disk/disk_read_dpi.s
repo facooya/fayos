@@ -21,14 +21,12 @@ disk_read_dpi:
 	push %ax
 	mov DP_OFF_LBA(%bx), %ax
 	push %ax
-	mov DP_OFF_LBA+0x02(%bx), %ax
-	push %ax
 	mov DP_OFF_MEM(%bx), %ax
 	push %ax
 	mov DP_OFF_MEM+0x02(%bx), %ax
 	push %ax
 	call ata_read_sect
-	add $0x0A, %sp
+	add $0x08, %sp
 
 	pop %bx
 	pop %bp

@@ -21,14 +21,12 @@ disk_write_fsp:
 	push %ax
 	mov FSP_OFF_DISK_LBA(%bx), %ax
 	push %ax
-	mov FSP_OFF_DISK_LBA+0x02(%bx), %ax
-	push %ax
 	mov FSP_OFF_DISK_MEM(%bx), %ax
 	push %ax
 	mov FSP_OFF_DISK_MEM+0x02(%bx), %ax
 	push %ax
 	call ata_write_sect
-	add $0x0A, %sp
+	add $0x08, %sp
 
 	pop %bx
 	pop %bp

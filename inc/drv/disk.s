@@ -5,7 +5,7 @@
 # [Disk] Constants
 
 .equ DISK_SB_SECT_CNT, 0x01
-.equ DISK_SB_LBA, 0x00000001
+.equ DISK_SB_LBA, 0x0001
 .equ DISK_BLK_SECT_CNT, 0x08
 
 .equ DISK_SB_MEM, 0x00000600

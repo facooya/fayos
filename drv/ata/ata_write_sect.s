@@ -15,8 +15,7 @@
 # ata_write_sect(
 # ub16 *seg,
 # ub16 *off,
-# ub16 lba_hi,
-# ub16 lba_lo,
+# ub16 lba,
 # ub16 sect_cnt
 # )
 # <ret> dx:ax = seg:off
@@ -27,9 +26,9 @@ ata_write_sect:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (*seg)
 	mov %ax, %ds
-	mov 0x06(%bp), %si
+	mov 0x06(%bp), %si # (*off)
 
 	# set mode
 	mov $ATA_DRV_REG, %dx
@@ -41,22 +40,22 @@ ata_write_sect:
 
 	# sector count
 	mov $ATA_SECT_CNT_REG, %dx
-	mov 0x0C(%bp), %ax # sect_cnt
-	mov %ax, %bx # sect_cnt
+	mov 0x0A(%bp), %ax # (sect_cnt)
+	mov %ax, %bx
 	out %al, %dx
 
 	# {{{ LBA
 	mov $ATA_LBA_LO_REG, %dx
-	mov 0x0A(%bp), %ax # lba_lo
-	out %al, %dx
+	mov 0x08(%bp), %ax # (lba)
+	out %al, %dx # lba_lo
 
 	mov $ATA_LBA_MID_REG, %dx
-	mov %ah, %al # lba_mid
-	out %al, %dx
+	mov %ah, %al
+	out %al, %dx # lba_mid
 
 	mov $ATA_LBA_HI_REG, %dx
-	mov 0x08(%bp), %ax # lba_hi
-	out %al, %dx
+	xor %ax, %ax
+	out %al, %dx # lba_hi
 	# }}}
 
 	# write
