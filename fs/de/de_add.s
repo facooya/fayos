@@ -46,8 +46,6 @@ de_add:
 	mov 0x04(%bp), %si # (fsp *dst)
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov FSP_OFF_INUM+0x02(%si), %ax
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
 	mov 0x0A(%bp), %ax # (f_type)

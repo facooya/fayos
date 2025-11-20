@@ -32,8 +32,6 @@ de_add_dots:
 	# write inum
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov FSP_OFF_INUM+0x02(%si), %ax
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
 	mov $DE_DOT_INFO, %ax
@@ -68,8 +66,6 @@ de_add_dots:
 	mov 0x06(%bp), %si # (fsp *src)
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov FSP_OFF_INUM+0x02(%si), %ax
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	# write info
 	mov $DE_DOTS_INFO, %ax

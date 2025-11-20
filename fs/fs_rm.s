@@ -227,10 +227,9 @@ fs_rm:
 
 	push %cx # [s.0:rec_size]
 	push %dx # [s.1:f_size]
-	push %es:DE_OFF_INUM(%bx) # (inum_lo)
-	push %es:DE_OFF_INUM+0x02(%bx) # (inum_hi)
+	push %es:DE_OFF_INUM(%bx) # (inum)
 	call ind_clr
-	add $0x04, %sp
+	add $0x02, %sp
 
 	# clr inum
 	xor %ax, %ax
@@ -280,20 +279,15 @@ fs_rm:
 
 	# (del_inum != sel_inum) ? {dir.down} : {clr}
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_INUM(%si), %cx
 	cmp %ax, %cx
 	jne .dir__down
-	mov FSP_OFF_INUM+0x02(%si), %cx
-	cmp %dx, %cx
-	jne .dir__down
 
 .last__rm:
-	push %ax # (inum_lo)
-	push %dx # (inum_hi)
+	push %ax # (inum)
 	call ind_clr
-	add $0x04, %sp
+	add $0x02, %sp
 
 	# clr inum
 	xor %ax, %ax

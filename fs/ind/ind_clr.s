@@ -11,7 +11,7 @@
 .code16
 .global ind_clr
 
-# ind_clr(ub16 inum_hi, ub16 inum_lo)
+# ind_clr(ub16 inum)
 ind_clr:
 	push %bp
 	mov %sp, %bp
@@ -24,9 +24,9 @@ ind_clr:
 	mov %ax, %es
 	mov $(DISK_IT_MEM&0xFFFF), %bx
 
-	# calc inode # TODO: low, high
+	# calc inode
 	xor %dx, %dx
-	mov 0x06(%bp), %ax # (inum_lo)
+	mov 0x04(%bp), %ax # (inum)
 	mov $IND_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
@@ -72,7 +72,7 @@ ind_clr:
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
-	mov 0x06(%bp), %ax # (inum_lo)
+	mov 0x04(%bp), %ax # (inum)
 	mov %ax, (ibnum)
 	push $ibnum
 	push %bx
