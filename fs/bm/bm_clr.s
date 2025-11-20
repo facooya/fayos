@@ -8,7 +8,7 @@
 .code16
 .global bm_clr
 
-# bm_clr(*seg, *off, *bitnum)
+# bm_clr(ub16 *seg, ub16 *off, ub16 bm_num)
 bm_clr:
 	push %bp
 	mov %sp, %bp
@@ -16,12 +16,11 @@ bm_clr:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax
-	mov %ax, %es # *seg
-	mov 0x06(%bp), %bx # *off
-	mov 0x08(%bp), %si # *bitnum
+	mov 0x04(%bp), %ax # (*seg)
+	mov %ax, %es
+	mov 0x06(%bp), %bx # (*off)
+	mov 0x08(%bp), %ax # (bm_num)
 
-	mov (%si), %ax # bitnum_lo
 	xor %dx, %dx
 	mov $0x10, %cx
 	div %cx

@@ -20,7 +20,8 @@ sb_set_bm:
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
-	push $bbnum
+	xor %ax, %ax
+	push %ax
 	push %bx
 	push %es
 	call bm_set
@@ -36,7 +37,8 @@ sb_set_bm:
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
-	push $ibnum
+	xor %ax, %ax
+	push %ax
 	push %bx
 	push %es
 	call bm_set

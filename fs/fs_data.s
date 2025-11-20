@@ -5,17 +5,11 @@
 # [File System] Data
 
 .section .data
-.global bbnum
-.global ibnum
-
 .global path_sbuf
 .global path_cv
 .global cwd
 
 .global fsp
-
-bbnum: .long 0x00
-ibnum: .long 0x00
 
 path_sbuf: .zero 0x50
 path_cv: .zero 0x50

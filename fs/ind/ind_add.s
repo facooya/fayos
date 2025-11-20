@@ -22,16 +22,17 @@ ind_add:
 	push %si
 	push %bx
 
-	# {{{ alloc blknum
+	# {{{ alloc blk_num
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
-	push $bbnum
 	push %bx
 	push %es
 	call bm_alloc
-	add $0x06, %sp
+	add $0x04, %sp
+	# <ax = bm_num>
+	push %ax # [s.0:blk_num]
 	# }}}
 
 	# {{{ alloc inum
@@ -39,13 +40,12 @@ ind_add:
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
-	push $ibnum
 	push %bx
 	push %es
 	call bm_alloc
-	add $0x06, %sp
-	# <ax = bit_num>
-	push %ax # [s.ret0:inum]
+	add $0x04, %sp
+	# <ax = bm_num>
+	push %ax # [s.1:inum]
 	# }}}
 
 	# {{{ read/write inode table
@@ -54,15 +54,20 @@ ind_add:
 	mov $(DISK_IT_MEM&0xFFFF), %bx
 
 	# calc inode
+	pop %ax # [s.1:inum]
+	push %ax # [s.1:inum]
 	xor %dx, %dx
-	mov (ibnum), %ax
 	mov $IND_SIZE, %cx
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
+	pop %ax # [s.1:inum]
+	mov %ax, %cx
 
 	# write blk
-	mov (bbnum), %ax
+	pop %ax # [s.0:blk_num]
 	mov %ax, %es:IND_OFF_BLK(%bx)
+	push %ax # [s.1:blk_num]
+	push %cx # [s.0:inum]
 
 	# f_type
 	mov 0x04(%bp), %ax # (f_type)
@@ -79,9 +84,10 @@ ind_add:
 	mov %ax, %es
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
-	push $ibnum
-	push %bx
-	push %es
+	pop %ax # [s.0:inum]
+	push %ax # (bm_num)
+	push %bx # (&off)
+	push %es # (&seg)
 	call bm_set
 	add $0x06, %sp
 
@@ -95,9 +101,10 @@ ind_add:
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
-	push $bbnum
-	push %bx
-	push %es
+	pop %ax # [s.1:blk_num]
+	push %ax # (bm_num)
+	push %bx # (&off)
+	push %es # (&seg)
 	call bm_set
 	add $0x06, %sp
 
@@ -106,7 +113,7 @@ ind_add:
 	add $0x02, %sp
 	# }}}
 
-	pop %ax # [s.ret0:inum] <ret:inum>
+	#pop %ax # [s.0:inum] <ret:inum>
 
 	pop %bx
 	pop %si

@@ -35,7 +35,7 @@ ind_clr:
 	# TODO: clear all block
 	# clear_bit(mem, bitnum)
 	mov %es:IND_OFF_BLK(%bx), %ax
-	mov %ax, (bbnum)
+	push %ax # [s.0:blk_num]
 
 	# clr blk
 	xor %ax, %ax
@@ -56,7 +56,8 @@ ind_clr:
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
 
-	push $bbnum
+	pop %ax # [s.0:blk_num]
+	push %ax
 	push %bx
 	push %es
 	call bm_clr
@@ -73,8 +74,7 @@ ind_clr:
 	mov $(DISK_IBM_MEM&0xFFFF), %bx
 
 	mov 0x04(%bp), %ax # (inum)
-	mov %ax, (ibnum)
-	push $ibnum
+	push %ax
 	push %bx
 	push %es
 	call bm_clr

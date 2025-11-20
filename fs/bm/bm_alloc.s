@@ -8,8 +8,8 @@
 .code16
 .global bm_alloc
 
-# bm_alloc(*seg, *off, *bitnum)
-# <ret> bitnum
+# bm_alloc(ub16 *seg, ub16 *off)
+# <ret> bm_num
 bm_alloc:
 	push %bp
 	mov %sp, %bp
@@ -58,10 +58,7 @@ bm_alloc:
 	mov $0x10, %cx
 	mul %cx
 	pop %cx # bit count
-	add %cx, %ax # bitnum
-
-	mov 0x08(%bp), %si # bitnum
-	mov %ax, (%si) # bitnum_lo
+	add %cx, %ax # <ret:bm_num>
 
 # {DONE}
 .done:
