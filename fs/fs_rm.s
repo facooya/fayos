@@ -96,7 +96,6 @@ fs_rm:
 
 .file__rm:
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM+0x02(%bx), %dx
 	jmp .last__rm
 
 .dir__chk:
@@ -139,11 +138,11 @@ fs_rm:
 	mov %dx, %es
 	mov %ax, %bx
 
-	add $0x18, %bx
-	mov $0x18, %cx
+	add $DIR_DOTS_REC_SIZE, %bx
+	mov $DIR_DOTS_REC_SIZE, %cx
 
 	mov FSP_OFF_F_SIZE(%si), %dx
-	sub $0x18, %dx
+	sub $DIR_DOTS_REC_SIZE, %dx
 	cmp $0x00, %dx
 	jle .dir__rm
 	jmp .dir__find_lp
@@ -152,7 +151,6 @@ fs_rm:
 	# (inum == 0) ? {step}
 	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .dir__find_step
 
 	# (f_type == dir) ? {chk}
@@ -176,7 +174,6 @@ fs_rm:
 	push %dx # [s.f0:f_size]
 	push %cx # [s.f1:rec_size]
 	mov %es:DE_OFF_INUM(%bx), %ax
-	mov %es:DE_OFF_INUM(%bx), %dx
 	push %ax # (inum)
 	push $fsp+FSP_OFF_BASE # (fsp &dst) HACK
 	call fsp_read
@@ -187,7 +184,7 @@ fs_rm:
 	# (f_size == dots) ? {find_step} : {down_lp}
 	mov $fsp+FSP_OFF_BASE, %di # HACK
 	mov FSP_OFF_F_SIZE(%di), %ax
-	cmp $0x18, %ax
+	cmp $DIR_DOTS_REC_SIZE, %ax
 	je .dir__find_step
 	jmp .dir__down
 
@@ -202,7 +199,7 @@ fs_rm:
 
 	# { pre upd
 	mov FSP_OFF_F_SIZE(%si), %dx
-	mov $0x18, %ax
+	mov $DIR_DOTS_REC_SIZE, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
 
 	push %ax # [s.f0:dots_size]
@@ -222,7 +219,6 @@ fs_rm:
 	# (inum == 0) ? {step}
 	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .dir__rm_step
 
 	push %cx # [s.0:rec_size]
@@ -234,7 +230,6 @@ fs_rm:
 	# clr inum
 	xor %ax, %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	push %si # (fsp &src)
 	call disk_write_fsp
@@ -292,7 +287,6 @@ fs_rm:
 	# clr inum
 	xor %ax, %ax
 	mov %ax, %es:DE_OFF_INUM(%bx)
-	mov %ax, %es:DE_OFF_INUM+0x02(%bx)
 
 	push $fsp+FSP_OFF_DIR
 	call disk_write_fsp

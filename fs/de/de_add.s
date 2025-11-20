@@ -15,7 +15,7 @@
 # de_add(
 # fsp *dst
 # fsp *src
-# ub8 *name_str,
+# ub8 *name,
 # ub16 f_type
 # )
 # <ret> ax = rec_size
@@ -50,7 +50,7 @@ de_add:
 	# write info
 	mov 0x0A(%bp), %ax # (f_type)
 	mov %al, %es:DE_OFF_F_TYPE(%bx)
-	mov 0x08(%bp), %si # (*name_str)
+	mov 0x08(%bp), %si # (*name)
 	push %si
 	xor %ax, %ax
 	push %ax
@@ -61,8 +61,8 @@ de_add:
 	# write rec_size
 	xor %cx, %cx
 	mov %al, %cl
-	add $0x0B, %cx # fix (8), align 4 (3)
-	and $0xFFFC, %cx # mask: 0b1100
+	add $(DE_SIZE+DE_ALIGN_2), %cx
+	and $DE_MASK, %cx
 	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
 	push %cx # [s.0:rec_size]
 

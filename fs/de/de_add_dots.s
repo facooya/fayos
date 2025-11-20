@@ -34,20 +34,20 @@ de_add_dots:
 	mov %ax, %es:DE_OFF_INUM(%bx)
 
 	# write info
-	mov $DE_DOT_INFO, %ax
+	mov $DE_S_DOT_INFO, %ax
 	mov %ah, %es:DE_OFF_F_TYPE(%bx)
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 
 	# write rec_size
 	xor %cx, %cx
 	mov %al, %cl
-	add $0x0B, %cx # fix (8), align 4 (3)
-	and $0xFFFC, %cx # mask: 0b1100
+	add $(DE_SIZE+DE_ALIGN_2), %cx
+	and $DE_MASK, %cx
 	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
 	push %cx # [s.0:rec_size]
 
 	# write name
-	mov $DE_DOT_NAME, %al
+	mov $DE_S_DOT_NAME, %al
 	mov %al, %es:DE_OFF_NAME(%bx)
 
 	mov 0x04(%bp), %si # (fsp *dst)
@@ -68,20 +68,20 @@ de_add_dots:
 	mov %ax, %es:DE_OFF_INUM(%bx)
 
 	# write info
-	mov $DE_DOTS_INFO, %ax
+	mov $DE_D_DOT_INFO, %ax
 	mov %ah, %es:DE_OFF_F_TYPE(%bx)
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
 
 	# write rec_size
 	xor %cx, %cx
 	mov %al, %cl
-	add $0x0B, %cx # fix (8), align 4 (3)
-	and $0xFFFC, %cx # mask: 0b1100
+	add $(DE_SIZE+DE_ALIGN_2), %cx
+	and $DE_MASK, %cx
 	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
 	push %cx # [s.0:rec_size]
 
 	# write name
-	mov $DE_DOTS_NAME, %ax
+	mov $DE_D_DOT_NAME, %ax
 	mov %ax, %es:DE_OFF_NAME(%bx)
 
 	mov 0x04(%bp), %si # (fsp *dst)

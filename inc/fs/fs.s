@@ -48,3 +48,6 @@
 # Redir
 .equ REDIR_APPEND, 0x3E3E
 .equ REDIR_WRITE, 0x003E
+
+# Dir
+.equ DIR_DOTS_REC_SIZE, 0x10

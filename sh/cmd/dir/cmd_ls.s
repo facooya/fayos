@@ -79,7 +79,6 @@ cmd_ls:
 	# (inum == 0) ? {chk}
 	mov %es:DE_OFF_INUM(%bx), %ax
 	test %ax, %ax
-	or %es:DE_OFF_INUM+0x02(%bx), %ax
 	jz .run__lp_step
 
 	# set name ptr
