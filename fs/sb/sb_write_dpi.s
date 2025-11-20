@@ -33,9 +33,7 @@ sb_write_dpi:
 	mov $(DISK_SB_MEM&0xFFFF), %ax
 	mov %ax, %es:DP_OFF_MEM(%di)
 
-	mov $(DISK_SB_LBA>>0x10), %ax
-	mov %ax, %es:DP_OFF_LBA+0x02(%di)
-	mov $(DISK_SB_LBA&0xFFFF), %ax
+	mov $DISK_SB_LBA, %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 	# }}}
 
@@ -51,8 +49,6 @@ sb_write_dpi:
 	mov $(DISK_BBM_MEM&0xFFFF), %ax
 	mov %ax, %es:DP_OFF_MEM(%di)
 
-	mov %es:SB_OFF_BBM_LBA+0x02(%si), %ax
-	mov %ax, %es:DP_OFF_LBA+0x02(%di)
 	mov %es:SB_OFF_BBM_LBA(%si), %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 	# }}}
@@ -69,8 +65,6 @@ sb_write_dpi:
 	mov $(DISK_IBM_MEM&0xFFFF), %ax
 	mov %ax, %es:DP_OFF_MEM(%di)
 
-	mov %es:SB_OFF_IBM_LBA+0x02(%si), %ax
-	mov %ax, %es:DP_OFF_LBA+0x02(%di)
 	mov %es:SB_OFF_IBM_LBA(%si), %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 	# }}}
@@ -87,8 +81,6 @@ sb_write_dpi:
 	mov $(DISK_IT_MEM&0xFFFF), %ax
 	mov %ax, %es:DP_OFF_MEM(%di)
 
-	mov %es:SB_OFF_IT_LBA+0x02(%si), %ax
-	mov %ax, %es:DP_OFF_LBA+0x02(%di)
 	mov %es:SB_OFF_IT_LBA(%si), %ax
 	mov %ax, %es:DP_OFF_LBA(%di)
 	# }}}

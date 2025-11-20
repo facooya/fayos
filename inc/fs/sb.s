@@ -12,24 +12,24 @@
 .equ SB_OFF_TOT_SECT, 0x20 # [4-byte]
 
 # LBA info [0x40-0x6F]
-# Size [0x40-0x4F] [4-byte]
+# Size [0x40-0x4F] [2-byte]
 .equ SB_OFF_BBM_SIZE, 0x40
-.equ SB_OFF_IBM_SIZE, 0x44
-.equ SB_OFF_IT_SIZE, 0x48
+.equ SB_OFF_IBM_SIZE, 0x42
+.equ SB_OFF_IT_SIZE, 0x44
 
 # Block Count [0x50-0x5F] [2-byte]
 .equ SB_OFF_BBM_BC, 0x50
 .equ SB_OFF_IBM_BC, 0x52
 .equ SB_OFF_IT_BC, 0x54
 
-# LBA [0x60-0x6F] [4-byte]
+# LBA [0x60-0x6F] [2-byte]
 .equ SB_OFF_BBM_LBA, 0x60
-.equ SB_OFF_IBM_LBA, 0x64
-.equ SB_OFF_IT_LBA, 0x68
-.equ SB_OFF_NORM_LBA, 0x6C
+.equ SB_OFF_IBM_LBA, 0x62
+.equ SB_OFF_IT_LBA, 0x64
+.equ SB_OFF_NORM_LBA, 0x66
 
-# Disk immutable cache [0x80-0xAF] [10-byte]
-.equ SB_DPI_SIZE, 0x0A
+# Disk immutable cache [0x80-0xAF] [8-byte]
+.equ SB_DPI_SIZE, 0x08
 .equ SB_OFF_DPI_SB, 0x80
 .equ SB_OFF_DPI_BBM, SB_OFF_DPI_SB+SB_DPI_SIZE
 .equ SB_OFF_DPI_IBM, SB_OFF_DPI_BBM+SB_DPI_SIZE

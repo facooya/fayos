@@ -17,8 +17,8 @@
 .equ F_TYPE_FILE, 0x80
 
 # { File System Packet
-.equ FSP_SIZE, 0x32
-.equ FSP_OFF_DISK, 0x28
+.equ FSP_SIZE, 0x2E
+.equ FSP_OFF_DISK, 0x26
 
 # Inode
 .equ FSP_OFF_F_SIZE, 0x00 # [2-byte]
@@ -31,9 +31,9 @@
 .equ FSP_OFF_INUM, 0x24 # [2-byte]
 
 # Disk
-.equ FSP_OFF_DISK_SECT_CNT, 0x28 # [2-byte]
-.equ FSP_OFF_DISK_MEM, 0x2A # [4-byte]
-.equ FSP_OFF_DISK_LBA, 0x2E # [2-byte]
+.equ FSP_OFF_DISK_SECT_CNT, 0x26 # [2-byte]
+.equ FSP_OFF_DISK_MEM, 0x28 # [4-byte]
+.equ FSP_OFF_DISK_LBA, 0x2C # [2-byte]
 
 # Access
 .equ FSP_OFF_CUR, 0x00

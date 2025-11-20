@@ -21,7 +21,7 @@
 .equ DISK_HIST_MEM, 0x10003000
 
 # Disk packet
-.equ DP_SIZE, 0x0A
+.equ DP_SIZE, 0x08
 
 .equ DPI_OFF_SB, 0x00
 .equ DPI_OFF_BBM, DPI_OFF_SB+DP_SIZE
