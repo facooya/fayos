@@ -2,45 +2,41 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Tokenize for arguments
+# [Argument] Tokenize
 
 .include "chr.s"
 .section .text
 .code16
-.global tok_args
+.global arg_tok
 
-# tok_args()
-# <INFO>
-# bx:si = (cl_sbuf) size:&data
-# cx:di = (tmp_sbuf) size:&data
-# <RET>
-# ax = 0:true, 1:exit, 2:skip
-tok_args:
+# arg_tok()
+# <info>
+# bx:si = (cl_sbuf) size:chr
+# cx:di = (tmp_sbuf) size:chr
+# <ret> ax = {0:true, 1:exit, 2:skip}
+# <mod> cl_sbuf, tmp_sbuf
+arg_tok:
 	push %si
 	push %di
 	push %bx
 
-	# {{{ init
+	# { init
 	mov $cl_sbuf, %si
-	mov (%si), %bx # len
+	mov (%si), %bx
 	add $0x02, %si
 
 	mov $tmp_sbuf, %di
 	add $0x02, %di
+	xor %cx, %cx
+	# }
 
-	xor %cx, %cx # tmp.len
-	# }}}
-
-	# {end.skip}
-	test %bx, %bx # raw.len
+	# (cl_sbuf.size == 0) ? {skip} : {gate}
+	test %bx, %bx
 	jz .skip
 	jmp .gate
 
-# {TASK}
 .gate:
-	mov (%si), %al # raw.data
-
-	# {task}
+	mov (%si), %al
 	cmp $CHR_SP, %al
 	je .skip_sp
 	cmp $CHR_QT, %al
@@ -49,167 +45,146 @@ tok_args:
 	je .tok_hs
 	jmp .tok_chr
 
-# {TASK}
 .skip_sp:
-	# {init.step}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 
 .skip_sp__lp:
-	# {task} (raw.len == 0)
+	# (cl_sbuf.size == 0) ? {cpy_buf}
 	test %bx, %bx
 	jz .cpy_buf
 
-	# {end} (raw.data != sp)
+	# (cl_sbuf.chr != sp) ? {end}
 	mov (%si), %al
 	cmp $CHR_SP, %al
 	jne .skip_sp__end
 
-	# {lp}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 	jmp .skip_sp__lp
 
 .skip_sp__end:
-	# {task} (tmp.len == 0)
+	# (tmp_sbuf.size == 0) ? {gate}
 	test %cx, %cx
 	jz .gate
 
 	# store null
 	xor %al, %al
 	mov %al, (%di)
-	add $0x01, %di # tmp.data
-	add $0x01, %cx # tmp.len
-
-	# {task}
+	inc %di
+	inc %cx
 	jmp .gate
 
-# {TASK}
 .tok_chr:
 .tok_chr__lp:
-	# {task} (raw.len == 0)
+	# (cl_sbuf.size == 0) ? {cpy_buf}
 	test %bx, %bx
 	jz .cpy_buf
 
 	# {{{
-	mov (%si), %al # raw.data
+	mov (%si), %al
 
-	# {end.err} (raw.data == qt)
+	# (chr == qt) ? {err}
 	cmp $CHR_QT, %al
 	je .err_tok_syn
 
-	# {task} (raw.data == sp)
+	# (chr == sp) ? {skip_sp}
 	cmp $CHR_SP, %al
 	je .skip_sp
 
-	# {task} (raw.data == hash)
+	# (chr == hash) ? {tok_chr_hs}
 	cmp $CHR_HS, %al
 	je .tok_chr_hs
 
-	# store
+	# store tmp_sbuf
 	mov %al, (%di)
-	add $0x01, %di # tmp.data
-	add $0x01, %cx # tmp.len
+	inc %di
+	inc %cx
 	# }}}
 
-	# {lp}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 	jmp .tok_chr__lp
 
-# {TASK}
 .tok_hs:
-	sub $0x01, %cx
+	dec %cx
 
 .tok_chr_hs:
-	# (cl_sbuf[i-1] != back_slash) ? {cpy_buf}
+	# (cl_sbuf[i-1].chr != bsl) ? {cpy_buf}
 	mov -0x01(%si), %al
 	cmp $CHR_BSL, %al
 	jne .cpy_buf
 
 	# replace
-	sub $0x01, %di
-	sub $0x01, %cx
 	mov $CHR_HS, %al
-	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
+	mov %al, -0x01(%di)
 
-	# {lp.gate}
-	add $0x01, %si
-	sub $0x01, %bx
+	inc %si
+	dec %bx
 	jmp .gate
 
-# {TASK}
 .tok_qt:
 	# skip qt
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 
 .tok_qt__lp:
-	# {end.err} (raw.len == 0)
+	# (cl_sbuf.size == 0) ? {err}
 	test %bx, %bx
 	jz .err_qt_no
 
-	# {chk} (raw.data == qt)
+	# (cl_sbuf.chr == qt) ? {chk}
 	mov (%si), %al
 	cmp $CHR_QT, %al
 	je .tok_qt__chk
 
-	# store
+	# store tmp_sbuf
 	mov %al, (%di)
-	add $0x01, %di # tmp.data
-	add $0x01, %cx # tmp.len
+	inc %di
+	inc %cx
 
-	# {lp}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 	jmp .tok_qt__lp
 
 .tok_qt__chk:
-	# {chk} (raw.data-1 == bsl)
+	# (chr-1 == bsl) ? {chk} ? {end}
 	mov -0x01(%si), %al
 	cmp $CHR_BSL, %al
 	je .tok_qt__chk_bsl
-
-	# {end}
 	jmp .tok_qt__end
 
 .tok_qt__chk_bsl:
-	# {end} (raw.data-2 == bsl)
+	# (chr-2 == bsl) ? {end}
 	mov -0x02(%si), %al
 	cmp $CHR_BSL, %al
 	je .tok_qt__end
 
-	# change bsl -> qt
+	# replace bsl -> qt
 	mov $CHR_QT, %al
-	mov %al, -0x01(%di) # tmp.data-1
+	mov %al, -0x01(%di)
 
-	# {lp}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 	jmp .tok_qt__lp
 
 .tok_qt__end:
-	# {step}
-	add $0x01, %si # raw.data
-	sub $0x01, %bx # raw.len
+	inc %si
+	dec %bx
 
-	# {task} (raw.len == 0)
+	# (size == 0) ? {cpy_buf}
 	test %bx, %bx
 	jz .cpy_buf
 
-	# {end.err} (raw.data != sp)
+	# (chr != sp) ? {err} ? {skip_sp}
 	mov (%si), %al
 	cmp $CHR_SP, %al
 	jne .err_tok_syn
-
-	# {task}
 	jmp .skip_sp
 
 # {TASK}
 .cpy_buf:
-	push %cx
+	push %cx # [s.f0:tmp_sbuf.size]
 	xor %ax, %ax
 	mov (cl_sbuf), %cx
 	add $0x02, %cx
@@ -219,52 +194,51 @@ tok_args:
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
-	pop %cx
+	pop %cx # [s.f0:tmp_sbuf.size]
 
 	# store last null
 	xor %ax, %ax
-	mov %al, (%di) # tmp.data
-	add $0x01, %cx # tmp.len
+	mov %al, (%di)
+	inc %cx
 
-	# {{{
+	# {
 	mov $tmp_sbuf, %di
-	mov %cx, (%di) # store len
-	add $0x02, %di # skip len
+	mov %cx, (%di)
+	add $0x02, %di
 
 	mov $cl_sbuf, %si
-	mov %cx, (%si) # store len
-	add $0x02, %si # skip len
-	# }}}
+	mov %cx, (%si)
+	add $0x02, %si
+	# }
 
-# <PRE>
-# si = &raw.data
-# cx:di = (tmp_sbuf) size:data
+# <pre>
+# si = *cl_sbuf.chr
+# cx:di = (tmp_sbuf) size:chr
 .cpy_buf__lp:
-	# {end} (tmp.len == 0)
+	# (size == 0) ? {end}
 	test %cx, %cx
 	jz .cpy_buf__end
 
-	# tmp to raw
+	# cpy
 	mov (%di), %al
 	mov %al, (%si)
 
-	# {lp}
-	add $0x01, %si # raw.data
-	add $0x01, %di # tmp.data
-	sub $0x01, %cx # tmp.len
+	inc %si # cl.chr
+	inc %di # tmp.chr
+	dec %cx # tmp.size
 	jmp .cpy_buf__lp
 
 .cpy_buf__end:
-	xor %ax, %ax
+	xor %ax, %ax # <ret:code>
 	jmp .done
 
 # {DONE}
 .skip:
-	mov $0x02, %ax
+	mov $0x02, %ax # <ret:code>
 	jmp .done
 
 .exit:
-	mov $0x01, %ax
+	mov $0x01, %ax # <ret:code>
 	jmp .done
 
 .done:

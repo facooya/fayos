@@ -20,7 +20,7 @@ cmd_cd:
 	push %di
 	push %bx
 
-	mov $args, %si
+	mov $arg_ccv, %si
 
 	# (argc == 1) ? {err}
 	mov (%si), %ax

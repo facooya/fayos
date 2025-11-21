@@ -2,22 +2,21 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Debug for argc, optc, argv
+# [Debug] arg_ccv
 
 .include "chr.s"
 .section .data
-
-.argc_str: .asciz "argc: "
-.optc_str: .asciz "optc: "
-.argv_str: .asciz "argv["
-.argv_end_str: .asciz "]: "
+.arg_c_str: .asciz "arg_c: "
+.opt_c_str: .asciz "opt_c: "
+.arg_v_str: .asciz "arg_v["
+.arg_v_end_str: .asciz "]: "
 
 .section .text
 .code16
-.global dbg_args
+.global dbg_arg_ccv
 
-# dbg_args()
-dbg_args:
+# dbg_arg_ccv()
+dbg_arg_ccv:
 	push %si
 	push %di
 	push %ax
@@ -41,21 +40,21 @@ dbg_args:
 	add $0x02, %si
 
 # {TASK}
-	push $.argc_str
+	push $.arg_c_str
 	call vga_puts
 	add $0x02, %sp
 
-	# get argc
-	mov $args, %di
-	mov (%di), %cx # argc
-	add $0x02, %di # skip argc
-	push %cx # [s.0:argc]
+	# get arg_c
+	mov $arg_ccv, %di
+	mov (%di), %cx # arg_c
+	add $0x02, %di # skip arg_c
+	push %cx # [s.0:arg_c]
 
 	# byte to ascii
 	mov %cx, %ax
 	add $0x30, %al
 
-	# argc
+	# arg_c
 	call vga_putc
 	mov $CHR_CR, %al
 	call vga_putc
@@ -63,39 +62,39 @@ dbg_args:
 	call vga_putc
 
 # {TASK}
-	push $.optc_str
+	push $.opt_c_str
 	call vga_puts
 	add $0x02, %sp
 
-	# get optc
-	mov (%di), %ax # optc
-	add $0x02, %di # skip optc
+	# get opt_c
+	mov (%di), %ax # opt_c
+	add $0x02, %di # skip opt_c
 
 	# byte to ascii
 	add $0x30, %al
 
-	# optc
+	# opt_c
 	call vga_putc
 	mov $CHR_CR, %al
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
-	pop %cx # [s.0:argc]
+	pop %cx # [s.0:arg_c]
 	jmp .argv
 
 # {TASK}
 .argv:
-	# {end.done} (argc == 0)
-	test %cx, %cx # argc
+	# {end.done} (arg_c == 0)
+	test %cx, %cx # arg_c
 	jz .done
 
 	xor %dx, %dx # idx
 
 .argv__lp:
-	push %cx # [s.0:argc]
+	push %cx # [s.0:arg_c]
 	push %dx # [s.1:idx]
 	# {{{ out str
-	push $.argv_str
+	push $.arg_v_str
 	call vga_puts
 	add $0x02, %sp
 	pop %dx # [s.1:idx]
@@ -106,7 +105,7 @@ dbg_args:
 	add $0x30, %al
 	call vga_putc
 
-	push $.argv_end_str
+	push $.arg_v_end_str
 	call vga_puts
 	add $0x02, %sp
 	# }}}
@@ -114,10 +113,10 @@ dbg_args:
 	# {{{
 	# {init}
 	mov $cl_sbuf, %si
-	add $0x02, %si # skip len
+	add $0x02, %si # skip size
 
 	# calc offset
-	mov (%di), %ax # argv[i]
+	mov (%di), %ax # arg_v[i]
 	add %ax, %si
 
 	push %si
@@ -125,26 +124,25 @@ dbg_args:
 	add $0x02, %sp
 	# }}}
 	pop %dx # [s.1:idx]
-	pop %cx # [s.0:argc]
+	pop %cx # [s.0:arg_c]
 
-	# {lp.step}
-	add $0x02, %di # argv
-	sub $0x01, %cx # argc
+	add $0x02, %di # arg_v
+	sub $0x01, %cx # arg_c
 	add $0x01, %dx # idx
 
-	# {end.done} (argc == 0)
+	# {end.done} (arg_c == 0)
 	test %cx, %cx
 	jz .done
 
 	# {lp}
-	push %cx # [s.f0:argc]
+	push %cx # [s.f0:arg_c]
 	push %dx # [s.f1:idx]
 	mov $CHR_CR, %al
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
 	pop %dx # [s.f1:idx]
-	pop %cx # [s.f0:argc]
+	pop %cx # [s.f0:arg_c]
 
 	jmp .argv__lp
 

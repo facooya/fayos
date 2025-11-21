@@ -2,76 +2,72 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Argments main
-
-# NOTE
-# [n_args]
-# argc [2-byte]
-# optc [2-byte]
-# argv [2-byte]-[156-byte]
+# [Argument] Process
 
 .include "chr.s"
-.section .data
-.global args
-
-args: .zero 0x100
-
 .section .text
 .code16
-.global proc_args
+.global arg_proc
 
-# proc_args()
-# <RET>
-# ax = 0:true, 1:exit
-proc_args:
+# arg_proc()
+# <ret> ax = {true:0, exit:1}
+arg_proc:
 	push %si
 
 	mov $cl_sbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 
+	# (size == 0) ? {exit}
 	test %cx, %cx
 	jz .exit
 
-.raw__lp:
-	# {end.done} (len == 0)
+.buf__lp:
+	# (size == 0) ? {done}
 	test %cx, %cx
 	jz .exit
 
-	# {end} (*data != sp)
+	# (chr != sp) ? {end}
 	mov (%si), %al
 	cmp $CHR_SP, %al
-	jne .raw__end
+	jne .buf__end
 
-	# {lp}
-	add $0x01, %si
-	sub $0x01, %cx
-	jmp .raw__lp
+	inc %si
+	dec %cx
+	jmp .buf__lp
 
-.raw__end:
+.buf__end:
 	call history
 	call ._zero
 
-	# {{{ proc
-	call tok_args
+	# { proc
+	call arg_tok
+	# <ax = {0:true, 1:exit, 2:skip}>
+
+	# (arg_tok() != true) ? {exit}
 	test %ax, %ax
 	jnz .exit
 
-	call build_args
+	call arg_build
 
-	call parse_args
+	call arg_parse
+	# <ax = {true:0, exit:1, redir:2}>
+
+	# (arg_parse() == exit) ? {exit}
 	cmp $0x01, %ax
 	je .exit
+	# (arg_parse() == redir) ? {redir} : {done}
 	cmp $0x02, %ax
 	je .done_redir
 	jmp .done
-	# }}}
+	# }
 
 .exit:
 	# {zero}
 	xor %ax, %ax
 	mov (cl_sbuf), %cx
 	add $0x02, %cx
+
 	push %cx # (size)
 	push %ax # (value)
 	push $cl_sbuf # (&off)
@@ -99,6 +95,7 @@ proc_args:
 	xor %ax, %ax
 	mov (tmp_sbuf), %cx
 	add $0x02, %cx
+
 	push %cx # (size)
 	push %ax # (value)
 	push $tmp_sbuf # (&off)
@@ -109,8 +106,8 @@ proc_args:
 	call clear_redir_buf
 
 	xor %ax, %ax
-	mov $args, %si
-	mov %ax, (%si) # argc
-	mov %ax, 0x02(%si) # optc
-	mov %ax, 0x04(%si) # argv[0]
+	mov $arg_ccv, %si
+	mov %ax, (%si) # arg_c
+	mov %ax, 0x02(%si) # opt_c
+	mov %ax, 0x04(%si) # arg_v[0]
 	ret

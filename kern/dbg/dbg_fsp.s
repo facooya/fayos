@@ -73,10 +73,6 @@ dbg_fsp:
 	call vga_putc
 	mov $CHR_LF, %al
 	call vga_putc
-	mov FSP_OFF_DISK_LBA+0x02(%si), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	mov FSP_OFF_DISK_LBA(%si), %ax
 	push %ax
 	call dbg_reg

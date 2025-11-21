@@ -18,7 +18,7 @@ cmd_ls:
 	push %di
 	push %bx
 
-	mov $args, %si
+	mov $arg_ccv, %si
 
 	# (argc == 1) ? {cmd_only}
 	mov (%si), %ax # argc

@@ -14,14 +14,14 @@
 .global cmd_touch
 
 # cmd_touch()
-# <req> args, path_cv, path_sbuf
+# <req> arg_ccv, path_cv, path_sbuf
 cmd_touch:
 	push %es
 	push %si
 	push %di
 	push %bx
 
-	mov $args, %di
+	mov $arg_ccv, %di
 
 	# (argc == 1) ? {err}
 	mov (%di), %cx

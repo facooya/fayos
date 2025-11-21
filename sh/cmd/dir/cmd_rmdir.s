@@ -18,7 +18,7 @@ cmd_rmdir:
 	push %di
 	push %bx
 
-	mov $args, %di
+	mov $arg_ccv, %di
 
 	# (argc == 1) ? {err}
 	mov (%di), %cx

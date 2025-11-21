@@ -24,7 +24,7 @@ kern/mem/mem_data.s \
 kern/mem/mem_alloc.s \
 kern/mem/mem_free.s \
 \
-kern/dbg/dbg_args.s \
+kern/dbg/dbg_arg_ccv.s \
 kern/dbg/dbg_path_cv.s \
 kern/dbg/dbg_curs.s \
 kern/dbg/dbg_sbuf.s \
@@ -75,10 +75,11 @@ fs/fsp/fsp_blk_to_lba.s
 
 # Shell
 SRCS_SH = \
-sh/args/args.s \
-sh/args/tok_args.s \
-sh/args/build_args.s \
-sh/args/parse_args.s \
+sh/arg/arg_data.s \
+sh/arg/arg_proc.s \
+sh/arg/arg_tok.s \
+sh/arg/arg_build.s \
+sh/arg/arg_parse.s \
 \
 sh/exec/exec_cmd.s \
 sh/exec/exec_redir.s \

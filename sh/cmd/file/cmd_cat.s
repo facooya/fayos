@@ -18,7 +18,7 @@ cmd_cat:
 	push %di
 	push %bx
 
-	mov $args, %si
+	mov $arg_ccv, %si
 
 	# (argc == 1) ? {err}
 	mov (%si), %ax
@@ -31,7 +31,7 @@ cmd_cat:
 	add %ax, %si # cl_sbuf[argv[1]]
 
 	# {{{ path
-	push %si # (&name)
+	push %si # (&path)
 	call fs_path
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
@@ -47,8 +47,8 @@ cmd_cat:
 
 	# (f_type != file) ? {err}
 	mov $fsp+FSP_OFF_BASE, %si
-	mov FSP_OFF_F_TYPE(%si), %ax
-	cmp $F_TYPE_FILE, %ax
+	mov FSP_OFF_F_TYPE(%si), %al
+	cmp $F_TYPE_FILE, %al
 	jne .err_file_type
 
 	push $fsp+FSP_OFF_BASE # (fsp &src)

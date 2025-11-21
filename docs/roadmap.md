@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- change all 16-bit like inum 16-bit, total sector 16-bit
 
 ## PRIORITY
 

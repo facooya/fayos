@@ -20,6 +20,7 @@ ind_add:
 	mov %sp, %bp
 	push %es
 	push %si
+	push %di
 	push %bx
 
 	# {{{ alloc blk_num
@@ -45,6 +46,7 @@ ind_add:
 	call bm_alloc
 	add $0x04, %sp
 	# <ax = bm_num>
+	mov %ax, %di # inum
 	push %ax # [s.1:inum]
 	# }}}
 
@@ -113,9 +115,10 @@ ind_add:
 	add $0x02, %sp
 	# }}}
 
-	#pop %ax # [s.0:inum] <ret:inum>
+	mov %di, %ax # <ret:inum>
 
 	pop %bx
+	pop %di
 	pop %si
 	pop %es
 	pop %bp

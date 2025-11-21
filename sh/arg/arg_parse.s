@@ -2,38 +2,30 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Parse for arguments, And calculation option count
+# [Argument] Parse
 
 .include "chr.s"
 .include "fs/fs.s"
 .section .text
 .code16
-.global parse_args
+.global arg_parse
 
-# parse_args()
-# <INFO>
-# si = raw.data
-# cx = argc
-# <RET>
-# ax = 0:true, 1:exit
-parse_args:
+# arg_parse()
+# <info>
+# si = (cl_sbuf) chr
+# cx = arg_c
+# <ret> ax = {true:0, exit:1, redir:2}
+arg_parse:
 	push %si
 	push %di
 	push %bx
 
-	# {{{
-	# {init}
 	mov $cl_sbuf, %si
-	add $0x02, %si # skip len
-
-	mov $args, %di
-	mov (%di), %cx # argc
-	# }}}
-
-	# {task}
+	add $0x02, %si
+	mov $arg_ccv, %di
+	mov (%di), %cx # arg_c
 	jmp .cmd
 
-# {TASK}
 .cmd:
 	# { chk redir
 	dec %si
@@ -52,108 +44,99 @@ parse_args:
 	inc %si
 	# }
 
-	# regex_alpha(&chr)
-	# ret: ax = 0(true), ax = 1(false)
-	push %cx # argc
-	push %si # raw.data
+	# regex_alpha
+	push %cx # [s.f0:arg_c]
+	push %si # (&chr)
 	call regex_alpha
 	add $0x02, %sp
-	pop %cx # argc
+	# <ax = {true:0, false:1}>
+	pop %cx # [s.f0:arg_c
 
-	# {end.err} (ret.code != true)
+	# (regex_alpha() != true) ? {err}
 	test %ax, %ax
 	jnz .err_cmd_syn
 
 .cmd__lp:
-	# {end} (raw.data == null)
+	# (chr == null) ? {end}
 	mov (%si), %al
 	test %al, %al
 	jz .cmd__end
 
-	# {lp}
-	add $0x01, %si # raw.data
+	inc %si
 	jmp .cmd__lp
 
 .cmd__end:
-	# {step}
-	add $0x01, %si # raw.data
-	sub $0x01, %cx # argc
+	inc %si # chr
+	dec %cx # arg_c
 
-	# {end.done} (argc == 0)
+	# (arg_c == 0) ? {done}
 	xor %ax, %ax
 	test %cx, %cx
 	jz .done
 
-	# {task} (raw.data == hy)
+	# (chr == hy) ? {opt} : {arg}
 	mov (%si), %al
 	cmp $CHR_HY, %al
 	je .opt
-
-	# {task}
 	jmp .arg
 
 # {TASK}
-# <INFO>
-# di = &args
-# bx = optc
-# <REQ>
+# <info>
+# di = *arg_ccv
+# bx = opt_c
+# <req>
 # (*si == hy)
 .opt:
-	xor %bx, %bx # optc
+	xor %bx, %bx # opt_c
 	add $0x01, %si # skip hy
 
 # <REQ>
 # (*si == alpha)
 .opt__lp:
-	# {chk} (chr == null)
-	mov (%si), %al # raw.data
+	# (chr == null) ? {chk}
+	mov (%si), %al
 	test %al, %al
 	jz .opt__chk
 
-	# regex_alpha(&chr)
-	push %cx # argc
-	push %si # raw.data
+	# regex_alpha
+	push %cx # [s.f0:arg_c]
+	push %si # (&chr)
 	call regex_alpha
 	add $0x02, %sp
-	pop %cx # argc
+	# <ax = {true:0, false:1}>
+	pop %cx # [s.f0:arg_c]
 
-	# {end.err} (ret.code != true)
+	# (regex_alpha() != true) ? {err}
 	test %ax, %ax
 	jnz .err_opt_syn
 
-	# {lp}
-	add $0x01, %si # raw.data
+	inc %si
 	jmp .opt__lp
 
 .opt__chk:
-	# {{{
-	# {step}
-	add $0x01, %si # skip null
-	add $0x01, %bx # optc
+	# {
+	inc %si # skip null
+	inc %bx # opt_c
 
-	# {end} (chr != hy)
-	mov (%si), %al # raw.data
+	# (chr != hy) ? {end}
+	mov (%si), %al
 	cmp $CHR_HY, %al
 	jne .opt__end
-	# }}}
+	# }
 
-	# {lp}
-	add $0x01, %si # skip hy
+	inc %si # skip hy
 	jmp .opt__lp
 
 .opt__end:
-	# store optc
-	mov $args, %di
+	# store opt_c
+	mov $arg_ccv, %di
 	mov %bx, 0x02(%di)
 
-	# {step}
-	sub %bx, %cx # argc
+	sub %bx, %cx # arg_c
 
-	# {end.done} (argc == 0)
+	# (arg_c == 0) ? {done} : {arg}
 	test %cx, %cx
 	jz .done
-
-	# {task}
 	jmp .arg
 
 # {TASK}
@@ -175,25 +158,23 @@ parse_args:
 	# }
 	inc %si
 
-# <REQ>
+# <req>
 # (*si != null)
 .arg__lp:
-	# {chk} (chr == null)
-	mov (%si), %al # raw.data
+	# (chr == null) ? {chk}
+	mov (%si), %al
 	test %al, %al
 	jz .arg__chk
 
-	# {lp}
-	add $0x01, %si # raw.data
+	inc %si
 	jmp .arg__lp
 
 .arg__chk:
-	# {end} (argc == 0)
-	sub $0x01, %cx # argc
+	dec %cx # arg_c
+	# (arg_c == 0) ? {end}
 	test %cx, %cx
 	jz .arg__end
 
-	# {task}
 	# ah = redir.type
 	mov 0x01(%si), %dx
 	mov $0x01, %ah
@@ -207,20 +188,18 @@ parse_args:
 	je .redir
 1:
 
-	# {lp}
-	add $0x01, %si
+	inc %si
 	jmp .arg__lp
 
 .arg__end:
-	# {end.done}
 	xor %ax, %ax
 	jmp .done
 
 # {TASK}
-# <INFO>
-# di = &redir_hsbuf
-# dx = offset
-# <REQ>
+# <info>
+# di = *redir_hsbuf
+# dx = off
+# <req>
 # (*si == null)
 # ah = redir.type
 .redir:
@@ -246,15 +225,13 @@ parse_args:
 	mov %dx, (redir_hsbuf)
 	# }
 
-	# {init}
 	xor %dx, %dx
 	mov $redir_hsbuf, %di
 	mov %ah, %dh # redir.type
-	add $0x02, %di # skip type+len
+	add $0x02, %di # skip type+size
 
-	# {step}
 	add $0x02, %si # skip null+redir.type
-	sub $0x01, %cx # argc
+	dec %cx # arg_c
 
 	# { redir append
 	cmp $0x12, %dh
@@ -267,35 +244,34 @@ parse_args:
 2:
 	# }
 
-	# {end.err} (chr != 0)
-	mov (%si), %al # raw.data
+	# (chr != 0) ? {err}
+	mov (%si), %al
 	test %al, %al
 	jnz .err_redir_type
 
-	# {end.err} (argc == 0)
+	# (arg_c == 0) { err}
 	test %cx, %cx
 	jz .err_redir_req
 
-	# {pre}
-	add $0x01, %si # skip null
+	# pre
+	inc %si # skip null
 
-# <REQ>
+# <req>
 # (*si == chr)
-# di = redir.data
-# dl = redir.len
+# di = redir.chr
+# dl = redir.size
 .redir__lp:
-	mov (%si), %al # raw.data
-
-	# {end} (raw.data == null)
+	# (chr == null) ? {end}
+	mov (%si), %al
 	test %al, %al
 	jz .redir__end
 
-	mov %al, (%di) # redir.data
+	# cpy
+	mov %al, (%di)
 
-	# {lp}
-	add $0x01, %si # raw.data
-	add $0x01, %di # redir.data
-	add $0x01, %dl # redir.len
+	inc %si # cl.chr
+	inc %di # redir.chr
+	inc %dl # redir.size
 	jmp .redir__lp
 
 .redir__end:
@@ -309,30 +285,25 @@ parse_args:
 	mov $redir_hsbuf, %di
 	mov %dx, (%di) # redir.hdr
 
-	# {{{ chk err
-	# {step}
-	sub $0x01, %cx # argc
-
-	# {end.err} (argc != 0)
+	dec %cx # arg_c
+	# (arg_c != 0) ? {err}
 	test %cx, %cx
 	jnz .err_redir_extra
-	# }}}
 
-	# {{{ update argc
-	mov $args, %di
-	mov (%di), %ax # argc
+	# {{{ update arg_c
+	mov $arg_ccv, %di
+	mov (%di), %ax # arg_c
 
-	# argc -= redir.arg
+	# arg_c -= redir.arg
 	sub $0x02, %ax
 	mov %ax, (%di)
 	# }}}
 
-	# chk redir only
+	# (redir.type == cmd) ? {done.redir}
 	mov (redir_hsbuf), %ax
 	cmp $0x10, %ah
-	ja .done_redir
+	ja .done__redir
 
-	# {end.done}
 	xor %ax, %ax
 	jmp .done
 
@@ -341,7 +312,7 @@ parse_args:
 	mov $0x01, %ax
 	jmp .done
 
-.done_redir:
+.done__redir:
 	sub $0x10, %ah
 	mov %ax, (redir_hsbuf)
 	mov $0x02, %ax

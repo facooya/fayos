@@ -27,7 +27,7 @@ cmd_echo:
 
 	# {{blk.1}
 	# get argc
-	mov $args, %di
+	mov $arg_ccv, %di
 	mov (%di), %cx # argc
 	add $0x02, %di
 

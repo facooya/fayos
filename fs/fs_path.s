@@ -4,6 +4,7 @@
 #
 # [File System] Process path
 
+.include "fs/fs.s"
 .section .text
 .code16
 .global fs_path
