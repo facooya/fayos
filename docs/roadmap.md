@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- time
 
 ## PRIORITY
 
@@ -8,7 +9,6 @@
 ## Feature
 - tab: autocomplete file or dir
 - ls: colorful file or dir, add option
-- time
 - color
 - debug runtime
 - using allocate memory and free
