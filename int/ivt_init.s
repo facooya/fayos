@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Interrupt vector table initialization
+# [Interrupt Vector Table] Initialization
 
 .section .text
 .code16
@@ -22,6 +22,10 @@ ivt_init:
 	# irq 1
 	mov $irq_kbd, %es:(0x0084)
 	mov %cs, %es:(0x0086)
+
+	# irq 8
+	mov $irq_rtc, %es:(0x00A0)
+	mov %cs, %es:(0x00A2)
 
 	pop %es
 	ret

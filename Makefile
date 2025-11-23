@@ -150,14 +150,19 @@ drv/vga/vga_set_curs.s \
 drv/vga/vga_shu.s \
 \
 drv/disp/disp_shr_cl.s \
-drv/disp/disp_shl_cl.s
+drv/disp/disp_shl_cl.s \
+\
+drv/rtc/rtc_init.s
 
 # Interrupt
 SRCS_INT = \
 int/pic_init.s \
 int/ivt_init.s \
+\
+int/irq_kbd.s \
+int/irq_rtc.s \
+\
 int/interrupt.s \
-int/irq_kbd.s
 
 # Library
 SRCS_LIB = \

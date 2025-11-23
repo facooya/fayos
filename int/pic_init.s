@@ -48,6 +48,16 @@ pic_init:
 	out %al, $0x21
 	out %al, $0xA1
 
+	# { rtc
+	in $0xA1, %al
+	and $~(0x01<<0x00), %al
+	out %al, $0xA1
+
+	in $0x21, %al
+	and $~(0x01<<0x02), %al
+	out %al, $0x21
+	# }
+
 	# enable irq 1
 	in $0x21, %al
 	and $0xFD, %al
