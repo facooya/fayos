@@ -21,3 +21,5 @@
 .equ RTC_ADDR_DAY, 0x07
 .equ RTC_ADDR_MONTH, 0x08
 .equ RTC_ADDR_YEAR, 0x09
+
+.equ RTC_REG_A_BIT_UIP, (0x01<<0x07)

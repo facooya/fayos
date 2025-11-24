@@ -152,7 +152,8 @@ drv/vga/vga_shu.s \
 drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
-drv/rtc/rtc_init.s
+drv/rtc/rtc_init.s \
+drv/rtc/rtc_get.s
 
 # Interrupt
 SRCS_INT = \
