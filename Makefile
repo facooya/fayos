@@ -94,6 +94,7 @@ sh/cmd/cmd_map.s \
 \
 sh/cmd/sys/cmd_test.s \
 sh/cmd/sys/cmd_echo.s \
+sh/cmd/sys/cmd_date.s \
 sh/cmd/sys/cmd_help.s \
 sh/cmd/sys/cmd_clear.s \
 \

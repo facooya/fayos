@@ -75,12 +75,6 @@ rtc_get:
 	call ._save
 
 	# last
-	mov $CHR_CR, %al
-	mov %al, (%di)
-	inc %di
-	mov $CHR_LF, %al
-	mov %al, (%di)
-	inc %di
 	xor %ax, %ax
 	mov %al, (%di)
 

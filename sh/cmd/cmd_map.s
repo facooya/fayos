@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Command mapping
+# [Command] Map
 
 .section .data
 .global cmd_map
@@ -13,10 +13,13 @@ cmd_map:
 	.asciz "test"
 	.word cmd_clear
 	.asciz "clear"
+	.word cmd_date
+	.asciz "date"
 	.word cmd_echo
 	.asciz "echo"
 	.word cmd_help
 	.asciz "help"
+
 	# dir
 	.word cmd_pwd
 	.asciz "pwd"
@@ -28,6 +31,7 @@ cmd_map:
 	.asciz "mkdir"
 	.word cmd_rmdir
 	.asciz "rmdir"
+
 	# file
 	.word cmd_cat
 	.asciz "cat"
@@ -35,5 +39,6 @@ cmd_map:
 	.asciz "touch"
 	.word cmd_rm
 	.asciz "rm"
+
 	# end of cmd_map
 	.long 0x00
