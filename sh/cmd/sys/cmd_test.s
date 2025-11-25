@@ -11,9 +11,5 @@
 
 # cmd_test()
 cmd_test:
-	call rtc_get
-	push $date_zbuf
-	call vga_puts
-	add $0x02, %sp
 	ret
 

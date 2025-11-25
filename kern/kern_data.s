@@ -11,8 +11,7 @@
 .global redir_hsbuf
 .global write_sbuf
 
-.global date_zbuf
-
+.global rtc_date
 .global curs
 
 cl_sbuf: .zero 0x200
@@ -21,8 +20,7 @@ tmp_sbuf: .zero 0x200
 redir_hsbuf: .zero 0x200
 write_sbuf: .zero 0x200
 
-date_zbuf: .zero 0x10
-
+rtc_date: .zero 0x07
 curs:
 	.word 0x00 # min_pos
 	.word 0x00 # max_pos
