@@ -92,6 +92,7 @@ arg_proc:
 	ret
 
 ._zero:
+	# { clr tmp_sbuf
 	xor %ax, %ax
 	mov (tmp_sbuf), %cx
 	add $0x02, %cx
@@ -102,8 +103,21 @@ arg_proc:
 	push %ax # (&seg)
 	call mem_set
 	add $0x08, %sp
+	# }
 
-	call clear_redir_buf
+	# { clr redir_hsbuf
+	xor %ax, %ax
+	mov (redir_hsbuf), %cx
+	xor %ch, %ch
+	add $0x02, %cx
+
+	push %cx # (size)
+	push %ax # (value)
+	push $redir_hsbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
+	# }
 
 	xor %ax, %ax
 	mov $arg_ccv, %si
