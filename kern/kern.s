@@ -5,6 +5,7 @@
 # [Kernel] Main
 
 .include "chr.s"
+.include "drv/ps2.s"
 .section .data
 .kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"
 
@@ -43,11 +44,23 @@ _start:
 	call ps2_init
 	call rtc_init
 
+	xor %ax, %ax
+	mov %ax, (scan_code)
+
 	jmp .run
 
 # run()
 # <req> (*si == cl_sbuf.data)
 .run:
 	sti
+
+	# (chr == null) ? {pass} : {kbd_proc}
+	mov (scan_code+0x01), %al
+	test %al, %al
+	jz .pass
+
+	call kbd_proc
+
+.pass:
 	hlt
 	jmp .run

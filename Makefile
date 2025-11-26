@@ -130,6 +130,7 @@ drv/ps2/ps2_read_sc.s \
 drv/kbd/kbd.s \
 drv/kbd/kbd_data.s \
 drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_proc.s \
 drv/kbd/kbd_upd_mflg.s \
 drv/kbd/kbd_sctokc.s \
 drv/kbd/kbd_key_cr.s \

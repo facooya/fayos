@@ -11,26 +11,29 @@
 
 # irq 0x01 || int $0x21
 irq_kbd:
-	#in $PS2_DATA_REG, %al
-	#jmp .done
+	in $PS2_DATA_REG, %al
 
-	# <ret> ax:sc, dx:sc_brk
-	call ps2_read_sc
+	cmp $PS2_SC_BRK, %al
+	je .brk
+	cmp $PS2_SC_EXT, %al
+	je .ext
+	jmp .norm
 
-	# <req> ax:sc, dx:sc_brk
-	# <ret> ax:sc (skip=0)
-	# <ret> mflg
-	call kbd_upd_mflg
-	# (sc == 0) ? {done(skip)}
-	test %ax, %ax
-	jz .done
+.brk:
+	mov (scan_code), %al
+	or $(0x01<<0x00), %al
+	mov %al, (scan_code)
+	jmp .done
 
-	# <req> ax = sc
-	# <ret> al = kc
-	call kbd_sctokc
+.ext:
+	mov (scan_code), %al
+	or $(0x01<<0x01), %al
+	mov %al, (scan_code)
+	jmp .done
 
-	# <req> al = kc
-	call kbd
+.norm:
+	mov %al, (scan_code+0x01)
+	jmp .done
 
 .done:
 	# EOI
