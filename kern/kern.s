@@ -41,6 +41,8 @@ _start:
 	add $0x02, %si
 
 	call ps2_init
+	call rtc_init
+
 	jmp .run
 
 # run()

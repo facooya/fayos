@@ -14,7 +14,7 @@
 # <ret> dx = sc_brk
 ps2_read_sc:
 	xor %ax, %ax
-	OBF
+	#OBF
 	in $PS2_DATA_REG, %al
 
 	# (data == brk) ? {skip}
@@ -29,8 +29,8 @@ ps2_read_sc:
 	jmp .done
 
 .skip:
-	OBF
-	in $PS2_DATA_REG, %al
+	#OBF
+	#in $PS2_DATA_REG, %al
 
 	xor %dx, %dx
 	mov %al, %dl
@@ -38,8 +38,8 @@ ps2_read_sc:
 	jmp .done
 
 .ext:
-	OBF
-	in $PS2_DATA_REG, %al
+	#OBF
+	#in $PS2_DATA_REG, %al
 
 	# (data == brk) ? {skip} : {done}
 	cmp $PS2_SC_BRK, %al
@@ -49,8 +49,8 @@ ps2_read_sc:
 	jmp .done
 
 .ext__skip:
-	OBF
-	in $PS2_DATA_REG, %al
+	#OBF
+	#in $PS2_DATA_REG, %al
 
 	xor %dx, %dx
 	mov %ax, %dx

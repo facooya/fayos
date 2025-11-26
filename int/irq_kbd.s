@@ -4,12 +4,16 @@
 #
 # [Interrupt] Interrupt request from keyboard
 
+.include "drv/ps2.s"
 .section .text
 .code16
 .global irq_kbd
 
 # irq 0x01 || int $0x21
 irq_kbd:
+	#in $PS2_DATA_REG, %al
+	#jmp .done
+
 	# <ret> ax:sc, dx:sc_brk
 	call ps2_read_sc
 

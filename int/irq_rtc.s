@@ -18,24 +18,24 @@ sec: .word 0x00
 irq_rtc:
 	push %ax
 
+	# clr int
+	mov $RTC_REG_C, %al
+	out %al, $RTC_PORT_ADDR
+	in $RTC_PORT_DATA, %al
+
 	mov (.tick), %ax
 	inc %ax
 	cmp $0x0400, %ax
 	jne .pass
-	call dbg_a
 
 	mov (sec), %ax
 	inc %ax
 	mov %ax, (sec)
+	call dbg_a
 	xor %ax, %ax
 
 .pass:
 	mov %ax, (.tick)
-
-	# clr int
-	mov $RTC_REG_NMI_C, %al
-	out %al, $RTC_PORT_ADDR
-	in $RTC_PORT_DATA, %al
 
 	mov $0x20, %al
 	out %al, $0xA0

@@ -11,5 +11,11 @@
 
 # cmd_test()
 cmd_test:
+	#call rtc_init
+	call dbg_a
+	mov (sec), %ax
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
 	ret
 
