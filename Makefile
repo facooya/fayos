@@ -132,7 +132,7 @@ drv/kbd/kbd_data.s \
 drv/kbd/kbd_keymap.s \
 drv/kbd/kbd_proc.s \
 drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_sctokc.s \
+drv/kbd/kbd_sc_to_kc.s \
 drv/kbd/kbd_key_cr.s \
 drv/kbd/kbd_key_bs.s \
 drv/kbd/kbd_key_up.s \

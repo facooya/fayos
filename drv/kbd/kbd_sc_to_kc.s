@@ -2,21 +2,22 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Scan code to keycode
+# [Keyboard] Scan code to keycode
 
 .include "chr.s"
 .include "drv/kbd.s"
 .include "drv/ps2.s"
 .section .text
 .code16
-.global kbd_sctokc
+.global kbd_sc_to_kc
 
-# kbd_sctokc()
-# <req> ax = sc
-# <req> kbd_mflg
+# kbd_sc_to_kc()
+# <req> scan_code, kbd_mflg
 # <ret> al = kc
-kbd_sctokc:
+kbd_sc_to_kc:
 	push %si
+	
+	mov (scan_code), %ax
 
 	# (sc != norm) ? {done}
 	test %ah, %ah

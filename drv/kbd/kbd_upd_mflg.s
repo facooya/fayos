@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Update modifier flag
+# [Keyboard] Update modifier flag
 
 .include "drv/ps2.s"
 .include "drv/kbd.s"
@@ -19,10 +19,10 @@ kbd_upd_mflg:
 	mov %ax, %dx
 
 	# (sc == ext) ? {no_ext}
-	test $PS2_SC_BIT_EXT, %ah
+	test $PS2_SC_BIT_EXT, %dh
 	jz .no_ext
-	mov $PS2_SC_EXT, %ah
-	mov %ah, (scan_code+0x01)
+	mov $PS2_SC_EXT, %dh
+	mov %dh, (scan_code+0x01)
 	jmp .cont
 
 .no_ext:
@@ -30,7 +30,7 @@ kbd_upd_mflg:
 	mov %dh, (scan_code+0x01)
 
 .cont:
-	# (sc == brk) ? {set} : {clr}
+	# (sc != brk) ? {set} : {clr}
 	test $PS2_SC_BIT_BRK, %ah
 	jz .set
 	jmp .clr
@@ -63,7 +63,11 @@ kbd_upd_mflg:
 	# (sc == caps) ? {cap.set}
 	cmp $PS2_SC_CAP, %dx
 	je .cap__set
-	jmp .done # cont
+
+	test $PS2_SC_BRK, %ah
+	jz .done
+	xor %ax, %ax
+	jmp .done
 
 .clr:
 	# Shf
@@ -90,7 +94,8 @@ kbd_upd_mflg:
 	cmp $PS2_SC_RALT, %dx
 	je .rctl__clr
 
-	jmp .done # cont
+	xor %ax, %ax
+	jmp .done
 
 # {SHF}
 .lshf__set:

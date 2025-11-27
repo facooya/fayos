@@ -20,21 +20,12 @@ kbd_proc:
 	test %ax, %ax
 	jz .done
 
-	mov (kbd_mflg), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
+	call kbd_sc_to_kc
+	# <req: scan_code, kbd_mflg>
+	# <al = kc>
 
-	xor %ax, %ax
-	mov %ax, (scan_code)
-	jmp .done
-
-	# <req> ax = sc
-	# <ret> al = kc
-	call kbd_sctokc
-
-	# <req> al = kc
 	call kbd
+	# <req: al = kc>
 
 .done:
 	xor %ax, %ax
