@@ -125,7 +125,6 @@ drv/disk/disk_load_dpi.s \
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
-drv/ps2/ps2_read_sc.s \
 \
 drv/kbd/kbd.s \
 drv/kbd/kbd_data.s \

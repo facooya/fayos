@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# PS/2 initialization
+# [Personal System 2] Initialize
 
 .section .text
 .code16

@@ -59,6 +59,11 @@ _start:
 	test %al, %al
 	jz .pass
 
+	#mov (scan_code), %ax
+	#push %ax
+	#call dbg_reg
+	#add $0x02, %sp
+
 	call kbd_proc
 
 .pass:

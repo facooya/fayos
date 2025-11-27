@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Translate bit off - off bit 6 in configuration byte
+# [Personal System 2] Translate bit off - off bit 6 in configuration byte
 
 # reference link
 # https://wiki.osdev.org/I8042_PS/2_Controller#PS/2_Controller_Commands
@@ -14,6 +14,7 @@
 .global ps2_xlate_off
 
 ps2_xlate_off:
+	cli
 	IBF
 	mov $PS2_READ_CONF_BYTE, %al
 	out %al, $PS2_CMD_REG
@@ -30,4 +31,5 @@ ps2_xlate_off:
 	IBF
 	mov %ah, %al
 	out %al, $PS2_DATA_REG
+	sti
 	ret
