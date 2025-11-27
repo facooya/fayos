@@ -20,19 +20,19 @@ irq_kbd:
 	jmp .norm
 
 .brk:
-	mov (scan_code), %al
-	or $(0x01<<0x00), %al
-	mov %al, (scan_code)
+	mov (scan_code+0x01), %ah
+	or $PS2_SC_BIT_BRK, %ah
+	mov %ah, (scan_code+0x01)
 	jmp .done
 
 .ext:
-	mov (scan_code), %al
-	or $(0x01<<0x01), %al
-	mov %al, (scan_code)
+	mov (scan_code+0x01), %ah
+	or $PS2_SC_BIT_EXT, %ah
+	mov %ah, (scan_code+0x01)
 	jmp .done
 
 .norm:
-	mov %al, (scan_code+0x01)
+	mov %al, (scan_code)
 	jmp .done
 
 .done:

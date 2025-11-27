@@ -32,13 +32,13 @@
 .equ PS2_SC_BRK, 0xF0
 
 # Mod
-.equ PS2_SC_LSHF, 0x12
-.equ PS2_SC_RSHF, 0x59
-.equ PS2_SC_LCTL, 0x14
-.equ PS2_SC_LALT, 0x11
+.equ PS2_SC_LSHF, 0x0012
+.equ PS2_SC_RSHF, 0x0059
+.equ PS2_SC_LCTL, 0x0014
+.equ PS2_SC_LALT, 0x0011
 .equ PS2_SC_RCTL, 0xE014
 .equ PS2_SC_RALT, 0xE011
-.equ PS2_SC_CAP, 0x58
+.equ PS2_SC_CAP, 0x0058
 
 # Arrow
 .equ PS2_SC_UP, 0xE075
@@ -55,6 +55,9 @@
 .equ PS2_OBF, (0x01<<0x00)
 .equ PS2_IBF, (0x01<<0x01)
 .equ PS2_XLATE_BIT, (0x01<<0x06)
+
+.equ PS2_SC_BIT_BRK, (0x01<<0x00)
+.equ PS2_SC_BIT_EXT, (0x01<<0x01)
 
 # Macro
 .macro IBF

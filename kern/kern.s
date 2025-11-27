@@ -55,7 +55,7 @@ _start:
 	sti
 
 	# (chr == null) ? {pass} : {kbd_proc}
-	mov (scan_code+0x01), %al
+	mov (scan_code), %al
 	test %al, %al
 	jz .pass
 

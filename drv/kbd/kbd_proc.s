@@ -11,7 +11,16 @@
 # kbd_proc()
 # <req> scan_code
 kbd_proc:
-	mov (scan_code), %ax
+	call kbd_upd_mflg
+	# <req: scan_code>
+	# <ax = {skip:0}>
+	# <mod: kbd_mflg, scan_code>
+
+	# (kbd_upd_mflg() == 0) ? {done}
+	test %ax, %ax
+	jz .done
+
+	mov (kbd_mflg), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp
@@ -19,17 +28,6 @@ kbd_proc:
 	xor %ax, %ax
 	mov %ax, (scan_code)
 	jmp .done
-
-	# <ret> ax:sc, dx:sc_brk
-	#call ps2_read_sc
-
-	# <req> ax:sc, dx:sc_brk
-	# <ret> ax:sc (skip=0)
-	# <ret> mflg
-	call kbd_upd_mflg
-	# (sc == 0) ? {done(skip)}
-	test %ax, %ax
-	jz .done
 
 	# <req> ax = sc
 	# <ret> al = kc
@@ -39,4 +37,6 @@ kbd_proc:
 	call kbd
 
 .done:
+	xor %ax, %ax
+	mov %ax, (scan_code)
 	ret

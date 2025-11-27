@@ -11,57 +11,38 @@
 .global kbd_upd_mflg
 
 # kbd_upd_mflg()
-# <req> ax = sc
-# <req> dx = sc_brk
-# <ret> ax = sc (skip=0)
-# <ret> kbd_mflg
+# <ret> ax = {skip:0}
+# <mod> kbd_mflg, scan_code
 kbd_upd_mflg:
 	mov (kbd_mflg), %cx
+	mov (scan_code), %ax
+	mov %ax, %dx
 
-	# (sc_brk == 0) ? {set} : {clr}
-	test %dx, %dx
+	# (sc == ext) ? {no_ext}
+	test $PS2_SC_BIT_EXT, %ah
+	jz .no_ext
+	mov $PS2_SC_EXT, %ah
+	mov %ah, (scan_code+0x01)
+	jmp .cont
+
+.no_ext:
+	xor %dh, %dh
+	mov %dh, (scan_code+0x01)
+
+.cont:
+	# (sc == brk) ? {set} : {clr}
+	test $PS2_SC_BIT_BRK, %ah
 	jz .set
 	jmp .clr
 
 .set:
 	# Shf
 	# (sc == lshf) ? {lshf.set}
-	cmp $PS2_SC_LSHF, %ax
+	cmp $PS2_SC_LSHF, %dx
 	je .lshf__set
 	# (sc == rshf) ? {rshf.set}
-	cmp $PS2_SC_RSHF, %ax
-	je .rshf__set
-
-	# Ctl
-	# (sc == lctl) ? {lctl.set}
-	cmp $PS2_SC_LCTL, %ax
-	je .lctl__set
-	# (sc == rctl) ? {rctl.set}
-	cmp $PS2_SC_RCTL, %ax
-	je .rctl__set
-
-	# Alt
-	# (sc == lalt) ? {lalt.set}
-	cmp $PS2_SC_LALT, %ax
-	je .lctl__set
-	# (sc == ralt) ? {ralt.set}
-	cmp $PS2_SC_RALT, %ax
-	je .rctl__set
-
-	# (sc == caps) ? {cap.set}
-	cmp $PS2_SC_CAP, %ax
-	je .cap__set
-
-	jmp .done # cont
-
-.clr:
-	# Shf
-	# (sc_brk == lshf) ? {lshf.clr} : {done}
-	cmp $PS2_SC_LSHF, %dx
-	je .lshf__clr
-	# (sc_brk == rshf) ? {rshf.clr} : {done}
 	cmp $PS2_SC_RSHF, %dx
-	je .rshf__clr
+	je .rshf__set
 
 	# Ctl
 	# (sc == lctl) ? {lctl.set}
@@ -78,6 +59,36 @@ kbd_upd_mflg:
 	# (sc == ralt) ? {ralt.set}
 	cmp $PS2_SC_RALT, %dx
 	je .rctl__set
+
+	# (sc == caps) ? {cap.set}
+	cmp $PS2_SC_CAP, %dx
+	je .cap__set
+	jmp .done # cont
+
+.clr:
+	# Shf
+	# (sc_brk == lshf) ? {lshf.clr}
+	cmp $PS2_SC_LSHF, %dx
+	je .lshf__clr
+	# (sc_brk == rshf) ? {rshf.clr}
+	cmp $PS2_SC_RSHF, %dx
+	je .rshf__clr
+
+	# Ctl
+	# (sc == lctl) ? {lctl.clr}
+	cmp $PS2_SC_LCTL, %dx
+	je .lctl__clr
+	# (sc == rctl) ? {rctl.clr}
+	cmp $PS2_SC_RCTL, %dx
+	je .rctl__clr
+
+	# Alt
+	# (sc == lalt) ? {lalt.clr}
+	cmp $PS2_SC_LALT, %dx
+	je .lctl__clr
+	# (sc == ralt) ? {ralt.clr}
+	cmp $PS2_SC_RALT, %dx
+	je .rctl__clr
 
 	jmp .done # cont
 
@@ -139,7 +150,7 @@ kbd_upd_mflg:
 # {DONE}
 .done__flg:
 	mov %cx, (kbd_mflg)
-	xor %ax, %ax # skip
+	xor %ax, %ax
 	jmp .done
 
 .done:
