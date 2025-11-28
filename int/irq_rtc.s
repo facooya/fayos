@@ -4,6 +4,7 @@
 #
 # [Interrupt] Real Time Clock
 
+.include "int.s"
 .include "drv/rtc.s"
 .section .data
 .global sec
@@ -14,7 +15,7 @@ sec: .word 0x00
 .code16
 .global irq_rtc
 
-# irq 0x08 || int $0x28
+# irq 0x08
 irq_rtc:
 	push %ax
 
@@ -37,9 +38,9 @@ irq_rtc:
 .pass:
 	mov %ax, (.tick)
 
-	mov $0x20, %al
-	out %al, $0xA0
-	out %al, $0x20
+	mov $EOI, %al
+	out %al, $PIC2_PORT_CMD
+	out %al, $PIC1_PORT_CMD
 
 	pop %ax
 	iret

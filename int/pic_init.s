@@ -2,65 +2,64 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# Programmable interrupt controller initialization
+# [Programmable Interrupt Controller] Initialize
 
 # reference link
 # http://wiki.osdev.org/8259_PIC
 
+.include "int.s"
 .section .text
 .code16
 .global pic_init
 
 # pic_init()
 pic_init:
-	# 0x20 master PIC
-	# 0xA0 slave PIC
 	# init
-	mov $0x11, %al # ICW1_INIT+ICW1_ICW4
-	out %al, $0x20
-	out %al, $0x80
-	out %al, $0xA0
-	out %al, $0x80
+	mov $(ICW1_INIT|ICW1_ICW4), %al # ICW1_INIT+ICW1_ICW4
+	out %al, $PIC1_PORT_CMD
+	out %al, $IO_WAIT
+	out %al, $PIC2_PORT_CMD
+	out %al, $IO_WAIT
 
 	# IRQ remap 0x20-0x2F
-	mov $0x20, %al
-	out %al, $0x21
-	out %al, $0x80
-	mov $0x28, %al
-	out %al, $0xA1
-	out %al, $0x80
+	mov $ICW2_PIC1, %al
+	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
+	mov $ICW2_PIC2, %al
+	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 
 	# connect
-	mov $0x04, %al
-	out %al, $0x21
-	out %al, $0x80
-	mov $0x02, %al
-	out %al, $0xA1
-	out %al, $0x80
+	mov $ICW3_PIC1, %al
+	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
+	mov $ICW3_PIC2, %al
+	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 
-	mov $0x01, %al # ICW4_8086
-	out %al, $0x21
-	out %al, $0x80
-	out %al, $0xA1
-	out %al, $0x80
+	mov $ICW4_8086, %al
+	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
+	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 
 	mov $0xFF, %al
-	out %al, $0x21
-	out %al, $0xA1
+	out %al, $PIC1_PORT_DATA
+	out %al, $PIC2_PORT_DATA
 
 	# enable irq 1
-	in $0x21, %al
+	in $PIC1_PORT_DATA, %al
 	and $0xFD, %al
-	out %al, $0x21
+	out %al, $PIC1_PORT_DATA
 
-	# { rtc
-	in $0xA1, %al
+	# { enable irq 8
+	in $PIC2_PORT_DATA, %al
 	and $~(0x01<<0x00), %al
-	out %al, $0xA1
+	out %al, $PIC2_PORT_DATA
 
-	in $0x21, %al
+	in $PIC1_PORT_DATA, %al
 	and $~(0x01<<0x02), %al
-	out %al, $0x21
+	out %al, $PIC1_PORT_DATA
 	# }
 
 	ret

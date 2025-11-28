@@ -4,12 +4,13 @@
 #
 # [Interrupt] Interrupt request from keyboard
 
+.include "int.s"
 .include "drv/ps2.s"
 .section .text
 .code16
 .global irq_kbd
 
-# irq 0x01 || int $0x21
+# irq 0x01
 irq_kbd:
 	push %ax
 
@@ -46,9 +47,8 @@ irq_kbd:
 	jmp .done
 
 .done:
-	# EOI
-	mov $0x20, %al
-	out %al, $0x20
+	mov $EOI, %al
+	out %al, $PIC1_PORT_CMD
 
 	pop %ax
 	iret
