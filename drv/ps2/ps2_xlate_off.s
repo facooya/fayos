@@ -14,7 +14,6 @@
 .global ps2_xlate_off
 
 ps2_xlate_off:
-	cli
 	IBF
 	mov $PS2_READ_CONF_BYTE, %al
 	out %al, $PS2_CMD_REG
@@ -31,5 +30,4 @@ ps2_xlate_off:
 	IBF
 	mov %ah, %al
 	out %al, $PS2_DATA_REG
-	sti
 	ret

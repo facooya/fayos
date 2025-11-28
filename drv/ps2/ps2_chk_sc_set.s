@@ -14,7 +14,6 @@
 
 # ps2_chk_sc_set()
 ps2_chk_sc_set:
-	cli
 	xor %ax, %ax
 
 	IBF
@@ -43,5 +42,4 @@ ps2_chk_sc_set:
 	out %al, $PS2_DATA_REG
 	OBF
 	in $PS2_DATA_REG, %al # ok 0xFA
-	sti
 	ret

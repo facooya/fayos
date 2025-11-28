@@ -11,6 +11,12 @@
 
 # irq 0x01 || int $0x21
 irq_kbd:
+	push %ax
+
+	mov (init_flag), %ax
+	test %ax, %ax
+	jnz .skip
+
 	in $PS2_DATA_REG, %al
 
 	cmp $PS2_SC_BRK, %al
@@ -35,8 +41,14 @@ irq_kbd:
 	mov %al, (scan_code)
 	jmp .done
 
+.skip:
+	in $PS2_DATA_REG, %al
+	jmp .done
+
 .done:
 	# EOI
 	mov $0x20, %al
 	out %al, $0x20
+
+	pop %ax
 	iret

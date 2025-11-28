@@ -15,6 +15,7 @@
 
 # _start()
 _start:
+	cli
 	call pic_init
 	call ivt_init
 	call vga_init
@@ -43,26 +44,19 @@ _start:
 
 	call ps2_init
 	call rtc_init
+	sti
 
 	xor %ax, %ax
-	mov %ax, (scan_code)
-
+	mov %ax, (init_flag)
 	jmp .run
 
 # run()
 # <req> (*si == cl_sbuf.data)
 .run:
-	sti
-
 	# (chr == null) ? {pass} : {kbd_proc}
 	mov (scan_code), %al
 	test %al, %al
 	jz .pass
-
-	#mov (scan_code), %ax
-	#push %ax
-	#call dbg_reg
-	#add $0x02, %sp
 
 	call kbd_proc
 
