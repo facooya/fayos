@@ -11,47 +11,44 @@
 
 # rtc_init()
 rtc_init:
-	push %bx
-
-	# set bit 1, bit 2
-	mov $(RTC_REG_B|RTC_NMI), %al
-	out %al, $RTC_PORT_ADDR
-	mov $0x06, %al
-	out %al, $RTC_PORT_DATA
-
-	# {
-	mov $(RTC_REG_B|RTC_NMI), %al
+	# { reg a
+	mov $(RTC_REG_A|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
-	push %ax
+
+	mov %al, %ah # value
+	and $RTC_REG_A_UIP, %ah
+	or $RTC_REG_A_DV, %ah # 32.768 khz
+	or $RTC_REG_A_RS, %ah # 1024 hz
 
 	mov $(RTC_REG_A|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
-	and $0xF0, %al
-	or $0x06, %al
-	or $0x02, %al
-	mov %al, %bl
-	mov $(RTC_REG_A|RTC_NMI), %al
-	out %al, $RTC_PORT_ADDR
-	mov %bl, %al
+	mov %ah, %al # value
 	out %al, $RTC_PORT_DATA
+	# }
 
-	pop %ax
-	or $0x40, %al
-	and $0x7F, %al
-	mov %al, %bl
+	# { reg b
 	mov $(RTC_REG_B|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
-	mov %bl, %al
-	out %al, $RTC_PORT_DATA
+	in $RTC_PORT_DATA, %al
 
-	# nmi enable
+	mov %al, %ah # value
+	or $RTC_REG_B_TF, %ah # 24h
+	and $~RTC_REG_B_DM, %ah # bcd
+	or $RTC_REG_B_PIE, %ah # enable
+
+	mov $(RTC_REG_B|RTC_NMI), %al
+	out %al, $RTC_PORT_ADDR
+	in $RTC_PORT_DATA, %al
+	mov %ah, %al # value
+	out %al, $RTC_PORT_DATA
+	# }
+
+	# enable nmi
 	mov $RTC_REG_D, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
-	# }
 
 .done:
-	pop %bx
 	ret
