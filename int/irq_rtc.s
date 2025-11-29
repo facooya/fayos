@@ -9,7 +9,6 @@
 .section .data
 .global sec
 sec: .word 0x00
-.tick: .word 0x00
 
 .section .text
 .code16
@@ -19,25 +18,42 @@ sec: .word 0x00
 irq_rtc:
 	push %ax
 
+	xchg %bx, %bx
+
+	# (init_flag != 0) ? {skip}
+	mov (init_flag), %ax
+	test %ax, %ax
+	jnz .skip
+
 	# clr int
-	mov $RTC_REG_C, %al
+	mov $RTC_REG_NMI_C, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
-	mov (.tick), %ax
-	inc %ax
+	mov (rtc_tick), %ax
 	cmp $0x0400, %ax
-	jne .pass
+	jne .tick
 
 	mov (sec), %ax
 	inc %ax
 	mov %ax, (sec)
 	call dbg_a
 	xor %ax, %ax
+	mov %ax, (rtc_tick)
+	jmp .done
 
-.pass:
-	mov %ax, (.tick)
+.tick:
+	inc %ax
+	mov %ax, (rtc_tick)
+	jmp .done
 
+.skip:
+	mov $RTC_REG_NMI_C, %al
+	out %al, $RTC_PORT_ADDR
+	in $RTC_PORT_DATA, %al
+	jmp .done
+
+.done:
 	mov $EOI, %al
 	out %al, $PIC2_PORT_CMD
 	out %al, $PIC1_PORT_CMD

@@ -13,6 +13,7 @@
 
 .global init_flag
 .global scan_code
+.global rtc_tick
 .global rtc_date
 .global curs
 
@@ -24,6 +25,7 @@ write_sbuf: .zero 0x200
 
 init_flag: .word 0x01
 scan_code: .word 0x00
+rtc_tick: .word 0x00
 rtc_date: .zero 0x07
 curs:
 	.word 0x00 # min_pos

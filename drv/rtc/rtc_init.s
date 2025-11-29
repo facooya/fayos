@@ -14,10 +14,10 @@ rtc_init:
 	push %bx
 
 	# set bit 1, bit 2
-	#mov $RTC_REG_B, %al
-	#out %al, $RTC_PORT_ADDR
-	#mov $0x06, %al
-	#out %al, $RTC_PORT_DATA
+	mov $RTC_REG_NMI_B, %al
+	out %al, $RTC_PORT_ADDR
+	mov $0x06, %al
+	out %al, $RTC_PORT_DATA
 
 	# {
 	mov $RTC_REG_NMI_B, %al
