@@ -18,15 +18,17 @@ sec: .word 0x00
 irq_rtc:
 	push %ax
 
-	xchg %bx, %bx
-
 	# (init_flag != 0) ? {skip}
 	mov (init_flag), %ax
 	test %ax, %ax
 	jnz .skip
 
 	# clr int
-	mov $RTC_REG_NMI_C, %al
+	mov $(RTC_REG_C|RTC_NMI), %al
+	out %al, $RTC_PORT_ADDR
+	in $RTC_PORT_DATA, %al
+
+	mov $RTC_REG_D, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
@@ -48,7 +50,11 @@ irq_rtc:
 	jmp .done
 
 .skip:
-	mov $RTC_REG_NMI_C, %al
+	mov $(RTC_REG_C|RTC_NMI), %al
+	out %al, $RTC_PORT_ADDR
+	in $RTC_PORT_DATA, %al
+
+	mov $RTC_REG_D, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 	jmp .done

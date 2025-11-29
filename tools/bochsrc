@@ -2,6 +2,5 @@ romimage: file=$BXSHARE/BIOS-bochs-latest
 vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
 ata0-master: type=disk, path=../build/fayos.img
 boot: disk
-clock: sync=realtime, time0=local, rtc_sync=1
+clock: sync=slowdown, time0=local, rtc_sync=1
 log: ../build/bochslog
-magic_break: enabled=1

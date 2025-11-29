@@ -8,12 +8,12 @@
 .equ RTC_PORT_DATA, 0x71
 
 # NMI: Non-Maskable Interrupt
+.equ RTC_NMI, (0x01<<0x07)
+
 .equ RTC_REG_A, 0x0A
 .equ RTC_REG_B, 0x0B
 .equ RTC_REG_C, 0x0C
-.equ RTC_REG_NMI_A, 0x8A
-.equ RTC_REG_NMI_B, 0x8B
-.equ RTC_REG_NMI_C, 0x8C
+.equ RTC_REG_D, 0x0D # instead reg_c
 
 .equ RTC_SEC, 0x00
 .equ RTC_MIN, 0x02
