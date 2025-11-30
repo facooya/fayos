@@ -1,6 +1,5 @@
 # Issues
 ## WIP
-- irq 1
 
 ## FIXME
 

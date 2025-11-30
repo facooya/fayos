@@ -11,5 +11,14 @@
 
 # cmd_test()
 cmd_test:
+	xor %ax, %ax
+	mov $0xFF, %al
+	push %ax
+	call ub8_h_to_d
+	add $0x02, %sp
+
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
 	ret
 

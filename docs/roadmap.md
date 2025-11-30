@@ -2,6 +2,7 @@
 ## WIP
 
 ## PRIORITY
+- irq disk
 
 ## TODO
 
@@ -17,7 +18,6 @@
 - fs: dentry size optimize
 - scroll and restore many line feed
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
-- pic inspect
 
 ## Command
 - cp
