@@ -5,6 +5,7 @@
 - irq disk
 
 ## TODO
+- more date format
 
 ## Feature
 - tab: autocomplete file or dir

@@ -16,6 +16,7 @@ ub8_h_to_d:
 	push %bx
 
 	mov 0x04(%bp), %ax # (ub8 hex)
+	xor %ah, %ah
 	xor %bx, %bx # buf
 	xor %cx, %cx # shl
 

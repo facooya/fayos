@@ -8,13 +8,13 @@
 .include "drv/rtc.s"
 .section .data
 .week:
+	.asciz "Sun",
 	.asciz "Mon",
 	.asciz "Tue",
 	.asciz "Wed",
 	.asciz "Thu",
 	.asciz "Fri",
-	.asciz "Sat",
-	.asciz "Sun"
+	.asciz "Sat"
 
 .section .text
 .code16
@@ -40,6 +40,10 @@ cmd_date:
 	call putc
 
 	mov RTC_DATE_OFF_YEAR(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
@@ -56,6 +60,10 @@ cmd_date:
 
 	# { month
 	mov RTC_DATE_OFF_MONTH(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
@@ -72,6 +80,10 @@ cmd_date:
 
 	# { day
 	mov RTC_DATE_OFF_DAY(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
@@ -90,6 +102,7 @@ cmd_date:
 	mov $.week, %di
 	xor %ax, %ax
 	mov RTC_DATE_OFF_WEEK(%si), %al
+	dec %al
 	mov $0x04, %cx
 	mul %cx
 	add %ax, %di
@@ -106,6 +119,10 @@ cmd_date:
 
 	# { hour
 	mov RTC_DATE_OFF_HOUR(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
@@ -122,6 +139,10 @@ cmd_date:
 
 	# { min
 	mov RTC_DATE_OFF_MIN(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
@@ -138,6 +159,10 @@ cmd_date:
 
 	# { sec
 	mov RTC_DATE_OFF_SEC(%si), %al
+	push %ax # (ub8 hex)
+	call ub8_h_to_d
+	add $0x02, %sp
+	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
 	call ub8_d_to_c
 	add $0x02, %sp
