@@ -6,10 +6,6 @@
 
 .include "int.s"
 .include "drv/rtc.s"
-.section .data
-.global sec
-sec: .word 0x00
-
 .section .text
 .code16
 .global irq_rtc
@@ -17,11 +13,6 @@ sec: .word 0x00
 # irq 0x08
 irq_rtc:
 	push %ax
-
-	# (init_flag != 0) ? {skip}
-	mov (init_flag), %ax
-	test %ax, %ax
-	jnz .skip
 
 	# clr int
 	mov $(RTC_REG_C|RTC_NMI), %al
@@ -32,31 +23,28 @@ irq_rtc:
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
+	# (init_flag != 0) ? {skip}
+	mov (init_flag), %ax
+	test %ax, %ax
+	jnz .done
+
 	mov (rtc_tick), %ax
 	cmp $0x0400, %ax
 	jne .tick
 
-	mov (sec), %ax
+	mov (rtc_date), %ax
 	inc %ax
-	mov %ax, (sec)
-	call dbg_a
+	mov %ax, (rtc_date)
+	call rtc_upd_time
+
 	xor %ax, %ax
+	inc %ax
 	mov %ax, (rtc_tick)
 	jmp .done
 
 .tick:
 	inc %ax
 	mov %ax, (rtc_tick)
-	jmp .done
-
-.skip:
-	mov $(RTC_REG_C|RTC_NMI), %al
-	out %al, $RTC_PORT_ADDR
-	in $RTC_PORT_DATA, %al
-
-	mov $RTC_REG_D, %al
-	out %al, $RTC_PORT_ADDR
-	in $RTC_PORT_DATA, %al
 	jmp .done
 
 .done:

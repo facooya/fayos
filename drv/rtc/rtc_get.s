@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 #
-# [Real Time Clock] Get time
+# [Real Time Clock] Get date
 
 .include "chr.s"
 .include "drv/rtc.s"

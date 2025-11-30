@@ -154,7 +154,8 @@ drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
 drv/rtc/rtc_init.s \
-drv/rtc/rtc_get.s
+drv/rtc/rtc_get.s \
+drv/rtc/rtc_upd_time.s
 
 # Interrupt
 SRCS_INT = \

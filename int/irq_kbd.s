@@ -14,12 +14,12 @@
 irq_kbd:
 	push %ax
 
+	# (init_flag != 0) ? {skip}
 	mov (init_flag), %ax
 	test %ax, %ax
 	jnz .skip
 
 	in $PS2_DATA_REG, %al
-
 	cmp $PS2_SC_BRK, %al
 	je .brk
 	cmp $PS2_SC_EXT, %al

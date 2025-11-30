@@ -44,6 +44,7 @@ _start:
 
 	call ps2_init
 	call rtc_init
+	call rtc_get
 	sti
 
 	xor %ax, %ax

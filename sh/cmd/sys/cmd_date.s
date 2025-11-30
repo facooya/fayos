@@ -25,9 +25,6 @@ cmd_date:
 	push %si
 	push %di
 
-	call rtc_get
-	# <mod: rtc_date>
-
 	mov $rtc_date, %si
 
 	# { year

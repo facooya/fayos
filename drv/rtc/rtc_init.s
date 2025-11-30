@@ -35,7 +35,7 @@ rtc_init:
 
 	mov %al, %ah # value
 	or $RTC_REG_B_TF, %ah # 24h
-	and $~RTC_REG_B_DM, %ah # bcd
+	or $RTC_REG_B_DM, %ah # binary
 	or $RTC_REG_B_PIE, %ah # enable
 
 	mov $(RTC_REG_B|RTC_NMI), %al
