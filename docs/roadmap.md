@@ -1,8 +1,8 @@
 # Roadmap
 ## WIP
+- irq ata
 
 ## PRIORITY
-- irq disk
 
 ## TODO
 - more date format

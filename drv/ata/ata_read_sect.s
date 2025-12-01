@@ -59,9 +59,10 @@ ata_read_sect:
 	# }}}
 
 	# read
-	mov $ATA_CMD_REG, %dx
-	mov $ATA_READ, %al
-	out %al, %dx
+	#mov $ATA_CMD_REG, %dx
+	#mov $ATA_READ, %al
+	#mov %al, (ata_stat)
+	#out %al, %dx
 
 .sect__lp:
 	BSY
@@ -69,9 +70,14 @@ ata_read_sect:
 	DRQ
 	# TODO: err, df
 
-	mov $ATA_DATA_REG, %dx
-	mov $ATA_SECT_SIZE_WORD, %cx
-	rep insw
+	mov $ATA_CMD_REG, %dx
+	mov $ATA_READ, %al
+	mov %al, (ata_stat)
+	out %al, %dx
+
+	#mov $ATA_DATA_REG, %dx
+	#mov $ATA_SECT_SIZE_WORD, %cx
+	#rep insw
 
 	# (sect_cnt == 0) ? {done} : {sec.lp}
 	sub $0x01, %bx

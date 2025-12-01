@@ -15,6 +15,9 @@
 .equ ATA_DRV_REG, 0x01F6
 .equ ATA_CMD_REG, 0x01F7
 .equ ATA_STAT_REG, 0x01F7
+
+# DCR: Device Control Register
+.equ ATA_DCR, 0x03F6
 # }}}
 
 # {{{ Driver
@@ -34,6 +37,9 @@
 .equ ATA_DRQ, (0x01<<0x03)
 .equ ATA_RDY, (0x01<<0x06)
 .equ ATA_BSY, (0x01<<0x07)
+
+# NIEN: Nagative Interrupt ENable
+.equ ATA_NIEN, (0x01<<0x01) # 0:enable, 1:disable
 
 .equ ATA_SECT_SIZE_WORD, 0x0100
 # word cnt 0x3C-0x3D low first, 0xC4-0xC3 lo-hi

@@ -64,6 +64,11 @@ pic_init:
 	in $PIC2_PORT_DATA, %al
 	and $~IMR_BIT_IRQ8, %al
 	out %al, $PIC2_PORT_DATA
+
+	# enable irq 14
+	in $PIC2_PORT_DATA, %al
+	and $~IMR_BIT_IRQ14, %al
+	out %al, $PIC2_PORT_DATA
 	# }
 
 	ret

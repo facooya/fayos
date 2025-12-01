@@ -164,6 +164,7 @@ int/ivt_init.s \
 \
 int/irq_kbd.s \
 int/irq_rtc.s \
+int/irq_ata.s \
 \
 int/interrupt.s \
 

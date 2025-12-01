@@ -35,6 +35,7 @@
 .equ IMR_BIT_IRQ1, (0x01<<0x01)
 .equ IMR_BIT_IRQ2, (0x01<<0x02)
 .equ IMR_BIT_IRQ8, (0x01<<0x00)
+.equ IMR_BIT_IRQ14, (0x01<<0x06)
 # }
 
 .equ EOI, 0x20 # end of interrupt

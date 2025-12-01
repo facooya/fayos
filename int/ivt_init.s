@@ -27,5 +27,9 @@ ivt_init:
 	mov $irq_rtc, %es:(0x00A0)
 	mov %cs, %es:(0x00A2)
 
+	# irq 14
+	mov $irq_ata, %es:(0x00B8)
+	mov %cs, %es:(0x00BA)
+
 	pop %es
 	ret

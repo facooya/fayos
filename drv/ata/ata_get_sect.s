@@ -12,6 +12,11 @@
 # ata_get_sect()
 # <ret> dx:ax = sect
 ata_get_sect:
+	# nien enable
+	mov $ATA_DCR, %dx
+	xor %al, %al
+	out %al, %dx
+
 	# set drv
 	mov $ATA_DRV_REG, %dx
 	mov $ATA_DRV_MA, %al
