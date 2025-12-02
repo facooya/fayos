@@ -24,16 +24,27 @@ ata_read_sect:
 	mov %sp, %bp
 	push %es
 	push %di
-	push %bx
+
+	# nien enable
+	#mov $ATA_DCR, %dx
+	#xor %al, %al
+	#out %al, %dx
 
 	mov 0x04(%bp), %ax # (*seg)
-	mov %ax, %es
-	mov 0x06(%bp), %di # (*off)
+	mov %ax, (ata_seg)
+	mov 0x06(%bp), %ax # (*off)
+	mov %ax, (ata_off)
 
 	# set mode
 	mov $ATA_DRV_REG, %dx
 	mov $ATA_DRV_MA_LBA, %al # 0b11100000
 	out %al, %dx
+
+	mov $ATA_STAT_REG, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 	BSY
 	RDY
@@ -41,7 +52,7 @@ ata_read_sect:
 	# sector count
 	mov $ATA_SECT_CNT_REG, %dx
 	mov 0x0A(%bp), %ax # (sect_cnt)
-	mov %ax, %bx # sect_cnt
+	mov %ax, (ata_cnt)
 	out %al, %dx
 
 	# {{{ LBA
@@ -59,31 +70,18 @@ ata_read_sect:
 	# }}}
 
 	# read
-	#mov $ATA_CMD_REG, %dx
-	#mov $ATA_READ, %al
-	#mov %al, (ata_stat)
-	#out %al, %dx
-
-.sect__lp:
-	BSY
-	RDY
-	DRQ
-	# TODO: err, df
-
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_READ, %al
 	mov %al, (ata_stat)
 	out %al, %dx
 
-	#mov $ATA_DATA_REG, %dx
-	#mov $ATA_SECT_SIZE_WORD, %cx
-	#rep insw
-
-	# (sect_cnt == 0) ? {done} : {sec.lp}
-	sub $0x01, %bx
-	test %bx, %bx
+.wait:
+	mov (ata_cnt), %ax
+	test %ax, %ax
 	jz .done
-	jmp .sect__lp
+
+	hlt
+	jmp .wait
 
 .done:
 	BSY
@@ -92,7 +90,6 @@ ata_read_sect:
 	mov 0x04(%bp), %dx
 	mov 0x06(%bp), %ax
 
-	pop %bx
 	pop %di
 	pop %es
 	pop %bp

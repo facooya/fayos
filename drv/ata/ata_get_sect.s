@@ -27,6 +27,7 @@ ata_get_sect:
 
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_ID_DEV, %al
+	mov %al, (ata_stat)
 	out %al, %dx
 
 	BSY

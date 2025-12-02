@@ -20,6 +20,14 @@ _start:
 	call ivt_init
 	call vga_init
 
+	call ps2_init
+	call rtc_init
+	call rtc_get
+	sti
+
+	xor %ax, %ax
+	mov %ax, (init_flag)
+
 	call sb_run
 
 	push $.kmsg_welcome
@@ -42,13 +50,6 @@ _start:
 	mov $cl_sbuf, %si
 	add $0x02, %si
 
-	call ps2_init
-	call rtc_init
-	call rtc_get
-	sti
-
-	xor %ax, %ax
-	mov %ax, (init_flag)
 	jmp .run
 
 # run()
