@@ -20,6 +20,7 @@ _start:
 	call ivt_init
 	call vga_init
 
+	call ata_init
 	call ps2_init
 	call rtc_init
 	call rtc_get

@@ -39,7 +39,7 @@
 .equ ATA_BSY, (0x01<<0x07)
 
 # NIEN: Nagative Interrupt ENable
-.equ ATA_NIEN, (0x01<<0x01) # 0:enable, 1:disable
+.equ ATA_DCR_NIEN, (0x01<<0x01) # 0:enable, 1:disable
 
 .equ ATA_SECT_SIZE_WORD, 0x0100
 # word cnt 0x3C-0x3D low first, 0xC4-0xC3 lo-hi
