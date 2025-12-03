@@ -9,11 +9,10 @@
 .global ata_cnt
 .global ata_seg
 .global ata_off
-ata_stat: .byte 0x00
 ata_cnt: .word 0x00
 ata_seg: .word 0x00
 ata_off: .word 0x00
-.cnt: .word 0x00
+ata_stat: .byte 0x00
 
 .section .text
 .code16
@@ -25,8 +24,10 @@ irq_ata:
 	push %cx
 	push %dx
 
+	# int clr
 	mov $ATA_STAT_REG, %dx
 	in %dx, %al
+	# TODO: err, df
 
 	mov (init_flag), %ax
 	test %ax, %ax
@@ -40,26 +41,28 @@ irq_ata:
 	jmp .done
 
 .read:
-	push %es
-	push %di
+	push %es # [s.0:seg]
+	push %di # [s.1:off]
 	mov (ata_seg), %ax
 	mov %ax, %es
 	mov (ata_off), %di
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep insw
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+
 	mov %di, (ata_off)
-	pop %di
-	pop %es
+	pop %di # [s.1:off]
+	pop %es # [s.0:seg]
 
 	mov (ata_cnt), %ax
 	dec %ax
 	mov %ax, (ata_cnt)
-
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-	test $ATA_DRQ, %al
-	jnz .read
 	jmp .done
 
 .write:
@@ -72,44 +75,34 @@ irq_ata:
 .write__next:
 	mov $ATA_STAT_REG, %dx
 	in %dx, %al
+	test $ATA_BSY, %al
+	jnz .write__next
 	test $ATA_DRQ, %al
 	jz .write__next
 
-	push %si
-	push %ds
+	push %si # [s.0:off]
+	push %ds # [s.1:seg]
 	mov (ata_off), %si
 	mov (ata_seg), %ax
 	mov %ax, %ds
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep outsw
-	pop %ds
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+
+	pop %ds # [s.1:seg]
 	mov %si, (ata_off)
-	pop %si
-
-	jmp .epil
-
-.write__end:
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-
-	xor %ah, %ah
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-
-	test $ATA_DRQ, %al
-	jnz .write
+	pop %si # [s.0:off]
 	jmp .done
 
 .done:
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-
-.epil:
 	mov $EOI, %al
 	out %al, $PIC2_PORT_CMD
-	out %al, $0x80
 	out %al, $PIC1_PORT_CMD
 
 	pop %dx

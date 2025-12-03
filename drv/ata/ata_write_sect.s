@@ -7,6 +7,7 @@
 # reference link
 # https://wiki.osdev.org/ATA_read/write_sectors#ATA_write_sectors
 
+.include "int.s"
 .include "drv/ata.s"
 .section .text
 .code16
@@ -25,11 +26,6 @@ ata_write_sect:
 	push %ds
 	push %si
 
-	# nien enable
-	#mov $ATA_DCR, %dx
-	#xor %al, %al
-	#out %al, %dx
-
 	mov 0x04(%bp), %ax # (*seg)
 	mov %ax, (ata_seg)
 	mov 0x06(%bp), %ax # (*off)
@@ -40,11 +36,11 @@ ata_write_sect:
 	mov $ATA_DRV_MA_LBA, %al
 	out %al, %dx
 
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-	in %dx, %al
-	in %dx, %al
-	in %dx, %al
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
 
 	BSY
 	RDY
@@ -78,20 +74,31 @@ ata_write_sect:
 .wait:
 	mov $ATA_STAT_REG, %dx
 	in %dx, %al
+	test $ATA_BSY, %al
+	jnz .wait
 	test $ATA_DRQ, %al
 	jz .wait
 
-	push %si
-	push %ds
+	cli
+	push %si # [s.0:off]
+	push %ds # [s.1:seg]
 	mov (ata_off), %si
 	mov (ata_seg), %ax
 	mov %ax, %ds
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep outsw
-	pop %ds
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+
+	pop %ds # [s.1:seg]
 	mov %si, (ata_off)
-	pop %si
+	pop %si # [s.0:off]
+	sti
 
 .wait_irq:
 	hlt
@@ -103,9 +110,6 @@ ata_write_sect:
 	jmp .wait_irq
 
 .done:
-	BSY
-	# TODO: err, df
-
 	mov 0x04(%bp), %dx
 	mov 0x06(%bp), %ax
 

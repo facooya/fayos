@@ -7,6 +7,7 @@
 # reference link
 # https://wiki.osdev.org/ATA_read/write_sectors#Read_in_LBA_mode
 
+.include "int.s"
 .include "drv/ata.s"
 .section .text
 .code16
@@ -25,11 +26,6 @@ ata_read_sect:
 	push %es
 	push %di
 
-	# nien enable
-	#mov $ATA_DCR, %dx
-	#xor %al, %al
-	#out %al, %dx
-
 	mov 0x04(%bp), %ax # (*seg)
 	mov %ax, (ata_seg)
 	mov 0x06(%bp), %ax # (*off)
@@ -40,11 +36,11 @@ ata_read_sect:
 	mov $ATA_DRV_MA_LBA, %al # 0b11100000
 	out %al, %dx
 
-	mov $ATA_STAT_REG, %dx
-	in %dx, %al
-	in %dx, %al
-	in %dx, %al
-	in %dx, %al
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
 
 	BSY
 	RDY
@@ -75,6 +71,12 @@ ata_read_sect:
 	mov %al, (ata_stat)
 	out %al, %dx
 
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+
 .wait:
 	mov (ata_cnt), %ax
 	test %ax, %ax
@@ -84,9 +86,6 @@ ata_read_sect:
 	jmp .wait
 
 .done:
-	BSY
-	# TODO: err, df
-
 	mov 0x04(%bp), %dx
 	mov 0x06(%bp), %ax
 
