@@ -54,9 +54,8 @@ sb_run:
 	# {{{ write superblock
 	mov %bx, %si
 	add $SB_OFF_TOT_SECT, %si
-	#call ata_get_sect
-	mov $0x5000, %ax # HACK
-	xor %dx, %dx
+	call ata_get_sect
+	# <dx:ax = tot_sect_hi:tot_sect_lo>
 	mov %ax, (%si)
 	mov %dx, 0x02(%si)
 

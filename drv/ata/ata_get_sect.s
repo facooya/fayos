@@ -4,6 +4,7 @@
 #
 # Get total sectors
 
+.include "int.s"
 .include "drv/ata.s"
 .section .text
 .code16
@@ -12,15 +13,28 @@
 # ata_get_sect()
 # <ret> dx:ax = sect
 ata_get_sect:
-	# nien enable
+	# nien disable
 	mov $ATA_DCR, %dx
-	xor %al, %al
+	in %dx, %al
+	or $ATA_DCR_NIEN, %al
 	out %al, %dx
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
 
 	# set drv
 	mov $ATA_DRV_REG, %dx
 	mov $ATA_DRV_MA, %al
 	out %al, %dx
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
 
 	BSY
 	RDY
@@ -58,6 +72,29 @@ ata_get_sect:
 	jmp .data__lp
 
 .data__end:
-	pop %dx # [s.d1:sect_hi]
-	pop %ax # [s.d0:sect_lo]
+	mov $ATA_STAT_REG, %dx
+	in %dx, %al
+	test $ATA_DRQ, %al
+	jnz .err
+	# TODO: err chk
+
+.epil:
+	# nien enable
+	mov $ATA_DCR, %dx
+	in %dx, %al
+	and $~ATA_DCR_NIEN, %al
+	out %al, %dx
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+
+	pop %dx # <ret:hi> [s.d1:sect_hi]
+	pop %ax # <ret:lo> [s.d0:sect_lo]
 	ret
+
+.err:
+	call dbg_a # HACK
+	jmp .epil
