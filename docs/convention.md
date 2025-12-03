@@ -6,6 +6,8 @@
 - refactor
 - feat
 - fix
+- test
+- debug
 
 #### Usage
 - `type(scope): message`
@@ -13,15 +15,32 @@
 
 Examples:
 - `chore(kernel): clean up`
+- `test(fs/bm): test bitmap clear`
+- - It is okey if not real path
+- `refactor(lib/conv,fs/ind): rename functions`
 - `docs: update README.md`
 
 ### Comment
-- Condition: ()
+- Comment write lower case please. Using simple words. If need description write in docs file not a logic file.
+- Condition: (COND) ? {TASK} : {TASK}
+- - (fayos == 1) ? {pass} : {end}
 - Keyword: {}
-- Start block: {{{
-- End block: }}}
+- Start block:
+- - small: {
+- - medium: {{
+- - large: {{{
+- End block:
+- - small: }
+- - medium: }}
+- - large: }}}
 - Information: <>
-- Docs: []
+- - \<ax = ret\_code\>
+- Stack: [s.N:KEY]
+- - write next comment for `push` and `pop`. skip for prolog and epilog.
+- - [s.0:abc]
+- - [s.f2:def] - f: function
+- Docs: [d.N:KEY]
+- - [d.1:init]
 
 ### Align
 - X: 0x1, 0x123
@@ -32,15 +51,27 @@ Examples:
 - X: .short, .int, .string
 
 ### Instruction
-- X: lods, stos, rep, loop
 - O: add, sub
-- X: inc, dec
+- O: inc, dec
+- - If `a+=1` using inc.
 
 - X: movw (%si), %ax
 - O: mov (%si), %ax
 - X: movb (%si), %al
 - O: mov (%si), %al
+- - Avoid attache type at instruction.
 
 ### Code
-- recommend: .global  
-- avoid: .globl  
+- recommend: .global
+- avoid: .globl
+
+### Protact
+Callee protect registers:
+- es, ds, ss, sp
+- bp, si, di, bx
+
+Caller protect registers:
+- ax, cx, dx
+
+Interrupt protect registers:
+- all

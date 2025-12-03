@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Get total sectors
 
 .include "int.s"
 .include "drv/ata.s"
@@ -11,7 +9,7 @@
 .global ata_get_sect
 
 # ata_get_sect()
-# <ret> dx:ax = sect
+# <ret> dx:ax = tot_sect_hi:tot_sect_lo
 ata_get_sect:
 	# nien disable
 	mov $ATA_DCR, %dx
