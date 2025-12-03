@@ -110,6 +110,7 @@ sh/cmd/dir/cmd_rmdir.s
 
 # Driver
 SRCS_DRV = \
+drv/ata/ata_data.s \
 drv/ata/ata_init.s \
 drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \

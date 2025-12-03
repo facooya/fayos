@@ -45,6 +45,12 @@
 # word cnt 0x3C-0x3D low first, 0xC4-0xC3 lo-hi
 .equ ATA_REV_TOT_SECT_OFF, 0xC4 # [4-byte] i=0x100;i--
 
+# Offset
+.equ ATA_STAT_CMD, 0x00
+.equ ATA_STAT_CNT, 0x01
+.equ ATA_STAT_SEG, 0x02
+.equ ATA_STAT_OFF, 0x04
+
 .macro BSY
 0:
 	mov $ATA_STAT_REG, %dx

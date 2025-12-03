@@ -23,13 +23,13 @@
 ata_read_sect:
 	push %bp
 	mov %sp, %bp
-	push %es
-	push %di
+	push %bx
 
+	mov $ata_stat, %bx
 	mov 0x04(%bp), %ax # (*seg)
-	mov %ax, (ata_seg)
+	mov %ax, ATA_STAT_SEG(%bx)
 	mov 0x06(%bp), %ax # (*off)
-	mov %ax, (ata_off)
+	mov %ax, ATA_STAT_OFF(%bx)
 
 	# set mode
 	mov $ATA_DRV_REG, %dx
@@ -48,7 +48,7 @@ ata_read_sect:
 	# sector count
 	mov $ATA_SECT_CNT_REG, %dx
 	mov 0x0A(%bp), %ax # (sect_cnt)
-	mov %ax, (ata_cnt)
+	mov %al, ATA_STAT_CNT(%bx)
 	out %al, %dx
 
 	# {{{ LBA
@@ -68,7 +68,7 @@ ata_read_sect:
 	# read
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_READ, %al
-	mov %al, (ata_stat)
+	mov %al, ATA_STAT_CMD(%bx)
 	out %al, %dx
 
 	# delay 400ns
@@ -78,8 +78,8 @@ ata_read_sect:
 	out %al, $IO_WAIT
 
 .wait:
-	mov (ata_cnt), %ax
-	test %ax, %ax
+	mov ATA_STAT_CNT(%bx), %al
+	test %al, %al
 	jz .done
 
 	hlt
@@ -89,7 +89,6 @@ ata_read_sect:
 	mov 0x04(%bp), %dx
 	mov 0x06(%bp), %ax
 
-	pop %di
-	pop %es
+	pop %bx
 	pop %bp
 	ret

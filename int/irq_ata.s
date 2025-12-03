@@ -4,25 +4,18 @@
 
 .include "int.s"
 .include "drv/ata.s"
-.section .data
-.global ata_stat
-.global ata_cnt
-.global ata_seg
-.global ata_off
-ata_cnt: .word 0x00
-ata_seg: .word 0x00
-ata_off: .word 0x00
-ata_stat: .byte 0x00
-
 .section .text
 .code16
 .global irq_ata
 
 # irq 0x0E
 irq_ata:
+	push %bx
 	push %ax
 	push %cx
 	push %dx
+
+	mov $ata_stat, %bx
 
 	# int clr
 	mov $ATA_STAT_REG, %dx
@@ -33,7 +26,7 @@ irq_ata:
 	test %ax, %ax
 	jnz .done
 
-	mov (ata_stat), %al
+	mov ATA_STAT_CMD(%bx), %al
 	cmp $ATA_READ, %al
 	je .read
 	cmp $ATA_WRITE, %al
@@ -43,9 +36,9 @@ irq_ata:
 .read:
 	push %es # [s.0:seg]
 	push %di # [s.1:off]
-	mov (ata_seg), %ax
+	mov ATA_STAT_SEG(%bx), %ax
 	mov %ax, %es
-	mov (ata_off), %di
+	mov ATA_STAT_OFF(%bx), %di
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep insw
@@ -56,20 +49,20 @@ irq_ata:
 	out %al, $IO_WAIT
 	out %al, $IO_WAIT
 
-	mov %di, (ata_off)
+	mov %di, ATA_STAT_OFF(%bx)
 	pop %di # [s.1:off]
 	pop %es # [s.0:seg]
 
-	mov (ata_cnt), %ax
-	dec %ax
-	mov %ax, (ata_cnt)
+	mov ATA_STAT_CNT(%bx), %al
+	dec %al
+	mov %al, ATA_STAT_CNT(%bx)
 	jmp .done
 
 .write:
-	mov (ata_cnt), %ax
-	dec %ax
-	mov %ax, (ata_cnt)
-	test %ax, %ax
+	mov ATA_STAT_CNT(%bx), %al
+	dec %al
+	mov %al, ATA_STAT_CNT(%bx)
+	test %al, %al
 	jz .done
 
 .write__next:
@@ -82,8 +75,8 @@ irq_ata:
 
 	push %si # [s.0:off]
 	push %ds # [s.1:seg]
-	mov (ata_off), %si
-	mov (ata_seg), %ax
+	mov ATA_STAT_OFF(%bx), %si
+	mov ATA_STAT_SEG(%bx), %ax
 	mov %ax, %ds
 	mov $ATA_DATA_REG, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
@@ -96,7 +89,7 @@ irq_ata:
 	out %al, $IO_WAIT
 
 	pop %ds # [s.1:seg]
-	mov %si, (ata_off)
+	mov %si, ATA_STAT_OFF(%bx)
 	pop %si # [s.0:off]
 	jmp .done
 
@@ -108,4 +101,5 @@ irq_ata:
 	pop %dx
 	pop %cx
 	pop %ax
+	pop %bx
 	iret
