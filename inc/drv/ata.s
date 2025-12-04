@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Advanced Technology Attachment
 
-# {{{ Registers
+# { Registers
 .equ ATA_DATA_REG, 0x01F0 # [2-byte]
 #.equ ATA_ERR_REG, 0x01F1
 #.equ ATA_FEAT_REG, 0x01F1
@@ -19,7 +17,7 @@
 # DCR: Device Control Register
 .equ ATA_DCR, 0x03F6
 .equ ATA_ALT_STAT, 0x03F6
-# }}}
+# }
 
 # {{{ Driver
 # bit 5,7: always 1
