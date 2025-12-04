@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Write sectors
-
-# reference link
-# https://wiki.osdev.org/ATA_read/write_sectors#ATA_write_sectors
 
 .include "int.s"
 .include "drv/ata.s"
@@ -19,6 +14,7 @@
 # ub16 lba,
 # ub16 sect_cnt
 # )
+# <mod> ata_stat
 # <ret> dx:ax = seg:off
 ata_write_sect:
 	push %bp
@@ -51,7 +47,7 @@ ata_write_sect:
 	mov %al, ATA_STAT_CNT(%bx)
 	out %al, %dx
 
-	# {{{ LBA
+	# { lba
 	mov $ATA_LBA_LO_REG, %dx
 	mov 0x08(%bp), %ax # (lba)
 	out %al, %dx # lba_lo
@@ -63,13 +59,19 @@ ata_write_sect:
 	mov $ATA_LBA_HI_REG, %dx
 	xor %ax, %ax
 	out %al, %dx # lba_hi
-	# }}}
+	# }
 
 	# write
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_WRITE, %al
 	mov %al, ATA_STAT_CMD(%bx)
 	out %al, %dx
+
+	# delay 400ns
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
+	out %al, $IO_WAIT
 
 .wait:
 	mov $ATA_STAT_REG, %dx
@@ -103,10 +105,10 @@ ata_write_sect:
 .wait_irq:
 	hlt
 
+	# (sect_cnt == 0) ? {done} : {lp}
 	mov ATA_STAT_CNT(%bx), %al
 	test %al, %al
 	jz .done
-
 	jmp .wait_irq
 
 .done:

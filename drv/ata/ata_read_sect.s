@@ -14,6 +14,7 @@
 # ub16 lba,
 # ub16 sect_cnt
 # )
+# <mod> ata_stat
 # <ret> dx:ax = seg:off
 ata_read_sect:
 	push %bp
@@ -75,10 +76,10 @@ ata_read_sect:
 	sti
 
 .wait:
+	# (sect_cnt == 0) ? {done} : {lp}
 	mov ATA_STAT_CNT(%bx), %al
 	test %al, %al
 	jz .done
-
 	hlt
 	jmp .wait
 
