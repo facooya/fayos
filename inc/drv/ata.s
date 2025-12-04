@@ -18,6 +18,7 @@
 
 # DCR: Device Control Register
 .equ ATA_DCR, 0x03F6
+.equ ATA_ALT_STAT, 0x03F6
 # }}}
 
 # {{{ Driver

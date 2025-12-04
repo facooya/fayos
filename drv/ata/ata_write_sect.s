@@ -33,10 +33,11 @@ ata_write_sect:
 	out %al, %dx
 
 	# delay 400ns
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
+	mov $ATA_STAT_REG, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 	BSY
 	RDY
@@ -68,10 +69,11 @@ ata_write_sect:
 	out %al, %dx
 
 	# delay 400ns
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
+	mov $ATA_STAT_REG, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 .wait:
 	mov $ATA_STAT_REG, %dx
@@ -91,11 +93,12 @@ ata_write_sect:
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep outsw
 
-	# delay 400ns
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
+	# delay 400ns, don't clear interrupt signal
+	mov $ATA_ALT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 	pop %ds # [s.1:seg]
 	mov %si, ATA_STAT_OFF(%bx)

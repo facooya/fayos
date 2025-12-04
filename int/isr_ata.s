@@ -44,10 +44,15 @@ isr_ata:
 	rep insw
 
 	# delay 400ns
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
+	#mov $ATA_STAT_REG, %dx
+	#in %dx, %al
+	#in %dx, %al
+	#in %dx, %al
+	#in %dx, %al
+	out %al, $0x80
+	out %al, $0x80
+	out %al, $0x80
+	out %al, $0x80
 
 	mov %di, ATA_STAT_OFF(%bx)
 	pop %di # [s.1:off]
@@ -83,10 +88,15 @@ isr_ata:
 	rep outsw
 
 	# delay 400ns
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
-	out %al, $IO_WAIT
+	#mov $ATA_STAT_REG, %dx
+	#in %dx, %al
+	#in %dx, %al
+	#in %dx, %al
+	#in %dx, %al
+	out %al, $0x80
+	out %al, $0x80
+	out %al, $0x80
+	out %al, $0x80
 
 	pop %ds # [s.1:seg]
 	mov %si, ATA_STAT_OFF(%bx)
