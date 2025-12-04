@@ -16,6 +16,7 @@
 _start:
 	# init
 	cli
+	cld
 	xor %ax, %ax
 	mov %ax, %ds
 	mov %ax, %es

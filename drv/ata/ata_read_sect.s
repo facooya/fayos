@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Read sectors
-
-# reference link
-# https://wiki.osdev.org/ATA_read/write_sectors#Read_in_LBA_mode
 
 .include "int.s"
 .include "drv/ata.s"
@@ -51,7 +46,7 @@ ata_read_sect:
 	mov %al, ATA_STAT_CNT(%bx)
 	out %al, %dx
 
-	# {{{ LBA
+	# { lba
 	mov $ATA_LBA_LO_REG, %dx
 	mov 0x08(%bp), %ax # (lba)
 	out %al, %dx # lba_lo
@@ -63,9 +58,10 @@ ata_read_sect:
 	mov $ATA_LBA_HI_REG, %dx
 	xor %ax, %ax
 	out %al, %dx # lba_hi
-	# }}}
+	# }
 
 	# read
+	cli
 	mov $ATA_CMD_REG, %dx
 	mov $ATA_READ, %al
 	mov %al, ATA_STAT_CMD(%bx)
@@ -76,6 +72,7 @@ ata_read_sect:
 	out %al, $IO_WAIT
 	out %al, $IO_WAIT
 	out %al, $IO_WAIT
+	sti
 
 .wait:
 	mov ATA_STAT_CNT(%bx), %al

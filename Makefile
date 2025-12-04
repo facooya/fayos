@@ -164,9 +164,9 @@ SRCS_INT = \
 int/pic_init.s \
 int/ivt_init.s \
 \
-int/irq_kbd.s \
-int/irq_rtc.s \
-int/irq_ata.s \
+int/isr_kbd.s \
+int/isr_rtc.s \
+int/isr_ata.s \
 \
 int/interrupt.s \
 

@@ -1,17 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Interrupt] Real Time Clock
 
 .include "int.s"
 .include "drv/rtc.s"
 .section .text
 .code16
-.global irq_rtc
+.global isr_rtc
 
-# irq 0x08
-irq_rtc:
+# isr 0x08
+isr_rtc:
 	push %ax
 
 	# clr int

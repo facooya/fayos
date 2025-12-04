@@ -6,10 +6,10 @@
 .include "drv/ata.s"
 .section .text
 .code16
-.global irq_ata
+.global isr_ata
 
 # irq 0x0E
-irq_ata:
+isr_ata:
 	push %bx
 	push %ax
 	push %cx

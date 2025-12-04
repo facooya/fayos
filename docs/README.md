@@ -63,3 +63,5 @@ Conventional Free Memory: [0x0500-0x9FBF]
 - unset: 0x9E00-0x9FBF (padding, unuse)
 
 Free: 0x010000 - 0x09FFFF (max: 1152 sectors, 144 blocks)
+
+> Authors 2025 Facooya and Fanone Facooya

@@ -1,17 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Interrupt] Interrupt request from keyboard
 
 .include "int.s"
 .include "drv/ps2.s"
 .section .text
 .code16
-.global irq_kbd
+.global isr_kbd
 
 # irq 0x01
-irq_kbd:
+isr_kbd:
 	push %ax
 
 	# (init_flag != 0) ? {skip}

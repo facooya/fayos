@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Programmable Interrupt Controller] Initialize
 
 # reference link
 # http://wiki.osdev.org/8259_PIC
