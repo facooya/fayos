@@ -17,7 +17,7 @@ ata_init:
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al

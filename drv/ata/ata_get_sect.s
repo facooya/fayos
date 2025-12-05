@@ -18,7 +18,7 @@ ata_get_sect:
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
@@ -26,11 +26,11 @@ ata_get_sect:
 
 	# set drv
 	mov $ATA_PORT_DRV, %dx
-	mov $ATA_DRV_MA, %al
+	mov $ATA_DRV_MA_LBA, %al
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
@@ -40,25 +40,24 @@ ata_get_sect:
 	DRDY
 
 	mov $ATA_PORT_CMD, %dx
-	mov $ATA_ID_DEV, %al
-	mov %al, (ata_stat)
+	mov $ATA_CMD_ID_DEV, %al
 	out %al, %dx
 
 	DRQ
 
 	mov $ATA_PORT_DATA, %dx
-	mov $ATA_SECT_SIZE_WORD, %cx
+	xor %cx, %cx
 
 .data__lp:
 	# (cnt == 0) ? {end}
-	test %cx, %cx
-	jz .data__end
+	cmp $ATA_SECT_SIZE_WORD, %cx
+	je .data__end
 
 	in %dx, %ax
-	cmp $ATA_REV_TOT_SECT_OFF, %cx
+	cmp $ATA_OFF_TOT_SECT, %cx
 	je .get_total_sect
 
-	sub $0x01, %cx
+	inc %cx
 	jmp .data__lp
 
 .get_total_sect:
@@ -66,13 +65,13 @@ ata_get_sect:
 	in %dx, %ax
 	push %ax # [s.d1:sect_hi]
 
-	sub $0x02, %cx
+	add $0x02, %cx
 	jmp .data__lp
 
 .data__end:
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
-	test $ATA_DRQ, %al
+	test $ATA_STAT_DRQ, %al
 	jnz .err
 	# TODO: err chk
 
@@ -84,7 +83,7 @@ ata_get_sect:
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
@@ -92,6 +91,8 @@ ata_get_sect:
 
 	pop %dx # <ret:hi> [s.d1:sect_hi]
 	pop %ax # <ret:lo> [s.d0:sect_lo]
+	# TODO: is set hi? set max in lo
+
 	ret
 
 .err:

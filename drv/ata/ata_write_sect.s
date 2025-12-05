@@ -14,18 +14,18 @@
 # ub16 lba,
 # ub16 sect_cnt
 # )
-# <mod> ata_stat
+# <mod> ata_buf
 # <ret> dx:ax = seg:off
 ata_write_sect:
 	push %bp
 	mov %sp, %bp
 	push %bx
 
-	mov $ata_stat, %bx
+	mov $ata_buf, %bx
 	mov 0x04(%bp), %ax # (*seg)
-	mov %ax, ATA_STAT_SEG(%bx)
+	mov %ax, ATA_BUF_SEG(%bx)
 	mov 0x06(%bp), %ax # (*off)
-	mov %ax, ATA_STAT_OFF(%bx)
+	mov %ax, ATA_BUF_OFF(%bx)
 
 	# set mode
 	mov $ATA_PORT_DRV, %dx
@@ -33,7 +33,7 @@ ata_write_sect:
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
@@ -45,7 +45,7 @@ ata_write_sect:
 	# sector count
 	mov $ATA_PORT_SECT_CNT, %dx
 	mov 0x0A(%bp), %ax # (sect_cnt)
-	mov %al, ATA_STAT_CNT(%bx)
+	mov %al, ATA_BUF_CNT(%bx)
 	out %al, %dx
 
 	# { lba
@@ -64,28 +64,28 @@ ata_write_sect:
 
 	# write
 	mov $ATA_PORT_CMD, %dx
-	mov $ATA_WRITE, %al
-	mov %al, ATA_STAT_CMD(%bx)
+	mov $ATA_CMD_WRITE, %al
+	mov %al, ATA_BUF_CMD(%bx)
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 
 .wait:
-	mov $ATA_PORT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
-	test $ATA_DRQ, %al
+	test $ATA_STAT_DRQ, %al
 	jz .wait
 
 	cli
 	push %si # [s.0:off]
 	push %ds # [s.1:seg]
-	mov ATA_STAT_OFF(%bx), %si
-	mov ATA_STAT_SEG(%bx), %ax
+	mov ATA_BUF_OFF(%bx), %si
+	mov ATA_BUF_SEG(%bx), %ax
 	mov %ax, %ds
 	mov $ATA_PORT_DATA, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
@@ -99,7 +99,7 @@ ata_write_sect:
 	in %dx, %al
 
 	pop %ds # [s.1:seg]
-	mov %si, ATA_STAT_OFF(%bx)
+	mov %si, ATA_BUF_OFF(%bx)
 	pop %si # [s.0:off]
 	sti
 
@@ -107,7 +107,7 @@ ata_write_sect:
 	hlt
 
 	# (sect_cnt == 0) ? {done} : {lp}
-	mov ATA_STAT_CNT(%bx), %al
+	mov ATA_BUF_CNT(%bx), %al
 	test %al, %al
 	jz .done
 	jmp .wait_irq
