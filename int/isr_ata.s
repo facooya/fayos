@@ -18,7 +18,7 @@ isr_ata:
 	mov $ata_stat, %bx
 
 	# int clr
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	# TODO: err, df
 
@@ -39,12 +39,12 @@ isr_ata:
 	mov ATA_STAT_SEG(%bx), %ax
 	mov %ax, %es
 	mov ATA_STAT_OFF(%bx), %di
-	mov $ATA_DATA_REG, %dx
+	mov $ATA_PORT_DATA, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep insw
 
 	# delay 400ns
-	mov $ATA_ALT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
@@ -67,7 +67,7 @@ isr_ata:
 	jz .done
 
 .write__next:
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	test $ATA_DRQ, %al
 	jz .write__next
@@ -77,12 +77,12 @@ isr_ata:
 	mov ATA_STAT_OFF(%bx), %si
 	mov ATA_STAT_SEG(%bx), %ax
 	mov %ax, %ds
-	mov $ATA_DATA_REG, %dx
+	mov $ATA_PORT_DATA, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep outsw
 
 	# delay 400ns
-	mov $ATA_ALT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al

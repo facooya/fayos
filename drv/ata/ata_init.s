@@ -11,13 +11,13 @@
 # ata_init()
 ata_init:
 	# int enable
-	mov $ATA_DCR, %dx
+	mov $ATA_PORT_DCR, %dx
 	in %dx, %al
 	and $~ATA_DCR_NIEN, %al
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al

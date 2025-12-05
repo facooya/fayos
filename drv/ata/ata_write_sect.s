@@ -28,55 +28,55 @@ ata_write_sect:
 	mov %ax, ATA_STAT_OFF(%bx)
 
 	# set mode
-	mov $ATA_DRV_REG, %dx
+	mov $ATA_PORT_DRV, %dx
 	mov $ATA_DRV_MA_LBA, %al
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 
 	BSY
-	RDY
+	DRDY
 
 	# sector count
-	mov $ATA_SECT_CNT_REG, %dx
+	mov $ATA_PORT_SECT_CNT, %dx
 	mov 0x0A(%bp), %ax # (sect_cnt)
 	mov %al, ATA_STAT_CNT(%bx)
 	out %al, %dx
 
 	# { lba
-	mov $ATA_LBA_LO_REG, %dx
+	mov $ATA_PORT_LBA_LO, %dx
 	mov 0x08(%bp), %ax # (lba)
 	out %al, %dx # lba_lo
 
-	mov $ATA_LBA_MID_REG, %dx
+	mov $ATA_PORT_LBA_MID, %dx
 	mov %ah, %al
 	out %al, %dx # lba_mid
 
-	mov $ATA_LBA_HI_REG, %dx
+	mov $ATA_PORT_LBA_HI, %dx
 	xor %ax, %ax
 	out %al, %dx # lba_hi
 	# }
 
 	# write
-	mov $ATA_CMD_REG, %dx
+	mov $ATA_PORT_CMD, %dx
 	mov $ATA_WRITE, %al
 	mov %al, ATA_STAT_CMD(%bx)
 	out %al, %dx
 
 	# delay 400ns
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
 
 .wait:
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 	in %dx, %al
 	test $ATA_DRQ, %al
 	jz .wait
@@ -87,12 +87,12 @@ ata_write_sect:
 	mov ATA_STAT_OFF(%bx), %si
 	mov ATA_STAT_SEG(%bx), %ax
 	mov %ax, %ds
-	mov $ATA_DATA_REG, %dx
+	mov $ATA_PORT_DATA, %dx
 	mov $ATA_SECT_SIZE_WORD, %cx
 	rep outsw
 
 	# delay 400ns, don't clear interrupt signal
-	mov $ATA_ALT_STAT, %dx
+	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al

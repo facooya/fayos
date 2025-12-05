@@ -1,6 +1,24 @@
 # Readme for ATA
 ## Overview
-You can reference documents easely for ATA.
+The documents for Fayos.
+This document for ATA (Advanced Technology Attachement).
+
+**Implementation**
+- PIO (Progammend Input Output)
+- Interrupt
+
+**Drive Mode**
+- Master
+- LBA (Logical Block Address)
+
+---
+
+## Table of Contents
+- [API Map](#api-map)
+- [Register Map](#register-map)
+- [Terms](#terms)
+- [Notes](#notes)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -16,7 +34,7 @@ You can reference documents easely for ATA.
 ---
 
 ## Register Map
-[!IMPORTANT]
+> [!IMPORTANT]
 > This register map write for Fayos.
 > So table is different to standard.
 > Examples if your using LBA 48 bit, So LBA low register 2 byte size is correct not 1.
@@ -24,7 +42,7 @@ You can reference documents easely for ATA.
 > And like "LBA low" is IN and OUT possible. But using OUT only. Because using OUT only in Fayos.
 > And "LBA low" register name is differenct to standard, Standard name is "Sector Number Register".
 
-[!NOTE]
+> [!NOTE]
 > **You can find standard ATA hardware reference here** [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
 
 Align order the port number.
@@ -45,7 +63,7 @@ Align order the port number.
 
 **Drive Register**
 | Bit | Name | Value | Description |
-| --- | --- | --- | --- |
+| :---: | --- | --- | --- |
 | 0-3 | LBA highest | 0 | LBA b24-27. Set 0 only, not use. |
 | 4 | Drive mode | 0=master, 1=slave | Master only |
 | 5 | N/A | 1 | Always 1 |
@@ -54,7 +72,7 @@ Align order the port number.
 
 **Status Register**
 | Bit | Name | Value | Description |
-| --- | --- | --- | --- |
+| :---: | --- | --- | --- |
 | 0 | Error | 0=false, 1=true | N/A |
 | 3 | Drive request | 0=false, 1=true | Set when sector ready to read, Or after write end if not sector count 0. Working every sectors. Drive request if set is already busy bit 0 and drive ready bit 1. |
 | 6 | Drive ready | 0=false, 1=true | Check when drive change, And before write to command  |
@@ -62,7 +80,7 @@ Align order the port number.
 
 **Drive Control Register**
 | Bit | Name | Value | Description |
-| --- | --- | --- | --- |
+| :---: | --- | --- | --- |
 | 1 | Nagative interrupt enable | 0=enable, 1:disable | Always 0 except in `ata_get_sect()` |
 
 ---
