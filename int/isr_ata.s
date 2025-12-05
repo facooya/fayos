@@ -44,15 +44,11 @@ isr_ata:
 	rep insw
 
 	# delay 400ns
-	#mov $ATA_STAT_REG, %dx
-	#in %dx, %al
-	#in %dx, %al
-	#in %dx, %al
-	#in %dx, %al
-	out %al, $0x80
-	out %al, $0x80
-	out %al, $0x80
-	out %al, $0x80
+	mov $ATA_ALT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 	mov %di, ATA_STAT_OFF(%bx)
 	pop %di # [s.1:off]
@@ -73,8 +69,6 @@ isr_ata:
 .write__next:
 	mov $ATA_STAT_REG, %dx
 	in %dx, %al
-	test $ATA_BSY, %al
-	jnz .write__next
 	test $ATA_DRQ, %al
 	jz .write__next
 
@@ -88,15 +82,11 @@ isr_ata:
 	rep outsw
 
 	# delay 400ns
-	#mov $ATA_STAT_REG, %dx
-	#in %dx, %al
-	#in %dx, %al
-	#in %dx, %al
-	#in %dx, %al
-	out %al, $0x80
-	out %al, $0x80
-	out %al, $0x80
-	out %al, $0x80
+	mov $ATA_ALT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 
 	pop %ds # [s.1:seg]
 	mov %si, ATA_STAT_OFF(%bx)

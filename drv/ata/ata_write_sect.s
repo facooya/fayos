@@ -78,8 +78,6 @@ ata_write_sect:
 .wait:
 	mov $ATA_STAT_REG, %dx
 	in %dx, %al
-	test $ATA_BSY, %al
-	jnz .wait
 	test $ATA_DRQ, %al
 	jz .wait
 

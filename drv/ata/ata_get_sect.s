@@ -44,8 +44,6 @@ ata_get_sect:
 	mov %al, (ata_stat)
 	out %al, %dx
 
-	BSY
-	RDY
 	DRQ
 
 	mov $ATA_DATA_REG, %dx

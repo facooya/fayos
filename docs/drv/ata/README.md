@@ -44,13 +44,26 @@ Align order the port number.
 | Device control | 0x03F6 | 1 | OUT |
 
 **Drive Register**
-| Bit | Description | Value |
-| --- | --- | --- |
-| 0-3 | LBA highest | 0 |
-| 4 | Drive mode: 0=master, 1=slave | 0 |
-| 5 | Always 1 | 1 |
-| 6 | LBA: 0=CHS, 1=LBA | 1 |
-| 7 | Always 1 | 1 |
+| Bit | Name | Value | Description |
+| --- | --- | --- | --- |
+| 0-3 | LBA highest | 0 | LBA b24-27. Set 0 only, not use. |
+| 4 | Drive mode | 0=master, 1=slave | Master only |
+| 5 | N/A | 1 | Always 1 |
+| 6 | LBA | 0=CHS, 1=LBA | LBA only |
+| 7 | N/A | 1 | Always 1 |
+
+**Status Register**
+| Bit | Name | Value | Description |
+| --- | --- | --- | --- |
+| 0 | Error | 0=false, 1=true | N/A |
+| 3 | Drive request | 0=false, 1=true | Set when sector ready to read, Or after write end if not sector count 0. Working every sectors. Drive request if set is already busy bit 0 and drive ready bit 1. |
+| 6 | Drive ready | 0=false, 1=true | Check when drive change, And before write to command  |
+| 7 | Busy | 0=false, 1=true | Check when with drive ready, If busy bit 0 and drive ready bit 1 is safe. |
+
+**Drive Control Register**
+| Bit | Name | Value | Description |
+| --- | --- | --- | --- |
+| 1 | Nagative interrupt enable | 0=enable, 1:disable | Always 0 except in `ata_get_sect()` |
 
 ---
 

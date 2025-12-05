@@ -2,21 +2,19 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-# { Registers
-.equ ATA_DATA_REG, 0x01F0 # [2-byte]
+# { ports
+.equ ATA_DATA_REG, 0x01F0
 #.equ ATA_ERR_REG, 0x01F1
 #.equ ATA_FEAT_REG, 0x01F1
 .equ ATA_SECT_CNT_REG, 0x01F2
-.equ ATA_LBA_LO_REG, 0x01F3 # [1-byte]
-.equ ATA_LBA_MID_REG, 0x01F4 # [1-byte]
-.equ ATA_LBA_HI_REG, 0x01F5 # [1-byte]
+.equ ATA_LBA_LO_REG, 0x01F3
+.equ ATA_LBA_MID_REG, 0x01F4
+.equ ATA_LBA_HI_REG, 0x01F5
 .equ ATA_DRV_REG, 0x01F6
-.equ ATA_CMD_REG, 0x01F7
 .equ ATA_STAT_REG, 0x01F7
-
-# DCR: Device Control Register
-.equ ATA_DCR, 0x03F6
+.equ ATA_CMD_REG, 0x01F7
 .equ ATA_ALT_STAT, 0x03F6
+.equ ATA_DCR, 0x03F6
 # }
 
 # {{{ Driver
