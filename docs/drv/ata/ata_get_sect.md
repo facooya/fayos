@@ -17,15 +17,11 @@ Identify device commend and read device data and return number of total sectors.
 ### Returns
 - `dx:ax = tot_sect_hi:tot_sect_lo`
 
-### Internal
-- `N/A`
-
 ---
 
 ## Process Flow
 1. Disable interrupt using nIEN
-    - delay 400ns - [docs: ata delay 400ns](/docs/drv/ata/README.md#note-delay-400ns)
-    - Why nIEN - [docs: ata nien](/docs/drv/ata/README.md#note-nien)
+    - delay 400ns
 1. Set drive using master and LBA
     - delay 400ns
 1. Check BSY bit and DRDY bit
@@ -43,13 +39,18 @@ Identify device commend and read device data and return number of total sectors.
 1. Enable interrupt using nIEN
     - delay 400ns
 
+| Description | Link |
+| --- | --- |
+| Why using nIEN | [docs: ata nIEN](/docs/drv/ata/README.md#note-nien) |
+| Why delay 400ns | [docs: ata delay 400ns](/docs/drv/ata/README.md#note-delay-400ns) |
+
 ---
 
 ## Reference Links
-- [docs: ata](/docs/drv/ata/README.md)
-
-### External
-- [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
+| Description | Link |
+| --- | --- |
+| Parent document | [docs: ata](/docs/drv/ata/README.md) |
+| External link: standard document | [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode) |
 
 ---
 

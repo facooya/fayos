@@ -14,22 +14,24 @@ ATA read sectors. Data transfer mode PIO and interrupt mode. Trigger `isr_ata` b
 > ub: unsinged bit
 
 ### Requires
-- interrupt enable - `sti`
+- `sti` - interrupt enable
+- clear nIEN bit in DCR - interrupt enable
 
 ### Modifies
-- `ata_buf` - [docs: ata data](/docs/drv/ata/ata_data.md)
+- `ata_buf`
 
 ### Returns
 - `dx:ax = seg:off`
 
-### Internal
-- `isr_ata` - [docs: isr ata](docs/int/isr_ata.md)
+| Description | Link |
+| --- | --- |
+| Definition to `ata_buf` | [docs: ata data](/docs/drv/ata/ata_data.md) |
+| What is nIEN | [docs: ata nIEN](/docs/drv/ata/README.md#note-nien) |
 
 ---
 
 ## Process Flow
 1. Save segment and offset in `ata_buf` structure
-    - [docs: ata buf](/docs/drv/ata/ata_data.md)
 1. Set drive mode
     - Set drive, master and LBA
 1. Wait 400ns
@@ -44,21 +46,25 @@ ATA read sectors. Data transfer mode PIO and interrupt mode. Trigger `isr_ata` b
     - Command value in `ata_buf` too
 1. Wait 400ns
 1. Enable interrupt
-1. Start ATA interrupt handler - [docs: isr ata](/docs/int/isr_ata.md)
+1. Start ATA interrupt handler
 1. Loop till sector count 0
+
+| Description | Link |
+| --- | --- |
+| Definition to `ata_buf` | [docs: ata data](/docs/drv/ata/ata_data.md) |
+| Why delay 400ns | [docs: ata delay 400ns](/docs/drv/ata/README.md#note-delay-400ns) |
+| Interrupt handler | [docs: isr ata](/docs/int/isr_ata.md) |
 
 ---
 
 ## Reference Links
-- [docs: ata](/docs/drv/ata/README.md)
-- [docs: ata write sect](/docs/drv/ata/ata_write_sect.md)
-- [docs: ata get sect](/docs/drv/ata/ata_get_sect.md)
-- [docs: ata data](/docs/drv/ata/ata_data.md)
-- [docs: inc ata](/docs/inc/drv/ata.md)
-- [docs: isr ata](/docs/int/isr_ata.md)
-
-### External
-- [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
+| Description | Link |
+| --- | --- |
+| Parent Document | [docs: ata](/docs/drv/ata/README.md) |
+| Definition to `ata_buf` structure | [docs: ata data](/docs/drv/ata/ata_data.md) |
+| Header for ATA | [docs: inc ata](/docs/inc/drv/ata.md) |
+| Interrupt handler | [docs: isr ata](/docs/int/isr_ata.md) |
+| External link: standard document | [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode) |
 
 ---
 

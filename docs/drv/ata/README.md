@@ -89,6 +89,7 @@ This document for ATA (Advanced Technology Attachement).
 
 ## Terms
 - ATA: Advanced Technology Attachment
+- PIO: Programmed Input Output
 - LBA: Logical Block Address
 - IRQ: Interrupt Request
 - ISR: Interrupt Service Routine
@@ -139,16 +140,16 @@ nIEN: negative interrupt enable
 ---
 
 ## Reference Links
-- [docs: ata data](/docs/drv/ata/ata_data.md)
-- [docs: ata init](/docs/drv/ata/ata_init.md)
-- [docs: ata get sect](/docs/drv/ata/ata_get_sect.md)
-- [docs: ata read sect](/docs/drv/ata/ata_read_sect.md)
-- [docs: ata write sect](/docs/drv/ata/ata_write_sect.md)
-- [docs: inc ata](/docs/inc/drv/ata.md)
-- [docs: isr ata](/docs/int/isr_ata.md)
-
-### External
-- [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
+| Description | Link |
+| --- | --- |
+| Definition data | [docs: ata data](/docs/drv/ata/ata_data.md) |
+| Initialization | [docs: ata init](/docs/drv/ata/ata_init.md) |
+| Get total sectors | [docs: ata get sect](/docs/drv/ata/ata_get_sect.md) |
+| Read sectors | [docs: ata read sect](/docs/drv/ata/ata_read_sect.md) |
+| Write sectors | [docs: ata write sect](/docs/drv/ata/ata_write_sect.md) |
+| Header for ATA | [docs: inc ata](/docs/inc/drv/ata.md) |
+| Interrupt handler | [docs: isr ata](/docs/int/isr_ata.md) |
+| External link: Standard document | [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode) |
 
 ---
 
