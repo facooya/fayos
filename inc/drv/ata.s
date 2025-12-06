@@ -39,8 +39,8 @@
 # }
 
 .equ ATA_SECT_SIZE_WORD, 0x0100
-# word cnt 0x3C-0x3D low first
-.equ ATA_OFF_TOT_SECT, 0x3C # [4-byte] i=0x100;i--
+.equ ATA_OFF_TOT_SECT, 0x3C
+.equ ATA_MAX_TOT_SECT, 0x0007FFF8
 
 .macro BSY
 0:
