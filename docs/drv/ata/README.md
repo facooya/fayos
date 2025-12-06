@@ -118,7 +118,7 @@ Align order the port number.
 ---
 
 ## Notes
-### ATA-delay-400ns
+### note-delay-400ns
 - The "ns" is nano second.
 - Q. Why 400ns?
 - A. Hardware ready time least wait 400ns. CPU is so fast.
@@ -126,6 +126,10 @@ Align order the port number.
 - A. Write at Command Register, Contorl Register and Data register read and write after.
 - Q. How make 400ns?
 - A. `in $STAT_REG, %al` is `in $0x01F7, %al` or `in $0x03F6, %al`. 0x01F7 port is status register and 0x03F6 is alternate status register. So 1 time `in $STAT_REG, %al` is 100ns. Include 4 times it is 400ns.
+
+### note-nien
+- nIEN: negative interrupt enable
+- Q. why
 
 ---
 

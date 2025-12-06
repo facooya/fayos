@@ -44,6 +44,13 @@ ata_get_sect:
 	mov $ATA_CMD_ID_DEV, %al
 	out %al, %dx
 
+	# delay 400ns
+	mov $ATA_PORT_ALT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+
 	DRQ
 
 	mov $ATA_PORT_DATA, %dx

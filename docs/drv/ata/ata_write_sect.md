@@ -32,7 +32,7 @@ ATA write sectors. Data transfer mode PIO and interrupt mode. Trigger `isr_ata` 
     - [docs: ata data](/docs/drv/ata/ata_data.md)
 1. Set drive mode
     - Set master and LBA mode.
-1. Wait 400ns - [docs: ata delay 400ns](/docs/drv/ata/README.md#ata-delay-400ns)
+1. Wait 400ns - [docs: ata delay 400ns](/docs/drv/ata/README.md#note-delay-400ns)
 1. Check BSY bit and DRDY bit
     - Ready for BSY=0, DRDY=1
 1. Write sector conut and LBA in registers
