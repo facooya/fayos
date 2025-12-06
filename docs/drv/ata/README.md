@@ -14,7 +14,7 @@ This document for ATA (Advanced Technology Attachement).
 ---
 
 ## Table of Contents
-- [API Map](#api-map)
+- [Module Map](#module-map)
 - [Register Map](#register-map)
 - [Terms](#terms)
 - [Notes](#notes)
@@ -22,14 +22,16 @@ This document for ATA (Advanced Technology Attachement).
 
 ---
 
-## API Map
-### Public
-- [docs: ata read sect](/docs/drv/ata/ata_read_sect.md)
-- [docs: ata write sect](/docs/drv/ata/ata_write_sect.md)
-- [docs: ata get sect](/docs/drv/ata/ata_get_sect.md)
-
-### Interrupt
-- [docs: isr ata](docs/int/isr_ata.md)
+## Module Map
+| Source Path | Docs Link | Description |
+| --- | --- | --- |
+| `/drv/ata/ata_data.s` | [docs: ata data](/docs/drv/ata/ata_data.md) | Data definition |
+| `/drv/ata/ata_init.s` | [docs: ata init](/docs/drv/ata/ata_init.md) | Initialization once by kernel |
+| `/drv/ata/ata_get_sect.s` | [docs: ata get sect](/docs/drv/ata/ata_get_sect.md) | Get total sectors by superblock |
+| `/drv/ata/ata_read_sect.s` | [docs: ata read sect](/docs/drv/ata/ata_read_sect.md) | Read sectors by interrupt |
+| `/drv/ata/ata_write_sect.s` | [docs: ata write sect](/docs/drv/ata/ata_write_sect.md) | Write sectors by interrupt |
+| `/inc/drv/ata.s` | [docs: ata header](docs/inc/drv/ata.md) | Constants and macro |
+| `/int/isr_ata.s` | [docs: isr ata](docs/int/isr_ata.md) | Handler for read/write sectors |
 
 ---
 
@@ -45,7 +47,7 @@ This document for ATA (Advanced Technology Attachement).
 > [!NOTE]
 > **You can find standard ATA hardware reference here** [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
 
-Align order the port number.
+**PORT**
 | Name | Port | Byte | Mode |
 | :--- | :---: | :---: | :---: |
 | Data | 0x01F0 | 2 | IO |
@@ -55,7 +57,7 @@ Align order the port number.
 | LBA low | 0x01F3 | 1 | OUT |
 | LBA mid | 0x01F4 | 1 | OUT |
 | LBA high | 0x01F5 | 1 | OUT |
-| Drive | 0x01F6 | 1 | IO |
+| Drive | 0x01F6 | 1 | OUT |
 | Status | 0x01F7 | 1 | IN |
 | Command | 0x01F7 | 1 | OUT |
 | Alternate status | 0x03F6 | 1 | IN |
@@ -74,7 +76,7 @@ Align order the port number.
 | Bit | Name | Value | Description |
 | :---: | --- | --- | --- |
 | 0 | Error | 0=false, 1=true | N/A |
-| 3 | Drive request | 0=false, 1=true | Set when sector ready to read, Or after write end if not sector count 0. Working every sectors. Drive request if set is already busy bit 0 and drive ready bit 1. |
+| 3 | Data request | 0=false, 1=true | Set when sector ready to read, Or after write end if not sector count 0. Working every sectors. Data request if set is already busy bit 0 and drive ready bit 1. |
 | 6 | Drive ready | 0=false, 1=true | Check when drive change, And before write to command  |
 | 7 | Busy | 0=false, 1=true | Check when with drive ready, If busy bit 0 and drive ready bit 1 is safe. |
 
@@ -97,7 +99,7 @@ Align order the port number.
 - reg: Register
 - drv: Drive
 - bsy: Busy
-- drq: Drive Rquest
+- drq: Data Rquest
 - rdy: Ready
 - id: Identifiy
 - dev: Device
@@ -119,7 +121,7 @@ Align order the port number.
 
 ## Notes
 ### note-delay-400ns
-- The "ns" is nano second.
+The "ns" is nano second.
 - Q. Why 400ns?
 - A. Hardware ready time least wait 400ns. CPU is so fast.
 - Q. Where include?
@@ -128,16 +130,22 @@ Align order the port number.
 - A. `in $STAT_REG, %al` is `in $0x01F7, %al` or `in $0x03F6, %al`. 0x01F7 port is status register and 0x03F6 is alternate status register. So 1 time `in $STAT_REG, %al` is 100ns. Include 4 times it is 400ns.
 
 ### note-nien
-- nIEN: negative interrupt enable
-- Q. why
+nIEN: negative interrupt enable
+- Q. Why using `nIEN`?
+- A. Turn off interrupt using `cli` is clear interrupt. But steel have inetrrupt signal write ISR. So turn on interrupt using `sti` go to interrupt handler. But using `nIEN` is turn off interrupt signal. ISR don't know signal even if status is `sti`. So no interrupt request signal.
+- Q. When use?
+- A. Must not go to interrupt handler. Example identifiy device must not go to interrupt handler. Because method is polling. And different logic.
 
 ---
 
 ## Reference Links
+- [docs: ata data](/docs/drv/ata/ata_data.md)
+- [docs: ata init](/docs/drv/ata/ata_init.md)
+- [docs: ata get sect](/docs/drv/ata/ata_get_sect.md)
 - [docs: ata read sect](/docs/drv/ata/ata_read_sect.md)
 - [docs: ata write sect](/docs/drv/ata/ata_write_sect.md)
-- [docs: ata get sect](/docs/drv/ata/ata_get_sect.md)
 - [docs: inc ata](/docs/inc/drv/ata.md)
+- [docs: isr ata](/docs/int/isr_ata.md)
 
 ### External
 - [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
