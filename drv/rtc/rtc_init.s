@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Real Time Clock] Initialization
 
 .include "drv/rtc.s"
 .section .text
@@ -50,5 +48,4 @@ rtc_init:
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
-.done:
 	ret
