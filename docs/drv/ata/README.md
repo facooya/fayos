@@ -23,15 +23,15 @@ This document for ATA (Advanced Technology Attachement).
 ---
 
 ## Module Map
-| Source Path | Docs Link | Description |
+| Description | Source Path | Docs Link |
 | --- | --- | --- |
-| `/drv/ata/ata_data.s` | [docs: ata data](/docs/drv/ata/ata_data.md) | Data definition |
-| `/drv/ata/ata_init.s` | [docs: ata init](/docs/drv/ata/ata_init.md) | Initialization once by kernel |
-| `/drv/ata/ata_get_sect.s` | [docs: ata get sect](/docs/drv/ata/ata_get_sect.md) | Get total sectors by superblock |
-| `/drv/ata/ata_read_sect.s` | [docs: ata read sect](/docs/drv/ata/ata_read_sect.md) | Read sectors by interrupt |
-| `/drv/ata/ata_write_sect.s` | [docs: ata write sect](/docs/drv/ata/ata_write_sect.md) | Write sectors by interrupt |
-| `/inc/drv/ata.s` | [docs: ata header](docs/inc/drv/ata.md) | Constants and macro |
-| `/int/isr_ata.s` | [docs: isr ata](docs/int/isr_ata.md) | Handler for read/write sectors |
+| Data definition | `/drv/ata/ata_data.s` | [docs: ata data](/docs/drv/ata/ata_data.md) |
+| Initialization once by kernel | `/drv/ata/ata_init.s` | [docs: ata init](/docs/drv/ata/ata_init.md) |
+| Get total sectors by superblock | `/drv/ata/ata_get_sect.s` | [docs: ata get sect](/docs/drv/ata/ata_get_sect.md) |
+| Read sectors by interrupt | `/drv/ata/ata_read_sect.s` | [docs: ata read sect](/docs/drv/ata/ata_read_sect.md) |
+| Write sectors by interrupt | `/drv/ata/ata_write_sect.s` | [docs: ata write sect](/docs/drv/ata/ata_write_sect.md) |
+| Constants and macro | `/inc/drv/ata.s` | [docs: ata header](docs/inc/drv/ata.md) |
+| Handler for read/write sectors | `/int/isr_ata.s` | [docs: isr ata](docs/int/isr_ata.md) |
 
 ---
 
