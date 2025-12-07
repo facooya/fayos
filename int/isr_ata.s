@@ -67,11 +67,11 @@ isr_ata:
 	test %al, %al
 	jz .done
 
-.write__next:
+.write__wait:
 	mov $ATA_PORT_ALT_STAT, %dx
 	in %dx, %al
 	test $ATA_STAT_DRQ, %al
-	jz .write__next
+	jz .write__wait
 
 	push %si # [s.0:off]
 	push %ds # [s.1:seg]
