@@ -10,7 +10,7 @@
 # rtc_init()
 rtc_init:
 	# { reg a
-	mov $(RTC_REG_A|RTC_NMI), %al
+	mov $(RTC_ADDR_REG_A|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
@@ -19,7 +19,7 @@ rtc_init:
 	or $RTC_REG_A_DV, %ah # 32.768 khz
 	or $RTC_REG_A_RS, %ah # 1024 hz
 
-	mov $(RTC_REG_A|RTC_NMI), %al
+	mov $(RTC_ADDR_REG_A|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 	mov %ah, %al # value
@@ -27,7 +27,7 @@ rtc_init:
 	# }
 
 	# { reg b
-	mov $(RTC_REG_B|RTC_NMI), %al
+	mov $(RTC_ADDR_REG_B|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
@@ -36,7 +36,7 @@ rtc_init:
 	or $RTC_REG_B_DM, %ah # binary
 	or $RTC_REG_B_PIE, %ah # enable
 
-	mov $(RTC_REG_B|RTC_NMI), %al
+	mov $(RTC_ADDR_REG_B|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 	mov %ah, %al # value
@@ -44,7 +44,7 @@ rtc_init:
 	# }
 
 	# enable nmi
-	mov $RTC_REG_D, %al
+	mov $RTC_ADDR_REG_D, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 

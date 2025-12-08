@@ -18,30 +18,30 @@ rtc_upd_time:
 	mov $rtc_date, %si
 
 	# (sec < 60) ? {done} : {zero}
-	mov RTC_DATE_OFF_SEC(%si), %al
+	mov RTC_DATE_SEC(%si), %al
 	cmp $0x3C, %al
 	jl .done
-	mov %ah, RTC_DATE_OFF_SEC(%si)
+	mov %ah, RTC_DATE_SEC(%si)
 
 	# upd min
-	mov RTC_DATE_OFF_MIN(%si), %al
+	mov RTC_DATE_MIN(%si), %al
 	inc %al
-	mov %al, RTC_DATE_OFF_MIN(%si)
+	mov %al, RTC_DATE_MIN(%si)
 
 	# (min < 60) ? {done} : {zero}
 	cmp $0x3C, %al
 	jl .done
-	mov %ah, RTC_DATE_OFF_MIN(%si)
+	mov %ah, RTC_DATE_MIN(%si)
 
 	# upd hour
-	mov RTC_DATE_OFF_HOUR(%si), %al
+	mov RTC_DATE_HOUR(%si), %al
 	inc %al
-	mov %al, RTC_DATE_OFF_HOUR(%si)
+	mov %al, RTC_DATE_HOUR(%si)
 
 	# (hour < 24) ? {done} : {zero}
 	cmp $0x18, %al
 	jl .done
-	mov %ah, RTC_DATE_OFF_HOUR(%si)
+	mov %ah, RTC_DATE_HOUR(%si)
 
 	# TODO: call rtc_upd_day
 

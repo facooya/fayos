@@ -39,7 +39,7 @@ cmd_date:
 	mov %cl, %al
 	call putc
 
-	mov RTC_DATE_OFF_YEAR(%si), %al
+	mov RTC_DATE_YEAR(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp
@@ -59,7 +59,7 @@ cmd_date:
 	call putc
 
 	# { month
-	mov RTC_DATE_OFF_MONTH(%si), %al
+	mov RTC_DATE_MONTH(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp
@@ -79,7 +79,7 @@ cmd_date:
 	call putc
 
 	# { day
-	mov RTC_DATE_OFF_DAY(%si), %al
+	mov RTC_DATE_DAY(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp
@@ -101,7 +101,7 @@ cmd_date:
 	# { week
 	mov $.week, %di
 	xor %ax, %ax
-	mov RTC_DATE_OFF_WEEK(%si), %al
+	mov RTC_DATE_WEEK(%si), %al
 	dec %al
 	mov $0x04, %cx
 	mul %cx
@@ -118,7 +118,7 @@ cmd_date:
 	call putc
 
 	# { hour
-	mov RTC_DATE_OFF_HOUR(%si), %al
+	mov RTC_DATE_HOUR(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp
@@ -138,7 +138,7 @@ cmd_date:
 	call putc
 
 	# { min
-	mov RTC_DATE_OFF_MIN(%si), %al
+	mov RTC_DATE_MIN(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp
@@ -158,7 +158,7 @@ cmd_date:
 	call putc
 
 	# { sec
-	mov RTC_DATE_OFF_SEC(%si), %al
+	mov RTC_DATE_SEC(%si), %al
 	push %ax # (ub8 hex)
 	call ub8_h_to_d
 	add $0x02, %sp

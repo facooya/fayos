@@ -13,11 +13,11 @@ isr_rtc:
 	push %ax
 
 	# clr int
-	mov $(RTC_REG_C|RTC_NMI), %al
+	mov $(RTC_ADDR_REG_C|RTC_NMI), %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
-	mov $RTC_REG_D, %al
+	mov $RTC_ADDR_REG_D, %al
 	out %al, $RTC_PORT_ADDR
 	in $RTC_PORT_DATA, %al
 
