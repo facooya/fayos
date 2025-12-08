@@ -122,10 +122,11 @@ NMI: Non-Maskable Interrupt
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| ISR for RTC | [docs: isr rtc](/docs/int/isr_rtc.md) |
 | RTC Initialization | [docs: rtc init](/docs/drv/rtc/rtc_init.md) |
 | RTC get date | [docs: rtc get](/docs/drv/rtc/rtc_get.md) |
 | RTC update time | [docs: rtc update time](/docs/drv/rtc_upd_time.md) |
+| ISR for RTC | [docs: isr rtc](/docs/int/isr_rtc.md) |
+| Header for RTC | [docs: inc rtc](/docs/inc/rtc.md) |
 | External link, RTC standard document | [OSDev: rtc](https://wiki.osdev.org/RTC) |
 
 ---

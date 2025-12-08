@@ -68,10 +68,11 @@ Include some macros for check bit.
 ---
 
 ## Reference Links
-- [docs: ata register map](/docs/drv/ata/README.md#register-map)
-
-### External
-- [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
+| Description | Link |
+| --- | --- |
+| Parent document | [docs: ata](/docs/drv/ata/README.md) |
+| Register Map | [docs: ata register map](/docs/drv/ata/README.md#register-map) |
+| External link: standard document | [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode) |
 
 ---
 
