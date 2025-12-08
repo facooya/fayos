@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Real Time Clock] Update time
 
 .include "drv/rtc.s"
 .section .text

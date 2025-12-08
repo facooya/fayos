@@ -34,8 +34,8 @@ This document for RTC (Real Time Clock).
 | RTC initialization | `/drv/rtc/rtc_init.s` | [docs: rtc init](/docs/drv/rtc/rtc_init.md) |
 | RTC get date | `/drv/rtc/rtc_get.s` | [docs: rtc get](/docs/drv/rtc/rtc_get.md) |
 | RTC update time | `/drv/rtc/rtc_upd_time.s` | [docs: rtc upd time](/docs/drv/rtc/rtc_upd_time.md) |
-| Constants | `/inc/drv/rtc.s` | [docs: rtc header](docs/inc/drv/rtc.md) |
-| Handler for RTC | `/int/isr_rtc.s` | [docs: isr rtc](docs/int/isr_rtc.md) |
+| Constants | `/inc/drv/rtc.s` | [docs: rtc header](/docs/inc/drv/rtc.md) |
+| Handler for RTC | `/int/isr_rtc.s` | [docs: isr rtc](/docs/int/isr_rtc.md) |
 
 ---
 
@@ -122,6 +122,10 @@ NMI: Non-Maskable Interrupt
 ## Reference Links
 | Description | Link |
 | --- | --- |
+| ISR for RTC | [docs: isr rtc](/docs/int/isr_rtc.md) |
+| RTC Initialization | [docs: rtc init](/docs/drv/rtc/rtc_init.md) |
+| RTC get date | [docs: rtc get](/docs/drv/rtc/rtc_get.md) |
+| RTC update time | [docs: rtc update time](/docs/drv/rtc_upd_time.md) |
 | External link, RTC standard document | [OSDev: rtc](https://wiki.osdev.org/RTC) |
 
 ---

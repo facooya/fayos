@@ -6,8 +6,8 @@ Invoke by interrupt request. Using IRQ 14 line.
 
 ## Interrupt Reference
 ### Invoke
-1. `ata_read_sect`
-1. `ata_write_sect`
+- `ata_read_sect`
+- `ata_write_sect`
 
 ### Modifies
 - `ata_buf`

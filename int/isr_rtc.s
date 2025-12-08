@@ -36,7 +36,6 @@ isr_rtc:
 	call rtc_upd_time
 
 	xor %ax, %ax
-	inc %ax
 	mov %ax, (rtc_tick)
 	jmp .done
 
