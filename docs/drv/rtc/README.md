@@ -67,7 +67,7 @@ This document for RTC (Real Time Clock).
 | 0-6 | Register B | 0x0B | Configuration TF, DM, PIE |
 | 0-6 | Register C | 0x0C | Interrupt flag, Read to clear |
 | 0-6 | Register D | 0x0D | Only for NMI enable |
-| 7 | Non-Maskable Interrupt | 0=enable, 1=disable | Protect data from interrupt. Using like `REG_A|NMI` is access register A with NMI disable. |
+| 7 | Non-Maskable Interrupt | 0=enable, 1=disable | Protect data from NMI. Using like `REG_A|NMI` is access register A with NMI disable. |
 
 **Register A**
 | Bit | Name | Value | Description |
@@ -93,6 +93,19 @@ This document for RTC (Real Time Clock).
 ## Terms
 RTC: Real Time Clock
 NMI: Non-Maskable Interrupt
+BCD: Binary Code Decimal
+UIP: Update In Progress
+PIE: Perodic Interrup Enable
+
+DV: Divider
+RS: Rate Selector
+TF: Time Format
+DM: Data Mode
+
+sec: second
+min: minute
+addr: address
+reg: register
 
 ---
 
@@ -100,7 +113,7 @@ NMI: Non-Maskable Interrupt
 ### note-nmi
 NMI: Non-Maskable Interrupt
 - Q. Why set?
-- A. Set is disable for NMI bit. RTC process is address write after read/write data. If address value is 0x00 (second), Address value write done, Now read/wrie data. But trigger interrupt. In interrupt if `isr_rtc` change address value for `isr_rtc` require. And interrupt done for `isr_rtc`, If last address require is 0x01 (minute) address port is 0x01 and out interrupt. Keep read/write data for 0x00 (second) in function. But address value is 0x01 (minute), If read data for minute. So disable NMI bit.
+- A. Set is disable for NMI bit. RTC process is address write after read/write data. If address value is 0x00 (second), Address value write done, Now read/wrie data. But trigger NMI interrupt. It can change address value. So protect address port before read/write data from NMI.
 - Q. How to use?
 - A. Address port out before using `or`. Example, `REG_A|NMI` This is `0x0A or 0x80 = 0x8A`. Finally address value is 0x8A. This mean is Access register A with disable NMI bit.
 

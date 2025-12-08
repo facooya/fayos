@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Real Time Clock] Get date
 
 .include "chr.s"
 .include "drv/rtc.s"
@@ -11,7 +9,7 @@
 .global rtc_get
 
 # rtc_get()
-# <ret> rtc_date
+# <mod> rtc_date
 rtc_get:
 	push %di
 	mov $rtc_date, %di
