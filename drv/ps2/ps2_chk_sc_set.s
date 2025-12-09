@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Personal System 2] Check scan code set - only set 2
-
-# command list
-# https://wiki.osdev.org/PS/2_Keyboard#Commands
 
 .include "drv/ps2.s"
 .section .text
