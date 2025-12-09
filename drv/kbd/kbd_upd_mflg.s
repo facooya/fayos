@@ -19,7 +19,7 @@ kbd_upd_mflg:
 	mov %ax, %dx
 
 	# (sc == ext) ? {no_ext}
-	test $PS2_SC_BIT_EXT, %dh
+	test $PS2_SCF_EXT, %dh
 	jz .no_ext
 	mov $PS2_SC_EXT, %dh
 	mov %dh, (scan_code+0x01)
@@ -31,7 +31,7 @@ kbd_upd_mflg:
 
 .cont:
 	# (sc != brk) ? {set} : {clr}
-	test $PS2_SC_BIT_BRK, %ah
+	test $PS2_SCF_BRK, %ah
 	jz .set
 	jmp .clr
 

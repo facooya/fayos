@@ -10,19 +10,19 @@
 # ps2_xlate_off()
 ps2_xlate_off:
 	IBF
-	mov $PS2_READ_CONF_BYTE, %al
-	out %al, $PS2_CMD_REG
+	mov $PS2_CMD_READ_CONF, %al
+	out %al, $PS2_PORT_CMD
 
 	OBF
-	in $PS2_DATA_REG, %al # conf_byte
-	and $~PS2_XLATE_BIT, %al
+	in $PS2_PORT_DATA, %al
+	and $~PS2_CONF_XLATE, %al
 	mov %al, %ah
 
 	IBF
-	mov $PS2_WRITE_CONF_BYTE, %al
-	out %al, $PS2_CMD_REG
+	mov $PS2_CMD_WRITE_CONF, %al
+	out %al, $PS2_PORT_CMD
 
 	IBF
 	mov %ah, %al
-	out %al, $PS2_DATA_REG
+	out %al, $PS2_PORT_DATA
 	ret

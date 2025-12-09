@@ -7,7 +7,7 @@ Definition for Real Tiem Clock.
 > So it is different to standard.
 
 > [!NOTE]
-> **You can find standard ATA hardware reference here** [OSDev: rtc](https://wiki.osdev.org/RTC)
+> **You can find standard RTC hardware reference here** [OSDev: rtc](https://wiki.osdev.org/RTC)
 
 ---
 

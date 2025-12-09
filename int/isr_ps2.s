@@ -6,10 +6,10 @@
 .include "drv/ps2.s"
 .section .text
 .code16
-.global isr_kbd
+.global isr_ps2
 
 # irq 0x01
-isr_kbd:
+isr_ps2:
 	push %ax
 
 	# (init_flag != 0) ? {skip}
@@ -17,7 +17,7 @@ isr_kbd:
 	test %ax, %ax
 	jnz .skip
 
-	in $PS2_DATA_REG, %al
+	in $PS2_PORT_DATA, %al
 	cmp $PS2_SC_BRK, %al
 	je .brk
 	cmp $PS2_SC_EXT, %al
@@ -26,13 +26,13 @@ isr_kbd:
 
 .brk:
 	mov (scan_code+0x01), %ah
-	or $PS2_SC_BIT_BRK, %ah
+	or $PS2_SCF_BRK, %ah
 	mov %ah, (scan_code+0x01)
 	jmp .done
 
 .ext:
 	mov (scan_code+0x01), %ah
-	or $PS2_SC_BIT_EXT, %ah
+	or $PS2_SCF_EXT, %ah
 	mov %ah, (scan_code+0x01)
 	jmp .done
 
@@ -41,7 +41,7 @@ isr_kbd:
 	jmp .done
 
 .skip:
-	in $PS2_DATA_REG, %al
+	in $PS2_PORT_DATA, %al
 	jmp .done
 
 .done:

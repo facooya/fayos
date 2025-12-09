@@ -18,7 +18,7 @@ ivt_init:
 	mov %cs, %es:(0x0082)
 
 	# irq 1
-	mov $isr_kbd, %es:(0x0084)
+	mov $isr_ps2, %es:(0x0084)
 	mov %cs, %es:(0x0086)
 
 	# irq 8

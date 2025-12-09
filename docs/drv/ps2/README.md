@@ -53,9 +53,12 @@ This document for PS2 (Personal System 2).
 - OBF: Output Buffer Full
 - IBF: Input Buffer Full
 - SC: Scan Code
+- SCF: Scan Code Flag
+- SCS: Scan Code Set
 - KC: Key Code
 
 **Word**
+- ACK: Acknowledge
 - STAT: status
 - BRK: break
 - EXT: extend
@@ -86,7 +89,7 @@ This document for PS2 (Personal System 2).
 | PS2 translation bit off | [docs: ps2 xlate off](/docs/drv/ps2/ps2_xlate_off.md) |
 | PS2 check scan code set 2 | [docs: ps2 chk sc set](/docs/drv/ps2/ps2_chk_sc_set.md) |
 | Keyboard driver main document | [docs: keyboard](/docs/drv/kbd/README.md) |
-| External link: PS2 standard document | [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller)
+| External link: PS2 standard document | [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller) |
 
 ---
 

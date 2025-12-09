@@ -12,29 +12,29 @@ ps2_chk_sc_set:
 	xor %ax, %ax
 
 	IBF
-	mov $PS2_DIS_SCAN, %al
-	out %al, $PS2_DATA_REG
+	mov $PS2_DATA_DISABLE_SCAN, %al
+	out %al, $PS2_PORT_DATA
 	OBF
-	in $PS2_DATA_REG, %al # ok 0xFA
+	in $PS2_PORT_DATA, %al # ok 0xFA
 
 	IBF
-	mov $PS2_CUR_SC_SET, %al
-	out %al, $PS2_DATA_REG
+	mov $PS2_DATA_CUR_SCS, %al
+	out %al, $PS2_PORT_DATA
 	OBF
-	in $PS2_DATA_REG, %al # ok 0xFA
+	in $PS2_PORT_DATA, %al # ok 0xFA
 
 	IBF
-	mov $PS2_GET_SC_SET, %al
-	out %al, $PS2_DATA_REG
+	mov $PS2_DATA_GET_SCS, %al
+	out %al, $PS2_PORT_DATA
 	OBF
-	in $PS2_DATA_REG, %al # ok 0xFA
+	in $PS2_PORT_DATA, %al # ok 0xFA
 	OBF
-	in $PS2_DATA_REG, %al # sc_set
+	in $PS2_PORT_DATA, %al # sc_set
 	# TODO: log
 
 	IBF
-	mov $PS2_EN_SCAN, %al
-	out %al, $PS2_DATA_REG
+	mov $PS2_DATA_ENABLE_SCAN, %al
+	out %al, $PS2_PORT_DATA
 	OBF
-	in $PS2_DATA_REG, %al # ok 0xFA
+	in $PS2_PORT_DATA, %al # ok 0xFA
 	ret
