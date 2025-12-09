@@ -18,7 +18,7 @@ ps2_chk_sc_set:
 	in $PS2_PORT_DATA, %al # ok 0xFA
 
 	IBF
-	mov $PS2_DATA_CUR_SCS, %al
+	mov $PS2_DATA_GET_SET_SCS, %al
 	out %al, $PS2_PORT_DATA
 	OBF
 	in $PS2_PORT_DATA, %al # ok 0xFA

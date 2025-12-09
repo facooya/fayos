@@ -36,14 +36,14 @@ This document for PS2 (Personal System 2).
 > So table is different to standard.
 
 > [!NOTE]
-> **You can find standard RTC hardware reference here** [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller)
+> **You can find standard document here** [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller)
 
 **Port**
 | Name | Port | Byte | Mode |
 | :--- | :---: | :---: | :---: |
 | Data | 0x60 | 1 | IO |
-| Command | 0x64 | 1 | OUT |
 | Status | 0x64 | 1 | IN |
+| Command | 0x64 | 1 | OUT |
 
 ---
 
@@ -79,6 +79,9 @@ This document for PS2 (Personal System 2).
 ---
 
 ## Notes
+### Note Data Command
+- Q. What is data command?
+- A. Normal command into i8042 chip. But data command into device.
 
 ---
 
