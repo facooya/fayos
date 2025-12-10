@@ -167,8 +167,6 @@ int/ivt_init.s \
 int/isr_ps2.s \
 int/isr_rtc.s \
 int/isr_ata.s \
-\
-int/interrupt.s \
 
 # Library
 SRCS_LIB = \

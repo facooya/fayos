@@ -1,27 +1,43 @@
 # Readme for Driver
 ## Overview
-Driver for Fayos.
+Drivers for Fayos.
+
+---
+
+## Table of Contents
+- [Directory Structure](#directory-structure)
+- [Terms](#terms)
 
 ---
 
 ## Directory Structure
-| Directory Name | Description |
-| --- | --- |
-| `vga` | Video Graphic Array |
-| `ps2` | Personal System 2, IRQ 1 |
-| `rtc` | Real Time Clock, IRQ 8 |
-| `ata` | Advanced Technology Attachement, IRQ 14 |
-| `disp` | Display driver with VGA |
-| `kbd` | Keyboard driver with PS2 |
-| `disk` | Disk driver with ATA |
+| Name | Description | Link |
+| --- | --- | --- |
+| `vga` | Video Graphic Array | [docs: vga](/docs/drv/vga/README.md) |
+| `ps2` | Personal System 2, IRQ 1 | [docs: ps2](/docs/drv/ps2/README.md) |
+| `rtc` | Real Time Clock, IRQ 8 | [docs: rtc](/docs/drv/rtc/README.md) |
+| `ata` | Advanced Technology Attachement, IRQ 14 | [docs: ata](/docs/drv/ata/README.md) |
+| `disp` | Display driver with VGA | [docs: display](/docs/drv/disp/README.md) |
+| `kbd` | Keyboard driver with PS2 | [docs: keyboard](/docs/drv/kbd/README.md) |
+| `disk` | Disk driver with ATA | [docs: disk](/docs/drv/disk/README.md) |
 
 ---
 
-## Reference Links
-| Description | Link |
+## Terms
+**Attribute**
+| Name | Description |
 | --- | --- |
-| ATA Readme | [docs: ata](/docs/drv/ata/README.md) |
-| RTC Readme | [docs: rtc](/docs/drv/rtc/README.md) |
+| PS2 | Personal System 2 |
+| RTC | Real Time Clock |
+| ATA | Advanced Technology Attachment |
+| VGA | Viedo Graphic Array |
+| IRQ | Interrupt Request |
+
+**Word**
+| Name | Description |
+| --- | --- |
+| DISP | Display |
+| KBD | Keyboard |
 
 ---
 

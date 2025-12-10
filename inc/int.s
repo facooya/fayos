@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Interrupt] Constants
 
 # { PIC: Programmable Interrupt Controller
 # cmd: icw1, ocw2, ocw3

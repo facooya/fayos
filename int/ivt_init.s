@@ -13,10 +13,6 @@ ivt_init:
 	xor %ax, %ax
 	mov %ax, %es
 
-	# irq 0
-	mov $interrupt, %es:(0x0080)
-	mov %cs, %es:(0x0082)
-
 	# irq 1
 	mov $isr_ps2, %es:(0x0084)
 	mov %cs, %es:(0x0086)

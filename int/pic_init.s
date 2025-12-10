@@ -2,9 +2,6 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-# reference link
-# http://wiki.osdev.org/8259_PIC
-
 .include "int.s"
 .section .text
 .code16
@@ -46,27 +43,33 @@ pic_init:
 	# disable irq all
 	mov $IMR_INIT, %al
 	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
 	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 
 	# enable irq 1
 	in $PIC1_PORT_DATA, %al
 	and $~IMR_BIT_IRQ1, %al
 	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
 
 	# enable irq 2
 	in $PIC1_PORT_DATA, %al
 	and $~IMR_BIT_IRQ2, %al
 	out %al, $PIC1_PORT_DATA
+	out %al, $IO_WAIT
 
 	# enable irq 8
 	in $PIC2_PORT_DATA, %al
 	and $~IMR_BIT_IRQ8, %al
 	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 
 	# enable irq 14
 	in $PIC2_PORT_DATA, %al
 	and $~IMR_BIT_IRQ14, %al
 	out %al, $PIC2_PORT_DATA
+	out %al, $IO_WAIT
 	# }
 
 	ret
