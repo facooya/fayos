@@ -31,6 +31,10 @@ Check scan code set is 2. Generally keyboard using scan code set 2.
 1. Enable interrupt from ps2
     - wait ack read to clear
 
+| Description | Link |
+| --- | --- |
+| What is data command | [docs: ps2 data command](/docs/drv/ps2/README.md#note-data-command) |
+
 ---
 
 ## Reference Links

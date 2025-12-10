@@ -45,6 +45,17 @@ This document for PS2 (Personal System 2).
 | Status | 0x64 | 1 | IN |
 | Command | 0x64 | 1 | OUT |
 
+**Status**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0 | Output Buffer Full | 0=empty, 1=full | 1 is ready to read data or command. |
+| 1 | Input Buffer Full | 0=empty, 1=full | 0 is ready to write data or command. |
+
+**Configuration Byte**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 6 | Configuration translation | 0=disable, 1=enable | Translation bit in configuration byte. If translate enable scan code set 2 convert to scan code set 1. |
+
 ---
 
 ## Terms
@@ -81,7 +92,7 @@ This document for PS2 (Personal System 2).
 ## Notes
 ### Note Data Command
 - Q. What is data command?
-- A. Normal command into i8042 chip. But data command into device.
+- A. Normal command into I8042 chip. But data command into device.
 
 ---
 

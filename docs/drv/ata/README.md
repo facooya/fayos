@@ -47,7 +47,7 @@ This document for ATA (Advanced Technology Attachement).
 > [!NOTE]
 > **You can find standard ATA hardware reference here** [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
 
-**PORT**
+**Port**
 | Name | Port | Byte | Mode |
 | :--- | :---: | :---: | :---: |
 | Data | 0x01F0 | 2 | IO |
