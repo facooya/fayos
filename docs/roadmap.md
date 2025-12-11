@@ -1,12 +1,20 @@
 # Roadmap
 ## WIP
 - docs
+- - boot
+- - drv
 - - fs
+
+---
 
 ## PRIORITY
 
+---
+
 ## TODO
 - more date format
+
+---
 
 ## Feature
 - tab: autocomplete file or dir
@@ -21,6 +29,8 @@
 - scroll and restore many line feed
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 
+---
+
 ## Command
 - cp
 - mv
@@ -30,6 +40,10 @@
 - find
 - poweroff
 
+---
+
 ## Function
+
+---
 
 > Authors 2025 Facooya and Fanone Facooya

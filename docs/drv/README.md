@@ -27,16 +27,17 @@ Drivers for Fayos.
 **Attribute**
 | Name | Description |
 | --- | --- |
+| ATA | Advanced Technology Attachment |
+| IRQ | Interrupt Request |
 | PS2 | Personal System 2 |
 | RTC | Real Time Clock |
-| ATA | Advanced Technology Attachment |
 | VGA | Viedo Graphic Array |
-| IRQ | Interrupt Request |
 
 **Word**
 | Name | Description |
 | --- | --- |
 | DISP | Display |
+| DRV | Driver |
 | KBD | Keyboard |
 
 ---

@@ -1,21 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Make file for fayos.img
 
-# Don't reposition "boot/boot.s",
-# This file always first location in Fayos.
-# Boot start address - segment:offset = 0x0000:0x7C00
-BOOT_SRCS = \
+# boot group
+SRCS_GROUP_BOOT = \
 boot/boot.s \
 boot/boot_vga_puts.s \
 boot/boot_vga_clr.s \
 boot/boot_ata_read_sect.s
 
-# Don't reposition "kern/kern.s",
-# This file always first location in Fayos.
-# Kernel address - segment:offset = 0x0000:0x1000
+# kernel
 SRCS_KERN = \
 kern/kern.s \
 kern/kern_data.s \
@@ -35,7 +29,7 @@ kern/dbg/dbg_fsp.s \
 kern/dbg/num/dbg_num.s \
 kern/dbg/num/dbg_reg.s
 
-# File System
+# file system
 SRCS_FS = \
 fs/fs_data.s \
 fs/fs_open.s \
@@ -73,7 +67,7 @@ fs/fsp/fsp_read.s \
 fs/fsp/fsp_write.s \
 fs/fsp/fsp_blk_to_lba.s
 
-# Shell
+# shell
 SRCS_SH = \
 sh/arg/arg_data.s \
 sh/arg/arg_proc.s \
@@ -108,7 +102,7 @@ sh/cmd/dir/cmd_cd.s \
 sh/cmd/dir/cmd_mkdir.s \
 sh/cmd/dir/cmd_rmdir.s
 
-# Driver
+# driver
 SRCS_DRV = \
 drv/ata/ata_data.s \
 drv/ata/ata_init.s \
@@ -159,7 +153,7 @@ drv/rtc/rtc_init.s \
 drv/rtc/rtc_get.s \
 drv/rtc/rtc_upd_time.s
 
-# Interrupt
+# interrupt
 SRCS_INT = \
 int/pic_init.s \
 int/ivt_init.s \
@@ -168,7 +162,7 @@ int/isr_ps2.s \
 int/isr_rtc.s \
 int/isr_ata.s \
 
-# Library
+# library
 SRCS_LIB = \
 lib/file/fparse_lines.s \
 \
@@ -192,7 +186,8 @@ lib/regex/regex_name.s \
 lib/conv/ub8_h_to_d.s \
 lib/conv/ub8_d_to_c.s
 
-SRCS = \
+# kernel group
+SRCS_GROUP_KERN = \
 $(SRCS_KERN) \
 $(SRCS_FS) \
 $(SRCS_SH) \
@@ -200,10 +195,10 @@ $(SRCS_DRV) \
 $(SRCS_INT) \
 $(SRCS_LIB)
 
-BOOT_OBJS = $(BOOT_SRCS:%.s=./build/%.o)
-OBJS = $(SRCS:%.s=./build/%.o)
+OBJS_BOOT = $(SRCS_GROUP_BOOT:%.s=./build/%.o)
+OBJS_KERN = $(SRCS_GROUP_KERN:%.s=./build/%.o)
 
-# ALL
+# { command
 all: ./build/fayos.img
 
 ./build/fayos.img: ./build/boot.bin ./build/kern.bin | ./build/
@@ -211,11 +206,11 @@ all: ./build/fayos.img
 	dd if=./build/boot.bin of=./build/fayos.img bs=512 count=1 conv=notrunc
 	dd if=./build/kern.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
 
-./build/boot.bin: $(BOOT_OBJS) | ./build/
-	ld -T ./boot/boot.lds $(BOOT_OBJS) -o $@
+./build/boot.bin: $(OBJS_BOOT) | ./build/
+	ld -T ./boot/boot.lds $(OBJS_BOOT) -o $@
 
-./build/kern.bin: $(OBJS) | ./build/
-	ld -T ./kern/kern.lds $(OBJS) -o $@
+./build/kern.bin: $(OBJS_KERN) | ./build/
+	ld -T ./kern/kern.lds $(OBJS_KERN) -o $@
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)
@@ -224,13 +219,14 @@ all: ./build/fayos.img
 ./build/:
 	mkdir -p $@
 
-# CLEAN
 clean:
 	find ./build/ -name "*.bin" -delete
 	find ./build/ -name "*.o" -delete
+	find ./build/ -name "*.lock" -delete
 	find ./build/ -name "bochslog" -delete
 	find ./build/ -type d -empty -delete
 
 clean_all: clean
 	find ./build/ -name "*.img" -delete
 	find ./build/ -type d -empty -delete
+# }
