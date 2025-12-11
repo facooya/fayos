@@ -1,7 +1,6 @@
 # Roadmap
 ## WIP
 - docs
-- - int
 - - fs
 
 ## PRIORITY

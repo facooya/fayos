@@ -44,7 +44,7 @@ Initialization sequence: PIC (Programmable Interrupt Controller), IVT (Interrupt
 **Data**
 | Bit | Name | Value | Description |
 | :---: | --- | --- | --- |
-| 0 | ICW4 8086 | 0=8080, 1=8086 | CPU mode |
+| 0 | ICW4 MODE | 0=8080, 1=8086 | CPU mode |
 | 2 | ICW3 PIC1 PIC2 | 0=disable, 1=enable | Interrup request line 2 |
 
 **IMR of PIC1**
@@ -65,13 +65,14 @@ Initialization sequence: PIC (Programmable Interrupt Controller), IVT (Interrupt
 **Abbreviation**
 | Name | Description |
 | --- | --- |
-| ISR | Interrupt Service Routine |
-| PIC | Programmable Interrupt Controller |
-| IVT | Interrupt Vector Table |
-| ICW | Initialization Command Words |
-| OCW | Operation Command Words |
-| IMR | Interrup Mask Register |
 | EOI | End of Interrupt |
+| ICW | Initialization Command Words |
+| IMR | Interrup Mask Register |
+| IRQ | Interrupt Request |
+| IVT | Interrupt Vector Table |
+| ISR | Interrupt Service Routine |
+| OCW | Operation Command Words |
+| PIC | Programmable Interrupt Controller |
 
 ---
 
@@ -79,6 +80,8 @@ Initialization sequence: PIC (Programmable Interrupt Controller), IVT (Interrupt
 ### Note Data Port
 - Q. Why ICW2, ICW3, ICW4 commands using data port?
 - A. It is parameter command type. ICW1 initialization command with ICW4 need, It will read data port 3 byte. ICW1 expect ICW2, ICW3, ICW4 sequence.
+- Q. When using data port and command port?
+- A. Data port list: ICW2, ICW3, ICW4, OCW1, Command port list: ICW1, OCW2, OCW3
 
 ### Note IO Wait
 - Q. Why using IO wait?
@@ -109,6 +112,12 @@ So 0x84 is vector entry for IRQ 1.
 ## Reference Links
 | Description | Link |
 | --- | --- |
+| PIC Initialization | `/int/pic_init.s` | [docs: pic init](/docs/int/pic_init.md) |
+| IVT Initialization | `/int/ivt_init.s` | [docs: ivt init](/docs/int/ivt_init.md) |
+| ISR PS2 | `/int/isr_ps2.s` | [docs: isr ps2](/docs/int/isr_ps2.md) |
+| ISR RTC | `/int/isr_rtc.s` | [docs: isr rtc](/docs/int/isr_rtc.md) |
+| ISR ATA | `/int/isr_ata.s` | [docs: isr ata](/docs/int/isr_ata.md) |
+| Header for Interrupt | `/inc/int.s` | [docs: int header](/docs/inc/int.md) |
 | External link: pic standard document | [OSDev: pic](https://wiki.osdev.org/8259_PIC) |
 | External link: interrupt vector table | [OSDev: ivt](https://wiki.osdev.org/Interrupt_Vector_Table) |
 

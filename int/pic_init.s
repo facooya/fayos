@@ -28,7 +28,7 @@ pic_init:
 	mov $ICW3_PIC1_PIC2, %al
 	out %al, $PIC1_PORT_DATA
 	out %al, $IO_WAIT
-	mov $ICW3_PIC2_ID, %al
+	mov $ICW3_PIC2_IDX, %al
 	out %al, $PIC2_PORT_DATA
 	out %al, $IO_WAIT
 
@@ -41,7 +41,7 @@ pic_init:
 
 	# { ocw 1
 	# disable irq all
-	mov $IMR_INIT, %al
+	mov $IMR_IRQ_ALL, %al
 	out %al, $PIC1_PORT_DATA
 	out %al, $IO_WAIT
 	out %al, $PIC2_PORT_DATA
@@ -49,25 +49,25 @@ pic_init:
 
 	# enable irq 1
 	in $PIC1_PORT_DATA, %al
-	and $~IMR_BIT_IRQ1, %al
+	and $~IMR_IRQ1, %al
 	out %al, $PIC1_PORT_DATA
 	out %al, $IO_WAIT
 
 	# enable irq 2
 	in $PIC1_PORT_DATA, %al
-	and $~IMR_BIT_IRQ2, %al
+	and $~IMR_IRQ2, %al
 	out %al, $PIC1_PORT_DATA
 	out %al, $IO_WAIT
 
 	# enable irq 8
 	in $PIC2_PORT_DATA, %al
-	and $~IMR_BIT_IRQ8, %al
+	and $~IMR_IRQ8, %al
 	out %al, $PIC2_PORT_DATA
 	out %al, $IO_WAIT
 
 	# enable irq 14
 	in $PIC2_PORT_DATA, %al
-	and $~IMR_BIT_IRQ14, %al
+	and $~IMR_IRQ14, %al
 	out %al, $PIC2_PORT_DATA
 	out %al, $IO_WAIT
 	# }
