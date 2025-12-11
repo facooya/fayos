@@ -86,12 +86,31 @@ Initialization sequence: PIC (Programmable Interrupt Controller), IVT (Interrupt
 - Q. How many IO wait time?
 - A. Approximately 1 micro second.
 
+### Note remap
+- Q. Why remap to 0x20?
+- A. CPU using 0x00-0x1F, So remap to 0x20 for Fayos. This is base vector.
+
+### Note IVT
+- Q. Where is IVT memory?
+- A. [0x0000:0x0000-0x0000:0x03FF] is IVT area. Fayos using [0x0000:0x0080-0x0000:0x00BF].
+- Q. How to calculate interrupt vector?
+- A. Formula: `(base_vactor + irq_line_num) * addr_size = vector_entry`.
+Example for IRQ 1 in Fayos:
+| Type | Value |
+| --- | --- |
+| Decimal | `(32 + 1) * 4 = 132` |
+| Hexadecimal | `(0x20 + 0x01) * 0x04 = 0x84` |
+So 0x84 is vector entry for IRQ 1.
+- Q. What indicate?
+- A. ISR address (seg:off) write in vector entry, `vector_entry+2:vector_entry -> isr_seg:isr_off`. Vector entry pointer to ISR.
+
 ---
 
 ## Reference Links
-| Name | Description |
+| Description | Link |
 | --- | --- |
 | External link: pic standard document | [OSDev: pic](https://wiki.osdev.org/8259_PIC) |
+| External link: interrupt vector table | [OSDev: ivt](https://wiki.osdev.org/Interrupt_Vector_Table) |
 
 ---
 

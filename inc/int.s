@@ -36,5 +36,9 @@
 .equ IMR_BIT_IRQ14, (0x01<<0x06)
 # }
 
+.equ IVT_ENT_IRQ1, ((ICW2_PIC1 + 0x01) * 0x04)
+.equ IVT_ENT_IRQ8, ((ICW2_PIC1 + 0x08) * 0x04)
+.equ IVT_ENT_IRQ14, ((ICW2_PIC1 + 0x0E) * 0x04)
+
 .equ EOI, 0x20 # end of interrupt
 .equ IO_WAIT, 0x80

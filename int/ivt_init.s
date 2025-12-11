@@ -2,6 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
+.include "int.s"
 .section .text
 .code16
 .global ivt_init
@@ -14,16 +15,16 @@ ivt_init:
 	mov %ax, %es
 
 	# irq 1
-	mov $isr_ps2, %es:(0x0084)
-	mov %cs, %es:(0x0086)
+	mov %cs, %es:(IVT_ENT_IRQ1+0x02)
+	mov $isr_ps2, %es:(IVT_ENT_IRQ1)
 
 	# irq 8
-	mov $isr_rtc, %es:(0x00A0)
-	mov %cs, %es:(0x00A2)
+	mov %cs, %es:(IVT_ENT_IRQ8+0x02)
+	mov $isr_rtc, %es:(IVT_ENT_IRQ8)
 
 	# irq 14
-	mov $isr_ata, %es:(0x00B8)
-	mov %cs, %es:(0x00BA)
+	mov %cs, %es:(IVT_ENT_IRQ14+0x02)
+	mov $isr_ata, %es:(IVT_ENT_IRQ14)
 
 	pop %es
 	ret

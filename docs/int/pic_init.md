@@ -39,15 +39,16 @@ Initialization for PIC (Programmable Interrupt Controller).
 1. OCW1: enable for using irq lines
     - data port (pic1 or pic2)
 
-| Name | Description |
+| Description | Link |
 | --- | --- |
 | Why using data port | [docs: int](/docs/int/README.md#note-data-port) |
 | Why IO wait | [docs: int](/docs/int/README.md#note-io-wait) |
+| Why remap | [docs: int](/docs/int/README.md#note-remap) |
 
 ---
 
 ## Reference Links
-| Name | Description |
+| Description | Link |
 | --- | --- |
 | Main document for interrupt | [docs: int](/docs/int/README.md) |
 | External link: pic standard document | [OSDev: pic](https://wiki.osdev.org/8259_PIC) |

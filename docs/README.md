@@ -29,7 +29,7 @@ Every files follow the documentation rules, Examples:
 
 ## Memory Map
 ### Conventional Memory
-- BIOS Interrupt Vector Table: 0x00 - 0x03FF
+- BIOS Interrupt Vector Table: 0x0000 - 0x03FF
 - BIOS Data Area: 0x0400 - 0x04FF
 - Free Memory: 0x0500 - 0x9FBF
 - Extended BIOS Data Area: 0x9FC0 - 0x9FFF
@@ -51,6 +51,8 @@ Examples:
 - - (0x1000 * 0x10) + 0xABCD = 0x010000 + 0xABCD = 0x01ABCD
 
 ### Fayos
+Reserved for IVT: 0x0080-0x00BF
+
 Conventional Free Memory: [0x0500-0x9FBF]
 - padding for superblock: 0x0500-0x05FF
 - superblock: 0x0600-0x07FF
