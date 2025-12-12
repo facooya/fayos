@@ -1,11 +1,12 @@
 # Readme for Makefile
 ## Overview
-Make file for `fayos.img`.
+Build for `fayos.img`.
 
 ---
 
 ## Table of Contents
 - [Commands](#commands)
+- [Process Flow](#process-flow)
 - [Terms](#terms)
 - [Notes](#notes)
 - [Reference Links](#reference-links)
@@ -13,9 +14,25 @@ Make file for `fayos.img`.
 ---
 
 ## Commands 
-- `make` or `make all`: Build for make Fayos image file.
-- `make clean`: remove all except `fayos.img` in build directory.
-- `make clean_all`: remove all, include build directory.
+| Command | Description |
+| --- | --- |
+| `make`, `make all` | Build for Fayos image file, Auto generate files and directories in build directory for build. |
+| `make clean` | Remove all for auto generate files and directories by build except Fayos image file in build directory. |
+| `make clean_all` | Remove all for auto generate files and directories by build include build directory. |
+
+---
+
+## Syntax Reference
+| Syntax | Description |
+| --- | --- |
+| `$`, `$()` | Variable. Only 1 letter possible using `$`. |
+| `%` | Pattern wildcard |
+| `$@` | Variable type, Equal to `$(@)`. Example: `A: B`, Indicate A |
+| `$^` | Variable type, Equal to `$(^)`. Example: `A: B`, Indicate B |
+
+| Description | Link |
+| --- | --- |
+| External link: standard document for make | [GNU: make](https://www.gnu.org/savannah-checkouts/gnu/make/manual/make.html) |
 
 ---
 
@@ -72,9 +89,10 @@ And keep first `SRCS_KERN` in `SRCS_GROUP_KERN`.
 ---
 
 ## Reference Links
-| Name | Description |
+| Description | Link |
 | --- | --- |
 | Main document for entire | [docs: readme](/docs/README.md) |
+| External link: standard document for make | [GNU: make](https://www.gnu.org/savannah-checkouts/gnu/make/manual/make.html) |
 
 ---
 

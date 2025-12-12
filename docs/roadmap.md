@@ -4,6 +4,7 @@
 - - boot
 - - drv
 - - fs
+- - inspection
 
 ---
 

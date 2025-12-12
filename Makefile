@@ -2,6 +2,11 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
+# config
+FAYOS_IMG = ./build/fayos.img
+BOOT_BIN = ./build/boot.bin
+KERN_BIN = ./build/kern.bin
+
 # boot group
 SRCS_GROUP_BOOT = \
 boot/boot.s \
@@ -195,26 +200,27 @@ $(SRCS_DRV) \
 $(SRCS_INT) \
 $(SRCS_LIB)
 
+# objects
 OBJS_BOOT = $(SRCS_GROUP_BOOT:%.s=./build/%.o)
 OBJS_KERN = $(SRCS_GROUP_KERN:%.s=./build/%.o)
 
 # { command
-all: ./build/fayos.img
+all: $(FAYOS_IMG)
 
-./build/fayos.img: ./build/boot.bin ./build/kern.bin | ./build/
-	dd if=/dev/zero of=./build/fayos.img bs=512 count=20480
-	dd if=./build/boot.bin of=./build/fayos.img bs=512 count=1 conv=notrunc
-	dd if=./build/kern.bin of=./build/fayos.img bs=512 seek=16 conv=notrunc
+$(FAYOS_IMG): $(BOOT_BIN) $(KERN_BIN) | ./build/
+	dd if=/dev/zero of=$(FAYOS_IMG) bs=512 count=20480
+	dd if=$(BOOT_BIN) of=$(FAYOS_IMG) bs=512 count=1 conv=notrunc
+	dd if=$(KERN_BIN) of=$(FAYOS_IMG) bs=512 seek=16 conv=notrunc
 
-./build/boot.bin: $(OBJS_BOOT) | ./build/
-	ld -T ./boot/boot.lds $(OBJS_BOOT) -o $@
+$(BOOT_BIN): $(OBJS_BOOT) | ./build/
+	ld -T ./boot/boot.lds $^ -o $@
 
-./build/kern.bin: $(OBJS_KERN) | ./build/
-	ld -T ./kern/kern.lds $(OBJS_KERN) -o $@
+$(KERN_BIN): $(OBJS_KERN) | ./build/
+	ld -T ./kern/kern.lds $^ -o $@
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)
-	as --32 -Iinc $< -o $@
+	as --32 -Iinc $^ -o $@
 
 ./build/:
 	mkdir -p $@
