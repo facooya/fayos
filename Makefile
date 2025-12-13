@@ -6,6 +6,7 @@
 FAYOS_IMG = ./build/fayos.img
 BOOT_BIN = ./build/boot.bin
 KERN_BIN = ./build/kern.bin
+TOT_SECT_CNT = 20480
 
 # boot group
 SRCS_GROUP_BOOT = \
@@ -208,19 +209,19 @@ OBJS_KERN = $(SRCS_GROUP_KERN:%.s=./build/%.o)
 all: $(FAYOS_IMG)
 
 $(FAYOS_IMG): $(BOOT_BIN) $(KERN_BIN) | ./build/
-	dd if=/dev/zero of=$(FAYOS_IMG) bs=512 count=20480
+	dd if=/dev/zero of=$(FAYOS_IMG) bs=512 count=$(TOT_SECT_CNT)
 	dd if=$(BOOT_BIN) of=$(FAYOS_IMG) bs=512 count=1 conv=notrunc
 	dd if=$(KERN_BIN) of=$(FAYOS_IMG) bs=512 seek=16 conv=notrunc
 
 $(BOOT_BIN): $(OBJS_BOOT) | ./build/
-	ld -T ./boot/boot.lds $^ -o $@
+	ld -T ./boot/boot.lds -o $@ $^
 
 $(KERN_BIN): $(OBJS_KERN) | ./build/
-	ld -T ./kern/kern.lds $^ -o $@
+	ld -T ./kern/kern.lds -o $@ $^
 
 ./build/%.o: %.s | ./build/
 	mkdir -p $(dir $@)
-	as --32 -Iinc $^ -o $@
+	as --32 -Iinc -o $@ $^
 
 ./build/:
 	mkdir -p $@
