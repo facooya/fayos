@@ -2,8 +2,6 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright 2025 Facooya and Fanone Facooya
- *
- * Linker description script for boot
  */
 
 OUTPUT_FORMAT(binary)
