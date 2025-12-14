@@ -47,13 +47,15 @@ Quick execute:
 ```bash
 ./tools/qemu.sh
 ```
-The `./tools/qemu.sh` for **amd64** architecture.
 
 Manual execute:
 ```bash
-qemu-system-x86_64 -drive format=raw,file=./build/fayos.img
+qemu-system-i386 [OPTIONS]
 ```
-- `qemu-system-[architecture] -drive format=raw,file=[path].img`
+
+```bash
+qemu-system-i386 -drive file=[path].img,format=raw -rtc base=localtime
+```
 
 Follow the **Command List** section.
 
@@ -70,9 +72,13 @@ Quick execute:
 - Bochs log default path: `build/bochslog`
 
 Manual execute:
+```bash
+bochs [OPTIONS]
+```
+
 Modify `tools/bochsrc` file if you need.
 ```bash
-bochs -q -f ./tools/bochsrc
+bochs -f ./tools/bochsrc
 ```
 
 Follow the **Command List** section.

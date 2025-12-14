@@ -1,6 +1,6 @@
 # Bochs
 ## Overview
-Execute Fayos in Bochs
+Shell script to execute Fayos in Bochs.
 
 ---
 
@@ -24,6 +24,15 @@ Execute Fayos in Bochs
 | `boot` | `boot: TYPE` | Boot. Set for Fayos `boot: disk`. |
 | `clock` | `clock: PROP...` | Set clock. Set for Fayos `clock: sync=slowdown, time0=local, rtc_sync=1`. |
 | `log` | `log: FILE` | Log file. Set for Fayos `log: ../build/bochslog`. |
+
+---
+
+## Reference Links
+| Description | Link |
+| --- | --- |
+| Main document for tools | [docs: tools](/docs/tools/README.md) |
+| Main document for build | [docs: makefile](/docs/Makefile.md) |
+| Note for Bochs | [docs: note bochs](/docs/tools/README.md#note-bochs) |
 
 ---
 
