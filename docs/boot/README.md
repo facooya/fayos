@@ -1,6 +1,6 @@
 # Readme for Boot
 ## Overview
-Bootloader for Fayos.
+Boot for Fayos.
 Display contol with direct VGA access memory.
 Kernel sectors read with ATA PIO mode polling method.
 Write the boot signature via linker script.
@@ -10,6 +10,7 @@ After kernel jump, Boot done.
 
 ## Table of Contents
 - [Module Map](#module-map)
+- [Memory Map](#memory-map)
 - [Terms](#terms)
 - [Notes](#notes)
 - [Reference Links](#reference-links)
@@ -25,6 +26,16 @@ After kernel jump, Boot done.
 | VGA put sting in boot | `/boot/boot_vga_puts.s` | [docs: boot vga puts](/docs/boot/boot_vga_puts.md) |
 | Header for bootloader | `/inc/boot.s` | [docs: boot header](/docs/inc/boot.md) |
 | Linker script for boot | `/boot/boot.lds` | [docs: linker for boot](#note-linker-script) |
+
+---
+
+## Memory Map
+**Base Segment: 0x0000**.
+| Memory | Description |
+| --- | --- |
+| `0x7000-0x7BFF` | Stack memory Stack start `0x7C00`. Supports 1546 stacks. Stack segment always 0. |
+| `0x7C00-0x7DFF` | Bootloader memory |
+| `0x1000-0x6FFF` | Kernel memory |
 
 ---
 
@@ -53,6 +64,12 @@ Set start section is `0x7C00`. Sections layout `text, rodata, data, bss`. And se
 
 ### Note Clear Interrupt
 Disable interrupt in bootloader. And enable interrupt when initialization logic end.
+
+### Note Stack
+Example: `sp = 0x7C00`.
+The `push %ax` stack pointer auto decrease 2-byte `sp = 0x7BFE`. So `(0x7BFE) = ax value`.
+The `pop %ax` get value and current stack pointer auto increase 2-byte.
+If nessless `ax` value, Manualy add 2-byte to stack pointer for clean like `add $0x02, %sp` instead of `pop`.
 
 ---
 

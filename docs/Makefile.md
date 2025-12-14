@@ -27,8 +27,8 @@ Build for Fayos.
 ## Module Map
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
-| Link editor script for boot | `/boot/boot.lds` | [docs: boot linker](/docs/boot/boot_lds.md) |
-| Link editor script for kernel | `/kern/kern.lds` | [docs: kernel linker](/docs/kern/kern_lds.md) |
+| Link editor script for boot | `/boot/boot.lds` | [docs: boot linker](/docs/boot/README.md#note-linker-script) |
+| Link editor script for kernel | `/kern/kern.lds` | [docs: kernel linker](/docs/kern/README.md#note-linker-script) |
 | Execute Fayos in Quick Emulator | `/tools/qemu.sh` | [docs: qemu](/docs/tools/qeum.md) |
 | Execute Fayos in Bochs | `/tools/bochs.sh` | [docs: bochs](/docs/tools/bochs.md) |
 
