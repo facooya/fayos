@@ -1,2 +1,2 @@
 #!/bin/sh
-qemu-system-x86_64 -drive format=raw,file=./build/fayos.img -rtc base=localtime
+qemu-system-i386 -drive file=./build/fayos.img,format=raw -rtc base=localtime
