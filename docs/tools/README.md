@@ -7,8 +7,8 @@ Readme for tools.
 ## File List
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
-| Emulator for QEMU | `/tools/qemu.sh` | [docs: qemu](/docs/tools/qemu.md) |
-| Emulator for Bochs | `/tools/bochs.sh` | [docs: bochs](/docs/tools/bochs.md) |
+| Execute Fayos in QEMU | `/tools/qemu.sh` | [docs: qemu](/docs/tools/qemu.md) |
+| Execute Fayos in Bochs | `/tools/bochs.sh` | [docs: bochs](/docs/tools/bochs.md) |
 | Run commands for Bochs | `/tools/bochsrc` | [docs: bochs](/docs/tools/bochs.md) |
 
 ---
