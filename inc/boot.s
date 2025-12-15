@@ -22,7 +22,7 @@
 .equ VGA_CMD_CURS_POS_HI, 0x0E
 .equ VGA_CMD_CURS_POS_LO, 0x0F
 
-.equ VGA_CONF_BG, 0x07
+.equ VGA_ATTR_COLOR, 0x07
 # }
 
 # disp

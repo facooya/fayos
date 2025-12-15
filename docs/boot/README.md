@@ -51,6 +51,7 @@ After kernel jump, Boot done.
 | CLI | Clear Interrupt |
 | LBA | Logical Block Address |
 | BG | Backgroud |
+| FG | Foreground |
 
 ---
 

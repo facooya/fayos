@@ -55,8 +55,8 @@ boot_vga_puts:
 	mov %al, %es:(%di)
 	add $0x01, %di
 
-	# conf
-	mov $VGA_CONF_BG, %al
+	# attr
+	mov $VGA_ATTR_COLOR, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 
