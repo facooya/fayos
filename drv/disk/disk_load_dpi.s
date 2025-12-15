@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Disk] Load memory for immutable disk packet
 
 .include "drv/disk.s"
 .section .text

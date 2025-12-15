@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Disk] Constants
 
 .equ DISK_SB_SECT_CNT, 0x01
 .equ DISK_SB_LBA, 0x0001
@@ -20,7 +18,7 @@
 .equ DISK_BASE_MEM, 0x10002000
 .equ DISK_HIST_MEM, 0x10003000
 
-# Disk packet
+# disk packet
 .equ DP_SIZE, 0x08
 
 .equ DPI_OFF_SB, 0x00
