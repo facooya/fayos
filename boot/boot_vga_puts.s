@@ -7,13 +7,13 @@
 .code16
 .global boot_vga_puts
 
-# boot_vga_puts(&str)
+# boot_vga_puts(ub8 *str)
 boot_vga_puts:
 	push %bp
 	mov %sp, %bp
 	push %es
 
-	mov 0x04(%bp), %si
+	mov 0x04(%bp), %si # (*str)
 
 	# init
 	mov $(VGA_MEM>>0x10), %ax
@@ -60,13 +60,12 @@ boot_vga_puts:
 	mov %al, %es:(%di)
 	add $0x01, %di
 
-	# {lp}
 	add $0x01, %si
 	add $0x01, %cx # pos
 	jmp .lp
 
 .nl:
-	# {{{ newline
+	# { newline
 	push %cx
 	mov $DISP_ADDR_COL, %bx
 	mov (%bx), %cx # col
@@ -81,7 +80,7 @@ boot_vga_puts:
 	add %cx, %di
 
 	pop %cx
-	# }}}
+	# }
 
 	# curs pos
 	mov %di, %ax

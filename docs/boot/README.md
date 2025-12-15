@@ -50,6 +50,11 @@ After kernel jump, Boot done.
 | CLD | Clear Direction |
 | CLI | Clear Interrupt |
 | LBA | Logical Block Address |
+| MA | Master |
+| STAT | Status |
+| SECT | Sector |
+| CMD | Command |
+| DRQ | Data Request |
 | BG | Backgroud |
 | FG | Foreground |
 
