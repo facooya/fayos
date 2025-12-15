@@ -121,7 +121,7 @@ This document for ATA (Advanced Technology Attachement).
 ---
 
 ## Notes
-### note-delay-400ns
+### Note Delay 400ns
 The "ns" is nano second.
 - Q. Why 400ns?
 - A. Hardware ready time least wait 400ns. CPU is so fast.
@@ -130,7 +130,7 @@ The "ns" is nano second.
 - Q. How make 400ns?
 - A. `in $STAT_REG, %al` is `in $0x01F7, %al` or `in $0x03F6, %al`. 0x01F7 port is status register and 0x03F6 is alternate status register. So 1 time `in $STAT_REG, %al` is 100ns. Include 4 times it is 400ns.
 
-### note-nien
+### Note nIEN
 nIEN: negative interrupt enable
 - Q. Why using `nIEN`?
 - A. Turn off interrupt using `cli` is clear interrupt. But steel have inetrrupt signal write ISR. So turn on interrupt using `sti` go to interrupt handler. But using `nIEN` is turn off interrupt signal. ISR don't know signal even if status is `sti`. So no interrupt request signal.

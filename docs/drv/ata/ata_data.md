@@ -5,7 +5,7 @@ Definition data for ATA.
 ---
 
 ## Data Reference
-| Name | Size (byte) |Description |
+| Name | Size (byte) | Description |
 | --- | --- | --- |
 | `ata_buf` | 6 | Set by read/write sectors functions. Reference and modified by ISR the name is `isr_ata`. |
 

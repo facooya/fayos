@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Disk] Set immutable disk packet
 
 .include "drv/disk.s"
 .include "fs/sb.s"
@@ -11,7 +9,7 @@
 .global disk_set_dpi
 
 # disk_set_dpi()
-# <mod:dpi>
+# <mod> dpi
 disk_set_dpi:
 	push %es
 	push %si
