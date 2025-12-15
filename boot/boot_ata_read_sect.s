@@ -12,38 +12,52 @@
 # boot_ata_read_sect()
 boot_ata_read_sect:
 	# set mode
-	mov $ATA_DRV_REG, %dx
-	mov $ATA_DRV_SET, %al # 0b11100000
+	mov $ATA_PORT_DRV, %dx
+	mov $ATA_DRV_MA_LBA, %al
 	out %al, %dx
 
+	# delay 400ns
+	mov $ATA_PORT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+
 	# sector count
-	mov $ATA_SECT_CNT_REG, %dx
+	mov $ATA_PORT_SECT_CNT, %dx
 	mov $KERN_SECT_CNT, %al
 	mov $KERN_SECT_CNT, %bx
 	out %al, %dx
 
-	# {{{ LBA
-	mov $ATA_LBA_LO_REG, %dx
-	mov $KERN_LBA_LO, %al
+	# { lba
+	mov $ATA_PORT_LBA_LO, %dx
+	mov $KERN_LBA, %ax
 	out %al, %dx
 
-	mov $ATA_LBA_MID_REG, %dx
-	mov $KERN_LBA_MID, %al
+	mov $ATA_PORT_LBA_MID, %dx
+	mov %ah, %al
 	out %al, %dx
 
-	mov $ATA_LBA_HI_REG, %dx
-	mov $KERN_LBA_HI, %al
+	mov $ATA_PORT_LBA_HI, %dx
+	xor %ax, %ax
 	out %al, %dx
-	# }}}
+	# }
 
 	# read
-	mov $ATA_CMD_REG, %dx
+	mov $ATA_PORT_CMD, %dx
 	mov $ATA_CMD_READ, %al
 	out %al, %dx
+
+	# delay 400ns
+	mov $ATA_PORT_STAT, %dx
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
+	in %dx, %al
 	jmp .drq__lp
 
 .sect__lp:
-	mov $ATA_STAT_REG, %dx
+	mov $ATA_PORT_STAT, %dx
 
 .drq__lp:
 	in %dx, %al
@@ -52,8 +66,8 @@ boot_ata_read_sect:
 
 	# TODO: error
 
-	mov $ATA_DATA_REG, %dx
-	mov $SECT_SIZE_WORD, %cx
+	mov $ATA_PORT_DATA, %dx
+	mov $ATA_SECT_SIZE_WORD, %cx
 	sub $0x01, %bx # sector count
 
 .data__lp:
@@ -65,7 +79,6 @@ boot_ata_read_sect:
 	in %dx, %ax
 	mov %ax, %es:(%di)
 
-	# {lp}
 	sub $0x01, %cx
 	add $0x02, %di
 	jmp .data__lp

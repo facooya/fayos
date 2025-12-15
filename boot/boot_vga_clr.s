@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Clear display in bootloader
 
 .include "boot.s"
 .section .text
@@ -13,19 +11,19 @@
 boot_vga_clr:
 	push %es
 
-	# vid init
-	mov $VID_MEM_SEG, %ax
+	# init
+	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	xor %di, %di
+	mov $(VGA_MEM&0xFFFF), %di
 
-	# {{{ get disp
+	# { get disp
 	xor %dx, %dx
-	mov $DISP_MEM_ROW, %bx
+	mov $DISP_ADDR_ROW, %bx
 	mov (%bx), %dl
 
-	mov $DISP_MEM_COL, %bx
+	mov $DISP_ADDR_COL, %bx
 	mov (%bx), %ax
-	# }}}
+	# }
 
 	mul %dx
 	mov %ax, %cx
@@ -41,7 +39,7 @@ boot_vga_clr:
 	add $0x01, %di
 
 	# conf
-	mov $CONF_BG, %al
+	mov $VGA_CONF_BG, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 
@@ -50,21 +48,21 @@ boot_vga_clr:
 	jmp .lp
 
 .done:
-	# {{{ set curs
-	mov $CURS_POS_HI, %al
-	mov $CURS_CMD_REG, %dx
+	# { set curs
+	mov $VGA_CMD_CURS_POS_HI, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	xor %al, %al
 	out %al, %dx
 
-	mov $CURS_POS_LO, %al
-	mov $CURS_CMD_REG, %dx
+	mov $VGA_CMD_CURS_POS_LO, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	xor %al, %al
 	out %al, %dx
-	# }}}
+	# }
 
 	pop %es
 	ret

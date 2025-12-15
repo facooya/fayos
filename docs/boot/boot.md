@@ -53,8 +53,10 @@ Write the boot signature via linker script.
 ## Reference Links
 | Description | Link |
 | --- | --- |
+| Header for bootloader | [docs: boot header](/docs/inc/boot.md) |
 | Main doucment for boot | [docs: boot](/docs/boot/README.md) |
 | Main document for kernel | [docs: kernel](/docs/kern/README.md) |
+| Main document for Fayos | [docs: fayos](/docs/README.md) |
 
 ---
 

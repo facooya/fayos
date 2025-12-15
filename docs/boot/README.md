@@ -49,6 +49,8 @@ After kernel jump, Boot done.
 | BSS | Block Started by Symbol |
 | CLD | Clear Direction |
 | CLI | Clear Interrupt |
+| LBA | Logical Block Address |
+| BG | Backgroud |
 
 ---
 
@@ -76,6 +78,7 @@ If nessless `ax` value, Manualy add 2-byte to stack pointer for clean like `add 
 ## Reference Links
 | Description | Link |
 | --- | --- |
+| Main document for Fayos | [docs: fayos](/docs/README.md) |
 | Main doucment for kernel | [docs: kernel](/docs/kern/kern.md) |
 
 ---

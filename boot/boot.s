@@ -32,6 +32,6 @@ _start:
 	add $0x02, %sp
 
 	# kernel
-	mov $KERN_OFF, %di
+	mov $(KERN_MEM&0xFFFF), %di
 	call boot_ata_read_sect
-	ljmp $KERN_SEG, $KERN_OFF
+	ljmp $(KERN_MEM>>0x10), $(KERN_MEM&0xFFFF)

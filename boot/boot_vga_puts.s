@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Put string in bootloader
 
 .include "boot.s"
 .section .text
@@ -17,23 +15,23 @@ boot_vga_puts:
 
 	mov 0x04(%bp), %si
 
-	# vid init
-	mov $VID_MEM_SEG, %ax
+	# init
+	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	xor %di, %di
+	mov $(VGA_MEM&0xFFFF), %di
 
-	# {{{ get curs
-	mov $CURS_POS_HI, %al
-	mov $CURS_CMD_REG, %dx
+	# { get curs
+	mov $VGA_CMD_CURS_POS_HI, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	in %dx, %al
 	mov %al, %ah
 
-	mov $CURS_POS_LO, %al
-	mov $CURS_CMD_REG, %dx
+	mov $VGA_CMD_CURS_POS_LO, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	in %dx, %al
 
 	# skip outc, conf
@@ -41,7 +39,7 @@ boot_vga_puts:
 	add %ax, %di
 
 	mov %ax, %cx # pos
-	# }}}
+	# }
 
 .lp:
 	# (chr == null) ? {end}
@@ -58,7 +56,7 @@ boot_vga_puts:
 	add $0x01, %di
 
 	# conf
-	mov $CONF_BG, %al
+	mov $VGA_CONF_BG, %al
 	mov %al, %es:(%di)
 	add $0x01, %di
 
@@ -70,7 +68,7 @@ boot_vga_puts:
 .nl:
 	# {{{ newline
 	push %cx
-	mov $DISP_MEM_COL, %bx
+	mov $DISP_ADDR_COL, %bx
 	mov (%bx), %cx # col
 
 	xor %dx, %dx
@@ -96,21 +94,21 @@ boot_vga_puts:
 	jmp .lp
 
 .done:
-	# {{{ set curs
-	mov $CURS_POS_HI, %al
-	mov $CURS_CMD_REG, %dx
+	# { set curs
+	mov $VGA_CMD_CURS_POS_HI, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	mov %ch, %al
 	out %al, %dx
 
-	mov $CURS_POS_LO, %al
-	mov $CURS_CMD_REG, %dx
+	mov $VGA_CMD_CURS_POS_LO, %al
+	mov $VGA_PORT_CURS_CMD, %dx
 	out %al, %dx
-	mov $CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	mov %cl, %al
 	out %al, %dx
-	# }}}
+	# }
 
 	pop %es
 	pop %bp
