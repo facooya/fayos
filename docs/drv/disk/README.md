@@ -1,6 +1,6 @@
 # Readme for Disk
 ## Overview
-Disk driver. Logic base the ATA (Advanced Technology Attachement) .
+Disk driver. Logic base the ATA (Advanced Technology Attachement).
 
 ---
 
@@ -31,6 +31,15 @@ Disk driver. Logic base the ATA (Advanced Technology Attachement) .
 | DP | Disk Packet |
 | DPI | Disk Packet Immutable |
 | FSP | File System Packet |
+| SB | Superblock |
+| BBM | Block Bitmap |
+| IBM | Inum Bitmap |
+| IT | Inode Table |
+| CUR | Current |
+| PAR | Parent |
+| TMP | Temporary |
+| LBA | Logical Block Address |
+| HIST | History |
 
 ---
 

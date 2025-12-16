@@ -2,10 +2,12 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
+# common
 .equ DISK_SB_SECT_CNT, 0x01
 .equ DISK_SB_LBA, 0x0001
 .equ DISK_BLK_SECT_CNT, 0x08
 
+# memory
 .equ DISK_SB_MEM, 0x00000600
 .equ DISK_BBM_MEM, 0x0000A000
 .equ DISK_IBM_MEM, 0x0000B000
@@ -18,7 +20,7 @@
 .equ DISK_BASE_MEM, 0x10002000
 .equ DISK_HIST_MEM, 0x10003000
 
-# disk packet
+# { disk packet
 .equ DP_SIZE, 0x08
 
 .equ DPI_OFF_SB, 0x00
@@ -32,6 +34,7 @@
 .equ DP_OFF_ROOT, DP_SIZE*0x03
 .equ DP_OFF_PATH, DP_SIZE*0x04
 
-.equ DP_OFF_SECT_CNT, 0x00 # [2-byte]
-.equ DP_OFF_MEM, 0x02 # [4-byte]
-.equ DP_OFF_LBA, 0x06 # [2-byte]
+.equ DP_OFF_SECT_CNT, 0x00
+.equ DP_OFF_MEM, 0x02
+.equ DP_OFF_LBA, 0x06
+# }
