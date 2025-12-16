@@ -39,6 +39,21 @@ Readme for VGA (Video Graphic Array). Base for display driver.
 
 ---
 
+## Notes
+### Note VGA Size
+- ROW: `TOTAL_ROW - 1` in screen
+- COLUMN: Total column in screen
+    - `ROW * COLUMN = last_row_offset`
+    - `last_offset + COLUMN = total_size`
+- Q. Why `ROW * COLUMN` is not total size?
+- A. VGA address row have index value. But VGA address column have size value.
+- Q. Why using `last_row_offset + COLUMN`?
+- A. More faster than `(ROW + 1) * COLUMN`. And necessary need last offset. Already last row offset calculated. Just `last_row_offset + COLUMN` is total size.
+- Q. Why `ROW * COLUMN` in `vga_last_row_off`?
+- A. The `ROW * COLUMN` is size. But VGA using index, So start 0. So size value point the last row start offset.
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
