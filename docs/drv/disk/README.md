@@ -28,6 +28,7 @@ Disk driver. Logic base the ATA (Advanced Technology Attachement).
 ## Terms
 | Name | Description |
 | --- | --- |
+| ATA | Advanced Technology Attachement |
 | DP | Disk Packet |
 | DPI | Disk Packet Immutable |
 | FSP | File System Packet |

@@ -141,7 +141,8 @@ drv/kbd/kbd_key_down.s \
 drv/kbd/kbd_key_left.s \
 drv/kbd/kbd_key_right.s \
 \
-drv/vga/vga.s \
+drv/vga/vga_data.s \
+drv/vga/vga_init.s \
 drv/vga/vga_putc.s \
 drv/vga/vga_puts.s \
 drv/vga/vga_putls.s \
