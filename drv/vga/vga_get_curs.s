@@ -15,17 +15,17 @@ vga_get_curs:
 	xor %ax, %ax
 
 	# high
-	mov $VGA_CURS_IDX_REG, %dx
-	mov $VGA_CURS_IDX_HI, %al
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_POS_HI, %al
 	out %al, %dx
-	mov $VGA_CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	in %dx, %al
 	mov %al, %ah
 
 	# low
-	mov $VGA_CURS_IDX_REG, %dx
-	mov $VGA_CURS_IDX_LO, %al
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_POS_LO, %al
 	out %al, %dx
-	mov $VGA_CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	in %dx, %al
 	ret

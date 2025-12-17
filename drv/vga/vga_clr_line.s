@@ -14,13 +14,13 @@ vga_clr_line:
 	push %di
 	push %bx
 
-	mov $VGA_SEG, %ax
+	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	xor %di, %di
+	mov $(VGA_MEM&0xFFFF), %di
 
 	call vga_get_curs
 
-	mov (VGA_COL), %cx
+	mov (VGA_ADDR_COL), %cx
 
 	# get current line [line_idx=curs_pos/col]
 	xor %dx, %dx
@@ -28,7 +28,7 @@ vga_clr_line:
 	mov %ax, %cx # line_idx
 
 	# [line_start_pos=col*line_idx]
-	mov (VGA_COL), %ax
+	mov (VGA_ADDR_COL), %ax
 	mul %cx
 	add %ax, %di
 	add %ax, %di
@@ -37,8 +37,8 @@ vga_clr_line:
 	call vga_set_curs
 	add $0x02, %sp
 
-	mov (VGA_COL), %cx
-	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	mov (VGA_ADDR_COL), %cx
+	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
 .done:

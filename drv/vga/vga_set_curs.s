@@ -13,19 +13,19 @@ vga_set_curs:
 	mov %sp, %bp
 
 	# high
-	mov $VGA_CURS_IDX_REG, %dx
-	mov $VGA_CURS_IDX_HI, %al
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_POS_HI, %al
 	out %al, %dx
-	mov $VGA_CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	mov 0x04(%bp), %ax
 	mov %ah, %al
 	out %al, %dx
 
 	# low
-	mov $VGA_CURS_IDX_REG, %dx
-	mov $VGA_CURS_IDX_LO, %al
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_POS_LO, %al
 	out %al, %dx
-	mov $VGA_CURS_DATA_REG, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
 	mov 0x04(%bp), %ax
 	out %al, %dx
 

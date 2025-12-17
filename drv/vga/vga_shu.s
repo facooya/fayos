@@ -20,7 +20,7 @@ vga_shu:
 	add $0x02, %sp
 
 	# ignore top row
-	mov (VGA_COL), %ax
+	mov (VGA_ADDR_COL), %ax
 	xor %si, %si
 	add %ax, %si
 	add %ax, %si
@@ -28,7 +28,7 @@ vga_shu:
 
 	mov (vga_last_row_off), %cx
 	push %ds # [s.s0:vga_seg]
-	mov $VGA_SEG, %ax
+	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov %ax, %ds
 

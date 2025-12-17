@@ -14,13 +14,13 @@ vga_clr:
 	push %di
 	push %bx
 
-	mov $VGA_SEG, %ax
+	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	xor %di, %di
+	mov $(VGA_MEM&0xFFFF), %di
 
 	mov (vga_size), %cx
 
-	mov $((VGA_COLOR_NORM<<0x08)|CHR_SP), %ax
+	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
 	xor %ax, %ax

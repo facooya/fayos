@@ -6,6 +6,7 @@ Readme for VGA (Video Graphic Array). Base for display driver.
 
 ## Table of Contents
 - [Module Map](#module-map)
+- [Register Map](#register-map)
 - [Terms](#terms)
 - [Reference Links](#reference-links)
 
@@ -26,6 +27,22 @@ Readme for VGA (Video Graphic Array). Base for display driver.
 | Put string to screen | `/drv/vga/vga_puts.s` | [docs: vga puts](/docs/drv/vga/vga_puts.md) |
 | Put length string to screen | `/drv/vga/vga_putls.s` | [docs: vga putls](/docs/drv/vga/vga_putls.md) |
 | Shift up one line | `/drv/vga/vga_shu.s` | [docs: vga shift up](/docs/drv/vga/vga_shu.md) |
+
+---
+
+## Register Map
+**Port**
+| Name | Port | Byte | Mode |
+| :--- | :---: | :---: | :---: |
+| `VGA_PORT_CURS_CMD` | 0x03D4 | 1 | OUT |
+| `VGA_PORT_CURS_DATA` | 0x03D5 | 1 | IO |
+
+**Address**
+| Name | Port | Byte | Mode |
+| :--- | :---: | :---: | :---: |
+| `VGA_ADDR_ROW` | 0x0484 | 1 | IN |
+| `VGA_ADDR_COL` | 0x044A | 2 | IN |
+
 
 ---
 

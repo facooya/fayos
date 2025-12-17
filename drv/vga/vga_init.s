@@ -10,8 +10,8 @@
 # vga_init()
 vga_init:
 	xor %ax, %ax
-	mov (VGA_ROW), %al
-	mov (VGA_COL), %cx
+	mov (VGA_ADDR_ROW), %al
+	mov (VGA_ADDR_COL), %cx
 
 	xor %dx, %dx
 	mul %cx

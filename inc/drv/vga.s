@@ -1,21 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Video graphic array
 
-.equ VGA_SEG, 0xB800
-.equ VGA_OFF, 0x0000
+.equ VGA_MEM, 0xB8000000
+.equ VGA_ATTR_COLOR, 0x07
 
-.equ VGA_ROW, 0x0484 # [1-byte]
-.equ VGA_COL, 0x044A # [2-byte]
+# port
+.equ VGA_PORT_CURS_CMD, 0x03D4
+.equ VGA_PORT_CURS_DATA, 0x03D5
 
-.equ VGA_COLOR_NORM, 0x07 # black:lightgray
+# address
+.equ VGA_ADDR_ROW, 0x0484
+.equ VGA_ADDR_COL, 0x044A
 
-# {{{ Cursor
-.equ VGA_CURS_IDX_REG, 0x03D4 # [1-byte]
-.equ VGA_CURS_DATA_REG, 0x03D5 # [1-byte]
-
-.equ VGA_CURS_IDX_HI, 0x0E
-.equ VGA_CURS_IDX_LO, 0x0F
-# }}}
+# command
+.equ VGA_CMD_CURS_POS_HI, 0x0E
+.equ VGA_CMD_CURS_POS_LO, 0x0F
