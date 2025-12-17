@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Get curs position
-
-# reference link
-# http://wiki.osdev.org/Text_Mode_Cursor#Get_Cursor_Position
 
 .include "drv/vga.s"
 .section .text
@@ -14,9 +9,8 @@
 
 # vga_get_curs()
 # <ret> ax = pos
-# <info>
-# ax / width = y
-# ax % width = x
+# ax / column = y
+# ax % column = x
 vga_get_curs:
 	xor %ax, %ax
 

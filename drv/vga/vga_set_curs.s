@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Set curs position
-
-# reference link
-# http://wiki.osdev.org/Text_Mode_Cursor#Get_Cursor_Position
 
 .include "drv/vga.s"
 .section .text
