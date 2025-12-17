@@ -12,8 +12,8 @@ Put string to screen base terminate length. Supports carriage return and line fe
 ### Requires
 - `vga_size`
 - `vga_last_row_off`
-- `vga_get_curs`
-- `vga_set_curs`
+- `vga_get_curs()`
+- `vga_set_curs()`
 
 ### Modifies
 - `N/A`

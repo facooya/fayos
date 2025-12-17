@@ -11,8 +11,8 @@ Put string to screen. Supports carriage return and line feed.
 ### Requires
 - `vga_size`
 - `vga_last_row_off`
-- `vga_get_curs`
-- `vga_set_curs`
+- `vga_get_curs()`
+- `vga_set_curs()`
 
 ### Modifies
 - `N/A`
