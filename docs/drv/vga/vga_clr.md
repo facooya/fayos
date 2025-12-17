@@ -21,7 +21,7 @@ Clear for entire screen.
 ---
 
 ## Process Flow
-1. Clear screen to write space.
+1. Clear screen to overwrite space.
     - color attribute background=black, foreground=white
 1. Set cursor position to zero
 

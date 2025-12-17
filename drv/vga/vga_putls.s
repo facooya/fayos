@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Video put length string
 
 .include "drv/vga.s"
 .include "chr.s"
@@ -91,7 +89,6 @@ vga_putls:
 	dec %dx # len
 	jmp .lp
 
-# {SHU}
 .shu__in:
 	push %si # [s.l1:str]
 	push %ax # [s.l0:chr]
@@ -162,7 +159,6 @@ vga_putls:
 	dec %dx # len
 	jmp .lp
 
-# {DONE}
 .done:
 	push %cx # cur_curs
 	call vga_set_curs

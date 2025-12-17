@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Video put string
 
 .include "drv/vga.s"
 .include "chr.s"
@@ -55,7 +53,6 @@ vga_puts:
 	inc %cx # cur_curs
 	jmp .lp
 
-# {CHR}
 .chr__cr:
 	push %bx # [s.l0:vga_size]
 	mov %cx, %ax # cur_curs
@@ -85,7 +82,6 @@ vga_puts:
 	inc %si
 	jmp .lp
 
-# {SHU}
 .shu__in:
 	push %si # [s.l1:str]
 	push %ax # [s.l0:chr]
@@ -151,7 +147,6 @@ vga_puts:
 	inc %si
 	jmp .lp
 
-# {DONE}
 .done:
 	push %cx # cur_curs
 	call vga_set_curs

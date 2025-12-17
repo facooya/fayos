@@ -12,6 +12,8 @@ Put character to screen.
 - `al = character`
 - `vga_size`
 - `vga_last_row_off`
+- `vga_get_curs`
+- `vga_set_curs`
 
 ### Modifies
 - `N/A`
@@ -42,7 +44,7 @@ Put character to screen.
 1. Set cursor position for current cursor position + column
 
 **Shift Up**
-1. Rewrite like shift up
+1. Overwrite like shift up
     - Like shift up: first line deleted -> second line move to first line -> third line move to second line -> ...
 1. Clear last line
 1. Set cursor position for last line offset + 1 (pre-update)
