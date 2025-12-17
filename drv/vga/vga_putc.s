@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# Video put character
 
 .include "drv/vga.s"
 .include "chr.s"
@@ -53,7 +51,6 @@ vga_putc:
 	add $0x02, %di
 	jmp .done
 
-# {CHR}
 .chr__cr:
 	call vga_get_curs
 	mov %ax, %bx # curs_pos
@@ -92,7 +89,6 @@ vga_putc:
 	add $0x02, %sp
 	jmp .done
 
-# {SHU}
 .shu__chr:
 	mov (VGA_COL), %ax
 	xor %si, %si
@@ -156,7 +152,6 @@ vga_putc:
 	add $0x02, %sp
 	jmp .done
 
-# {DONE}
 .done:
 	pop %bx
 	pop %di

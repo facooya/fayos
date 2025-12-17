@@ -1,4 +1,4 @@
-# VGA Clear
+# VGA Clear Line
 ## Overview
 Clear line for current cursor position.
 
