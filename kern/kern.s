@@ -57,7 +57,7 @@ _start:
 # <req> (*si == cl_sbuf.data)
 .run:
 	# (chr == null) ? {pass} : {kbd_run}
-	mov (scan_code), %al
+	mov (scancode), %al
 	test %al, %al
 	jz .pass
 

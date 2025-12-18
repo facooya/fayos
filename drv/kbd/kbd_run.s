@@ -7,19 +7,18 @@
 .global kbd_run
 
 # kbd_run()
-# <req> scan_code
+# <mod> scancode, kbd_mflg
 kbd_run:
 	call kbd_upd_mflg
-	# <req: scan_code>
+	# <mod: kbd_mflg, scancode>
 	# <ax = {skip:0}>
-	# <mod: kbd_mflg, scan_code>
 
 	# (kbd_upd_mflg() == 0) ? {done}
 	test %ax, %ax
 	jz .done
 
 	call kbd_conv_kc
-	# <req: scan_code, kbd_mflg>
+	# <req: scancode, kbd_mflg>
 	# <al = kc>
 
 	call kbd_proc
@@ -27,5 +26,5 @@ kbd_run:
 
 .done:
 	xor %ax, %ax
-	mov %ax, (scan_code)
+	mov %ax, (scancode)
 	ret

@@ -10,12 +10,12 @@
 .global kbd_conv_kc
 
 # kbd_conv_kc()
-# <req> scan_code, kbd_mflg
+# <req> scancode, kbd_mflg
 # <ret> al = kc
 kbd_conv_kc:
 	push %si
 	
-	mov (scan_code), %ax
+	mov (scancode), %ax
 
 	# (sc != norm) ? {done}
 	test %ah, %ah

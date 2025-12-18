@@ -11,8 +11,8 @@
 .global redir_hsbuf
 .global write_sbuf
 
+.global scancode
 .global init_flag
-.global scan_code
 .global rtc_tick
 .global rtc_date
 .global curs
@@ -23,8 +23,8 @@ tmp_sbuf: .zero 0x200
 redir_hsbuf: .zero 0x200
 write_sbuf: .zero 0x200
 
+scancode: .word 0x00
 init_flag: .word 0x01
-scan_code: .word 0x00
 rtc_tick: .word 0x00
 rtc_date: .zero 0x07
 curs:

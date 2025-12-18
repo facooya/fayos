@@ -37,6 +37,8 @@ Keyboard driver. Invoke keyboard driver scan code full in kernel main loop, Scan
 | SC | Scan Code |
 | KC | Key Code |
 | MFLG | Modifier Flag |
+| CONV | Convert |
+| PROC | Process |
 
 ---
 

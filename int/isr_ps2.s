@@ -25,19 +25,19 @@ isr_ps2:
 	jmp .norm
 
 .brk:
-	mov (scan_code+0x01), %ah
+	mov (scancode+0x01), %ah
 	or $PS2_SCF_BRK, %ah
-	mov %ah, (scan_code+0x01)
+	mov %ah, (scancode+0x01)
 	jmp .done
 
 .ext:
-	mov (scan_code+0x01), %ah
+	mov (scancode+0x01), %ah
 	or $PS2_SCF_EXT, %ah
-	mov %ah, (scan_code+0x01)
+	mov %ah, (scancode+0x01)
 	jmp .done
 
 .norm:
-	mov %al, (scan_code)
+	mov %al, (scancode)
 	jmp .done
 
 .skip:
