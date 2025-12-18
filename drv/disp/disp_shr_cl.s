@@ -1,15 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Display] Shift right in command line
 
 .section .text
 .code16
 .global disp_shr_cl
 
-# disp_shr_cl(*data, ascii)
-# <ret> [disp]
+# disp_shr_cl(ub8 *data, ub8 ascii)
 disp_shr_cl:
 	push %bp
 	mov %sp, %bp
@@ -24,7 +21,7 @@ disp_shr_cl:
 	mov %si, %di # data
 	sub $0x01, %di # restore origin
 
-	# {{{ len
+	# { len
 	push %ax
 	push %es
 
@@ -42,18 +39,17 @@ disp_shr_cl:
 
 	pop %es
 	pop %ax
-	# }}}
+	# }
 
 .lp:
 	# right shift
 	mov (%di), %al
 	mov %al, 0x01(%di)
 
-	# {end} (str.len == 0)
+	# (str.len == 0) ? {end}
 	test %cx, %cx
 	je .end
 
-	# {lp}
 	sub $0x01, %di # data
 	sub $0x01, %cx
 	jmp .lp

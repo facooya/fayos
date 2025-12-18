@@ -1,15 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Display] Shift left in command line
 
 .section .text
 .code16
 .global disp_shl_cl
 
 # disp_shl_cl(*data)
-# <ret> [disp]
 disp_shl_cl:
 	push %bp
 	mov %sp, %bp
@@ -22,7 +19,7 @@ disp_shl_cl:
 	mov %si, %di
 	add $0x01, %di
 
-	# {{{ len
+	# { len
 	push %es
 
 	xor %ax, %ax
@@ -36,18 +33,17 @@ disp_shl_cl:
 	pop %es
 
 	mov %ax, %cx # len
-	# }}}
+	# }
 
 .lp: # [d_lsh.1]
 	# left shift
 	mov (%di), %al # data
 	mov %al, -0x01(%di)
 
-	# {end} (str.len == 0)
+	# (str.len == 0) ? {end}
 	test %cx, %cx
 	jz .end
 
-	# {lp}
 	add $0x01, %di # data
 	sub $0x01, %cx # len
 	jmp .lp
