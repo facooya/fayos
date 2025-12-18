@@ -56,12 +56,12 @@ _start:
 # run()
 # <req> (*si == cl_sbuf.data)
 .run:
-	# (chr == null) ? {pass} : {kbd_proc}
+	# (chr == null) ? {pass} : {kbd_run}
 	mov (scan_code), %al
 	test %al, %al
 	jz .pass
 
-	call kbd_proc
+	call kbd_run
 
 .pass:
 	hlt

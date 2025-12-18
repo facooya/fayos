@@ -128,9 +128,8 @@ drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
 \
-drv/kbd/kbd.s \
 drv/kbd/kbd_data.s \
-drv/kbd/kbd_keymap.s \
+drv/kbd/kbd_run.s \
 drv/kbd/kbd_proc.s \
 drv/kbd/kbd_upd_mflg.s \
 drv/kbd/kbd_sc_to_kc.s \
