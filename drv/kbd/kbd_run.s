@@ -18,7 +18,7 @@ kbd_run:
 	test %ax, %ax
 	jz .done
 
-	call kbd_sc_to_kc
+	call kbd_conv_kc
 	# <req: scan_code, kbd_mflg>
 	# <al = kc>
 

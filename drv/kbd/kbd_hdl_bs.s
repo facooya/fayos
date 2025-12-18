@@ -1,15 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyboard] Key backspace
 
 .section .text
 .code16
-.global kbd_key_bs
+.global kbd_hdl_bs
 
-# kbd_key_bs()
-kbd_key_bs:
+# kbd_hdl_bs()
+kbd_hdl_bs:
 	# {end.done} (curs.x == curs.min)
 	call vga_get_curs
 	cmp (curs), %ax

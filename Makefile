@@ -132,13 +132,13 @@ drv/kbd/kbd_data.s \
 drv/kbd/kbd_run.s \
 drv/kbd/kbd_proc.s \
 drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_sc_to_kc.s \
-drv/kbd/kbd_key_cr.s \
-drv/kbd/kbd_key_bs.s \
-drv/kbd/kbd_key_up.s \
-drv/kbd/kbd_key_down.s \
-drv/kbd/kbd_key_left.s \
-drv/kbd/kbd_key_right.s \
+drv/kbd/kbd_conv_kc.s \
+drv/kbd/kbd_hdl_cr.s \
+drv/kbd/kbd_hdl_bs.s \
+drv/kbd/kbd_hdl_up.s \
+drv/kbd/kbd_hdl_down.s \
+drv/kbd/kbd_hdl_left.s \
+drv/kbd/kbd_hdl_right.s \
 \
 drv/vga/vga_data.s \
 drv/vga/vga_init.s \

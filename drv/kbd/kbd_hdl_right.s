@@ -1,15 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyboard] Key arrow right
 
 .section .text
 .code16
-.global kbd_key_right
+.global kbd_hdl_right
 
-# kbd_key_right()
-kbd_key_right:
+# kbd_hdl_right()
+kbd_hdl_right:
 	call vga_get_curs
 
 	# {end.done} (curs.x == curs.max)

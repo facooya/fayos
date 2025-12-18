@@ -1,15 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyborad] Arrow key up
 
 .section .text
 .code16
-.global kbd_key_up
+.global kbd_hdl_up
 
-# kbd_key_up()
-kbd_key_up:
+# kbd_hdl_up()
+kbd_hdl_up:
 	# (hist_idx == 0) ? {done}
 	mov (hist_idx), %ax
 	test %ax, %ax

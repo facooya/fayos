@@ -110,25 +110,25 @@ kbd_proc:
 	jmp .done
 
 .call__key_cr:
-	call kbd_key_cr
+	call kbd_hdl_cr
 	jmp .done
 
 .call__key_bs:
-	call kbd_key_bs
+	call kbd_hdl_bs
 	jmp .done
 
 .call__key_up:
-	call kbd_key_up
+	call kbd_hdl_up
 	jmp .done
 
 .call__key_down:
-	call kbd_key_down
+	call kbd_hdl_down
 	jmp .done
 
 .call__key_left:
-	call kbd_key_left
+	call kbd_hdl_left
 	jmp .done
 
 .call__key_right:
-	call kbd_key_right
+	call kbd_hdl_right
 	jmp .done

@@ -1,20 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyboard] Scan code to keycode
 
 .include "chr.s"
 .include "drv/kbd.s"
 .include "drv/ps2.s"
 .section .text
 .code16
-.global kbd_sc_to_kc
+.global kbd_conv_kc
 
-# kbd_sc_to_kc()
+# kbd_conv_kc()
 # <req> scan_code, kbd_mflg
 # <ret> al = kc
-kbd_sc_to_kc:
+kbd_conv_kc:
 	push %si
 	
 	mov (scan_code), %ax

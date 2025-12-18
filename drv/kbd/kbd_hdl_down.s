@@ -1,15 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyboard] Arrow key down
 
 .section .text
 .code16
-.global kbd_key_down
+.global kbd_hdl_down
 
-# kbd_key_down()
-kbd_key_down:
+# kbd_hdl_down()
+kbd_hdl_down:
 	# upd hist_idx
 	mov (hist_idx), %ax
 	mov (file_lines), %cx

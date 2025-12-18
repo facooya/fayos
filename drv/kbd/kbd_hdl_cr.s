@@ -1,17 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Keyboard] Key carriage return
 
 .section .text
 .code16
-.global kbd_key_cr
+.global kbd_hdl_cr
 
-# kbd_key_cr()
+# kbd_hdl_cr()
 # <req> cl_sbuf
 # <ret> cl_sbuf
-kbd_key_cr:
+kbd_hdl_cr:
 	call exec_cmd
 
 	push $ps1
