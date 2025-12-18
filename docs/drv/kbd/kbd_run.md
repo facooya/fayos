@@ -33,7 +33,6 @@ Keybarod run function, call only in kernel main loop.
 | --- | --- |
 | Main document for keyboard | [docs: keyboard](/docs/drv/kbd/README.md) |
 | Data definition for `scancode` | [docs: kern data](/docs/kern/kern_data.md) |
-| Data definition for `kbd_mflg` | [docs: kbd data](/docs/drv/kbd/kbd_data.md) |
 
 ---
 

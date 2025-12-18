@@ -7,7 +7,7 @@
 .global kbd_run
 
 # kbd_run()
-# <mod> scancode, kbd_mflg
+# <mod> scancode
 kbd_run:
 	call kbd_upd_mflg
 	# <mod: kbd_mflg, scancode>

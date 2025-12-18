@@ -9,8 +9,8 @@
 .global kbd_upd_mflg
 
 # kbd_upd_mflg()
+# <mod> scancode, kbd_mflg
 # <ret> ax = {skip:0}
-# <mod> kbd_mflg, scancode
 kbd_upd_mflg:
 	mov (kbd_mflg), %cx
 	mov (scancode), %ax
