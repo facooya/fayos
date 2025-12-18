@@ -1,6 +1,6 @@
-# Display Shift Right in Command Line
+# Display Shift Left in Command Line
 ## Overview
-Screen shift right in command line. Useful insert character in command line.
+Screen shift left in command line. Useful delete character in command line.
 
 ---
 
@@ -15,12 +15,11 @@ Screen shift right in command line. Useful insert character in command line.
 ### Parameters
 1. `ub8 *data`
     - string type
-    - point to `current_cursor_position + 1` in command line
-1. `ub8 ascii`
-    - insert character to `current_cursor_position`
+    - point to `current_cursor_position - 1` in command line
 
 ### Requires
 - `mem_size()`
+- `vga_putc()`
 - `vga_puts()`
 - `vga_get_curs()`
 - `vga_set_curs()`
@@ -35,18 +34,17 @@ Screen shift right in command line. Useful insert character in command line.
 
 ## Process Flow
 1. Data position recalculate point to current cursor position
-    - `&data - 1`
+    - `&data + 1`
 1. Get string tail size
-1. Point to last string
-1. Shfit right data
-    - repeat `(data+i) = chr; chr = (data+i+1);`
-1. Insert character in data
-    - data position: current cursor position
-1. Get current cursor position for restore
-1. Screen update for shift right
-    - effect auto increase cursor position using `vga_puts()`
-1. Restore cursor position and plus 1
-1. Update cursor position
+1. Shift left data
+    - repeat `(data+i) = chr; chr = (data+i-1);`
+1. Get current cursor position, `pos - 1` for restore and update
+1. Update cursor position for put string position
+1. Update screen for shift left
+    - auto increase cursor position
+1. Remove last character from effect shift left
+    - overwrite space to last character
+1. Restore cursor position
 
 ---
 

@@ -6,7 +6,7 @@
 .code16
 .global disp_shl_cl
 
-# disp_shl_cl(*data)
+# disp_shl_cl(ub8 *data)
 disp_shl_cl:
 	push %bp
 	mov %sp, %bp
