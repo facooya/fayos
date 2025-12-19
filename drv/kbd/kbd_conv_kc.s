@@ -17,7 +17,7 @@ kbd_conv_kc:
 	
 	mov (scancode), %ax
 
-	# (sc != norm) ? {done}
+	# (sc != norm) ? {ext}
 	test %ah, %ah
 	jnz .ext
 
