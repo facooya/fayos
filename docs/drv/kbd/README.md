@@ -47,6 +47,7 @@ Keyboard driver. Invoke keyboard driver scan code full in kernel main loop, Scan
 | --- | --- |
 | Main document for PS2 | [docs: ps2](/docs/drv/ps2/README.md) |
 | Main document for driver | [docs: driver](/docs/drv/README.md) |
+| Standard document for keyboard (External Link) | [OSDev: keyboard](https://wiki.osdev.org/PS/2_Keyboard) |
 
 ---
 

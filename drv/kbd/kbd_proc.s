@@ -11,19 +11,24 @@
 # kbd_proc()
 # <req> al = kc
 kbd_proc:
-	# {{{
+	# {
 	# (kc == bs) ? {key.bs}
 	cmp $CHR_BS, %al
 	je .call__key_bs
-
 	# (kc == cr) ? {key.cr}
 	cmp $CHR_CR, %al
 	je .call__key_cr
-	# }}}
+
+	# (kc == tab) ? {key.tab}
+	cmp $KBD_KC_TAB, %al
+	je .done
+	# (kc == esc) ? {key.esc}
+	cmp $KBD_KC_ESC, %al
+	je .done
+	# }
 
 	# TODO: check (kc >= 0x80)
-	# {{{
-	# Arrow
+	# { arrow
 	# (kc == up) ? {key.up}
 	cmp $KBD_KC_UP, %al
 	je .call__key_up
@@ -36,31 +41,25 @@ kbd_proc:
 	# (kc == right) ? {key.right}
 	cmp $KBD_KC_RIGHT, %al
 	je .call__key_right
+	# }
 
-	# Numpad
+	# { numpad
 	# (kc == num_sl) ? {key.n.sl}
 	cmp $KBD_KC_NUM_SL, %al
 	je .key__num_sl
 	# (kc == num_ent) ? {key.n.cr}
 	cmp $KBD_KC_NUM_ENT, %al
 	je .call__key_cr
+	# }
 
-	# Special
-	# (kc == tab) ? {key.tab}
-	cmp $KBD_KC_TAB, %al
-	je .done
-	# (kc == esc) ? {key.esc}
-	cmp $KBD_KC_ESC, %al
-	je .done
-
-	# FN
+	# { fn
 	# (kc == f1) ? {key.f1}
 	cmp $KBD_KC_F1, %al
 	je .done
 	# (kc == f2) ? {key.f2}
 	cmp $KBD_KC_F2, %al
 	je .done
-	# }}}
+	# }
 	jmp .norm
 
 .key__num_sl:
@@ -68,11 +67,11 @@ kbd_proc:
 	jmp .norm
 
 .norm:
-	# {{{ pre-update
+	# { pre-update
 	# update cl_sbuf
 	push %ax # [s.0:kc]
-	add $0x01, %si # raw.data
-	mov (cl_sbuf), %ax # raw.len
+	add $0x01, %si # cl.data
+	mov (cl_sbuf), %ax # cl.size
 	add $0x01, %ax
 	mov %ax, (cl_sbuf)
 
@@ -81,26 +80,25 @@ kbd_proc:
 	add $0x01, %ax
 	mov %ax, (curs+0x02)
 	pop %ax # [s.0:kc]
-	# }}}
+	# }
 
-	# {task} (raw.data-1 != null)
+	# (*(cl.data-1) != null) ? {shr.cl}
 	mov -0x01(%si), %ah
 	test %ah, %ah
 	jnz .call__shr_cl
 
-	# {{{
-	push %ax # [s.0:kc]
+	# {
+	push %ax # [s.f0:kc]
 	call vga_putc
-	pop %ax # [s.0:kc]
+	pop %ax # [s.f0:kc]
 
 	# store chr
-	mov %al, -0x01(%si) # raw.data
-	# }}}
+	mov %al, -0x01(%si) # cl.data
+	# }
 
 .done:
 	ret
 
-# {CALL}
 .call__shr_cl:
 	xor %ah, %ah
 	push %ax
