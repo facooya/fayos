@@ -70,14 +70,14 @@ kbd_proc:
 	# { pre-update
 	# update cl_sbuf
 	push %ax # [s.0:kc]
-	add $0x01, %si # cl.data
+	inc %si # cl_sbuf.data
 	mov (cl_sbuf), %ax # cl.size
-	add $0x01, %ax
+	inc %ax
 	mov %ax, (cl_sbuf)
 
 	# update curs max
 	mov (curs+0x02), %ax # curs.max
-	add $0x01, %ax
+	inc %ax
 	mov %ax, (curs+0x02)
 	pop %ax # [s.0:kc]
 	# }

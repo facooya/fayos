@@ -1,7 +1,6 @@
 # Roadmap
 ## WIP
 - docs
-- - drv
 - - fs
 - - inspection
 

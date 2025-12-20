@@ -49,7 +49,6 @@ kbd_conv_kc:
 	mov (%si), %al
 	jmp .done
 
-# {CAP}
 .cap:
 	mov $kbd_keymap_shf, %si
 
@@ -106,7 +105,6 @@ kbd_conv_kc:
 	pop %ax # [s.0:kc]
 	jmp .done
 
-# {EXT}
 .ext:
 	# arrow
 	cmp $PS2_SC_UP, %ax
@@ -125,7 +123,6 @@ kbd_conv_kc:
 	je .kc__num_ent
 	jmp .done
 
-# {KC.ARROW}
 .kc__up:
 	xor %ax, %ax
 	mov $KBD_KC_UP, %al
@@ -146,7 +143,6 @@ kbd_conv_kc:
 	mov $KBD_KC_RIGHT, %al
 	jmp .done
 
-# {KC.NUM}
 .kc__num_sl:
 	xor %ax, %ax
 	mov $KBD_KC_NUM_SL, %al
@@ -157,7 +153,6 @@ kbd_conv_kc:
 	mov $KBD_KC_NUM_ENT, %al
 	jmp .done
 
-# {DONE}
 .done:
 	pop %si
 	ret

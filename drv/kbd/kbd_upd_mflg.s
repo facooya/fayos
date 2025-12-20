@@ -34,7 +34,6 @@ kbd_upd_mflg:
 	jmp .clr
 
 .set:
-	# Shf
 	# (sc == lshf) ? {lshf.set}
 	cmp $PS2_SC_LSHF, %dx
 	je .lshf__set
@@ -42,7 +41,6 @@ kbd_upd_mflg:
 	cmp $PS2_SC_RSHF, %dx
 	je .rshf__set
 
-	# Ctl
 	# (sc == lctl) ? {lctl.set}
 	cmp $PS2_SC_LCTL, %dx
 	je .lctl__set
@@ -50,7 +48,6 @@ kbd_upd_mflg:
 	cmp $PS2_SC_RCTL, %dx
 	je .rctl__set
 
-	# Alt
 	# (sc == lalt) ? {lalt.set}
 	cmp $PS2_SC_LALT, %dx
 	je .lctl__set
@@ -65,7 +62,6 @@ kbd_upd_mflg:
 	jmp .done
 
 .clr:
-	# Shf
 	# (sc_brk == lshf) ? {lshf.clr}
 	cmp $PS2_SC_LSHF, %dx
 	je .lshf__clr
@@ -73,7 +69,6 @@ kbd_upd_mflg:
 	cmp $PS2_SC_RSHF, %dx
 	je .rshf__clr
 
-	# Ctl
 	# (sc == lctl) ? {lctl.clr}
 	cmp $PS2_SC_LCTL, %dx
 	je .lctl__clr
@@ -81,7 +76,6 @@ kbd_upd_mflg:
 	cmp $PS2_SC_RCTL, %dx
 	je .rctl__clr
 
-	# Alt
 	# (sc == lalt) ? {lalt.clr}
 	cmp $PS2_SC_LALT, %dx
 	je .lctl__clr
@@ -92,7 +86,6 @@ kbd_upd_mflg:
 	xor %ax, %ax
 	jmp .done
 
-# {SHF}
 .lshf__set:
 	or $KBD_MFLG_LSHF, %cx
 	jmp .done__flg
@@ -107,7 +100,6 @@ kbd_upd_mflg:
 	and $~KBD_MFLG_RSHF, %cx
 	jmp .done__flg
 
-# {CTL}
 .lctl__set:
 	or $KBD_MFLG_LCTL, %cx
 	jmp .done__flg
@@ -122,7 +114,6 @@ kbd_upd_mflg:
 	and $~KBD_MFLG_RCTL, %cx
 	jmp .done__flg
 
-# {ALT}
 .lalt__set:
 	or $KBD_MFLG_LALT, %cx
 	jmp .done__flg
@@ -137,7 +128,6 @@ kbd_upd_mflg:
 	and $~KBD_MFLG_RALT, %cx
 	jmp .done__flg
 
-# {CAP}
 .cap__set:
 	test $KBD_MFLG_CAP, %cx
 	jnz .cap__clr
@@ -147,7 +137,6 @@ kbd_upd_mflg:
 	and $~KBD_MFLG_CAP, %cx
 	jmp .done__flg
 
-# {DONE}
 .done__flg:
 	mov %cx, (kbd_mflg)
 	xor %ax, %ax

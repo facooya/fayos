@@ -13,15 +13,14 @@ disp_shl_cl:
 	push %si
 	push %di
 
-	mov 0x04(%bp), %si # data
+	mov 0x04(%bp), %si # (*data)
 
 	# cpy
 	mov %si, %di
-	add $0x01, %di
+	dec %di
 
-	# { len
-	push %es
-
+	# { size
+	push %es # [s.f0:extra]
 	xor %ax, %ax
 	mov %ax, %es
 
@@ -29,13 +28,12 @@ disp_shl_cl:
 	push %es
 	call mem_size
 	add $0x04, %sp
+	pop %es # [s.f0:extra]
 
-	pop %es
-
-	mov %ax, %cx # len
+	mov %ax, %cx # size
 	# }
 
-.lp: # [d_lsh.1]
+.lp:
 	# left shift
 	mov (%di), %al # data
 	mov %al, -0x01(%di)
@@ -44,14 +42,14 @@ disp_shl_cl:
 	test %cx, %cx
 	jz .end
 
-	add $0x01, %di # data
-	sub $0x01, %cx # len
+	inc %di # data
+	dec %cx # size
 	jmp .lp
 
 .end:
-	# left curs [d_lsh.2]
+	# left curs
 	call vga_get_curs
-	sub $0x01, %ax # curs.x
+	dec %ax
 	push %ax # [s.1:curs_pos]
 	push %ax
 	call vga_set_curs
@@ -61,11 +59,11 @@ disp_shl_cl:
 	call vga_puts
 	add $0x02, %sp
 
-	# overwrite [d_lsh.4]
-	mov $0x20, %al # space
+	# overwrite
+	mov $CHR_SP, %al
 	call vga_putc
 
-	# left curs [d_lsh.5]
+	# left curs
 	pop %ax # [s.1:curs_pos]
 	push %ax
 	call vga_set_curs

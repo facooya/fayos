@@ -28,7 +28,7 @@ kbd_hdl_up:
 	dec %ax
 	mov %ax, (hist_idx)
 
-	# (len == 0) ? {cont}
+	# (size == 0) ? {cont}
 	mov (cl_sbuf), %ax
 	test %ax, %ax
 	jz .cont

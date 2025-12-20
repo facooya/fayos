@@ -13,15 +13,15 @@ disp_shr_cl:
 	push %si
 	push %di
 
-	mov 0x04(%bp), %si
-	mov 0x06(%bp), %ax
+	mov 0x04(%bp), %si # (*data)
+	mov 0x06(%bp), %ax # (ascii)
 
 	# cpy
 	mov %al, %ah # ascii
 	mov %si, %di # data
-	sub $0x01, %di # restore origin
+	dec %di # restore origin
 
-	# { len
+	# { size
 	push %ax
 	push %es
 
@@ -33,9 +33,9 @@ disp_shr_cl:
 	call mem_size
 	add $0x04, %sp
 
-	mov %ax, %cx # len
+	mov %ax, %cx # size
 	add %ax, %di # data.end
-	sub $0x01, %di # data.last
+	dec %di # data.last
 
 	pop %es
 	pop %ax
@@ -46,21 +46,22 @@ disp_shr_cl:
 	mov (%di), %al
 	mov %al, 0x01(%di)
 
-	# (str.len == 0) ? {end}
+	# (size == 0) ? {end}
 	test %cx, %cx
 	je .end
 
-	sub $0x01, %di # data
-	sub $0x01, %cx
+	dec %di # data
+	dec %cx # size
 	jmp .lp
 
 .end:
 	# ah = ascii
 	mov %si, %di # cpy
-	sub $0x01, %di
+	dec %di
 	mov %ah, (%di) # data
 
 	call vga_get_curs
+	# <ax = curs_pos>
 
 	push %ax # [s.0:curs_pos]
 	push %di # data
@@ -69,7 +70,7 @@ disp_shr_cl:
 	pop %ax # [s.0:curs_pos]
 
 	# restore curs.pos
-	add $0x01, %ax # curs.x
+	inc %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
