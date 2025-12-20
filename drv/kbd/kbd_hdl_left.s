@@ -7,10 +7,12 @@
 .global kbd_hdl_left
 
 # kbd_hdl_left()
+# <req> si = cl_sbuf+i
+# <ret> si = {norm:cl_sbuf+i-1}, {skip:cl_sbuf+i}
 kbd_hdl_left:
 	call vga_get_curs
 
-	# {end.done} (curs.x == curs.min)
+	# (curs.x == curs.min) ? {done}
 	cmp (curs), %ax
 	je .done
 
@@ -21,7 +23,7 @@ kbd_hdl_left:
 	add $0x02, %sp
 
 	# ptr
-	sub $0x01, %si # raw.data
+	sub $0x01, %si # cl.data
 
 .done:
 	ret

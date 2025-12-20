@@ -7,10 +7,12 @@
 .global kbd_hdl_right
 
 # kbd_hdl_right()
+# <req> si = cl_sbuf+i
+# <ret> si = {norm:cl_sbuf+i+1}, {skip:cl_sbuf+i}
 kbd_hdl_right:
 	call vga_get_curs
 
-	# {end.done} (curs.x == curs.max)
+	# (curs.x == curs.max) ? {done}
 	cmp (curs+0x02), %ax
 	je .done
 
