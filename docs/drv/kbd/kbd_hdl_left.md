@@ -16,14 +16,14 @@ Keyboard handler for left arrow key.
 - `N/A`
 
 ### Requires
-- `si = cl_sbuf + index`
+- `si = &cl_sbuf + index`
 - `curs`
 
 ### Modifies
 - `N/A`
 
 ### Returns
-- `si = {normal: cl_sbuf + index - 1}, {skip: cl_sbuf + index}`
+- `si = {normal: &cl_sbuf + index - 1}, {skip: &cl_sbuf + index}`
 
 ---
 

@@ -7,26 +7,28 @@
 .global kbd_hdl_bs
 
 # kbd_hdl_bs()
+# <mod> cl_sbuf, curs
+# <ret> si = &cl_sbuf-1
 kbd_hdl_bs:
-	# {end.done} (curs.x == curs.min)
+	# (curs.x == curs.min) ? {done}
 	call vga_get_curs
 	cmp (curs), %ax
 	je .done
 
-	# {{{ pre-update
+	# { pre-update
 	# dec curs max
 	mov (curs+0x02), %ax # curs.max
 	sub $0x01, %ax
 	mov %ax, (curs+0x02)
 
 	# dec cl_sbuf
-	sub $0x01, %si # raw.data
-	mov (cl_sbuf), %ax # raw.len
+	sub $0x01, %si # cl.data
+	mov (cl_sbuf), %ax # cl.size
 	sub $0x01, %ax
 	mov %ax, (cl_sbuf)
-	# }}}
+	# }
 
-	# {task} (raw.data+1 != null)
+	# (raw.data+1 != null) ? {shl}
 	mov 0x01(%si), %al
 	test %al, %al
 	jnz .call__shl_cl

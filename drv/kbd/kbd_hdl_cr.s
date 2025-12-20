@@ -7,8 +7,8 @@
 .global kbd_hdl_cr
 
 # kbd_hdl_cr()
-# <req> cl_sbuf
-# <ret> cl_sbuf
+# <mod> cl_sbuf
+# <ret> si = cl_sbuf+buf_size_off
 kbd_hdl_cr:
 	call exec_cmd
 

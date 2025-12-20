@@ -1,6 +1,6 @@
-# Keyboard Handle Right
+# Keyboard Handle Carrage Return
 ## Overview
-Keyboard handler for right arrow key.
+Keryboard hander for carrage return (enter) key.
 
 ---
 
@@ -16,23 +16,22 @@ Keyboard handler for right arrow key.
 - `N/A`
 
 ### Requires
-- `si = &cl_sbuf + index`
-- `curs`
-
-### Modifies
 - `N/A`
 
+### Modifies
+- `cl_sbuf`
+
 ### Returns
-- `si = {normal: &cl_sbuf + index + 1}, {skip: &cl_sbuf + index}`
+- `si = &cl_sbuf + buffer_size_offset`
 
 ---
 
 ## Process Flow
-1. Get current cursor position
-1. Compare maximum cursor value with current cursor value
-    - done if equal
-1. Set cursor position + 1
-1. Update for command line buffer index + 1
+1. Call execute command function
+1. Update screen for prompt string
+1. Initial cursor structure for prompt string
+1. Initial command line buffer to zero
+1. Update pointer for command line buffer
 
 ---
 
@@ -40,7 +39,7 @@ Keyboard handler for right arrow key.
 | Description | Link |
 | --- | --- |
 | Main document for keyboard | [docs: keyboard](/docs/drv/kbd/README.md) |
-| Data definition for `curs` | [docs: kernel data](/docs/kern/kern_data.md) |
+| Data definition for `cl_sbuf` | [docs: kernel data](/docs/kern/kern_data.md) |
 
 ---
 

@@ -4,6 +4,13 @@ Keyboard handler for down arrow key. Related history function.
 
 ---
 
+## Table of Contents
+- [API Reference](#api-reference)
+- [Process Flow](#process-flow)
+- [Reference Links](#reference-links)
+
+---
+
 ## API Reference
 ### Parameters
 - `N/A`
@@ -18,7 +25,7 @@ Keyboard handler for down arrow key. Related history function.
 - `curs`
 
 ### Returns
-- `si = cl_sbuf + last_index`
+- `si = &cl_sbuf + last_index`
 
 ---
 
