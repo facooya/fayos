@@ -18,7 +18,7 @@ disp_shl_cl:
 
 	# cpy
 	mov %si, %di
-	dec %di
+	inc %di
 
 	# { size
 	push %es # [s.f0:extra]
