@@ -2,6 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
+.include "chr.s"
 .section .text
 .code16
 .global disp_shl_cl

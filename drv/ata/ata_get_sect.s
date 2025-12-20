@@ -90,19 +90,10 @@ ata_get_sect:
 	# (sect_hi == 0) ? {end}
 	test %dx, %dx
 	jz .max__end
-
-	# (sect_hi >= max_hi) ? {set} : {end}
-	cmp $(ATA_MAX_TOT_SECT>>0x10), %dx
-	jae .max__set
-	jmp .max__end
+	jmp .max__set
 
 .max__set:
 	mov $(ATA_MAX_TOT_SECT>>0x10), %dx
-
-	# (sect_lo <= max_lo) ? {end}
-	cmp $(ATA_MAX_TOT_SECT&0xFFFF), %ax
-	jbe .max__end
-
 	mov $(ATA_MAX_TOT_SECT&0xFFFF), %ax
 	jmp .max__end
 

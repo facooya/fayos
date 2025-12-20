@@ -54,7 +54,7 @@ Include some macros for check bit.
 | --- | --- |
 | `ATA_SECT_SIZE_WORD` | Sector size of word, Word is 2-byte. |
 | `ATA_OFF_TOT_SECT` | Offset total sectors, Offset read in identifiy device |
-| `ATA_MAX_TOT_SECT` | Maximum total sectors, Value is 0xFFF8 * 8 because block count is 2-byte. |
+| `ATA_MAX_TOT_SECT` | Maximum total sectors, Value is 0x010000, as ATA read LBA is 2-byte. ATA last read LBA is 0xFFF8. And sector count per block is 8. So `0xFFF8+0x08=0x010000`. |
 
 ---
 

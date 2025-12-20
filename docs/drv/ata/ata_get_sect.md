@@ -35,7 +35,7 @@ Identify device commend and read device data and return number of total sectors.
 1. Check maximum
     - if over maximum value, change total sectors value is maximum value
 1. Check turncate
-    - if total sectors not divided sector count per block, turncate remain
+    - turncat remain if total sectors not divided sector count per block
 1. Enable interrupt using nIEN
     - delay 400ns
 

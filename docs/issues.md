@@ -4,7 +4,6 @@
 ---
 
 ## FIXME
-- Reduce total sector size. Fit to 2-byte LBA. Maximum total sectors = 0x10000
 
 ---
 
