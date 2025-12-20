@@ -22,7 +22,7 @@ Keryboard hander for carrage return (enter) key.
 - `cl_sbuf`
 
 ### Returns
-- `si = &cl_sbuf + buffer_size_offset`
+- `si = &cl_sbuf.data`
 
 ---
 

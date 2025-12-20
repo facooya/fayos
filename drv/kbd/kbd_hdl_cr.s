@@ -8,7 +8,7 @@
 
 # kbd_hdl_cr()
 # <mod> cl_sbuf
-# <ret> si = cl_sbuf+buf_size_off
+# <ret> si = &cl_sbuf.data
 kbd_hdl_cr:
 	call exec_cmd
 
@@ -29,5 +29,5 @@ kbd_hdl_cr:
 	add $0x08, %sp
 
 	mov $cl_sbuf, %si
-	add $0x02, %si # skip len
+	add $0x02, %si # <ret>
 	ret

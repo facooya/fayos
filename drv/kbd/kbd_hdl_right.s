@@ -9,7 +9,7 @@
 # kbd_hdl_right()
 # <req> si = cl_sbuf+i
 # <req> curs
-# <ret> si = {norm:cl_sbuf+i+1}, {skip:cl_sbuf+i}
+# <ret> si = {norm:&cl_sbuf+i+1}, {skip:&cl_sbuf+i}
 kbd_hdl_right:
 	call vga_get_curs
 
@@ -18,13 +18,13 @@ kbd_hdl_right:
 	je .done
 
 	# right curs
-	add $0x01, %ax
+	inc %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
 	# ptr
-	add $0x01, %si # raw.data
+	inc %si # <ret>
 
 .done:
 	ret

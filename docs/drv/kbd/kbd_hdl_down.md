@@ -25,7 +25,7 @@ Keyboard handler for down arrow key. Related history function.
 - `curs`
 
 ### Returns
-- `si = &cl_sbuf + last_index`
+- `si = &cl_sbuf.data + last_index`
 
 ---
 

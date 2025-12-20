@@ -9,6 +9,7 @@
 # kbd_hdl_down()
 # <req> cl_hist_sbuf, file_lines
 # <mod> cl_sbuf, hist_idx
+# <ret> si = &cl_sbuf.data+last_i
 kbd_hdl_down:
 	# upd hist_idx
 	mov (hist_idx), %ax
@@ -78,7 +79,7 @@ kbd_hdl_down:
 .cont:
 	call hist_upd_cl
 	# <ax = cl_pos>
-	mov %ax, %si
+	mov %ax, %si # <ret>
 	jmp .done
 
 .done:

@@ -24,7 +24,7 @@ Keyboard handler for up arrow key. Related history function.
 - `hist_idx`
 
 ### Returns
-- `si = &cl_sbuf + last_index`
+- `si = &cl_sbuf.data + last_index`
 
 ---
 

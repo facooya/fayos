@@ -7,9 +7,9 @@
 .global kbd_hdl_left
 
 # kbd_hdl_left()
-# <req> si = cl_sbuf+i
+# <req> si = &cl_sbuf+i
 # <req> curs
-# <ret> si = {norm:cl_sbuf+i-1}, {skip:cl_sbuf+i}
+# <ret> si = {norm:&cl_sbuf+i-1}, {skip:&cl_sbuf+i}
 kbd_hdl_left:
 	call vga_get_curs
 
@@ -18,13 +18,13 @@ kbd_hdl_left:
 	je .done
 
 	# left curs
-	sub $0x01, %ax
+	dec %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
 	# ptr
-	sub $0x01, %si # cl.data
+	dec %si # <ret>
 
 .done:
 	ret

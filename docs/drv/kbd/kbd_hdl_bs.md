@@ -16,14 +16,14 @@ Keryboard hander for backspace key.
 - `N/A`
 
 ### Requires
-- `N/A`
+- `si = &cl_sbuf.data + index`
 
 ### Modifies
 - `cl_sbuf`
 - `curs`
 
 ### Returns
-- `si = &cl_sbuf - 1`
+- `si = {normal: &cl_sbuf.data + index - 1}, {skip: &cl_sbuf.data + index}`
 
 ---
 

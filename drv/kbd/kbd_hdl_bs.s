@@ -2,60 +2,67 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
+.include "chr.s"
 .section .text
 .code16
 .global kbd_hdl_bs
 
 # kbd_hdl_bs()
 # <mod> cl_sbuf, curs
-# <ret> si = &cl_sbuf-1
+# <ret> si = {norm:&cl_sbuf.data+i-1}, {skip:&cl_sbuf.data+i}
 kbd_hdl_bs:
-	# (curs.x == curs.min) ? {done}
+	# {
 	call vga_get_curs
+	# <ax = curs_pos>
+
+	# (curs.x == curs.min) ? {done}
 	cmp (curs), %ax
 	je .done
+	# <ret:skip>
+	# }
 
 	# { pre-update
 	# dec curs max
 	mov (curs+0x02), %ax # curs.max
-	sub $0x01, %ax
+	dec %ax
 	mov %ax, (curs+0x02)
 
 	# dec cl_sbuf
-	sub $0x01, %si # cl.data
-	mov (cl_sbuf), %ax # cl.size
-	sub $0x01, %ax
+	dec %si # &cl_sbuf.data
+	mov (cl_sbuf), %ax # cl_sbuf.size
+	dec %ax
 	mov %ax, (cl_sbuf)
 	# }
 
-	# (raw.data+1 != null) ? {shl}
+	# (*(cl_sbuf+1) != null) ? {shl}
 	mov 0x01(%si), %al
 	test %al, %al
 	jnz .call__shl_cl
 
-	# {{{ [d_nsh]
-	# left curs [d_nsh.1]
+	# {
+	# left curs
 	call vga_get_curs
-	sub $0x01, %ax # curs.x
+	# <ax = curs_pos>
+	dec %ax
 	push %ax # [s.0:curs_pos]
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
-	# overwrite [d_nsh.2]
-	mov $0x20, %al # space
+	# overwrite
+	mov $CHR_SP, %al # space
 	call vga_putc
 
-	# left curs [d_nsh.3]
+	# left curs
 	pop %ax # [s.0:curs_pos]
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
-	# {step} store null [d_nsh.4]
+	# store null
 	xor %al, %al
-	mov %al, (%si) # raw.data
-	# }}}
+	mov %al, (%si) # <ret>
+	# }
 
 .done:
 	ret
