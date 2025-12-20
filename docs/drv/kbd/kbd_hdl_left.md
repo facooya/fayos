@@ -39,6 +39,7 @@ Keyboard handler for left arrow key.
 | Description | Link |
 | --- | --- |
 | Main document for keyboard | [docs: keyboard](/docs/drv/kbd/README.md) |
+| Data definition for `curs` | [docs: kernel data](/docs/kern/kern_data.md) |
 
 ---
 

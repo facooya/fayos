@@ -7,6 +7,8 @@
 .global kbd_hdl_down
 
 # kbd_hdl_down()
+# <req> cl_hist_sbuf, file_lines
+# <mod> cl_sbuf, hist_idx
 kbd_hdl_down:
 	# upd hist_idx
 	mov (hist_idx), %ax

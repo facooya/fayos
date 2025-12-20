@@ -8,6 +8,7 @@
 
 # kbd_hdl_left()
 # <req> si = cl_sbuf+i
+# <req> curs
 # <ret> si = {norm:cl_sbuf+i-1}, {skip:cl_sbuf+i}
 kbd_hdl_left:
 	call vga_get_curs
