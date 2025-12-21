@@ -99,13 +99,18 @@ Examples:
 | `0x0002-0x000F` | 14 | Unuse |
 | `0x0010-0x003F` | 48 | Kernel |
 
+**Base block count per inum is 1**
 **Mutable by disk size**
-| LBA | Description |
-| --- | --- |
-| `0x0040-X` | Block bitmap |
-| `X+1-Y` | Inum bitmap |
-| `Y+1-Z` | Inode table|
-| `Z+1-0xFFFF` | Normal |
+| Description | LBA (min) | Block count (min) | LBA (max) | Block count (max) |
+| --- | --- | :---: | --- | :---: |
+| Block bitmap | `0x0040-0x0047` | 1 | `0x0040-0x0047` | 1 |
+| Inum bitmap | `0x0047-0x004F` | 1 | `0x0048-0x004F`| 1 |
+| Inode table | `0x0050-0x0057` | 1 | `0x0050-0x024F` | 64 |
+| Usable area | `0x0058-0x02D7` | 1-80 | `0x024F-0xFFFF` | 8118 |
+
+> [!NOTE]
+> Note for minimum usable area.
+> Usable area necessary reserved for root directory, history file. So allocate more 2 blocks count, Can't using file system related command. Only use system command. So allocate more spare blocks for file system.
 
 ---
 
