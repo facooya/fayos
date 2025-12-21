@@ -6,6 +6,10 @@
 
 .include "fs/fs.s"
 .include "fs/sb.s"
+.include "fs/ind.s"
+.section .data
+.flag: .word 0x00
+
 .section .text
 .code16
 .global sb_alloc_lba
@@ -15,6 +19,7 @@ sb_alloc_lba:
 	push %bp
 	mov %sp, %bp
 	push %es
+	push %si
 	push %bx
 
 	mov 0x04(%bp), %ax # (*seg)
@@ -24,73 +29,134 @@ sb_alloc_lba:
 	mov %es:SB_OFF_TOT_SECT(%bx), %ax
 	mov %es:SB_OFF_TOT_SECT+0x02(%bx), %dx
 	test %dx, %dx
-	jz .low
-	# TODO: log over 16-bit
+	jz .size__calc
 
-.low:
-	# {{{
-	# bbs
+	mov $0xFFFF, %ax # max for calc
+	mov $.flag, %si
+	mov $(0x01<<0x00), %dx
+	mov %dx, (%si)
+
+.size__calc:
+	# { bbm size
+	# <ax = tot_sect>
 	xor %dx, %dx
-	mov $0x40, %cx
+	mov $RATIO_SC_BLK, %cx
 	div %cx
+	# <ax = blk_cnt>
+	test %dx, %dx
+	jz 1f
+	mov (%si), %dx
+	test $(0x01<<0x00), %dx
+	jz 1f
+	inc %ax
+1:
+	mov %ax, %es:SB_TOT_BLK_CNT(%bx)
+
+	xor %dx, %dx
+	mov $RATIO_BIT_BYTE, %cx
+	div %cx
+	# <ax = blk_bitmap_size>
+	test %dx, %dx
+	jz 1f
+	inc %ax
+1:
 	mov %ax, %es:SB_OFF_BBM_SIZE(%bx)
+	# }
 
-	# ibs
-	mov %es:SB_OFF_BBM_SIZE(%bx), %ax
+	# { ibm size
+	mov %es:SB_TOT_BLK_CNT(%bx), %ax
 	xor %dx, %dx
-	mov $0x04, %cx
+	mov $RATIO_BC_INUM, %cx
 	div %cx
+	# <ax = inum_size>
+	test %dx, %dx
+	jz 1f
+	inc %ax
+1:
+	mov %ax, %es:SB_TOT_INUM_CNT(%bx)
+
+	xor %dx, %dx
+	mov $RATIO_BIT_BYTE, %cx
+	div %cx
+	# <ax = inum_bitmap_size>
+	test %dx, %dx
+	jz 1f
+	inc %ax
+1:
 	mov %ax, %es:SB_OFF_IBM_SIZE(%bx)
+	# }
 
-	# its
-	mov %es:SB_OFF_BBM_SIZE(%bx), %ax
+	# its size
+	mov %es:SB_TOT_INUM_CNT(%bx), %ax
 	xor %dx, %dx
-	mov $0x40, %cx
+	mov $IND_SIZE, %cx
 	mul %cx
+	# <dx:ax = ind_tbl_size>
+	mov %dx, %es:SB_OFF_IT_SIZE+0x02(%bx)
 	mov %ax, %es:SB_OFF_IT_SIZE(%bx)
-	# }}}
 
-	# {{{
-	# bbbc
+	# { bbbc
 	mov %es:SB_OFF_BBM_SIZE(%bx), %ax
 	xor %dx, %dx
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	div %cx
 
 	test %dx, %dx
 	jz .set_bbbc
-	add $0x01, %ax
+	inc %ax
+	jmp .set_bbbc
 
 .set_bbbc:
 	mov %ax, %es:SB_OFF_BBM_BC(%bx)
+	# }
 
-	# ibbc
+	# { ibbc
 	mov %es:SB_OFF_IBM_SIZE(%bx), %ax
 	xor %dx, %dx
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	div %cx
 
 	test %dx, %dx
 	jz .set_ibbc
-	add $0x01, %ax
+	inc %ax
 
 .set_ibbc:
 	mov %ax, %es:SB_OFF_IBM_BC(%bx)
+	# }
 
-	# itbc
+	# { itbc
+	# high
+	mov %es:SB_OFF_IT_SIZE(%bx), %dx
+	test %dx, %dx
+	jz 1f
+
+	mov %dx, %ax
+	xor %dx, %dx
+	mov $FS_BLK_SIZE, %cx
+	div %cx
+
+	test %dx, %dx
+	jz 1f
+	inc %ax
+1:
+	mov %ax, %es:SB_OFF_IT_BC(%bx) # only hi bc
+
+	# low
 	mov %es:SB_OFF_IT_SIZE(%bx), %ax
 	xor %dx, %dx
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	div %cx
 
 	test %dx, %dx
 	jz .set_itbc
-	add $0x01, %ax
+	inc %ax
 
 .set_itbc:
+	mov %es:SB_OFF_IT_BC(%bx), %dx
+	add %dx, %ax # hi+lo
 	mov %ax, %es:SB_OFF_IT_BC(%bx)
-	# }}}
-	
+	# }
+
 	# {{{
 	# bb
 	mov $FS_START_LBA, %ax
@@ -99,7 +165,7 @@ sb_alloc_lba:
 	# ib
 	mov %es:SB_OFF_BBM_BC(%bx), %ax
 	xor %dx, %dx
-	mov $0x08, %cx
+	mov $RATIO_SC_BLK, %cx
 	mul %cx
 	mov %es:SB_OFF_BBM_LBA(%bx), %cx
 	add %cx, %ax
@@ -108,7 +174,7 @@ sb_alloc_lba:
 	# it
 	mov %es:SB_OFF_IBM_BC(%bx), %ax
 	xor %dx, %dx
-	mov $0x08, %cx
+	mov $RATIO_SC_BLK, %cx
 	mul %cx
 	mov %es:SB_OFF_IBM_LBA(%bx), %cx
 	add %cx, %ax
@@ -117,7 +183,7 @@ sb_alloc_lba:
 	# normal
 	mov %es:SB_OFF_IT_BC(%bx), %ax
 	xor %dx, %dx
-	mov $0x08, %cx
+	mov $RATIO_SC_BLK, %cx
 	mul %cx
 	mov %es:SB_OFF_IT_LBA(%bx), %cx
 	add %cx, %ax
@@ -125,6 +191,7 @@ sb_alloc_lba:
 	# }}}
 
 	pop %bx
+	pop %si
 	pop %es
 	pop %bp
 	ret
