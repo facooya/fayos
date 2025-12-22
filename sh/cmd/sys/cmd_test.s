@@ -8,6 +8,7 @@
 .section .text
 .code16
 .global cmd_test
+.global cmd_test2
 
 # cmd_test()
 cmd_test:
@@ -21,4 +22,3 @@ cmd_test:
 	call dbg_reg
 	add $0x02, %sp
 	ret
-

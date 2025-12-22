@@ -15,16 +15,16 @@ ivt_init:
 	mov %ax, %es
 
 	# irq 1
-	mov %cs, %es:(IVT_ENT_IRQ1+0x02)
-	mov $isr_ps2, %es:(IVT_ENT_IRQ1)
+	movw %cs, %es:(IVT_ENT_IRQ1+0x02)
+	movw $isr_ps2, %es:(IVT_ENT_IRQ1)
 
 	# irq 8
-	mov %cs, %es:(IVT_ENT_IRQ8+0x02)
-	mov $isr_rtc, %es:(IVT_ENT_IRQ8)
+	movw %cs, %es:(IVT_ENT_IRQ8+0x02)
+	movw $isr_rtc, %es:(IVT_ENT_IRQ8)
 
 	# irq 14
-	mov %cs, %es:(IVT_ENT_IRQ14+0x02)
-	mov $isr_ata, %es:(IVT_ENT_IRQ14)
+	movw %cs, %es:(IVT_ENT_IRQ14+0x02)
+	movw $isr_ata, %es:(IVT_ENT_IRQ14)
 
 	pop %es
 	ret
