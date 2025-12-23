@@ -45,10 +45,8 @@ fs/fs_path.s \
 \
 fs/superblock.s \
 fs/bitmap.s \
+fs/inode.s \
 fs/cwd.s \
-\
-fs/ind/ind_add.s \
-fs/ind/ind_clr.s \
 \
 fs/de/de_add.s \
 fs/de/de_add_dots.s \
