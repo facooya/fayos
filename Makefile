@@ -44,10 +44,7 @@ fs/fs_rm.s \
 fs/fs_path.s \
 fs/fs_cwd.s \
 \
-fs/sb/sb_run.s \
-fs/sb/sb_alloc_lba.s \
-fs/sb/sb_set_bm.s \
-fs/sb/sb_write_dpi.s \
+fs/superblock.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
