@@ -45,6 +45,7 @@ fs/fs_path.s \
 fs/fs_cwd.s \
 \
 fs/superblock.s \
+fs/bitmap.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
@@ -52,10 +53,6 @@ fs/ind/ind_clr.s \
 fs/de/de_add.s \
 fs/de/de_add_dots.s \
 fs/de/de_seek.s \
-\
-fs/bm/bm_alloc.s \
-fs/bm/bm_clr.s \
-fs/bm/bm_set.s \
 \
 fs/path/path_tok.s \
 fs/path/path_build.s \
