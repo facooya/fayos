@@ -46,11 +46,8 @@ fs/fs_path.s \
 fs/superblock.s \
 fs/bitmap.s \
 fs/inode.s \
+fs/dentry.s \
 fs/cwd.s \
-\
-fs/de/de_add.s \
-fs/de/de_add_dots.s \
-fs/de/de_seek.s \
 \
 fs/path/path_tok.s \
 fs/path/path_build.s \
