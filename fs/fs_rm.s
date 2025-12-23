@@ -316,7 +316,7 @@ fs_rm:
 	mov (path_cv), %ax
 	dec %ax
 	mov %ax, (path_cv)
-	call fs_cwd
+	call cwd_build
 	# <req: path_cv, path_sbuf>
 	# <mod: cwd>
 

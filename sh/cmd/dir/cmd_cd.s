@@ -47,7 +47,7 @@ cmd_cd:
 	je .err_dir_no
 	# }}}
 
-	call fs_cwd
+	call cwd_build
 	# <req: path_cv, path_sbuf>
 	# <mod: cwd>
 

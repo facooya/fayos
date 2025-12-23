@@ -65,7 +65,7 @@ bm_alloc:
 	pop %bp
 	ret
 
-# bm_set(ub16 *seg, ub16 *off, ub16 bit_num)
+# [public] bm_set(ub16 *seg, ub16 *off, ub16 bit_num)
 bm_set:
 	push %bp
 	mov %sp, %bp
@@ -101,7 +101,7 @@ bm_set:
 	pop %bp
 	ret
 
-# bm_clr(ub16 *seg, ub16 *off, ub16 bit_num)
+# [public] bm_clr(ub16 *seg, ub16 *off, ub16 bit_num)
 bm_clr:
 	push %bp
 	mov %sp, %bp

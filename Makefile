@@ -42,10 +42,10 @@ fs/fs_open.s \
 fs/fs_add.s \
 fs/fs_rm.s \
 fs/fs_path.s \
-fs/fs_cwd.s \
 \
 fs/superblock.s \
 fs/bitmap.s \
+fs/cwd.s \
 \
 fs/ind/ind_add.s \
 fs/ind/ind_clr.s \
@@ -57,10 +57,6 @@ fs/de/de_seek.s \
 fs/path/path_tok.s \
 fs/path/path_build.s \
 fs/path/path_read.s \
-\
-fs/cwd/cwd_init.s \
-fs/cwd/cwd_add.s \
-fs/cwd/cwd_sub.s \
 \
 fs/fsp/fsp_init.s \
 fs/fsp/fsp_read.s \
