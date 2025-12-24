@@ -215,3 +215,8 @@ cwd_sub:
 	pop %di
 	pop %si
 	ret
+
+# [data]
+.section .data
+.global cwd
+cwd: .zero 0x100

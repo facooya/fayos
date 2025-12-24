@@ -44,7 +44,6 @@ fs/inode.s \
 fs/dentry.s \
 fs/path.s \
 fs/fsp.s \
-fs/cwd.s \
 
 # shell
 SRCS_SH = \
@@ -62,6 +61,7 @@ sh/hist/hist_upd_cl.s \
 \
 sh/ps/ps_data.s \
 sh/ps/ps1_build.s \
+sh/ps/cwd.s \
 \
 sh/cmd/cmd_map.s \
 \

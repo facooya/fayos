@@ -223,3 +223,9 @@ fsp_blk_to_lba:
 	pop %es
 	pop %bp
 	ret
+
+# [data]
+.section .data
+.global fsp
+# fsp: ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba
+fsp: .zero 0x200

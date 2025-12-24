@@ -565,16 +565,3 @@ err_print_name:
 	mov $CHR_SP, %al
 	call vga_putc
 	ret
-
-# [data]
-.section .data
-.global path_sbuf
-.global path_cv
-.global cwd
-.global fsp
-
-path_sbuf: .zero 0x50
-path_cv: .zero 0x50
-cwd: .zero 0x100
-# fsp: ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba
-fsp: .zero 0x200

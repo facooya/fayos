@@ -330,3 +330,10 @@ path_read:
 	pop %si
 	pop %es
 	ret
+
+# [data]
+.section .data
+.global path_sbuf
+.global path_cv
+path_sbuf: .zero 0x100
+path_cv: .zero 0x50
