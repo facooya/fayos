@@ -29,15 +29,15 @@ history:
 
 	# { path
 	push $.fpath_hist # (&path)
-	call fs_path
+	call path_parse
 	add $0x02, %sp
 	# <mod: (fsp *dir, *base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() == neq_last) ? {create}
+	# (path_parse() == neq_last) ? {create}
 	cmp $0x02, %ax
 	je .create
-	# (fs_path() != done) ? {done} : {save}
+	# (path_parse() != done) ? {done} : {save}
 	test %ax, %ax
 	jnz .done
 	# }

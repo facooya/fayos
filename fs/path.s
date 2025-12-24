@@ -9,13 +9,13 @@
 .include "fs/de.s"
 .section .text
 .code16
-.global fs_path
+.global path_parse
 
-# [public] fs_path(ub8 *path)
+# [public] path_parse(ub8 *path)
 # <req> fsp *root
 # <mod> (fsp *dir, *base), path_cv, path_sbuf
 # <ret> ax = {done:0, exit:1, neq_last:2}
-fs_path:
+path_parse:
 	push %bp
 	mov %sp, %bp
 

@@ -37,15 +37,15 @@ exec_redir:
 .find:
 	# {{{ path
 	push %si # (&path)
-	call fs_path
+	call path_parse
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() == exit) ? {err}
+	# (path_parse() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-	# (fs_path() != neq_last) ? {skip}
+	# (path_parse() != neq_last) ? {skip}
 	cmp $0x02, %ax
 	jne .skip
 
@@ -56,12 +56,12 @@ exec_redir:
 
 	# upd
 	push %si # (&path)
-	call fs_path
+	call path_parse
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
 
-	#(fs_path() != done) ? {err}
+	#(path_parse() != done) ? {err}
 	test %ax, %ax
 	jnz .err_inv_path
 	# }}}

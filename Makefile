@@ -37,11 +37,7 @@ kern/dbg/num/dbg_reg.s
 
 # file system
 SRCS_FS = \
-fs/fs_data.s \
-fs/fs_open.s \
-fs/fs_add.s \
-fs/fs_rm.s \
-\
+fs/filesys.s \
 fs/superblock.s \
 fs/bitmap.s \
 fs/inode.s \

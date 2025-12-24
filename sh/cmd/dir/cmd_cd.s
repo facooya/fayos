@@ -34,15 +34,15 @@ cmd_cd:
 
 	# {{{ path
 	push %si # (&path)
-	call fs_path
+	call path_parse
 	add $0x02, %sp
 	# <mod: (fsp &dir, &base)>
 	# <ax = {done:0, exit:1, neq_last:2}>
 
-	# (fs_path() == exit) ? {err}
+	# (path_parse() == exit) ? {err}
 	cmp $0x01, %ax
 	je .err_inv_path
-	# (fs_path() == neq_last) ? {err}
+	# (path_parse() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_dir_no
 	# }}}
