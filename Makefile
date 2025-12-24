@@ -47,16 +47,12 @@ fs/superblock.s \
 fs/bitmap.s \
 fs/inode.s \
 fs/dentry.s \
+fs/fsp.s \
 fs/cwd.s \
 \
 fs/path/path_tok.s \
 fs/path/path_build.s \
 fs/path/path_read.s \
-\
-fs/fsp/fsp_init.s \
-fs/fsp/fsp_read.s \
-fs/fsp/fsp_write.s \
-fs/fsp/fsp_blk_to_lba.s
 
 # shell
 SRCS_SH = \
