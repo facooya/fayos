@@ -6,13 +6,13 @@
 .include "fs/fs.s"
 .include "fs/ind.s"
 .include "fs/de.s"
-
 .section .text
 .code16
 .global fs_add
 .global fs_rm
 
 # [public] fs_add(ub8 *path, ub16 f_type)
+# <req> fsp {dir, par, cur, tmp}, path_cv, path_sbuf
 # <ret> ax = {done:0, exit:1}
 fs_add:
 	push %bp
@@ -31,10 +31,10 @@ fs_add:
 
 	# (path_parse() == exit) ? {err}
 	cmp $0x01, %ax
-	je 83f # inv_path
+	je 803f # inv_path
 	# (path_parse() != neq_last) ? {err}
 	cmp $0x02, %ax
-	jne 81f # name dup
+	jne 801f # name dup
 	# }
 
 	# { chk name
@@ -55,7 +55,7 @@ fs_add:
 	# <ax = {true:0, false:1}>
 
 	cmp $0x01, %ax
-	je 82f # name inv
+	je 802f # name inv
 	# }
 
 	push 0x06(%bp) # (f_type)
@@ -142,7 +142,7 @@ fs_add:
 	pop %bp
 	ret
 
-81: # name dup
+801: # name dup
 	mov $path_cv, %si
 	mov (%si), %ax # pathc
 	add %ax, %si
@@ -165,11 +165,11 @@ fs_add:
 	push $emsg_name_dup
 	jmp 890f
 
-82: # name inv
+802: # name inv
 	push $emsg_name_inv
 	jmp 890f
 
-83: # path inv
+803: # path inv
 	push $emsg_inv_path
 	jmp 890f
 
@@ -183,7 +183,8 @@ fs_add:
 	jmp 80b # exit
 
 # [public] fs_rm(ub8 *path, ub8 f_type)
-# <mod?> fsp cur, path_cv
+# <req> fsp {base, dir, cur}, path_sbuf
+# <mod> fsp tmp, path_cv
 # <ret> ax = {done:0, exit:1}
 fs_rm:
 	push %bp
@@ -201,7 +202,7 @@ fs_rm:
 
 	# (path_parse() == exit) ? {err}
 	cmp $0x01, %ax
-	je .err_inv_path
+	je 801f # path inv
 	# (path_parse() != neq_last) ? {pass}
 	cmp $0x02, %ax
 	jne 2f
@@ -209,19 +210,19 @@ fs_rm:
 	# (f_type == file) ? {err.file}
 	mov 0x06(%bp), %ax # (f_type)
 	cmp $F_TYPE_FILE, %al
-	je .err_file_no
+	je 802f # file no
 	# (f_type == dir) ? {err.dir} : {err.path}
 	cmp $F_TYPE_DIR, %al
-	je .err_dir_no
-	jmp .err_inv_path
+	je 804f # dir no
+	jmp 801f # path inv
 	# }
 
 1:
 	mov 0x06(%bp), %ax # (f_type)
 	cmp $F_TYPE_FILE, %al
-	je .err_file_type
+	je 803f # file type
 	cmp $F_TYPE_DIR, %al
-	je .err_dir_type
+	je 805f # dir type
 	jmp 80f
 
 2: # chk type
@@ -282,7 +283,7 @@ fs_rm:
 	add $0x02, %si
 	mov (%si), %ax
 	cmp $0x002E, %ax
-	je .err_dir_self
+	je 806f # dir self
 	cmp $0x2E2E, %ax
 	je 13f
 	jmp 20f
@@ -291,7 +292,7 @@ fs_rm:
 13: # chk dots
 	mov 0x02(%si), %al
 	test %al, %al
-	jz .err_dir_self
+	jz 806f # dir self
 	jmp 20f
 
 20: # down
@@ -508,37 +509,33 @@ fs_rm:
 	pop %bp
 	ret
 
-.err_inv_path:
+801: # path inv
 	push $emsg_inv_path
-	jmp .err_hdl
+	jmp 890f
 
-.err_name_inv:
-	push $emsg_name_inv
-	jmp .err_hdl
-
-.err_file_no:
+802: # file no
 	call err_print_name
 	push $emsg_file_no
-	jmp .err_hdl
+	jmp 890f
 
-.err_file_type:
+803: # file type
 	push $emsg_file_type
-	jmp .err_hdl
+	jmp 890f
 
-.err_dir_no:
+804: # dir no
 	call err_print_name
 	push $emsg_dir_no
-	jmp .err_hdl
+	jmp 890f
 
-.err_dir_type:
+805: # dir type
 	push $emsg_dir_type
-	jmp .err_hdl
+	jmp 890f
 
-.err_dir_self:
+806: # dir self
 	push $emsg_dir_self
-	jmp .err_hdl
+	jmp 890f
 
-.err_hdl:
+890: # err hdl
 	call vga_puts
 	add $0x02, %sp
 	mov $CHR_CR, %al
@@ -569,6 +566,7 @@ err_print_name:
 	call vga_putc
 	ret
 
+# [data]
 .section .data
 .global path_sbuf
 .global path_cv
@@ -578,7 +576,5 @@ err_print_name:
 path_sbuf: .zero 0x50
 path_cv: .zero 0x50
 cwd: .zero 0x100
-
-# file system packet
+# fsp: ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba
 fsp: .zero 0x200
-# ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba
