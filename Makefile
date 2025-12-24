@@ -41,18 +41,14 @@ fs/fs_data.s \
 fs/fs_open.s \
 fs/fs_add.s \
 fs/fs_rm.s \
-fs/fs_path.s \
 \
 fs/superblock.s \
 fs/bitmap.s \
 fs/inode.s \
 fs/dentry.s \
+fs/path.s \
 fs/fsp.s \
 fs/cwd.s \
-\
-fs/path/path_tok.s \
-fs/path/path_build.s \
-fs/path/path_read.s \
 
 # shell
 SRCS_SH = \
