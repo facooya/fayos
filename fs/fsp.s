@@ -27,7 +27,7 @@ fsp_init:
 	movw $(DISK_CUR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 
 	push FSP_OFF_BLK(%di)
-	call fsp_blk_to_lba
+	call _fsp_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
 	mov %ax, FSP_OFF_DISK_LBA(%di)
@@ -157,7 +157,7 @@ fsp_read:
 
 	# set lba
 	push FSP_OFF_BLK(%di)
-	call fsp_blk_to_lba
+	call _fsp_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
 	mov %ax, FSP_OFF_DISK_LBA(%di)
@@ -199,9 +199,9 @@ fsp_write:
 	pop %bp
 	ret
 
-# [private] fsp_blk_to_lba(ub16 blk_num)
+# [private] _fsp_blk_to_lba(ub16 blk_num)
 # <ret> ax = lba
-fsp_blk_to_lba:
+_fsp_blk_to_lba:
 	push %bp
 	mov %sp, %bp
 	push %es

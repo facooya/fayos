@@ -72,7 +72,7 @@ cwd_build:
 	xor %ax, %ax
 	push %si # (&off)
 	push %ax # (&seg)
-	call cwd_add
+	call _cwd_add
 	add $0x06, %sp
 	pop %cx # [s.f1:path_c]
 
@@ -81,7 +81,7 @@ cwd_build:
 
 4: # sub
 	push %cx # [s.f1:path_c]
-	call cwd_sub
+	call _cwd_sub
 	pop %cx # [s.f1:path_c]
 
 	add $0x02, %bx
@@ -110,9 +110,9 @@ cwd_init:
 	pop %di
 	ret
 
-# [private] cwd_add(ub16 *seg, ub16 *off, ub16 size)
+# [private] _cwd_add(ub16 *seg, ub16 *off, ub16 size)
 # <mod: cwd>
-cwd_add:
+_cwd_add:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -169,9 +169,9 @@ cwd_add:
 	pop %bp
 	ret
 
-# [private] cwd_sub()
+# [private] _cwd_sub()
 # <mod: cwd>
-cwd_sub:
+_cwd_sub:
 	push %si
 	push %di
 

@@ -59,9 +59,8 @@ sh/exec/exec_redir.s \
 sh/hist/history.s \
 sh/hist/hist_upd_cl.s \
 \
-sh/ps/ps_data.s \
-sh/ps/ps1_build.s \
-sh/ps/cwd.s \
+sh/prompt.s \
+sh/cwd.s \
 \
 sh/cmd/cmd_map.s \
 \

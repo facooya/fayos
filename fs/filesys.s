@@ -514,7 +514,7 @@ fs_rm:
 	jmp 890f
 
 802: # file no
-	call err_print_name
+	call _err_print_name
 	push $emsg_file_no
 	jmp 890f
 
@@ -523,7 +523,7 @@ fs_rm:
 	jmp 890f
 
 804: # dir no
-	call err_print_name
+	call _err_print_name
 	push $emsg_dir_no
 	jmp 890f
 
@@ -544,8 +544,8 @@ fs_rm:
 	call vga_putc
 	jmp 80b
 
-# [private] err_print_name()
-err_print_name:
+# [private] _err_print_name()
+_err_print_name:
 	mov $path_cv, %si
 	mov (%si), %ax # pathc
 	add %ax, %si

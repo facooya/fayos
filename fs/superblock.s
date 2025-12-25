@@ -34,14 +34,14 @@ sb_run:
 	cmp $(SB_MAG>>0x10), %ax
 	jne 1f
 
-	push $.kmsg_found
+	push $_kmsg_found
 	call vga_puts
 	add $0x02, %sp
 	jmp 2f
 	# }}}
 
 1:
-	push $.kmsg_try
+	push $_kmsg_try
 	call vga_puts
 	add $0x02, %sp
 
@@ -55,7 +55,7 @@ sb_run:
 
 	push %bx
 	push %es
-	call sb_alloc_lba
+	call _sb_alloc_lba
 	add $0x04, %sp
 
 	# write magic
@@ -64,7 +64,7 @@ sb_run:
 	mov $(SB_MAG>>0x10), %ax
 	mov %ax, %es:SB_OFF_MAG+0x02(%bx)
 
-	call sb_write_dpi
+	call _sb_write_dpi
 
 	push $DISK_SB_SECT_CNT # (sect_cnt)
 	push $DISK_SB_LBA # (lba)
@@ -76,7 +76,7 @@ sb_run:
 
 	call disk_set_dpi
 	call disk_load_dpi
-	call sb_set_bm
+	call _sb_set_bm
 
 	# { make root dir
 	push $F_TYPE_DIR # (f_type)
@@ -100,7 +100,7 @@ sb_run:
 	jmp 90f
 
 90:
-	push $.kmsg_ok
+	push $_kmsg_ok
 	call vga_puts
 	add $0x02, %sp
 
@@ -109,8 +109,8 @@ sb_run:
 	pop %es
 	ret
 
-# [private] sb_alloc_lba(ub16 *seg, ub16 *off)
-sb_alloc_lba:
+# [private] _sb_alloc_lba(ub16 *seg, ub16 *off)
+_sb_alloc_lba:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -127,7 +127,7 @@ sb_alloc_lba:
 	jz 1f
 
 	mov $0xFFFF, %ax # max for calc
-	mov $.flag, %si
+	mov $_flag, %si
 	mov $(0x01<<0x00), %dx
 	mov %dx, (%si)
 
@@ -291,8 +291,8 @@ sb_alloc_lba:
 	pop %bp
 	ret
 
-# [private] sb_write_dpi()
-sb_write_dpi:
+# [private] _sb_write_dpi()
+_sb_write_dpi:
 	push %es
 	push %si
 	push %di
@@ -370,8 +370,8 @@ sb_write_dpi:
 	pop %es
 	ret
 
-# [private] sb_set_bm()
-sb_set_bm:
+# [private] _sb_set_bm()
+_sb_set_bm:
 	push %es
 	push %si
 	push %bx
@@ -417,7 +417,7 @@ sb_set_bm:
 
 # [data]
 .section .data
-.kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
-.kmsg_found: .asciz "\r\nSuperblock found.\r\n"
-.kmsg_ok: .asciz "Superblock ok\r\n"
-.flag: .word 0x00
+_kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
+_kmsg_found: .asciz "\r\nSuperblock found.\r\n"
+_kmsg_ok: .asciz "Superblock ok\r\n"
+_flag: .word 0x00

@@ -1,68 +1,71 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Copyright 2025 Facooya and Fanone Facooya
-#
-# [Prompt String 1] Build prompt string
 
 .include "chr.s"
 .section .text
 .code16
 .global ps1_build
 
-# ps1_build()
+# [public] ps1_build()
+# <req> cwd
 ps1_build:
 	push %si
 	push %di
 
-	mov $ps1_name, %si
+	mov $_ps1_name, %si
 	mov $ps1, %di
 
-.zero__lp:
+10: # zero
+1:
 	# (*ps1[i] == null) ? {end}
 	mov (%di), %al
 	test %al, %al
-	jz .zero__end
+	jz 9f
 
 	xor %al, %al
 	mov %al, (%di)
 
 	inc %di
-	jmp .zero__lp
+	jmp 1b
 
-.zero__end:
+9:
+20: # name
 	mov $ps1, %di
 
-.name__lp:
+1:
 	# (chr == null) ? {end}
 	mov (%si), %al
 	test %al, %al
-	jz .name__end
+	jz 9f
 
 	mov %al, (%di)
 
 	inc %si
 	inc %di
-	jmp .name__lp
+	jmp 1b
 
-.name__end:
+9:
 	mov $CHR_COL, %al
 	mov %al, (%di)
 	inc %di
 
+30: # path
 	mov $cwd, %si
 
-.path__lp:
+1:
 	mov (%si), %al
 	test %al, %al
-	jz .path__end
+	jz 9f
 
 	mov %al, (%di)
 
 	inc %si
 	inc %di
-	jmp .path__lp
+	jmp 1b
 
-.path__end:
+9:
+90:
 	mov $CHR_HS, %al
 	mov %al, (%di)
 	inc %di
@@ -74,3 +77,9 @@ ps1_build:
 	pop %di
 	pop %si
 	ret
+
+# [data]
+.section .data
+.global ps1
+ps1: .zero 0x110
+_ps1_name: .asciz "fayos"

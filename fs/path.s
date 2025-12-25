@@ -20,24 +20,24 @@ path_parse:
 	mov %sp, %bp
 
 	push 0x04(%bp) # (&path)
-	call path_tok
+	call _path_tok
 	add $0x02, %sp
 	# <mod: path_sbuf>
 
-	call path_build
+	call _path_build
 	# <req: path_sbuf>
 	# <mod: path_cv>
 
-	call path_read
+	call _path_read
 	# <mod: (fsp *dir, *base)>
 	# <ax = {done:0, exit:1, ne_last:2}>
 
 	pop %bp
 	ret
 
-# [private] path_tok(ub8 *path)
+# [private] _path_tok(ub8 *path)
 # <mod> path_sbuf
-path_tok:
+_path_tok:
 	push %bp
 	mov %sp, %bp
 	push %si
@@ -123,10 +123,10 @@ path_tok:
 	pop %bp
 	ret
 
-# [private] path_build()
+# [private] _path_build()
 # <req> path_sbuf
 # <mod> path_cv
-path_build:
+_path_build:
 	push %si
 	push %di
 	push %bx
@@ -183,11 +183,11 @@ path_build:
 	pop %si
 	ret
 
-# [private] path_read()
+# [private] _path_read()
 # <req> fsp *root, path_cv, path_sbuf
 # <mod> (fsp *dir, *base)
 # <ret> ax = {done:0, exit:1, neq_last:2}
-path_read:
+_path_read:
 	push %es
 	push %si
 	push %di
