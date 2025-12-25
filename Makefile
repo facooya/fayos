@@ -48,15 +48,10 @@ fs/fsp.s \
 # shell
 SRCS_SH = \
 sh/cwd.s \
+sh/args.s \
 sh/prompt.s \
 sh/execute.s \
 sh/history.s \
-\
-sh/arg/arg_data.s \
-sh/arg/arg_proc.s \
-sh/arg/arg_tok.s \
-sh/arg/arg_build.s \
-sh/arg/arg_parse.s \
 \
 sh/cmd/cmd_map.s \
 \

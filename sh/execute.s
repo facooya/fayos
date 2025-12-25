@@ -22,8 +22,8 @@ exec_cmd:
 	mov $CHR_LF, %al
 	call vga_putc
 
-	# { arg_proc
-	call arg_proc
+	# { args_proc
+	call args_proc
 	# <ax = {true:0, exit:1}>
 	cmp $0x01, %ax
 	je 90f
