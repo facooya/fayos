@@ -6,6 +6,7 @@
 .section .text
 .code16
 .global pic_init
+.global ivt_init
 
 # pic_init()
 pic_init:
@@ -71,5 +72,26 @@ pic_init:
 	out %al, $PIC2_PORT_DATA
 	out %al, $IO_WAIT
 	# }
+	ret
 
+# ivt_init()
+ivt_init:
+	push %es
+
+	xor %ax, %ax
+	mov %ax, %es
+
+	# irq 1
+	movw %cs, %es:(IVT_ENT_IRQ1+0x02)
+	movw $isr_ps2, %es:(IVT_ENT_IRQ1)
+
+	# irq 8
+	movw %cs, %es:(IVT_ENT_IRQ8+0x02)
+	movw $isr_rtc, %es:(IVT_ENT_IRQ8)
+
+	# irq 14
+	movw %cs, %es:(IVT_ENT_IRQ14+0x02)
+	movw $isr_ata, %es:(IVT_ENT_IRQ14)
+
+	pop %es
 	ret

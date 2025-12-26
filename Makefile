@@ -119,12 +119,8 @@ drv/rtc/rtc_upd_time.s
 
 # interrupt
 SRCS_INT = \
-int/pic_init.s \
-int/ivt_init.s \
-\
-int/isr_ps2.s \
-int/isr_rtc.s \
-int/isr_ata.s \
+int/interrupt.s \
+int/isr.s
 
 # library
 SRCS_LIB = \
