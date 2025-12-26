@@ -8,12 +8,9 @@ BOOT_BIN = ./build/boot.bin
 KERN_BIN = ./build/kern.bin
 TOT_SECT_CNT = 20480
 
-# boot group
-SRCS_GROUP_BOOT = \
-boot/boot.s \
-boot/boot_vga_puts.s \
-boot/boot_vga_clr.s \
-boot/boot_ata_read_sect.s
+# boot
+SRC_BOOT = boot/boot.s
+OBJ_BOOT = $(SRC_BOOT:%.s=./build/%.o)
 
 # kernel
 SRCS_KERN = \
@@ -163,7 +160,6 @@ $(SRCS_INT) \
 $(SRCS_LIB)
 
 # objects
-OBJS_BOOT = $(SRCS_GROUP_BOOT:%.s=./build/%.o)
 OBJS_KERN = $(SRCS_GROUP_KERN:%.s=./build/%.o)
 
 # { command
@@ -174,13 +170,17 @@ $(FAYOS_IMG): $(BOOT_BIN) $(KERN_BIN) | ./build/
 	dd if=$(BOOT_BIN) of=$(FAYOS_IMG) bs=512 count=1 conv=notrunc
 	dd if=$(KERN_BIN) of=$(FAYOS_IMG) bs=512 seek=16 conv=notrunc
 
-$(BOOT_BIN): $(OBJS_BOOT) | ./build/
+$(BOOT_BIN): $(OBJ_BOOT) | ./build/
 	ld -T ./boot/boot.lds -o $@ $^
 
 $(KERN_BIN): $(OBJS_KERN) | ./build/
 	ld -T ./kern/kern.lds -o $@ $^
 
-./build/%.o: %.s | ./build/
+$(OBJ_BOOT): $(SRC_BOOT) | ./build/
+	mkdir -p $(dir $@)
+	as --32 -Iboot -o $@ $^
+
+./build/%.o: %.s | $(OBJ_BOOT)
 	mkdir -p $(dir $@)
 	as --32 -Iinc -o $@ $^
 
