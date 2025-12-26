@@ -53,23 +53,21 @@ sh/prompt.s \
 sh/execute.s \
 sh/history.s \
 \
-sh/cmd/cmd_map.s \
+sh/cmd/command.s \
+sh/cmd/test.s \
+sh/cmd/echo.s \
+sh/cmd/date.s \
+sh/cmd/help.s \
+sh/cmd/clear.s \
 \
-sh/cmd/sys/cmd_test.s \
-sh/cmd/sys/cmd_echo.s \
-sh/cmd/sys/cmd_date.s \
-sh/cmd/sys/cmd_help.s \
-sh/cmd/sys/cmd_clear.s \
-\
-sh/cmd/file/cmd_cat.s \
-sh/cmd/file/cmd_touch.s \
-sh/cmd/file/cmd_rm.s \
-\
-sh/cmd/dir/cmd_pwd.s \
-sh/cmd/dir/cmd_ls.s \
-sh/cmd/dir/cmd_cd.s \
-sh/cmd/dir/cmd_mkdir.s \
-sh/cmd/dir/cmd_rmdir.s
+sh/cmd/cat.s \
+sh/cmd/ls.s \
+sh/cmd/pwd.s \
+sh/cmd/cd.s \
+sh/cmd/touch.s \
+sh/cmd/rm.s \
+sh/cmd/mkdir.s \
+sh/cmd/rmdir.s
 
 # driver
 SRCS_DRV = \
