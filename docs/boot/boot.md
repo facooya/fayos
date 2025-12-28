@@ -18,23 +18,23 @@ Write the boot signature via linker script.
 ---
 
 ## API Reference
-## `_start`
-### Overview
+### `_start`
+#### Overview
 Boot entry point.
 
-### Parameters
+#### Parameters
 - `N/A`
 
-### Requires
+#### Requires
 - `N/A`
 
-### Modifies
+#### Modifies
 - `N/A`
 
-### Returns
+#### Returns
 - `N/A`
 
-### Process Flow
+#### Process Flow
 1. Clear interrupt and clear direction
 1. Initialize registers to zero
     - init registers: `ax, ds, es, ss, sp, bp`
@@ -55,23 +55,23 @@ Boot entry point.
 
 ---
 
-## `_vga_clr`
-### Overview
+### `_vga_clr`
+#### Overview
 Clear screen.
 
-### Parameters
+#### Parameters
 - `N/A`
 
-### Requires
+#### Requires
 - `N/A`
 
-### Modifies
+#### Modifies
 - `N/A`
 
-### Returns
+#### Returns
 - `N/A`
 
-### Process Flow
+#### Process Flow
 1. Set VGA memory
 1. Get display size
 1. Clear to using character space and defalut color
@@ -80,23 +80,23 @@ Clear screen.
 
 ---
 
-## `_vga_puts`
-### Overview
+### `_vga_puts`
+#### Overview
 Put string in VGA.
 
-### Parameters
+#### Parameters
 1. `ub8 *str`
 
-### Requires
+#### Requires
 - `N/A`
 
-### Modifies
+#### Modifies
 - `N/A`
 
-### Returns
+#### Returns
 - `N/A`
 
-### Process Flow
+#### Process Flow
 1. Set VGA memory
 1. Get cursor
 1. Set VGA memory to current cursor
@@ -106,23 +106,23 @@ Put string in VGA.
 
 ---
 
-## `_ata_read`
-### Overview
+### `_ata_read`
+#### Overview
 Read sectors for kernel. Implements PIO mode, polling method.
 
-### Parameters
+#### Parameters
 - `N/A`
 
-### Requires
+#### Requires
 - `N/A`
 
-### Modifies
+#### Modifies
 - `N/A`
 
-### Returns
+#### Returns
 - `N/A`
 
-### Process Flow
+#### Process Flow
 1. Set drive mode
     - set drive master and LBA mode
     - delay 400ns
