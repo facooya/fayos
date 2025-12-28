@@ -9,12 +9,19 @@ Write the boot signature via linker script.
 
 ## Table of Contents
 - [API Reference](#api-reference)
-- [Process Flow](#process-flow)
+- - [`_start`](#_start)
+- - [`_vga_clr`](#_vga_clr)
+- - [`_vga_puts`](#_vga_puts)
+- - [`_ata_read`](#_ata_read)
 - [Reference Links](#reference-links)
 
 ---
 
 ## API Reference
+## `_start`
+### Overview
+Boot entry point.
+
 ### Parameters
 - `N/A`
 
@@ -27,9 +34,7 @@ Write the boot signature via linker script.
 ### Returns
 - `N/A`
 
----
-
-## Process Flow
+### Process Flow
 1. Clear interrupt and clear direction
 1. Initialize registers to zero
     - init registers: `ax, ds, es, ss, sp, bp`
@@ -50,11 +55,95 @@ Write the boot signature via linker script.
 
 ---
 
+## `_vga_clr`
+### Overview
+Clear screen.
+
+### Parameters
+- `N/A`
+
+### Requires
+- `N/A`
+
+### Modifies
+- `N/A`
+
+### Returns
+- `N/A`
+
+### Process Flow
+1. Set VGA memory
+1. Get display size
+1. Clear to using character space and defalut color
+    - default color attribute: bg=black, fg=white
+1. Set cursor to initial position
+
+---
+
+## `_vga_puts`
+### Overview
+Put string in VGA.
+
+### Parameters
+1. `ub8 *str`
+
+### Requires
+- `N/A`
+
+### Modifies
+- `N/A`
+
+### Returns
+- `N/A`
+
+### Process Flow
+1. Set VGA memory
+1. Get cursor
+1. Set VGA memory to current cursor
+1. Put string to VGA memory with color attribute
+    - supports newline
+1. Set cursor to last position
+
+---
+
+## `_ata_read`
+### Overview
+Read sectors for kernel. Implements PIO mode, polling method.
+
+### Parameters
+- `N/A`
+
+### Requires
+- `N/A`
+
+### Modifies
+- `N/A`
+
+### Returns
+- `N/A`
+
+### Process Flow
+1. Set drive mode
+    - set drive master and LBA mode
+    - delay 400ns
+1. Set sector count and LBA and send command to read
+    - after send command delay 400ns
+1. Data request check every sectors
+1. Data read
+    - if sector count 0, done
+
+| Description | Link |
+| --- | --- |
+| Why delay 400ns | [docs: ata delay 400ns](/docs/drv/ata/README.md#note-delay-400ns) |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
 | Header for bootloader | [docs: boot header](/docs/inc/boot.md) |
 | Main doucment for boot | [docs: boot](/docs/boot/README.md) |
+| Main document for ATA | [docs: ata](/docs/drv/ata.md) |
 | Main document for kernel | [docs: kernel](/docs/kern/README.md) |
 | Main document for Fayos | [docs: fayos](/docs/README.md) |
 
