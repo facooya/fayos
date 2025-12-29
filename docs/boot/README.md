@@ -21,10 +21,7 @@ After kernel jump, Boot done.
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
 | Start of boot | `/boot/boot.s` | [docs: boot](/docs/boot/boot.md) |
-| ATA read in boot | `/boot/boot_ata_read_sect.s` | [docs: boot ata read](/docs/boot/boot_ata_read_sect.md) |
-| VGA clear display in boot | `/boot/boot_vga_clr.s` | [docs: boot vga clear](/docs/boot/boot_vga_clr.md) |
-| VGA put sting in boot | `/boot/boot_vga_puts.s` | [docs: boot vga puts](/docs/boot/boot_vga_puts.md) |
-| Header for bootloader | `/inc/boot.s` | [docs: boot header](/docs/inc/boot.md) |
+| Header for bootloader | `/boot/boot_inc.s` | [docs: boot header](/docs/boot_inc.md) |
 | Linker script for boot | `/boot/boot.lds` | [docs: linker for boot](#note-linker-script) |
 
 ---

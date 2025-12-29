@@ -35,16 +35,28 @@ Boot entry point.
 - `N/A`
 
 #### Process Flow
-1. Clear interrupt and clear direction
-1. Initialize registers to zero
+```mermaid
+graph TD
+Init[Initialization]
+Init --> Stack[Set stack pointer]
+Stack --> VGA_Clear[[_vga_clr]]
+VGA_Clear --> VGA_Puts[[_vga_puts]]
+VGA_Puts --> KernelMemory[Set memory for kernel]]
+KernelMemory --> ATA_Read[[_ata_read]]
+KernelRead --> JumpKernel([Jump to kernel memory])
+```
+
+#### Implementation
+- Initialization
+    - Clear interrupt and clear direction
     - init registers: `ax, ds, es, ss, sp, bp`
     - mandatory to zero: `ds, ss`
-1. Set stack start address
+- Set stack pointer
     - `sp = 0x7C00`
-1. Clear display
-1. Print boot message
-1. Read kernel sectors
-1. Jump to kernel
+- Clear screen
+- Print boot message
+- Read kernel sectors
+- Jump to kernel
     - `cs:ip = 0x0000:0x1000`
 
 | Description | Link |
