@@ -37,13 +37,13 @@ Boot entry point.
 #### Process Flow
 ```mermaid
 graph TD
-Init[Initialization]
-Init --> Stack[Set stack pointer]
-Stack --> VGA_Clear[[_vga_clr]]
-VGA_Clear --> VGA_Puts[[_vga_puts]]
-VGA_Puts --> KernelMemory[Set memory for kernel]]
-KernelMemory --> ATA_Read[[_ata_read]]
-KernelRead --> JumpKernel([Jump to kernel memory])
+Init([ Initialization ])
+Init --> Stack[ Set stack pointer ]
+Stack --> VGA_Clear[[ _vga_clr ]]
+VGA_Clear --> VGA_Puts[[ _vga_puts ]]
+VGA_Puts --> KernelMemory[ Set memory for kernel ]
+KernelMemory --> ATA_Read[[ _ata_read ]]
+ATA_Read --> JumpKernel([ Jump to kernel memory ])
 ```
 
 #### Implementation
@@ -84,11 +84,21 @@ Clear screen.
 - `N/A`
 
 #### Process Flow
-1. Set VGA memory
-1. Get display size
-1. Clear to using character space and defalut color
-    - default color attribute: bg=black, fg=white
-1. Set cursor to initial position
+```mermaid
+graph TD
+Init([ Set VGA memroy ])
+Init --> GetRowCol[ Get screen row count and column count ]
+GetRowCol --> CalcSize[ Calculate screen size ]
+CalcSize --> ClearCheck{ "(screen_size == 0)?" }
+ClearCheck --> Yes --> End([ Set cursor to zero ])
+ClearCheck --> No --> Loop[ "screen_size--" ]
+```
+
+#### Implementation
+- Overwirte space to clear
+- Default color attribute: background=black, foreground=lightgray
+- `screen_size = row_count * column_count`
+    - `row_count = row_last_index + 1`
 
 ---
 

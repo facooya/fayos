@@ -46,6 +46,7 @@ _vga_clr:
 	xor %dx, %dx
 	mov $DISP_ADDR_ROW, %bx
 	mov (%bx), %dl
+	inc %dl
 
 	mov $DISP_ADDR_COL, %bx
 	mov (%bx), %ax
@@ -62,14 +63,14 @@ _vga_clr:
 	# clear
 	mov $CHR_SP, %al
 	mov %al, %es:(%di)
-	add $0x01, %di
+	inc %di
 
 	# attr
 	mov $VGA_ATTR_COLOR, %al
 	mov %al, %es:(%di)
-	add $0x01, %di
+	inc %di
 
-	sub $0x01, %cx
+	dec %cx
 	jmp 1b
 
 9:
