@@ -37,13 +37,13 @@ Boot entry point.
 #### Process Flow
 ```mermaid
 graph TD
-Init([ Initialization ])
-Init --> Stack[ Set stack pointer ]
-Stack --> VGA_Clear[[ _vga_clr ]]
-VGA_Clear --> VGA_Puts[[ _vga_puts ]]
-VGA_Puts --> KernelMemory[ Set memory for kernel ]
-KernelMemory --> ATA_Read[[ _ata_read ]]
-ATA_Read --> JumpKernel([ Jump to kernel memory ])
+Init([Initialization])
+Init --> Stack[Set stack pointer]
+Stack --> VGA_Clear[[_vga_clr]]
+VGA_Clear --> VGA_Puts[[_vga_puts]]
+VGA_Puts --> KernelMemory[Set memory for kernel]
+KernelMemory --> ATA_Read[[_ata_read]]
+ATA_Read --> JumpKernel([Jump to kernel memory])
 ```
 
 #### Implementation
@@ -86,12 +86,12 @@ Clear screen.
 #### Process Flow
 ```mermaid
 graph TD
-Init([ Set VGA memroy ])
-Init --> GetRowCol[ Get screen row count and column count ]
-GetRowCol --> CalcSize[ Calculate screen size ]
-CalcSize --> ClearCheck{ "(screen_size == 0)?" }
-ClearCheck --> Yes --> End([ Set cursor to zero ])
-ClearCheck --> No --> Loop[ "screen_size--" ]
+Init([Set VGA memroy])
+Init --> GetRowCol[Get screen row count and column count]
+GetRowCol --> CalcSize[Calculate screen size]
+CalcSize --> ClearCheck{"(screen_size == 0)?"}
+ClearCheck -- Yes --> End([Set cursor to zero])
+ClearCheck -- No --> Loop[Clear: Overwirte space with color attribute] -- "&vga_memory+=2, screen_size--" --> ClearCheck
 ```
 
 #### Implementation
