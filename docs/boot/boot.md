@@ -119,12 +119,25 @@ Put string in VGA.
 - `N/A`
 
 #### Process Flow
-1. Set VGA memory
-1. Get cursor
-1. Set VGA memory to current cursor
-1. Put string to VGA memory with color attribute
-    - supports newline
-1. Set cursor to last position
+```mermaid
+graph TD
+Init([Set VGA memroy])
+Init --> GetCurs[Get current cursor position]
+GetCurs --> SetVGA[Set current cursor position in VGA memory]
+ChrNull{"(chr == null)?"}
+ChrNL{"(chr == newline)?"}
+NL[Get column count]
+Out[Output character]
+SetVGA --> ChrNull -- Yes --> End
+ChrNull -- No --> ChrNL -- Yes --> NL
+ChrNL -- No --> Out
+Out -- "curs_pos++, &str++, &vga_mem+=2" --> ChrNull
+NL --> CR[Carriage return] --> UpdateVGA[Update VGA memory pointer refer column count] --> UpdateCurs[Update cursor position refer VGA memory pointer] -- "&str++" --> ChrNull
+End([Set cursor to last index from string])
+```
+
+#### Implementation
+- Default color attribute: background=black, foreground=lightgray
 
 ---
 

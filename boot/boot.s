@@ -139,15 +139,15 @@ _vga_puts:
 
 	# out
 	mov %al, %es:(%di)
-	add $0x01, %di
+	inc %di
 
 	# attr
 	mov $VGA_ATTR_COLOR, %al
 	mov %al, %es:(%di)
-	add $0x01, %di
+	inc %di
 
-	add $0x01, %si
-	add $0x01, %cx # pos
+	inc %si
+	inc %cx # pos
 	jmp 1b
 
 2: # newline
@@ -175,7 +175,7 @@ _vga_puts:
 	div %cx
 	mov %ax, %cx
 
-	add $0x01, %si
+	inc %si
 	jmp 1b
 
 9:
