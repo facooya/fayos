@@ -158,14 +158,27 @@ Read sectors for kernel. Implements PIO mode, polling method.
 - `N/A`
 
 #### Process Flow
-1. Set drive mode
-    - set drive master and LBA mode
-    - delay 400ns
-1. Set sector count and LBA and send command to read
-    - after send command delay 400ns
-1. Data request check every sectors
-1. Data read
-    - if sector count 0, done
+```mermaid
+graph TD
+Start([Set drive mode])
+Start -- "delay 400ns" --> SetSector[Set kernel sector count]
+SetSector --> SetLBA[Set kernel LBA]
+SetLBA --> Command[Command for read]
+CheckDRQ{"(DRQ == 0)?"}
+Command -- "delay 400ns" --> CheckDRQ
+CheckDRQ -- Yes --> ReadStat[Read status] --> CheckDRQ
+CheckDRQ -- No --> ReadData[Read data for 1 sector]
+CheckDataCnt{"(data_count == 0)?"}
+CheckSectCnt{"(sector_count == 0)?"}
+ReadData -- "sector_count--" --> CheckDataCnt
+CheckDataCnt -- Yes --> CheckSectCnt
+CheckDataCnt -- No --> DataLoad[Data load 2-byte] -- "data_count--, &kernel_memory+=2" --> CheckDataCnt
+CheckSectCnt -- Yes --> End([End])
+CheckSectCnt -- No --> ReadStat
+```
+
+#### Implementation
+- Set drive master and LBA mode
 
 | Description | Link |
 | --- | --- |
@@ -176,7 +189,7 @@ Read sectors for kernel. Implements PIO mode, polling method.
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Header for bootloader | [docs: boot header](/docs/inc/boot.md) |
+| Header for bootloader | [docs: boot header](/docs/boot/boot_inc.md) |
 | Main doucment for boot | [docs: boot](/docs/boot/README.md) |
 | Main document for ATA | [docs: ata](/docs/drv/ata.md) |
 | Main document for kernel | [docs: kernel](/docs/kern/README.md) |
