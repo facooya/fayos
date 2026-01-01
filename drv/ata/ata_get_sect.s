@@ -4,7 +4,7 @@
 
 .include "int.s"
 .include "drv/ata.s"
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .section .text
 .code16
 .global ata_get_sect

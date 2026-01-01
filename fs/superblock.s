@@ -5,7 +5,7 @@
 .include "fs/fs.s"
 .include "fs/sb.s"
 .include "fs/ind.s"
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .section .text
 .code16
 .global sb_run

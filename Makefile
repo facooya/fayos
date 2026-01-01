@@ -74,7 +74,6 @@ drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
-drv/disk/disk_data.s \
 drv/disk/disk_read_fsp.s \
 drv/disk/disk_write_fsp.s \
 drv/disk/disk_read_dpi.s \
@@ -113,6 +112,7 @@ drv/vga/vga_shu.s \
 drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
+drv/disk.s \
 drv/time.s
 
 # interrupt

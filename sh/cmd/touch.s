@@ -5,7 +5,7 @@
 # [Command] Create file
 
 .include "chr.s"
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .include "fs/fs.s"
 .include "fs/de.s"
 .include "fs/ind.s"

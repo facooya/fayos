@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .section .text
 .code16
 .global disk_load_dpi

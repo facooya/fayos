@@ -4,7 +4,7 @@
 
 .include "chr.s"
 .include "fs/fs.s"
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .include "fs/de.s"
 .include "fs/ind.s"
 .section .text

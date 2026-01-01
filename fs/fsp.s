@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "drv/disk.s"
+.include "drv/disk.inc"
 .include "fs/fs.s"
 .include "fs/sb.s"
 .include "fs/ind.s"
