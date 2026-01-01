@@ -113,7 +113,7 @@ drv/vga/vga_shu.s \
 drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
-drv/rtc_cmos.s
+drv/time.s
 
 # interrupt
 SRCS_INT = \

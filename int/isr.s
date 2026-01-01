@@ -80,7 +80,7 @@ isr_rtc:
 	mov (rtc_date), %ax
 	inc %ax
 	mov %ax, (rtc_date)
-	call rtc_upd_time
+	call time_upd
 
 	xor %ax, %ax
 	mov %ax, (rtc_tick)
