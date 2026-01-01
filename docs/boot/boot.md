@@ -53,9 +53,6 @@ ATA_Read --> JumpKernel([Jump to kernel memory])
     - mandatory to zero: `ds, ss`
 - Set stack pointer
     - `sp = 0x7C00`
-- Clear screen
-- Print boot message
-- Read kernel sectors
 - Jump to kernel
     - `cs:ip = 0x0000:0x1000`
 
@@ -163,7 +160,7 @@ graph TD
 Start([Set drive mode])
 Start -- "delay 400ns" --> SetSector[Set kernel sector count]
 SetSector --> SetLBA[Set kernel LBA]
-SetLBA --> Command[Command for read]
+SetLBA --> Command[Command to read]
 CheckDRQ{"(DRQ == 0)?"}
 Command -- "delay 400ns" --> CheckDRQ
 CheckDRQ -- Yes --> ReadStat[Read status] --> CheckDRQ
@@ -197,4 +194,4 @@ CheckSectCnt -- No --> ReadStat
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

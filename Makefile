@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 # config
 FAYOS_IMG = ./build/fayos.img
@@ -113,9 +113,7 @@ drv/vga/vga_shu.s \
 drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
-drv/rtc/rtc_init.s \
-drv/rtc/rtc_get.s \
-drv/rtc/rtc_upd_time.s
+drv/rtc_cmos.s
 
 # interrupt
 SRCS_INT = \
