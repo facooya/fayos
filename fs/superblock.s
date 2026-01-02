@@ -2,9 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "fs/fs.s"
-.include "fs/sb.s"
-.include "fs/ind.s"
+.include "fs/fs.inc"
+.include "fs/sb.inc"
+.include "fs/ind.inc"
 .include "drv/disk.inc"
 .section .text
 .code16

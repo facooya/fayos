@@ -4,7 +4,7 @@
 #
 # Debug trace
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global dbg_a

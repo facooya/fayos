@@ -2,10 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
-.include "fs/fs.s"
-.include "fs/ind.s"
-.include "fs/de.s"
+.include "chr.inc"
+.include "fs/fs.inc"
+.include "fs/ind.inc"
+.include "fs/de.inc"
 .section .text
 .code16
 .global fs_add

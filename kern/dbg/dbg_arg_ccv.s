@@ -4,7 +4,7 @@
 #
 # [Debug] arg_ccv
 
-.include "chr.s"
+.include "chr.inc"
 .section .data
 .arg_c_str: .asciz "arg_c: "
 .opt_c_str: .asciz "opt_c: "

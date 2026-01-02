@@ -4,7 +4,7 @@
 #
 # Debug number - show number value
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global dbg_num

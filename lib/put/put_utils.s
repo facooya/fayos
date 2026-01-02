@@ -4,7 +4,7 @@
 #
 # Put utilities in write buffer
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global putc

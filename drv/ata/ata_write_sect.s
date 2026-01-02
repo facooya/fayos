@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "int.s"
-.include "drv/ata.s"
+.include "int.inc"
+.include "drv/ata.inc"
 .section .text
 .code16
 .global ata_write_sect

@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
-.include "fs/fs.s"
+.include "chr.inc"
+.include "fs/fs.inc"
 .section .text
 .code16
 .global args_proc

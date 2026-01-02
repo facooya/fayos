@@ -2,9 +2,9 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
-.include "drv/kbd.s"
-.include "drv/ps2.s"
+.include "chr.inc"
+.include "drv/kbd.inc"
+.include "drv/ps2.inc"
 .section .text
 .code16
 .global kbd_conv_kc

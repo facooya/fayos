@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "drv/vga.s"
+.include "drv/vga.inc"
 .section .text
 .code16
 .global vga_init

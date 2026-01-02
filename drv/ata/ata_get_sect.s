@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "int.s"
-.include "drv/ata.s"
+.include "int.inc"
+.include "drv/ata.inc"
 .include "drv/disk.inc"
 .section .text
 .code16

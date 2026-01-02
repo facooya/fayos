@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "drv/ps2.s"
-.include "drv/kbd.s"
+.include "drv/ps2.inc"
+.include "drv/kbd.inc"
 .section .text
 .code16
 .global kbd_upd_mflg

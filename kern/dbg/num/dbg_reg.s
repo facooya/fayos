@@ -4,7 +4,7 @@
 #
 # Debug register - show register value
 
-.include "chr.s"
+.include "chr.inc"
 .section .data
 .outnum: .zero 0x05
 

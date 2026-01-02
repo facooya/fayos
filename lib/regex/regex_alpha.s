@@ -4,7 +4,7 @@
 #
 # [Regular Expression] Check alphabet
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global regex_alpha

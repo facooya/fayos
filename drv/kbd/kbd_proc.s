@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
-.include "drv/kbd.s"
+.include "chr.inc"
+.include "drv/kbd.inc"
 .section .text
 .code16
 .global kbd_proc

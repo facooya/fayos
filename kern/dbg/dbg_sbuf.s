@@ -4,7 +4,7 @@
 #
 # [Debug] Size buffer
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global dbg_sbuf

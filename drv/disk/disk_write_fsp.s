@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "fs/fs.s"
+.include "fs/fs.inc"
 .section .text
 .code16
 .global disk_write_fsp

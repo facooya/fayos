@@ -2,11 +2,11 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
+.include "chr.inc"
 .include "drv/disk.inc"
-.include "fs/fs.s"
-.include "fs/ind.s"
-.include "fs/de.s"
+.include "fs/fs.inc"
+.include "fs/ind.inc"
+.include "fs/de.inc"
 .section .text
 .code16
 .global path_parse

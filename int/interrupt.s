@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "int.s"
+.include "int.inc"
 .section .text
 .code16
 .global pic_init

@@ -4,8 +4,8 @@
 #
 # [Command] Make directory
 
-.include "chr.s"
-.include "fs/fs.s"
+.include "chr.inc"
+.include "fs/fs.inc"
 .section .text
 .code16
 .global cmd_mkdir

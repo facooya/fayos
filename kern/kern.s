@@ -4,8 +4,8 @@
 #
 # [Kernel] Main
 
-.include "chr.s"
-.include "drv/ps2.s"
+.include "chr.inc"
+.include "drv/ps2.inc"
 .section .data
 .kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"
 

@@ -3,9 +3,9 @@
 # Copyright 2025 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
-.include "fs/fs.s"
-.include "fs/sb.s"
-.include "fs/ind.s"
+.include "fs/fs.inc"
+.include "fs/sb.inc"
+.include "fs/ind.inc"
 .section .text
 .code16
 .global fsp_init

@@ -4,11 +4,11 @@
 #
 # [Command] Create file
 
-.include "chr.s"
+.include "chr.inc"
 .include "drv/disk.inc"
-.include "fs/fs.s"
-.include "fs/de.s"
-.include "fs/ind.s"
+.include "fs/fs.inc"
+.include "fs/de.inc"
+.include "fs/ind.inc"
 .section .text
 .code16
 .global cmd_touch

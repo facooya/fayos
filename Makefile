@@ -34,7 +34,7 @@ kern/dbg/num/dbg_reg.s
 
 # file system
 SRCS_FS = \
-fs/filesys.s \
+fs/fs.s \
 fs/superblock.s \
 fs/bitmap.s \
 fs/inode.s \
@@ -113,7 +113,7 @@ drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
 drv/disk.s \
-drv/time.s
+drv/rtc.s
 
 # interrupt
 SRCS_INT = \

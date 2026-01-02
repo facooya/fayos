@@ -4,7 +4,7 @@
 #
 # [Command] Test runtime
 
-.include "drv/rtc.s"
+.include "drv/rtc.inc"
 .section .text
 .code16
 .global cmd_test

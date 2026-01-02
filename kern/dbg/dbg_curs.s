@@ -4,7 +4,7 @@
 #
 # [Debug] Cursor structure
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global dbg_curs

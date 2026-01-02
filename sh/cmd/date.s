@@ -4,8 +4,8 @@
 #
 # [Command] Print date
 
-.include "chr.s"
-.include "drv/rtc.s"
+.include "chr.inc"
+.include "drv/rtc.inc"
 .section .data
 .week:
 	.asciz "Sun",

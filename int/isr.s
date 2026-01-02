@@ -2,10 +2,10 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "int.s"
-.include "drv/ps2.s"
-.include "drv/rtc.s"
-.include "drv/ata.s"
+.include "int.inc"
+.include "drv/ps2.inc"
+.include "drv/rtc.inc"
+.include "drv/ata.inc"
 .section .text
 .code16
 .global isr_ps2

@@ -3,7 +3,7 @@
 # Copyright 2025 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
-.include "fs/sb.s"
+.include "fs/sb.inc"
 .section .text
 .code16
 .global disk_set_dpi

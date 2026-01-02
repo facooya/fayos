@@ -2,7 +2,7 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global ps1_build

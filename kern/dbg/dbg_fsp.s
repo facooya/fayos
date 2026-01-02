@@ -4,8 +4,8 @@
 #
 # [Debug] File System Packet
 
-.include "chr.s"
-.include "fs/fs.s"
+.include "chr.inc"
+.include "fs/fs.inc"
 .section .data
 .ind_ptr_str: .asciz "ind_ptr"
 .inum_str: .asciz "inum"

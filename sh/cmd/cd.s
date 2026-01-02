@@ -4,10 +4,10 @@
 #
 # [Command] Change directory
 
-.include "chr.s"
-.include "fs/fs.s"
-.include "fs/de.s"
-.include "fs/ind.s"
+.include "chr.inc"
+.include "fs/fs.inc"
+.include "fs/de.inc"
+.include "fs/ind.inc"
 .section .text
 .code16
 .global cmd_cd

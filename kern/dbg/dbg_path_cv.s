@@ -4,7 +4,7 @@
 #
 # [Debug] Show paths - pathc, *pathv
 
-.include "chr.s"
+.include "chr.inc"
 .section .data
 .pathc_str: .asciz "pathc: "
 .pathv_str: .asciz "pathv["

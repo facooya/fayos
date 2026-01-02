@@ -2,8 +2,8 @@
 #
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
-.include "chr.s"
-.include "drv/rtc.s"
+.include "chr.inc"
+.include "drv/rtc.inc"
 .section .text
 .code16
 .global time_upd

@@ -4,8 +4,8 @@
 #
 # Parse file lines and each line size except cr/lf
 
-.include "chr.s"
-.include "fs/fs.s"
+.include "chr.inc"
+.include "fs/fs.inc"
 .section .data
 .global file_lines
 .global file_linev

@@ -9,7 +9,7 @@
 # 0: e (escape)
 # 1: n (no-newline)
 
-.include "chr.s"
+.include "chr.inc"
 .section .text
 .code16
 .global cmd_echo

@@ -2,8 +2,8 @@
 #
 # Copyright 2025 Facooya and Fanone Facooya
 
-.include "drv/vga.s"
-.include "chr.s"
+.include "drv/vga.inc"
+.include "chr.inc"
 .section .text
 .code16
 .global vga_puts
