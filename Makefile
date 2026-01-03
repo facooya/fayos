@@ -90,12 +90,11 @@ drv/kbd/kbd_hdl_down.s \
 drv/kbd/kbd_hdl_left.s \
 drv/kbd/kbd_hdl_right.s \
 \
-drv/disp/disp_shr_cl.s \
-drv/disp/disp_shl_cl.s \
-\
 drv/vga.s \
-drv/disk.s \
 drv/rtc.s \
+\
+drv/disk.s \
+drv/display.s \
 drv/time.s
 
 # interrupt
