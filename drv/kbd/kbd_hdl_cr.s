@@ -13,7 +13,7 @@ kbd_hdl_cr:
 	call exec_cmd
 
 	push $ps1
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	call vga_init_curs

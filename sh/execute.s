@@ -18,9 +18,9 @@ exec_cmd:
 	push %bx
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	# { args_proc
 	call args_proc
@@ -127,7 +127,7 @@ exec_cmd:
 	add $0x02, %si # skip len
 
 	push %si
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	jmp 90f
 
@@ -157,12 +157,12 @@ exec_cmd:
 	jmp 890f
 
 890:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	jmp 90b
 
 # [private] _exec_redir()
@@ -331,10 +331,10 @@ _exec_redir:
 	jmp 890f
 
 890:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	jmp 80b

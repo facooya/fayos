@@ -109,10 +109,10 @@ cmd_cd:
 	jmp .err_hdl
 
 .err_hdl:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	jmp .exit

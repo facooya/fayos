@@ -6,11 +6,11 @@
 .include "chr.inc"
 .section .text
 .code16
-.global vga_putc
+.global vga_outc
 
-# vga_putc()
+# vga_outc()
 # <req> al = chr
-vga_putc:
+vga_outc:
 	push %es
 	push %si
 	push %di

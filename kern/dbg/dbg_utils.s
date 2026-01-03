@@ -23,7 +23,7 @@ dbg_line:
 
 	push %cx
 	mov $CHR_EQ, %al
-	call vga_putc
+	call vga_outc
 	pop %cx
 
 	# {lp}

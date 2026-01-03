@@ -366,27 +366,27 @@ _args_tok:
 
 8001:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_qt_no
 	jmp 8090f
 
 8002:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_tok_syn
 	jmp 8090f
 
 8090:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	jmp 80b
 
 # _args_build()
@@ -760,51 +760,51 @@ _args_parse:
 
 8001:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_cmd_syn
 	jmp 8090f
 
 8002:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_opt_syn
 	jmp 8090f
 
 8003:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_redir_type
 	jmp 8090f
 
 8004:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_redir_req
 	jmp 8090f
 
 8005:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	push $emsg_redir_extra
 	jmp 8090f
 
 8090:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	jmp 80b
 
 # [data]

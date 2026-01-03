@@ -218,7 +218,7 @@ hist_upd_cl:
 	call vga_clr_line
 
 	push $ps1
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	call vga_init_curs
@@ -263,12 +263,12 @@ hist_upd_cl:
 	mov (%si), %cx
 	add $0x02, %si
 
-	push %cx # [s.f0:len]
+	push %cx # [s.f0:size]
 	push %si
 	push %cx
-	call vga_putls
+	call vga_outns
 	add $0x04, %sp
-	pop %cx # [s.f0:len]
+	pop %cx # [s.f0:size]
 	add %cx, %si
 
 	mov (curs), %ax

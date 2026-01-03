@@ -25,7 +25,7 @@ _start:
 	# display
 	call _vga_clr
 	push $.bmsg_fayos
-	call _vga_puts
+	call _vga_outs
 	add $0x02, %sp
 
 	# kernel
@@ -93,8 +93,8 @@ _vga_clr:
 	pop %es
 	ret
 
-# _vga_puts(ub8 *str)
-_vga_puts:
+# _vga_outs(ub8 *str)
+_vga_outs:
 	push %bp
 	mov %sp, %bp
 	push %es

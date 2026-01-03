@@ -89,7 +89,7 @@ kbd_proc:
 
 	# {
 	push %ax # [s.f0:kc]
-	call vga_putc
+	call vga_outc
 	pop %ax # [s.f0:kc]
 
 	# store chr

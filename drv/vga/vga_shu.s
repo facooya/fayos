@@ -5,10 +5,10 @@
 .include "drv/vga.inc"
 .section .text
 .code16
-.global vga_shu
+.global vga_shf_up
 
-# vga_shu()
-vga_shu:
+# vga_shf_up()
+vga_shf_up:
 	push %es
 	push %si
 	push %di

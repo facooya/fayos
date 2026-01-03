@@ -25,23 +25,23 @@ dbg_num:
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
-	call vga_putc
+	call vga_outc
 	mov %dl, %al
-	call vga_putc
+	call vga_outc
 
 	mov (%si), %dx
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
-	call vga_putc
+	call vga_outc
 	mov %dl, %al
-	call vga_putc
+	call vga_outc
 
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	pop %dx
 	pop %ax

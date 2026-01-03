@@ -212,11 +212,11 @@ cmd_echo:
 .err_opt_inv:
 	# print opt err
 	mov (%si), %al # opt err char
-	call vga_putc
+	call vga_outc
 	mov $CHR_COL, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_SP, %al
-	call vga_putc
+	call vga_outc
 
 	push $emsg_opt_inv
 	jmp .err_hdl
@@ -226,13 +226,13 @@ cmd_echo:
 	jmp .err_hdl
 
 .err_hdl:
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	mov $0x01, %ax
 	jmp .done

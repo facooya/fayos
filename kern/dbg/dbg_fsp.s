@@ -39,12 +39,12 @@ dbg_fsp:
 	add $0x02, %sp
 
 	push $.ind_ptr_str
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	push %ax
 	call dbg_reg
@@ -55,24 +55,24 @@ dbg_fsp:
 	add $0x02, %sp
 
 	push $.inum_str
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	mov FSP_OFF_INUM(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp
 
 	push $.disk_lba_str
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	mov FSP_OFF_DISK_LBA(%si), %ax
 	push %ax
 	call dbg_reg

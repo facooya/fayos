@@ -57,12 +57,12 @@ disp_shl_cl:
 	add $0x02, %sp
 
 	push %si
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	# overwrite
 	mov $CHR_SP, %al
-	call vga_putc
+	call vga_outc
 
 	# left curs
 	pop %ax # [s.1:curs_pos]

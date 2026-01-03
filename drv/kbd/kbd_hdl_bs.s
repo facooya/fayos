@@ -51,7 +51,7 @@ kbd_hdl_bs:
 
 	# overwrite
 	mov $CHR_SP, %al # space
-	call vga_putc
+	call vga_outc
 
 	# left curs
 	pop %ax # [s.0:curs_pos]

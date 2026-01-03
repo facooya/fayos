@@ -16,32 +16,32 @@ dbg_curs:
 	mov $curs, %si
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	mov (%si), %al
 	add $0x30, %al
-	call vga_putc
+	call vga_outc
 
 	mov 0x01(%si), %al
 	add $0x30, %al
-	call vga_putc
+	call vga_outc
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	pop %si
 	ret

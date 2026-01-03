@@ -6,10 +6,10 @@
 .include "chr.inc"
 .section .text
 .code16
-.global vga_puts
+.global vga_outs
 
-# vga_puts(*str)
-vga_puts:
+# vga_outs(*str)
+vga_outs:
 	push %bp
 	mov %sp, %bp
 	push %es

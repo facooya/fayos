@@ -36,14 +36,14 @@ dbg_c:
 	jmp .done
 
 .done:
-	call vga_putc
+	call vga_outc
 	mov $CHR_SP, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	pop %dx
 	pop %cx
@@ -52,10 +52,10 @@ dbg_c:
 
 ._prol:
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_SP, %al
-	call vga_putc
+	call vga_outc
 	ret

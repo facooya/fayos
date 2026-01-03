@@ -32,19 +32,19 @@ _start:
 	call sb_run
 
 	push $.kmsg_welcome
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	call cwd_init
 	call ps1_build
 
 	push $ps1
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	call vga_init_curs

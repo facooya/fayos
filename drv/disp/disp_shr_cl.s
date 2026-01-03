@@ -65,7 +65,7 @@ disp_shr_cl:
 
 	push %ax # [s.0:curs_pos]
 	push %di # data
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	pop %ax # [s.0:curs_pos]
 

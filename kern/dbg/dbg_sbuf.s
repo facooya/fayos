@@ -20,14 +20,14 @@ dbg_sbuf:
 	push %dx
 
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	mov 0x04(%bp), %si
 	mov (%si), %cx # buf.len
@@ -36,23 +36,23 @@ dbg_sbuf:
 	mov %cx, %ax # buf.len
 	add $0x30, %al
 	push %cx
-	call vga_putc
+	call vga_outc
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	pop %cx
 
 	call ._data
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	pop %dx
 	pop %cx
@@ -79,21 +79,21 @@ dbg_sbuf:
 	jz ._data__nul
 
 	push %cx
-	call vga_putc
+	call vga_outc
 	pop %cx
 	jmp ._data__chk
 
 ._data__sp:
 	mov $CHR_PRD, %al
 	push %cx
-	call vga_putc
+	call vga_outc
 	pop %cx
 	jmp ._data__chk
 
 ._data__nul:
 	mov $CHR_ZERO, %al
 	push %cx
-	call vga_putc
+	call vga_outc
 	pop %cx
 	jmp ._data__chk
 

@@ -35,14 +35,14 @@ sb_run:
 	jne 1f
 
 	push $_kmsg_found
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 	jmp 2f
 	# }}}
 
 1:
 	push $_kmsg_try
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	# {{{ write superblock
@@ -101,7 +101,7 @@ sb_run:
 
 90:
 	push $_kmsg_ok
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	pop %bx

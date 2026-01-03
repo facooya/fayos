@@ -61,14 +61,14 @@ dbg_reg:
 
 .end:
 	push $.outnum
-	call vga_puts
+	call vga_outs
 	add $0x02, %sp
 
 	call dbg_line
 	mov $CHR_CR, %al
-	call vga_putc
+	call vga_outc
 	mov $CHR_LF, %al
-	call vga_putc
+	call vga_outc
 
 	pop %dx
 	pop %cx
