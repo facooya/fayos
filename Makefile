@@ -113,7 +113,8 @@ drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
 drv/disk.s \
-drv/rtc.s
+drv/rtc.s \
+drv/time.s
 
 # interrupt
 SRCS_INT = \

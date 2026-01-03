@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
-.include "boot_inc.s"
+.include "boot.inc"
 .section .text
 .code16
 .global _start
