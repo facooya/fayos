@@ -90,21 +90,10 @@ drv/kbd/kbd_hdl_down.s \
 drv/kbd/kbd_hdl_left.s \
 drv/kbd/kbd_hdl_right.s \
 \
-drv/vga/vga_data.s \
-drv/vga/vga_init.s \
-drv/vga/vga_putc.s \
-drv/vga/vga_puts.s \
-drv/vga/vga_putls.s \
-drv/vga/vga_clr.s \
-drv/vga/vga_clr_line.s \
-drv/vga/vga_init_curs.s \
-drv/vga/vga_get_curs.s \
-drv/vga/vga_set_curs.s \
-drv/vga/vga_shu.s \
-\
 drv/disp/disp_shr_cl.s \
 drv/disp/disp_shl_cl.s \
 \
+drv/vga.s \
 drv/disk.s \
 drv/rtc.s \
 drv/time.s
