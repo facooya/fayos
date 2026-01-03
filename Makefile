@@ -74,13 +74,6 @@ drv/ata/ata_get_sect.s \
 drv/ata/ata_read_sect.s \
 drv/ata/ata_write_sect.s \
 \
-drv/disk/disk_read_fsp.s \
-drv/disk/disk_write_fsp.s \
-drv/disk/disk_read_dpi.s \
-drv/disk/disk_write_dpi.s \
-drv/disk/disk_set_dpi.s \
-drv/disk/disk_load_dpi.s \
-\
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
