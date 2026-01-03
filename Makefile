@@ -68,16 +68,11 @@ sh/cmd/rmdir.s
 
 # driver
 SRCS_DRV = \
-drv/ata/ata_data.s \
-drv/ata/ata_init.s \
-drv/ata/ata_get_sect.s \
-drv/ata/ata_read_sect.s \
-drv/ata/ata_write_sect.s \
-\
 drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
 \
+drv/ata.s \
 drv/vga.s \
 drv/rtc.s \
 \
