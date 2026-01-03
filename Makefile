@@ -68,12 +68,9 @@ sh/cmd/rmdir.s
 
 # driver
 SRCS_DRV = \
-drv/ps2/ps2_chk_sc_set.s \
-drv/ps2/ps2_init.s \
-drv/ps2/ps2_xlate_off.s \
-\
 drv/ata.s \
 drv/vga.s \
+drv/ps2.s \
 drv/rtc.s \
 \
 drv/disk.s \
