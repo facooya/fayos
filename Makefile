@@ -78,23 +78,12 @@ drv/ps2/ps2_chk_sc_set.s \
 drv/ps2/ps2_init.s \
 drv/ps2/ps2_xlate_off.s \
 \
-drv/kbd/kbd_data.s \
-drv/kbd/kbd_run.s \
-drv/kbd/kbd_proc.s \
-drv/kbd/kbd_upd_mflg.s \
-drv/kbd/kbd_conv_kc.s \
-drv/kbd/kbd_hdl_cr.s \
-drv/kbd/kbd_hdl_bs.s \
-drv/kbd/kbd_hdl_up.s \
-drv/kbd/kbd_hdl_down.s \
-drv/kbd/kbd_hdl_left.s \
-drv/kbd/kbd_hdl_right.s \
-\
 drv/vga.s \
 drv/rtc.s \
 \
 drv/disk.s \
 drv/display.s \
+drv/keyboard.s \
 drv/time.s
 
 # interrupt
