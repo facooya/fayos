@@ -8,7 +8,7 @@ Write the boot signature via linker script.
 ---
 
 ## Table of Contents
-- [API Reference](#api-reference)
+- [Function Reference](#function-reference)
 - - [`_start`](#_start)
 - - [`_vga_clr`](#_vga_clr)
 - - [`_vga_puts`](#_vga_puts)
@@ -17,7 +17,7 @@ Write the boot signature via linker script.
 
 ---
 
-## API Reference
+## Function Reference
 ### `_start`
 #### Overview
 Boot entry point.
@@ -175,7 +175,9 @@ CheckSectCnt -- No --> ReadStat
 ```
 
 #### Implementation
-- Set drive master and LBA mode
+- Drive master and LBA mode
+- PIO mode
+- Polling
 
 | Description | Link |
 | --- | --- |
