@@ -21,7 +21,7 @@ After kernel jump, Boot done.
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
 | Start of boot | `/boot/boot.s` | [docs: boot](/docs/boot/boot.md) |
-| Header for bootloader | `/boot/boot_inc.s` | [docs: boot header](/docs/boot_inc.md) |
+| Header for bootloader | `/boot/boot.inc` | [docs: boot header](/docs/boot_header.md) |
 | Linker script for boot | `/boot/boot.lds` | [docs: linker for boot](#note-linker-script) |
 
 ---
@@ -86,4 +86,4 @@ If nessless `ax` value, Manualy add 2-byte to stack pointer for clean like `add 
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

@@ -10,15 +10,15 @@
 - debug
 
 #### Usage
-- `type(scope): message`
-- `type: message`
+- `type(scope): Message`
+- `type: Message`
 
 Examples:
-- `chore(kernel): clean up`
-- `test(fs/bm): test bitmap clear`
-- - It is okey if not real path
-- `refactor(lib/conv,fs/ind): rename functions`
-- `docs: update README.md`
+- `chore(kernel): Clean up`
+- `test(fs/bm): Test bitmap clear`
+    - It is okey if not real path
+- `refactor(lib/conv,fs/ind): Rename functions`
+- `docs: Update README.md`
 
 ### Comment
 - Comment write lower case please. Using simple words. If need description write in docs file not a logic file.
@@ -44,7 +44,9 @@ Examples:
 
 ### Align
 - X: 0x1, 0x123
+    - X: `add $0x2, %ax`
 - O: 0x01, 0x0123, 0x1234
+    - O: `add $0x02, %ax`
 
 ### Data type
 - O: .byte, .word, .long, .quad, .fill, .zero, .asciz, .ascii
@@ -76,4 +78,4 @@ Caller protect registers:
 Interrupt protect registers:
 - all
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

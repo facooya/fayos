@@ -9,12 +9,16 @@ Examples:
 - `/boot/boot.s` - `/docs/boot/boot.md`
 - `/drv/ata/ata_init.s` - `/docs/drv/ata/ata_init.md`
 
+Every include files fllow the documentation rules.
+Examples:
+- `/boot/boot.inc` - `/docs/boot/boot_header.md`
+- `/inc/chr.inc` - `/docs/inc/chr_header.md`
+
 Every directories have main document.
 Every main document name is `README.md`.
 Examples:
 - `/boot/` - `/docs/boot/README.md`
 - `/drv/` - `/docs/drv/README.md`
-- `/drv/kbd/` - `/docs/drv/kbd/README.md`
 
 ---
 
@@ -136,4 +140,4 @@ Examples:
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya
