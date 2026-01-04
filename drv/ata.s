@@ -61,7 +61,7 @@ ata_get_sect:
 
 # data
 10:
-	# (cnt == 0) ? {end}
+	# (cnt == 256) ? {end}
 	cmp $ATA_SECT_SIZE_WORD, %cx
 	je 19f
 
@@ -114,7 +114,7 @@ ata_get_sect:
 	test %dx, %dx
 	jz 1f
 
-	# turncate
+	# truncate
 	pop %ax # [s.c1:sect_lo]
 	xor %dx, %dx
 	mov $DISK_BLK_SECT_CNT, %cx

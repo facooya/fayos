@@ -106,27 +106,37 @@ Identify device commend and read device data and return number of total sectors.
 #### Process Flow
 ```mermaid
 graph TD
+IntDisable([nIEN disable])
+IntDisable -- "delay 400ns" --> SetDrv[Set drive for master and LBA mode]
+Chk{"Is not busy and drive ready?"}
+SetDrv -- "delay 400ns" --> Chk
+Chk -- Yes --> Cmd[Command for identify device]
+Chk -- No --> RetryChk[Retry] --> Chk
+ChkData{"Is data request?"}
+Cmd -- "dealy 400ns" --> ChkData
+ChkData -- Yes --> ChkCnt{"Is count equal sector size of word?"}
+ChkData -- No --> RetryData[Retry] --> ChkData
+
+ChkCnt -- Yes --> ChkEndDRQ{"Is data request?"}
+ChkCnt -- No --> ReadData[Read data 2-byte]
+ChkEndDRQ -- Yes --> Err([Error])
+ChkEndDRQ -- No --> ChkMax{"Is sector high value 0?"}
+ReadData --> ChkTotSect{"Is count total sector index?"}
+ChkTotSect -- "No, count++" --> ChkCnt
+ChkTotSect -- Yes --> SaveTotSect[Save total sector]
+SaveTotSect -- "count+=2" --> ChkCnt
+
+ChkMax -- Yes --> Div[Division sector count per block]
+ChkMax -- No --> SetMax[Set maximum value for total sector] --> Div
+Div --> ChkRemain{"Is remainder?"}
+ChkRemain -- Yes --> Truncate[Truncate fit to block count] --> IntEnable
+ChkRemain -- No --> IntEnable[nIEN enable]
+IntEnable -- "delay 400ns" --> Ret([Return total sector count])
 ```
 
 #### Implementation
-1. Disable interrupt using nIEN
-    - delay 400ns
-1. Set drive using master and LBA
-    - delay 400ns
-1. Check BSY bit and DRDY bit
-    - ready for BSY=0, DRDY=1
-1. Command for identify device
-    - delay 400ns
-    - ready for DRQ=1
-1. Read data
-    - before loop for count=0
-    - if count is same total sectors offset, save total sectors value in `dx:ax`
-1. Check maximum
-    - if over maximum value, change total sectors value is maximum value
-1. Check turncate
-    - turncat remain if total sectors not divided sector count per block
-1. Enable interrupt using nIEN
-    - delay 400ns
+- Set drive using master and LBA
+- Interrupt enable/disable using nIEN
 
 #### Reference Notes
 | Description | Link |
@@ -155,6 +165,7 @@ Interrupt enable. Clear nIEN bit in DCR.
 #### Process Flow
 ```mermaid
 graph TD
+Start([Interrupt enable]) --> End([Interrupt enabled])
 ```
 
 #### Implementation
@@ -191,29 +202,17 @@ Data transfer mode PIO and interrupt mode. Trigger `isr_ata` by irq 14.
 #### Process Flow
 ```mermaid
 graph TD
+Start([Initial for read]) --> ChkSectCnt
+ChkSectCnt{"Is sector count 0?"}
+ChkSectCnt -- Yes --> End
+ChkSectCnt -- No --> Int[Wait interrupt] --> ChkSectCnt
+End([Data read done])
 ```
-1. Save segment and offset in `ata_buf` structure
-1. Set drive mode
-    - Set drive, master and LBA
-1. Wait 400ns
-1. Check BSY bit and DRDY bit
-    - Ready for BSY=0, DRDY=1
-1. Write sector conut and LBA in registers
-    - Sector count in `ata_buf` too
-    - LBA high value set 0
-    - - [1 Byte] lba\_lo, [1 Byte] lba\_mid
-1. Disable interrupt
-1. Send command for read
-    - Command value in `ata_buf` too
-1. Wait 400ns
-1. Enable interrupt
-1. Start ATA interrupt handler
-1. Loop till sector count 0
 
 #### Implementation
 - Drive mode master and LBA
-- PIO mode
-- Interrupt
+- PIO mode and interrupt
+- Interrupt enable/disable using `cli`, `sti`
 
 #### Reference Notes
 | Description | Link |
@@ -245,39 +244,19 @@ Data transfer mode PIO and interrupt mode. Trigger `isr_ata` by irq 14.
 #### Process Flow
 ```mermaid
 graph TD
+Start([Initial for write])
+Start --> DataWrite[Data write for first sector] --> Int[Wait interrupt]
+Int --> ChkSectCnt{"Is sector count 0?"}
+ChkSectCnt -- Yes --> End
+ChkSectCnt -- No --> Int
+End([Data write done])
 ```
-1. Save segment and offset in `ata_buf` structure
-1. Set drive mode
-    - Set master and LBA mode.
-1. Wait 400ns
-1. Check BSY bit and DRDY bit
-    - Ready for BSY=0, DRDY=1
-1. Write sector conut and LBA in registers
-    - Sector count in `ata_buf` too
-    - LBA high value set 0
-    - - [1 Byte] lba\_lo, [1 Byte] lba\_mid
-1. Send command for write
-    - Command value in `ata_buf` too
-1. Wait 400ns
-1. Check BSY bit and DRQ bit.
-    - Ready for BSY=0, DRQ=1
-1. Disable interrupt - `cli`
-    - Very danger work. Data segment modifiy for outsw.
-1. Write 1 sector
-    - `outsw` using `ds:si` registers
-    - Repeat 256 times. 256:times \* 2:word = 512:bytes, 1 sector size = normal 512-byte
-1. Wait 400ns
-    - Must using alternate status register. If read status register do clear interrupt signal. Alternate status register read status code is same and not clear interrupt signal.
-1. Offset update in `ata_buf`
-1. Enable interrupt - `sti`
-1. Start ATA interrupt handler (`isr_ata`)
-1. Loop till sector count 0
-
 
 #### Implementation
 - Drive mode master and LBA
-- PIO mode
-- Interrupt
+- PIO mode and interrupt
+- `outsw` using `ds:si` registers
+- Interrupt enable/disable using `cli`, `sti`
 
 #### Reference Notes
 | Description | Link |
