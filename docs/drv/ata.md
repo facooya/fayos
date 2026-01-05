@@ -1,12 +1,14 @@
-# Advanced Technology Attachement
+# ATA Driver
 ## Overview
+Lower storage device interface.
+
 **Implementation**
-- PIO (Progammend Input Output)
+- PIO
 - Interrupt
 
 **Drive Mode**
 - Master
-- LBA (Logical Block Address)
+- LBA
 
 ---
 
@@ -15,6 +17,10 @@
 - [Register Map](#register-map)
 - [Data Reference](#data-reference)
 - [Function Reference](#function-reference)
+- - [`ata_get_sect`](#ata_get_sect)
+- - [`ata_init`](#ata_init)
+- - [`ata_read_sect`](#ata_read_sect)
+- - [`ata_write_sect`](#ata_write_sect)
 - [Notes](#notes)
 - [Terms](#terms)
 - [Reference Links](#reference-links)

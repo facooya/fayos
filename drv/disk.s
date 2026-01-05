@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2026 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
 .include "fs/fs.inc"
@@ -82,7 +82,7 @@ disk_load_dpi:
 	ret
 
 # disk_read_dpi(dpi *src)
-# <ret> dx:ax = seg:off
+# <ret: [dx:ax] = [seg:off]>
 disk_read_dpi:
 	push %bp
 	mov %sp, %bp
@@ -105,7 +105,7 @@ disk_read_dpi:
 	ret
 
 # disk_write_dpi(dpi *src)
-# <ret> dx:ax = seg:off
+# <ret: [dx:ax] = [seg:off]>
 disk_write_dpi:
 	push %bp
 	mov %sp, %bp
@@ -128,7 +128,7 @@ disk_write_dpi:
 	ret
 
 # disk_read_fsp(fsp *src)
-# <ret> dx:ax = seg:off
+# <ret: [dx:ax] = [seg:off]>
 disk_read_fsp:
 	push %bp
 	mov %sp, %bp
@@ -151,7 +151,7 @@ disk_read_fsp:
 	ret
 
 # disk_write_fsp(fsp *src)
-# <ret> dx:ax = seg:off
+# <ret: [dx:ax] = [seg:off]>
 disk_write_fsp:
 	push %bp
 	mov %sp, %bp
