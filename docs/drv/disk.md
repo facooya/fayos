@@ -7,6 +7,7 @@ Base the ATA.
 
 ## Table of Contents
 - [Module Map](#module-map)
+- [Data Reference](#data-reference)
 - [Function Reference](#function-reference)
 - - [`disk_set_dpi`](#disk_set_dpi)
 - - [`disk_load_dpi`](#disk_load_dpi)
@@ -14,7 +15,6 @@ Base the ATA.
 - - [`disk_write_dpi`](#disk_write_dpi)
 - - [`disk_read_fsp`](#disk_read_fsp)
 - - [`disk_write_fsp`](#disk_write_fsp)
-- [Data Reference](#data-reference)
 - [Terms](#terms)
 - [Reference Links](#reference-links)
 
@@ -25,6 +25,20 @@ Base the ATA.
 | --- | --- | --- |
 | Main | `/drv/disk.s` | [docs: disk](/docs/drv/disk.md) |
 | Header | `/inc/drv/disk.inc` | [docs: disk header](/docs/inc/drv/disk_header.md) |
+
+---
+
+## Data Reference
+| Name | Size | Description |
+| --- | --- | --- |
+| `dpi` | 0x100 | Immutable disk packet array. Disk packets in DPI array. |
+
+**DP in DPI**
+| Name | Size | Description |
+| --- | --- | --- |
+| Sector Count | 2 | Sector count |
+| Memory | 4 | Segment and offset |
+| LBA | 2 | Logical Block Address |
 
 ---
 
@@ -189,20 +203,6 @@ Write disk refer from FSP structure.
 graph TD
 Start([Setup]) --> End([Disk writed])
 ```
-
----
-
-## Data Reference
-| Name | Size | Description |
-| --- | --- | --- |
-| `dpi` | 0x100 | Immutable disk packet array. Disk packets in DPI array. |
-
-**DP in DPI**
-| Name | Size | Description |
-| --- | --- | --- |
-| Sector Count | 2 | Sector count |
-| Memory | 4 | Segment and offset |
-| LBA | 2 | Logical Block Address |
 
 ---
 
