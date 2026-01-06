@@ -76,7 +76,7 @@ disp_shl_cl:
 	pop %bp
 	ret
 
-# disp_shr_cl(ub8 *data, ub8 ascii)
+# disp_shr_cl(ub8 *data, ub8 chr)
 disp_shr_cl:
 	push %bp
 	mov %sp, %bp
@@ -84,10 +84,10 @@ disp_shr_cl:
 	push %di
 
 	mov 0x04(%bp), %si # (*data)
-	mov 0x06(%bp), %ax # (ascii)
+	mov 0x06(%bp), %ax # (chr)
 
 	# cpy
-	mov %al, %ah # ascii
+	mov %al, %ah # chr
 	mov %si, %di # data
 	dec %di # restore origin
 
@@ -125,7 +125,7 @@ disp_shr_cl:
 	jmp 1b
 
 9:
-	# ah = ascii
+	# ah = chr
 	mov %si, %di # cpy
 	dec %di
 	mov %ah, (%di) # data
