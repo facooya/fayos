@@ -1,6 +1,6 @@
 # Keyboard Driver
 ## Overview
-Upper PS2 interface.
+Upper keyboard interface.
 Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2 interrupt.
 
 ---
