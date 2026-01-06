@@ -130,6 +130,13 @@ Start([Setup]) --> A[Disable scan] --> B[Get scancode set] --> C[Enable scan] --
 
 ---
 
+## Notes
+### Note Data Command
+- Q. What is data command?
+- A. Normal command into I8042 chip. But data command into device.
+
+---
+
 ## Terms
 | Name | Description |
 | --- | --- |
@@ -141,13 +148,6 @@ Start([Setup]) --> A[Disable scan] --> B[Get scancode set] --> C[Enable scan] --
 | SCS | Scan Code Set |
 | KC | Key Code |
 | XLATE | Translate |
-
----
-
-## Notes
-### Note Data Command
-- Q. What is data command?
-- A. Normal command into I8042 chip. But data command into device.
 
 ---
 

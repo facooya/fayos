@@ -1,7 +1,6 @@
-# Readme for RTC
+# RTC Driver
 ## Overview
-The documents for Fayos.
-This document for RTC (Real Time Clock).
+Lower time interface.
 1024 ticks are equal 1 second.
 
 **Implementation**
@@ -21,8 +20,11 @@ This document for RTC (Real Time Clock).
 ## Table of Contents
 - [Module Map](#module-map)
 - [Register Map](#register-map)
-- [Terms](#terms)
+- [Function Reference](#function-reference)
+- - [`rtc_init`](#rtc_init)
+- - [`rtc_get`](#rtc_get)
 - [Notes](#notes)
+- [Terms](#terms)
 - [Reference Links](#reference-links)
 
 ---
@@ -30,23 +32,13 @@ This document for RTC (Real Time Clock).
 ## Module Map
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
-| Data definition to `rtc_tick` and `rtc_date` | `/kern/kern_data.s` | [docs: kern data](/docs/kern/kern_data.md`) |
-| RTC initialization | `/drv/rtc/rtc_init.s` | [docs: rtc init](/docs/drv/rtc/rtc_init.md) |
-| RTC get date | `/drv/rtc/rtc_get.s` | [docs: rtc get](/docs/drv/rtc/rtc_get.md) |
-| RTC update time | `/drv/rtc/rtc_upd_time.s` | [docs: rtc upd time](/docs/drv/rtc/rtc_upd_time.md) |
-| Constants | `/inc/drv/rtc.s` | [docs: rtc header](/docs/inc/drv/rtc.md) |
-| Handler for RTC | `/int/isr_rtc.s` | [docs: isr rtc](/docs/int/isr_rtc.md) |
+| RTC | `/drv/rtc.s` | [docs: rtc](/docs/drv/rtc.md) |
+| RTC header | `/inc/drv/rtc.inc` | [docs: rtc header](/docs/inc/drv/rtc_header.md) |
+| RTC interrupt service routine | `/int/isr_rtc.s` | [docs: isr rtc](/docs/int/isr.md#isr_rtc) |
 
 ---
 
 ## Register Map
-> [!IMPORTANT]
-> This register map write for Fayos.
-> So table is different to standard.
-
-> [!NOTE]
-> **You can find standard RTC hardware reference here** [OSDev: RTC](https://wiki.osdev.org/RTC)
-
 **Port**
 | Name | Port | Byte | Mode |
 | :--- | :---: | :---: | :---: |
@@ -90,22 +82,62 @@ This document for RTC (Real Time Clock).
 
 ---
 
-## Terms
-RTC: Real Time Clock
-NMI: Non-Maskable Interrupt
-BCD: Binary Code Decimal
-UIP: Update In Progress
-PIE: Perodic Interrup Enable
+## Function Reference
+### `rtc_init`
+#### Overview
+Modifiy register A and configuration register B. 24 Hours and binary and PIE enable.
 
-DV: Divider
-RS: Rate Selector
-TF: Time Format
-DM: Data Mode
+#### Parameters
+- `N/A`
 
-sec: second
-min: minute
-addr: address
-reg: register
+#### Requires
+- `cli` - Disable interrupt
+
+#### Modifies
+- `N/A`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Start([Start]) --> A[Configuration for register A] --> B[Configuration for register B] --> C[Enable NMI] --> End([RTC initialized])
+```
+
+#### Reference Notes
+| Description | Link |
+| --- | --- |
+| Why disable NMI | [docs: rtc nmi](#note-nmi) |
+
+---
+
+### `rtc_get`
+#### Overview
+RTC get date using port. And save values `rtc_date`. It will excute once every day or every boot.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `cli` - Disable interrupt
+
+#### Modifies
+- `rtc_date`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Start([Setup]) --> A[Get date] --> B[Enable NMI] --> End([Date get])
+```
+
+#### Reference Notes
+| Description | Link |
+| --- | --- |
+| Why disable NMI | [docs: rtc nmi](#note-nmi) |
 
 ---
 
@@ -119,16 +151,28 @@ NMI: Non-Maskable Interrupt
 
 ---
 
+## Terms
+| Name | Description |
+| --- | --- |
+| RTC | Real Time Clock |
+| NMI | Non-Maskable Interrupt |
+| BCD | Binary Code Decimal |
+| UIP | Update In Progress |
+| PIE | Perodic Interrup Enable |
+| DV | Divider |
+| RS | Rate Selector |
+| TF | Time Format |
+| DM | Data Mode |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| RTC Initialization | [docs: rtc init](/docs/drv/rtc/rtc_init.md) |
-| RTC get date | [docs: rtc get](/docs/drv/rtc/rtc_get.md) |
-| RTC update time | [docs: rtc update time](/docs/drv/rtc_upd_time.md) |
-| ISR for RTC | [docs: isr rtc](/docs/int/isr_rtc.md) |
-| Header for RTC | [docs: inc rtc](/docs/inc/rtc.md) |
+| Time driver | [docs: time](/docs/drv/time.md) |
+| Main document for driver | [docs: driver](/docs/drv/README.md) |
 | External link, RTC standard document | [OSDev: rtc](https://wiki.osdev.org/RTC) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya
