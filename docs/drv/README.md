@@ -1,4 +1,4 @@
-# Readme for Driver
+# Driver Readme
 ## Overview
 Drivers for Fayos.
 
@@ -13,33 +13,24 @@ Drivers for Fayos.
 ## Directory Structure
 | Name | Description | Link |
 | --- | --- | --- |
-| `vga` | Video Graphic Array | [docs: vga](/docs/drv/vga/README.md) |
-| `ps2` | Personal System 2, IRQ 1 | [docs: ps2](/docs/drv/ps2/README.md) |
-| `rtc` | Real Time Clock, IRQ 8 | [docs: rtc](/docs/drv/rtc/README.md) |
-| `ata` | Advanced Technology Attachement, IRQ 14 | [docs: ata](/docs/drv/ata/README.md) |
-| `disp` | Display driver with VGA | [docs: display](/docs/drv/disp/README.md) |
-| `kbd` | Keyboard driver with PS2 | [docs: keyboard](/docs/drv/kbd/README.md) |
-| `disk` | Disk driver with ATA | [docs: disk](/docs/drv/disk/README.md) |
+| `vga` | VGA driver | [docs: vga](/docs/drv/vga.md) |
+| `ps2` | PS2 driver | [docs: ps2](/docs/drv/ps2.md) |
+| `rtc` | RTC driver | [docs: rtc](/docs/drv/rtc.md) |
+| `ata` | ATA driver | [docs: ata](/docs/drv/ata.md) |
+| `display` | Display driver | [docs: display](/docs/drv/display.md) |
+| `keyboard` | Keyboard driver | [docs: keyboard](/docs/drv/keyboard.md) |
+| `disk` | Disk driver | [docs: disk](/docs/drv/disk.md) |
 
 ---
 
 ## Terms
-**Attribute**
 | Name | Description |
 | --- | --- |
 | ATA | Advanced Technology Attachment |
-| IRQ | Interrupt Request |
 | PS2 | Personal System 2 |
 | RTC | Real Time Clock |
 | VGA | Viedo Graphic Array |
 
-**Word**
-| Name | Description |
-| --- | --- |
-| DISP | Display |
-| DRV | Driver |
-| KBD | Keyboard |
-
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya
