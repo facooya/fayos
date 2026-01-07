@@ -1,16 +1,16 @@
-# Driver Readme
+# Driver Directory
 ## Overview
 Drivers for Fayos.
 
 ---
 
 ## Table of Contents
-- [Directory Structure](#directory-structure)
+- [File List](#file-list)
 - [Terms](#terms)
 
 ---
 
-## Directory Structure
+## File List
 | Name | Description | Link |
 | --- | --- | --- |
 | `vga` | VGA driver | [docs: vga](/docs/drv/vga.md) |
