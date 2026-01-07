@@ -7,6 +7,7 @@ Drivers for Fayos.
 ## Table of Contents
 - [File List](#file-list)
 - [Terms](#terms)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -30,6 +31,13 @@ Drivers for Fayos.
 | PS2 | Personal System 2 |
 | RTC | Real Time Clock |
 | VGA | Viedo Graphic Array |
+
+---
+
+## Reference Links
+| Description | Link |
+| --- | --- |
+| Document for Fayos | [docs: fayos](/docs/README.md) |
 
 ---
 

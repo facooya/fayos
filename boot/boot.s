@@ -24,7 +24,7 @@ _start:
 
 	# display
 	call _vga_clr
-	push $.bmsg_fayos
+	push $_bmsg_fayos
 	call _vga_outs
 	add $0x02, %sp
 
@@ -284,4 +284,4 @@ _ata_read:
 
 # [rodata]
 .section .rodata
-.bmsg_fayos: .asciz "FAYOS\n"
+_bmsg_fayos: .asciz "FAYOS\n"

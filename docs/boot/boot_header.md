@@ -50,11 +50,10 @@ Header for Boot.
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Main document for boot | [docs: boot](/docs/boot/README.md) |
-| Main document for ATA | [docs: ata](/docs/drv/ata/README.md) |
-| Main document for VGA | [docs: vga](/docs/drv/vga/README.md) |
-| Main document for display | [docs: display](/docs/drv/disp/README.md) |
+| Document for boot | [docs: boot](/docs/boot.md) |
+| Document for ATA | [docs: ata](/docs/drv/ata.md) |
+| Document for VGA | [docs: vga](/docs/drv/vga.md) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya
