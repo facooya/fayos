@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "int.inc"
 .include "drv/ps2.inc"
@@ -55,7 +55,7 @@ isr_ps2:
 	pop %ax
 	iret
 
-# isr 0x08
+# irq 0x08
 isr_rtc:
 	push %ax
 
