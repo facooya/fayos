@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
@@ -9,9 +9,9 @@
 .global cwd_build
 .global cwd_init
 
-# [public] cwd_build()
-# <req> path_cv, path_sbuf
-# <mod> cwd
+# cwd_build()
+# <req: path_cv, path_sbuf>
+# <mod: cwd>
 cwd_build:
 	push %si
 	push %di
@@ -21,15 +21,19 @@ cwd_build:
 	mov (%bx), %cx # path_c
 	add $0x02, %bx
 
+	# (path_c != 1) ? {norm}
 	cmp $0x01, %cx
 	jne 1f
 
 	mov $path_sbuf, %si
 	add $0x02, %si
 	mov (%si), %al
+
+	# (data != slash) ? {norm}
 	cmp $CHR_SL, %al
 	jne 1f
 
+	# slash only
 	mov $cwd, %di
 	mov $CHR_SL, %al
 	mov %al, (%di)
@@ -37,22 +41,32 @@ cwd_build:
 	mov %al, 0x01(%di)
 	jmp 90f
 
-1:
-	mov (%bx), %ax
+1: # norm
+	mov (%bx), %ax # path_v
 	mov $path_sbuf, %si
 	add $0x02, %si
 	add %ax, %si
 
+	# (*path_buf[path_v] != dot) ? {add}
 	mov (%si), %al
 	cmp $CHR_PRD, %al
 	jne 3f
 
-	mov 0x01(%si), %ax
-	cmp $0x002E, %ax
-	je 4f
+	# (*path_buf[path_v+1] != dot) ? {chk.s_dot}
+	mov 0x01(%si), %al
+	cmp $CHR_PRD, %al
+	jne 5f
+	# (*path_buf[path_v+2] == null) ? {sub} : {add}
+	mov 0x02(%si), %al
+	test %al, %al
+	jz 4f # d_dot
+	jnz 3f # file_name
 
+5: # chk s_dot
+	# (path_buf[path_v+1] != null) ? {add} : {s_dot}
 	test %al, %al
 	jnz 3f
+	add $0x02, %bx
 
 2: # chk end
 	dec %cx
@@ -93,7 +107,7 @@ cwd_build:
 	pop %si
 	ret
 
-# [public] cwd_init()
+# cwd_init()
 # <mod: cwd>
 cwd_init:
 	push %di
@@ -110,7 +124,7 @@ cwd_init:
 	pop %di
 	ret
 
-# [private] _cwd_add(ub16 *seg, ub16 *off, ub16 size)
+# _cwd_add(ub16 *seg, ub16 *off, ub16 size)
 # <mod: cwd>
 _cwd_add:
 	push %bp
@@ -169,7 +183,7 @@ _cwd_add:
 	pop %bp
 	ret
 
-# [private] _cwd_sub()
+# _cwd_sub()
 # <mod: cwd>
 _cwd_sub:
 	push %si

@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] Change directory
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
@@ -13,7 +11,7 @@
 .global cmd_cd
 
 # cmd_cd()
-# <mod> fsp *cur
+# <mod: fsp *cur>
 cmd_cd:
 	push %es
 	push %si
@@ -32,7 +30,7 @@ cmd_cd:
 	add $0x02, %si
 	add %ax, %si # cl_sbuf[argv[1]]
 
-	# {{{ path
+	# { path
 	push %si # (&path)
 	call path_parse
 	add $0x02, %sp
@@ -45,7 +43,7 @@ cmd_cd:
 	# (path_parse() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je .err_dir_no
-	# }}}
+	# }
 
 	call cwd_build
 	# <req: path_cv, path_sbuf>
