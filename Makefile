@@ -72,9 +72,7 @@ int/isr.s
 SRCS_LIB = \
 lib/file/fparse_lines.s \
 \
-lib/err/emsg_common.s \
-lib/err/emsg_io.s \
-lib/err/emsg_syn.s \
+lib/error.s \
 \
 lib/put/putf.s \
 lib/put/puts.s \
