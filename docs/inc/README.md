@@ -1,7 +1,7 @@
 # Include Readme
 ## Overview
 Header files.
-Omission `inc/`, Use like `.include "drv/vga.s"` in source file. Because already seek include files in `inc/` by `as -Iinc` compiler option in Makefile.
+Omission `inc/`, use like `.include "drv/vga.s"` in source file. Because already seek include files in `inc/` by `as -Iinc` compiler option in Makefile.
 
 ---
 
@@ -14,17 +14,17 @@ Omission `inc/`, Use like `.include "drv/vga.s"` in source file. Because already
 ## Directory Structure
 | Name | Description | Link |
 | --- | --- | --- |
-| `drv` | Driver | [docs: inc drv](/docs/inc/drv/README.md) |
-| `fs` | File system | [docs: inc fs](/docs/inc/fs/README.md) |
+| `drv` | Driver | [docs: drv dir](/docs/inc/drv/README.md) |
+| `fs` | File system | [docs: fs dir](/docs/inc/fs/README.md) |
 
 ---
 
 ## File List
 | Name | Description | Link |
 | --- | --- | --- |
-| `chr.s` | Character header | [docs: inc chr](/docs/inc/chr.md) |
-| `int.s` | Interrupt header | [docs: inc int](/docs/inc/int.md) |
+| `chr.inc` | Character header | [docs: chr header](/docs/inc/chr_header.md) |
+| `int.inc` | Interrupt header | [docs: int header](/docs/inc/int_header.md) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

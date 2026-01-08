@@ -13,8 +13,8 @@ Interrupts in Fayos.
 ## File List
 | Name | Description | Link |
 | --- | --- | --- |
-| `interrupt` | Interrupt | [docs: interrupt](/docs/int/interrupt.md) |
-| `isr` | ISR | [docs: isr](/docs/int/isr.md) |
+| `interrupt.s` | Interrupt | [docs: interrupt](/docs/int/interrupt.md) |
+| `isr.s` | ISR | [docs: isr](/docs/int/isr.md) |
 
 ---
 

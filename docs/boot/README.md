@@ -11,11 +11,11 @@ Boot for Fayos.
 ---
 
 ## File List
-| Description | Link |
+| Name | Description | Link |
 | --- | --- | --- |
-| Boot | `/boot/boot.s` | [docs: boot](/docs/boot/boot.md) |
-| Boot header | `/boot/boot.inc` | [docs: boot header](/docs/boot_header.md) |
-| Boot linker script | `/boot/boot.lds` | [docs: linker for boot](/docs/boot/boot.md#note-linker-script) |
+| `boot.s` | Boot | [docs: boot](/docs/boot/boot.md) |
+| `boot.inc` | Boot header | [docs: boot header](/docs/boot_header.md) |
+| `boot.lds` | Boot linker script | [docs: linker for boot](/docs/boot/boot.md#note-linker-script) |
 
 ---
 

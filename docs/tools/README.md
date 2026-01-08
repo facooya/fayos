@@ -1,47 +1,30 @@
-# Readme for Tools
+# Tools Directory
 ## Overview
-Readme for tools.
+Tools is not part of Fayos.
+
+---
+
+## Table of Contents
+- [File List](#file-list)
+- [Reference Links](#reference-links)
 
 ---
 
 ## File List
 | Description | Source Path | Docs Link |
 | --- | --- | --- |
-| Execute Fayos in QEMU | `/tools/qemu.sh` | [docs: qemu](/docs/tools/qemu.md) |
-| Execute Fayos in Bochs | `/tools/bochs.sh` | [docs: bochs](/docs/tools/bochs.md) |
-| Run commands for Bochs | `/tools/bochsrc` | [docs: bochs](/docs/tools/bochs.md) |
+| `qemu.sh` | Execute Fayos in QEMU | [docs: qemu](/docs/tools/qemu.md) |
+| `bochs.sh` | Execute Fayos in Bochs | [docs: bochs](/docs/tools/bochs.md) |
+| `bochsrc` | Run commands for Bochs | [docs: bochs](/docs/tools/bochs.md) |
 
 ---
 
-## Terms
-| Name | Description |
+## Reference Links
+| Description | Link |
 | --- | --- |
-| QEMU | Quick Emulator |
-| BX | Bochs |
-| RC | Run Commands |
-| PROP | Property |
-| RTC | Real Time Clock |
-| ATA | Advanced Technology Attachement |
-| SYNC | Synchronize |
-| VGA | Video Graphic Array |
-| ROM | Read Only Memory |
-| BIOS | Basic Input Output System |
+| Document for Fayos | [docs: fayos](/docs/README.md) |
+| Document for build | [docs: makefile](/docs/Makefile.md) |
 
 ---
 
-## Note
-### Note QEMU
-- Q. How to install?
-- A. `sudo apt install qemu-system`
-
-More options `qemu-system-i386 --help`.
-
-### Note Bochs
-- Q. How to install?
-- A. `sudo apt install bochs bochsbios vgabios bochs-sdl`
-
-More options `bochs --help`. And more run commands document default location `/usr/share/doc/bochs/examples/bochsrc.gz`.
-
----
-
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

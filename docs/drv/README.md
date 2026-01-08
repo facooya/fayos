@@ -14,13 +14,13 @@ Drivers for Fayos.
 ## File List
 | Name | Description | Link |
 | --- | --- | --- |
-| `vga` | VGA driver | [docs: vga](/docs/drv/vga.md) |
-| `ps2` | PS2 driver | [docs: ps2](/docs/drv/ps2.md) |
-| `rtc` | RTC driver | [docs: rtc](/docs/drv/rtc.md) |
-| `ata` | ATA driver | [docs: ata](/docs/drv/ata.md) |
-| `display` | Display driver | [docs: display](/docs/drv/display.md) |
-| `keyboard` | Keyboard driver | [docs: keyboard](/docs/drv/keyboard.md) |
-| `disk` | Disk driver | [docs: disk](/docs/drv/disk.md) |
+| `vga.s` | VGA driver | [docs: vga](/docs/drv/vga.md) |
+| `ps2.s` | PS2 driver | [docs: ps2](/docs/drv/ps2.md) |
+| `rtc.s` | RTC driver | [docs: rtc](/docs/drv/rtc.md) |
+| `ata.s` | ATA driver | [docs: ata](/docs/drv/ata.md) |
+| `display.s` | Display driver | [docs: display](/docs/drv/display.md) |
+| `keyboard.s` | Keyboard driver | [docs: keyboard](/docs/drv/keyboard.md) |
+| `disk.s` | Disk driver | [docs: disk](/docs/drv/disk.md) |
 
 ---
 
