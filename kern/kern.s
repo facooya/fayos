@@ -1,14 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Kernel] Main
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "drv/ps2.inc"
-.section .data
-.kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"
-
 .section .text
 .code16
 .global _start
@@ -31,7 +26,7 @@ _start:
 
 	call sb_run
 
-	push $.kmsg_welcome
+	push $_kmsg_welcome
 	call vga_outs
 	add $0x02, %sp
 
@@ -66,3 +61,6 @@ _start:
 .pass:
 	hlt
 	jmp .run
+
+.section .data
+_kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"

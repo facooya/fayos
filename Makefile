@@ -20,17 +20,7 @@ kern/kern_data.s \
 kern/mem/mem_data.s \
 kern/mem/mem_alloc.s \
 kern/mem/mem_free.s \
-\
-kern/dbg/dbg_arg_ccv.s \
-kern/dbg/dbg_path_cv.s \
-kern/dbg/dbg_curs.s \
-kern/dbg/dbg_sbuf.s \
-kern/dbg/dbg_trace.s \
-kern/dbg/dbg_utils.s \
-kern/dbg/dbg_fsp.s \
-\
-kern/dbg/num/dbg_num.s \
-kern/dbg/num/dbg_reg.s
+kern/debug.s
 
 # file system
 SRCS_FS = \
