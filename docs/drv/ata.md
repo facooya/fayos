@@ -303,6 +303,7 @@ nIEN: negative interrupt enable
 | DRV | Drive |
 | DRQ | Data Request |
 | DEV | Device |
+| DRDY | Drive Ready |
 
 | Description | Link |
 | --- | --- |

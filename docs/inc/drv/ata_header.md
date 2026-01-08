@@ -1,14 +1,15 @@
-# Header for ATA
+# ATA Header
 ## Overview
-Definition for port, Register value and bit position, Offset for `ata_buf`, Fixed value.
+Header for ATA. Definition for port, Register value and bit position, Offset for `ata_buf`, Fixed value.
 Include some macros for check bit.
 
-> [!IMPORTANT]
-> This document write for Fayos.
-> So it is different to standard.
+---
 
-> [!NOTE]
-> **You can find standard ATA hardware reference here** [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
+## Table of Contents
+- [Constants](#constants)
+- [Macro](#macro)
+- [Terms](#terms)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -67,13 +68,24 @@ Include some macros for check bit.
 
 ---
 
+## Terms
+| Name | Description |
+| --- | --- |
+| ATA | Advanced Technology Attachment |
+| LBA | Logical Block Address |
+| NIEN, nIEN | Negative Interrupt Enable |
+| DRQ | Data Request |
+| DRDY | Drive Ready |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Parent document | [docs: ata](/docs/drv/ata/README.md) |
-| Register Map | [docs: ata register map](/docs/drv/ata/README.md#register-map) |
+| Document for ATA | [docs: ata](/docs/drv/ata.md) |
+| Directory document for include | [docs: dir include](/docs/inc/README.md) |
 | External link: standard document | [OSDev: ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

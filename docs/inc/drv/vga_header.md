@@ -1,6 +1,15 @@
 # VGA Header
 ## Overview
-Header for VGA (Video Graphic Array).
+Header for VGA.
+
+---
+
+## Table of Contents
+- [Constants](#constants)
+- [Terms](#terms)
+- [Reference Links](#reference-links)
+
+---
 
 ## Constants
 | Name | Description |
@@ -14,11 +23,22 @@ Header for VGA (Video Graphic Array).
 | `VGA_CMD_CURS_POS_HI` | Command for cursor position high area |
 | `VGA_CMD_CURS_POS_LO` | Command for cursor position low area |
 
-## Reference Links
-| Description | Link |
+---
+
+## Terms
+| Name | Description |
 | --- | --- |
-| Main document for VGA | [docs: vga](/docs/drv/vga/README.md) |
+| VGA | Video Graphic Array |
+| CURS | Cursor |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+## Reference Links
+| Description | Link |
+| --- | --- |
+| Document for VGA | [docs: vga](/docs/drv/vga.md) |
+| Directory document for include | [docs: dir include](/docs/inc/README.md) |
+
+---
+
+> Authors 2025-2026 Facooya and Fanone Facooya

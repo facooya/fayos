@@ -143,10 +143,10 @@ Start([Setup]) --> A[Disable scan] --> B[Get scancode set] --> C[Enable scan] --
 | PS2 | Personal System 2 |
 | OBF | Output Buffer Full |
 | IBF | Input Buffer Full |
-| SC | Scan Code |
-| SCF | Scan Code Flag |
-| SCS | Scan Code Set |
-| KC | Key Code |
+| SC | Scancode |
+| SCF | Scancode Flag |
+| SCS | Scancode Set |
+| KC | Keycode |
 | XLATE | Translate |
 
 ---

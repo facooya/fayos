@@ -1,4 +1,4 @@
-# Include Driver Readme
+# Include Driver Directory
 ## Overview
 Header files for driver.
 Omission `inc/`, Use like `.include "drv/vga.s"` in source file. Because already seek include files in `inc/` by `as -Iinc` compiler option in Makefile.
@@ -14,20 +14,20 @@ Omission `inc/`, Use like `.include "drv/vga.s"` in source file. Because already
 ## File List
 | Name | Description | Link |
 | --- | --- | --- |
-| `ata.s` | ATA header | [docs: inc ata](/docs/inc/drv/ata.md) |
-| `disk.s` | Disk header | [docs: inc disk](/docs/inc/drv/disk.md) |
-| `kbd.s` | Keyboard header | [docs: inc kbd](/docs/inc/drv/kbd.md) |
-| `ps2.s` | PS2 header | [docs: inc ps2](/docs/inc/drv/ps2.md) |
-| `rtc.s` | RTC header | [docs: inc rtc](/docs/inc/drv/rtc.md) |
-| `vga.s` | VGA header | [docs: inc vga](/docs/inc/drv/vga.md) |
+| `ata.inc` | ATA header | [docs: ata header](/docs/inc/drv/ata_header.md) |
+| `disk.inc` | Disk header | [docs: disk header](/docs/inc/drv/disk_header.md) |
+| `kbd.inc` | Keyboard header | [docs: keyboard header](/docs/inc/drv/kbd_header.md) |
+| `ps2.inc` | PS2 header | [docs: ps2 header](/docs/inc/drv/ps2_header.md) |
+| `rtc.inc` | RTC header | [docs: rtc header](/docs/inc/drv/rtc_header.md) |
+| `vga.inc` | VGA header | [docs: vga header](/docs/inc/drv/vga_header.md) |
 
 ---
 
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Main document for include | [docs: inc](/docs/inc/README.md) |
+| Directory document for include | [docs: inc](/docs/inc/README.md) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

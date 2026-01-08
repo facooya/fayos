@@ -1,16 +1,17 @@
-# Header for Disk
+# Disk Header
 ## Overview
 Header for disk. Immutable memory address. Disk packet index.
 
 ---
 
 ## Table of Contents
-- [Data Reference](#data-reference)
+- [Constants](#constants)
+- [Terms](#terms)
 - [Reference Links](#reference-links)
 
 ---
 
-## Data Reference
+## Constants
 **Common**
 | Name | Description |
 | --- | --- |
@@ -52,11 +53,27 @@ Header for disk. Immutable memory address. Disk packet index.
 
 ---
 
-## Reference Links
-| Description | Link |
+## Terms
+| Name | Description |
 | --- | --- |
-| Main document for disk | [docs: disk](/docs/drv/disk/README.md) |
+| DP | Disk Packet |
+| DPI | Disk Packet Immutable |
+| SB | Superblock |
+| BBM | Block Bitmap |
+| IBM | Inum Bitmap |
+| IT | Inode Table |
+| LBA | Logical Block Address |
+| PAR | Parent |
+| CUR | Current |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+## Reference Links
+| Description | Link |
+| --- | --- |
+| Document for disk | [docs: disk](/docs/drv/disk.md) |
+| Directory document for include | [docs: dir include](/docs/inc/README.md) |
+
+---
+
+> Authors 2025-2026 Facooya and Fanone Facooya

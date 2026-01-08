@@ -1,11 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# Keyboard constants
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
-# {{{ Bit
-# Modifier flag
+# modifier flag
 .equ KBD_MFLG_LSHF, (0x01<<0x00)
 .equ KBD_MFLG_RSHF, (0x01<<0x01)
 .equ KBD_MFLG_LCTL, (0x01<<0x02)
@@ -13,9 +10,8 @@
 .equ KBD_MFLG_LALT, (0x01<<0x04)
 .equ KBD_MFLG_RALT, (0x01<<0x05)
 .equ KBD_MFLG_CAP, (0x01<<0x06)
-# }}}
 
-# {{{ Keycode
+# { keycode
 # 0xE0-0xEF
 .equ KBD_KC_UP, 0xE0
 .equ KBD_KC_DOWN, 0xE1
@@ -39,4 +35,4 @@
 .equ KBD_KC_F12, 0xFC
 .equ KBD_KC_TAB, 0xFE
 .equ KBD_KC_ESC, 0xFF
-# }}}
+# }

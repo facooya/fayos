@@ -1,13 +1,14 @@
-# Header for PS2
+# PS2 Header
 ## Overview
-Definition for personal system 2.
+Header for PS2.
 
-> [!IMPORTANT]
-> This document write for Fayos.
-> So it is different to standard.
+---
 
-> [!NOTE]
-> **You can find standard document here** [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller)
+## Table of Contents
+- [Constants](#constants)
+- [Macro](#macro)
+- [Terms](#terms)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -73,13 +74,26 @@ Definition for personal system 2.
 
 ---
 
+## Terms
+| Name | Description |
+| --- | --- |
+| PS2 | Personal System 2 |
+| OBF | Output Buffer Full |
+| IBF | Input Buffer Full |
+| SC | Scancode |
+| SCF | Scancode Flag |
+| SCS | Scancode Set |
+| XLATE | Translate |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Parent document | [docs: ps2](/docs/drv/ps2/README.md) |
-| Register Map | [docs: ps2 register map](/docs/drv/ps2/README.md#register-map) |
+| Document for PS2 | [docs: ps2](/docs/drv/ps2.md) |
+| Directory document for include | [docs: dir include](/docs/inc/README.md) |
 | External link, PS2 standard document | [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

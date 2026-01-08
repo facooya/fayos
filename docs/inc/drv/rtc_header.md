@@ -1,13 +1,13 @@
-# Header for RTC
+# RTC Header
 ## Overview
-Definition for Real Tiem Clock.
+Header for RTC.
 
-> [!IMPORTANT]
-> This document write for Fayos.
-> So it is different to standard.
+---
 
-> [!NOTE]
-> **You can find standard RTC hardware reference here** [OSDev: rtc](https://wiki.osdev.org/RTC)
+## Table of Contents
+- [Constants](#constants)
+- [Terms](#terms)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -57,13 +57,27 @@ Definition for Real Tiem Clock.
 
 ---
 
+## Terms
+| Name | Description |
+| --- | --- |
+| RTC | Real Time Clock |
+| NMI | Non-Maskable Interrupt |
+| UIP | Update In Progress |
+| PIE | Perodic Interrup Enable |
+| DV | Divider |
+| RS | Rate Selector |
+| TF | Time Format |
+| DM | Data Mode |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Parent document | [docs: rtc](/docs/drv/rtc/README.md) |
-| Register Map | [docs: rtc register map](/docs/drv/rtc/README.md#register-map) |
+| Document for RTC | [docs: rtc](/docs/drv/rtc.md) |
+| Directory document for include | [docs: dir include](/docs/inc/README.md) |
 | External link, RTC standard document | [OSDev: rtc](https://wiki.osdev.org/RTC) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

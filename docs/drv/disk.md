@@ -218,6 +218,8 @@ Start([Setup]) --> End([Disk writed])
 | IBM | Inum Bitmap |
 | IT | Inode Table |
 | LBA | Logical Block Address |
+| PAR | Parent |
+| CUR | Current |
 
 ---
 

@@ -1,4 +1,4 @@
-# Include Readme
+# Include Directory
 ## Overview
 Header files.
 Omission `inc/`, use like `.include "drv/vga.s"` in source file. Because already seek include files in `inc/` by `as -Iinc` compiler option in Makefile.

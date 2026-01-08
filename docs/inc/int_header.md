@@ -2,12 +2,12 @@
 ## Overview
 Header for interrupt.
 
-> [!IMPORTANT]
-> This document write for Fayos.
-> So it is different to standard.
+---
 
-> [!NOTE]
-> **You can find standard document here** [OSDev: ps2](https://wiki.osdev.org/I8042_PS/2_Controller)
+## Table of Contents
+- [Constants](#constants)
+- [Terms](#terms)
+- [Reference Links](#reference-links)
 
 ---
 
@@ -55,14 +55,26 @@ Header for interrupt.
 
 ---
 
+## Terms
+| Name | Description |
+| --- | --- |
+| EOI | End of Interrupt |
+| ICW | Initialization Command Words |
+| IMR | Interrup Mask Register |
+| IRQ | Interrupt Request |
+| IVT | Interrupt Vector Table |
+| PIC | Programmable Interrupt Controller |
+| ENT | Entry |
+
+---
+
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Main document for interrupt | [docs: int](/docs/int/README.md) |
-| Register Map | [docs: int register map](/docs/int/README.md#register-map) |
+| Document for interrupt | [docs: interrupt](/docs/int.md) |
 | External link, PIC standard document | [OSDev: pic](https://wiki.osdev.org/8259_PIC) |
 | External link, IVT standard document | [OSDev: ivt](https://wiki.osdev.org/Interrupt_Vector_Table) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

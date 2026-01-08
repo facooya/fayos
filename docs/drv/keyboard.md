@@ -326,8 +326,8 @@ Start([Setup]) --> Right[Cursor move right] --> End([Key handled])
 | Name | Description |
 | --- | --- |
 | PS2 | Personal System 2 |
-| SC | Scan Code |
-| KC | Key Code |
+| SC | Scancode |
+| KC | Keycode |
 | MFLG | Modifier Flag |
 
 ---
