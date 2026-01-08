@@ -162,10 +162,10 @@ Build for Fayos.
 
 ## Notes
 ### Note Boot Area
-Don't reposition `boot/boot.s` in `SRCS_GROUP_BOOT`. This file always first location in `SRCS_GROUP_BOOT`, Boot start address is `0x0000:0x7C00` in Fayos.
+Don't reposition `boot/boot.s` in `SRC_BOOT`. This file always first location in `SRC_BOOT`, Boot start address is `0x0000:0x7C00` in Fayos.
 
 ### Note Kernel Area
-Don't reposition `kernel/kernel.s` in `SRCS_KERN`. This file always first location in `SRCS_KERN`, Kernel start address is `0x0000:0x1000` in Fayos.
+Don't reposition `kern/kernel.s` in `SRCS_KERN`. This file always first location in `SRCS_KERN`, Kernel start address is `0x0000:0x1000` in Fayos.
 And keep first `SRCS_KERN` in `SRCS_GROUP_KERN`.
 
 ### Note Total Sector Count
@@ -217,9 +217,9 @@ If over maximum value, It will be fine. But Fayos working only in maximum value.
 ## Reference Links
 | Description | Link |
 | --- | --- |
-| Main document for entire | [docs: readme](/docs/README.md) |
+| Document for Fayos | [docs: readme](/docs/README.md) |
 | External link: standard document for make | [GNU: make](https://www.gnu.org/savannah-checkouts/gnu/make/manual/make.html) |
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

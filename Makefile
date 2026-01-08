@@ -14,12 +14,7 @@ OBJ_BOOT = $(SRC_BOOT:%.s=./build/%.o)
 
 # kernel
 SRCS_KERN = \
-kern/kern.s \
-kern/kern_data.s \
-\
-kern/mem/mem_data.s \
-kern/mem/mem_alloc.s \
-kern/mem/mem_free.s \
+kern/kernel.s \
 kern/debug.s
 
 # file system

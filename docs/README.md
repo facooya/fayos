@@ -7,7 +7,7 @@ Code first and test, so documentation may not update.
 Every assembly files follow the documentation rules.
 Examples:
 - `/boot/boot.s` - `/docs/boot/boot.md`
-- `/drv/ata/ata_init.s` - `/docs/drv/ata/ata_init.md`
+- `/sh/cmd/touch.s` - `/docs/sh/cmd/touch.md`
 
 Every include files fllow the documentation rules.
 Examples:
