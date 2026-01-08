@@ -1,16 +1,45 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Regular Expression] Check name
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .section .text
 .code16
+.global regex_alpha
 .global regex_name
 
+# regex_alpha(ub8 *chr)
+regex_alpha:
+	push %bp
+	mov %sp, %bp
+	push %si
+
+	mov 0x04(%bp), %si
+	mov (%si), %al
+
+	cmp $CHR_UC_A, %al
+	jb 2f
+	cmp $CHR_UC_Z, %al
+	jbe 1f
+	cmp $CHR_LC_A, %al
+	jb 2f
+	cmp $CHR_LC_Z, %al
+	jbe 1f
+
+1: # true
+	xor %ax, %ax
+	jmp 99f
+
+2: # false
+	mov $0x01, %ax
+
+99:
+	pop %si
+	pop %bp
+	ret
+
 # regex_name(*seg, *off)
-# <ret> ax = {true:0, false:1}
+# <ret: ax = {true:0, false:1}>
 regex_name:
 	push %bp
 	mov %sp, %bp
@@ -22,55 +51,54 @@ regex_name:
 	mov 0x06(%bp), %bx # (*off)
 	xor %cx, %cx # cnt
 
-.lp:
+1:
 	# (chr == null) ? {true}
 	mov %es:(%bx), %al
 	test %al, %al
-	jz .true
+	jz 91f
 
 	# alpha chk
 	cmp $CHR_UC_A, %al
-	jb .lp__alpha_false
+	jb 2f
 	cmp $CHR_UC_A, %al
-	jb .lp__alpha_false
+	jb 2f
 	cmp $CHR_UC_Z, %al
-	jbe .lp__step
+	jbe 4f
 	cmp $CHR_LC_A, %al
-	jb .lp__alpha_false
+	jb 2f
 	cmp $CHR_LC_Z, %al
-	jbe .lp__step
+	jbe 4f
 
-.lp__alpha_false:
+2: # alpha false
 	# spcial chk
 	cmp $CHR_US, %al
-	je .lp__step
+	je 4f
 	cmp $CHR_PRD, %al
-	je .lp__step
+	je 4f
 	cmp $CHR_HY, %al
-	je .lp__hy_chk
-	jmp .false
+	je 3f
+	jmp 92f
 
-.lp__hy_chk:
+3: # chk hyphen
 	# (cnt == 0) ? {false}
 	test %cx, %cx
-	jz .false
-	jmp .lp__step
+	jz 92f
+	jmp 4f
 
-.lp__step:
+4:
 	inc %cx
 	inc %bx
-	jmp .lp
+	jmp 1b
 
-# {DONE}
-.true:
+91: # true
 	xor %ax, %ax
-	jmp .done
+	jmp 99f
 
-.false:
+92: # false
 	mov $0x01, %ax
-	jmp .done
+	jmp 99f
 
-.done:
+99:
 	pop %bx
 	pop %si
 	pop %es
