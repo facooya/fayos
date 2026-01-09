@@ -70,10 +70,10 @@ int/isr.s
 
 # library
 SRCS_LIB = \
-lib/file/fparse_lines.s \
-\
 lib/error.s \
 lib/regex.s \
+lib/conversion.s \
+lib/file/fparse_lines.s \
 \
 lib/put/putf.s \
 lib/put/puts.s \
@@ -83,10 +83,7 @@ lib/put/put_utils.s \
 lib/mem/mem_cmp.s \
 lib/mem/mem_cpy.s \
 lib/mem/mem_set.s \
-lib/mem/mem_size.s \
-\
-lib/conv/ub8_h_to_d.s \
-lib/conv/ub8_d_to_c.s
+lib/mem/mem_size.s
 
 # kernel group
 SRCS_GROUP_KERN = \

@@ -38,7 +38,7 @@ regex_alpha:
 	pop %bp
 	ret
 
-# regex_name(*seg, *off)
+# regex_name(ub16 *seg, ub16 *off)
 # <ret: ax = {true:0, false:1}>
 regex_name:
 	push %bp

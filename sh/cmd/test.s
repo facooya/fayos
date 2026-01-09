@@ -1,21 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] Test runtime
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
-.include "drv/rtc.inc"
 .section .text
 .code16
 .global cmd_test
-.global cmd_test2
 
 # cmd_test()
 cmd_test:
 	xor %ax, %ax
 	mov $0xFF, %al
 	push %ax
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 
 	push %ax

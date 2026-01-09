@@ -1,21 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] Print date
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "drv/rtc.inc"
-.section .data
-.week:
-	.asciz "Sun",
-	.asciz "Mon",
-	.asciz "Tue",
-	.asciz "Wed",
-	.asciz "Thu",
-	.asciz "Fri",
-	.asciz "Sat"
-
 .section .text
 .code16
 .global cmd_date
@@ -30,7 +18,7 @@ cmd_date:
 	# { year
 	mov $0x20, %al
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -41,11 +29,11 @@ cmd_date:
 
 	mov RTC_DATE_YEAR(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -61,11 +49,11 @@ cmd_date:
 	# { month
 	mov RTC_DATE_MONTH(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -81,11 +69,11 @@ cmd_date:
 	# { day
 	mov RTC_DATE_DAY(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -120,11 +108,11 @@ cmd_date:
 	# { hour
 	mov RTC_DATE_HOUR(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -140,11 +128,11 @@ cmd_date:
 	# { min
 	mov RTC_DATE_MIN(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -160,11 +148,11 @@ cmd_date:
 	# { sec
 	mov RTC_DATE_SEC(%si), %al
 	push %ax # (ub8 hex)
-	call ub8_h_to_d
+	call ub8_hex_to_dec
 	add $0x02, %sp
 	# <ah:al = dec_hi:dec_lo>
 	push %ax # (ub8 dec)
-	call ub8_d_to_c
+	call ub8_dec_to_chr
 	add $0x02, %sp
 	# <ah:al = chr_hi:chr_lo>
 	mov %ax, %cx
@@ -176,9 +164,17 @@ cmd_date:
 
 	call putnl
 	xor %ax, %ax
-	jmp .done
 
-.done:
 	pop %di
 	pop %si
 	ret
+
+.section .data
+.week:
+	.asciz "Sun",
+	.asciz "Mon",
+	.asciz "Tue",
+	.asciz "Wed",
+	.asciz "Thu",
+	.asciz "Fri",
+	.asciz "Sat"
