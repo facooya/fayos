@@ -73,12 +73,9 @@ SRCS_LIB = \
 lib/error.s \
 lib/regex.s \
 lib/conversion.s \
-lib/file/fparse_lines.s \
+lib/put.s \
 \
-lib/put/putf.s \
-lib/put/puts.s \
-lib/put/putns.s \
-lib/put/put_utils.s \
+lib/file/fparse_lines.s \
 \
 lib/mem/mem_cmp.s \
 lib/mem/mem_cpy.s \
