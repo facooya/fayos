@@ -5,6 +5,7 @@
 .section .text
 .code16
 .global mem_size
+.global mem_size_val
 .global mem_set
 .global mem_cpy
 .global mem_cmp
@@ -27,6 +28,38 @@ mem_size:
 	mov %es:(%bx), %al
 	test %al, %al
 	jz 90f
+
+	inc %bx
+	inc %cx # size
+	jmp 1b
+
+90:
+	mov %cx, %ax # <ret:size>
+
+	pop %bx
+	pop %es
+	pop %bp
+	ret
+
+# mem_size_val(ub16 *seg, ub16 *off, ub8 val)
+# <ret: ax = size>
+mem_size_val:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %bx
+
+	mov 0x04(%bp), %ax # (*seg)
+	mov %ax, %es
+	mov 0x06(%bp), %bx # (*off)
+	mov 0x08(%bp), %dx # (val)
+	xor %cx, %cx # size
+
+1:
+	# (chr == val) ? {done}
+	mov %es:(%bx), %al
+	cmp %al, %dl
+	je 90f
 
 	inc %bx
 	inc %cx # size

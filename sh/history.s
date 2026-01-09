@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
@@ -12,9 +12,9 @@
 .global history
 .global hist_upd_cl
 
-# [public] history()
-# <req> cl_sbuf, file_lines
-# <mod> cl_hist_sbuf, hist_idx, fsp {base, tmp}
+# history()
+# <req: cl_sbuf, file_line_cv>
+# <mod: cl_hist_sbuf, hist_idx, fsp {base, tmp}>
 history:
 	push %es
 	push %si
@@ -125,7 +125,7 @@ history:
 	add $0x06, %sp
 
 	# upd hist_idx
-	mov (file_lines), %ax
+	mov (file_line_cv), %ax
 	mov %ax, (hist_idx)
 
 	# zero
@@ -147,10 +147,10 @@ history:
 	pop %es
 	ret
 
-# [public] hist_upd_cl()
-# <req> ps1, hist_idx, file_lines, file_linev
-# <mod> cl_sbuf, curs, fsp {root, tmp}
-# <ret> ax = cl_pos
+# hist_upd_cl()
+# <req: ps1, hist_idx, file_line_cv>
+# <mod: cl_sbuf, curs, fsp {root, tmp}>
+# <ret: ax = cl_pos>
 hist_upd_cl:
 	push %es
 	push %si
@@ -224,25 +224,27 @@ hist_upd_cl:
 	call vga_init_curs
 	# }
 
-	mov $file_lines, %di
-	mov (%di), %cx # linec
-	add $0x02, %di
-	mov (hist_idx), %ax
-	add %ax, %di
-	add %ax, %di
-	mov (%di), %dx # line_size
-
-	mov $cl_sbuf, %si
-	mov %dx, (%si)
+	mov $file_line_cv, %si
 	add $0x02, %si
-
 	mov (hist_idx), %ax
-	mov $file_linev, %di
-	add %ax, %di
-	add %ax, %di
-	mov (%di), %dx # tgt_line
+	add %ax, %si
+	add %ax, %si
+	mov (%si), %dx # line_v
 	add %dx, %bx # hist_file
-	mov (cl_sbuf), %cx
+
+	xor %ax, %ax
+	mov $CHR_CR, %al
+	push %ax # (val)
+	push %bx # (&off)
+	push %es # (&seg)
+	call mem_size_val
+	add $0x06, %sp
+	# <ret: ax = size>
+	mov %ax, %cx
+
+	mov $cl_sbuf, %di
+	mov %cx, (%di)
+	add $0x02, %di
 
 1:
 	# (size == 0) ? {end}
@@ -250,9 +252,9 @@ hist_upd_cl:
 	jz 9f
 
 	mov %es:(%bx), %al
-	mov %al, (%si)
+	mov %al, (%di)
 
-	inc %si
+	inc %di
 	inc %bx
 	dec %cx
 	jmp 1b

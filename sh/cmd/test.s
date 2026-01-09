@@ -8,13 +8,26 @@
 
 # cmd_test()
 cmd_test:
-	xor %ax, %ax
-	mov $0xFF, %al
-	push %ax
-	call ub8_hex_to_dec
-	add $0x02, %sp
+	push %si
 
+	mov $file_line_cv, %si
+	mov (%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp
+	call dbg_a
+	mov 0x02(%si), %ax
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+	mov 0x04(%si), %ax
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+	mov 0x06(%si), %ax
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+
+	pop %si
 	ret

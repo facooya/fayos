@@ -9,7 +9,7 @@
 .global file_parse_lines
 
 # file_parse_lines(ub16 *seg, ub16 *off, fsp *src)
-# <mod: file_linev, file_lines>
+# <mod: file_line_cv>
 file_parse_lines:
 	push %bp
 	mov %sp, %bp
@@ -24,51 +24,40 @@ file_parse_lines:
 	mov 0x08(%bp), %si # (fsp *src)
 	mov FSP_OFF_F_SIZE(%si), %dx
 
-	mov $file_linev, %di
+	mov $file_line_cv, %di
 	xor %ax, %ax
-	mov %ax, (%di)
-	add $0x02, %di
+	mov %ax, (%di) # line_c
 
-	mov $file_lines, %si
-	xor %ax, %ax
-	mov %ax, (%si) # init lines_c
-	add $0x02, %si # skip lines_c
-	xor %cx, %cx
+	xor %cx, %cx # line_v
+	add $0x02, %di
+	mov %cx, (%di) # line_v[0] # HACK
+	add $0x02, %di # skip line_v[0]
 
 1:
-	# (file_size == 0) {done}
+	# (file_size == 0) ? {done}
 	test %dx, %dx
 	jz 99f
 
 	# (chr == CR) ? {line}
-	push %ax # [s.l0:linev]
 	mov %es:(%bx), %al
 	cmp $CHR_CR, %al
 	je 2f
-	pop %ax # [s.l0:linev]
 
-	inc %ax # linev
+	inc %cx # line_v
 	inc %bx
-	inc %cx # line_size
 	dec %dx # file_size
 	jmp 1b
 
 2: # line
-	# update line_s
-	mov %cx, (%si)
-	add $0x02, %si
-
 	# update lines_c
-	mov (file_lines), %ax
+	mov (file_line_cv), %ax
 	inc %ax
-	mov %ax, (file_lines)
+	mov %ax, (file_line_cv)
 
-	pop %ax # [s.l0:linev]
-	add $0x02, %ax
-	mov %ax, (%di)
+	# store line_v
+	add $0x02, %cx # skip size cr, lf
+	mov %cx, (%di)
 	add $0x02, %di
-
-	xor %cx, %cx
 
 	# skip cr, lf
 	add $0x02, %bx
@@ -84,8 +73,5 @@ file_parse_lines:
 	ret
 
 .section .data
-.global file_lines
-.global file_linev
-file_lines: .zero 0x100
-# lines_c, line_size, line_size, ... (word, word, word, ...)
-file_linev: .zero 0x100 # HACK
+.global file_line_cv
+file_line_cv: .zero 0x100
