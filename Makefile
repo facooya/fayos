@@ -75,11 +75,7 @@ lib/regex.s \
 lib/conversion.s \
 lib/put.s \
 lib/file.s \
-\
-lib/mem/mem_cmp.s \
-lib/mem/mem_cpy.s \
-lib/mem/mem_set.s \
-lib/mem/mem_size.s
+lib/memory.s
 
 # kernel group
 SRCS_GROUP_KERN = \
