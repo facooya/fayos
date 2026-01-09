@@ -285,6 +285,12 @@ _kbd_conv_kc:
 	je 25f
 	cmp $PS2_SC_NUM_ENT, %ax
 	je 26f
+
+	# nav
+	cmp $PS2_SC_PAGE_UP, %ax
+	je 31f
+	cmp $PS2_SC_PAGE_DOWN, %ax
+	je 32f
 	jmp 99f
 
 # arrow
@@ -313,6 +319,17 @@ _kbd_conv_kc:
 26: # enter
 	xor %ax, %ax
 	mov $KBD_KC_NUM_ENT, %al
+	jmp 99f
+
+# nav
+31: # page up
+	xor %ax, %ax
+	mov $KBD_KC_PAGE_UP, %al
+	jmp 99f
+
+32: # page down
+	xor %ax, %ax
+	mov $KBD_KC_PAGE_DOWN, %al
 	jmp 99f
 
 99:
@@ -370,6 +387,13 @@ _kbd_proc:
 	# (kc == f2) ? {key.f2}
 	cmp $KBD_KC_F2, %al
 	je 99f
+	# }
+
+	# { nav
+	cmp $KBD_KC_PAGE_UP, %al
+	je 31f
+	cmp $KBD_KC_PAGE_DOWN, %al
+	je 32f
 	# }
 	jmp 10f
 
@@ -435,6 +459,14 @@ _kbd_proc:
 	jmp 99f
 26:
 	call _kbd_hdl_right
+	jmp 99f
+
+# nav
+31: # page up
+	call _kbd_hdl_page_up
+	jmp 99f
+32: # page down
+	call _kbd_hdl_page_down
 	jmp 99f
 
 99:
@@ -715,6 +747,16 @@ _kbd_hdl_right:
 	inc %si # <ret>
 
 99:
+	ret
+
+# _kbd_hdl_page_up()
+_kbd_hdl_page_up:
+	call dbg_a
+	ret
+
+# _kbd_hdl_page_down()
+_kbd_hdl_page_down:
+	call dbg_b
 	ret
 
 .section .data

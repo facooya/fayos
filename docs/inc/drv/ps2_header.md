@@ -39,21 +39,23 @@ Header for PS2.
 **Scan Code**
 | Name | Description |
 | --- | --- |
-| `PS2_SC_EXT` | Scan code for extend |
-| `PS2_SC_BRK` | Scan code for break |
-| `PS2_SC_LSHF` | Scan code for left shift |
-| `PS2_SC_RSHF` | Scan code for right shift |
-| `PS2_SC_LCTL` | Scan code for left control |
-| `PS2_SC_RCTL` | Scan code for right control |
-| `PS2_SC_LALT` | Scan code for left alternate |
-| `PS2_SC_RALT` | Scan code for right alternate |
-| `PS2_SC_CAP` | Scan code for capital lock |
-| `PS2_SC_UP` | Scan code for up arrow |
-| `PS2_SC_DOWN` | Scan code for down arrow |
-| `PS2_SC_LEFT` | Scan code for left arrow |
-| `PS2_SC_RIGHT` | Scan code for right arrow |
-| `PS2_SC_NUM_SL` | Scan code for slash in numpad |
-| `PS2_SC_NUM_ENT` | Scan code for enter in numpad |
+| `PS2_SC_EXT` | Scancode for extend |
+| `PS2_SC_BRK` | Scancode for break |
+| `PS2_SC_LSHF` | Scancode for left shift |
+| `PS2_SC_RSHF` | Scancode for right shift |
+| `PS2_SC_LCTL` | Scancode for left control |
+| `PS2_SC_RCTL` | Scancode for right control |
+| `PS2_SC_LALT` | Scancode for left alternate |
+| `PS2_SC_RALT` | Scancode for right alternate |
+| `PS2_SC_CAP` | Scancode for capital lock |
+| `PS2_SC_UP` | Scancode for up arrow |
+| `PS2_SC_DOWN` | Scancode for down arrow |
+| `PS2_SC_LEFT` | Scancode for left arrow |
+| `PS2_SC_RIGHT` | Scancode for right arrow |
+| `PS2_SC_NUM_SL` | Scancode for slash in numpad |
+| `PS2_SC_NUM_ENT` | Scancode for enter in numpad |
+| `PS2_SC_PAGE_UP` | Scancode for page up |
+| `PS2_SC_PAGE_DOWN` | Scancode for page down |
 
 **Bit**
 | Name | Description |

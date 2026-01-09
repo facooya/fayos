@@ -1,8 +1,6 @@
 # Roadmap
 ## WIP
-- docs
-- - fs
-- - inspection
+- scroll and restore many line feed
 
 ---
 
@@ -25,7 +23,6 @@
 - OBF, IBF timeout error
 - fs: block extends
 - fs: dentry size optimize
-- scroll and restore many line feed
 - support more key (num\_lock, fN, (ins, del, home, end, page up/down))
 
 ---
@@ -45,4 +42,4 @@
 
 ---
 
-> Authors 2025 Facooya and Fanone Facooya
+> Authors 2025-2026 Facooya and Fanone Facooya

@@ -44,6 +44,10 @@
 # numpad
 .equ PS2_SC_NUM_SL, 0xE04A
 .equ PS2_SC_NUM_ENT, 0xE05A
+
+# nav
+.equ PS2_SC_PAGE_UP, 0xE07D
+.equ PS2_SC_PAGE_DOWN, 0xE07A
 # }
 
 # { bit
