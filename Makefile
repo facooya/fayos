@@ -74,8 +74,7 @@ lib/error.s \
 lib/regex.s \
 lib/conversion.s \
 lib/put.s \
-\
-lib/file/fparse_lines.s \
+lib/file.s \
 \
 lib/mem/mem_cmp.s \
 lib/mem/mem_cpy.s \

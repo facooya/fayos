@@ -1,25 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# Parse file lines and each line size except cr/lf
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
-.section .data
-.global file_lines
-.global file_linev
-file_lines: .zero 0x100
-# lines_c, line_size, line_size, ... (word, word, word, ...)
-file_linev: .zero 0x100 # HACK
-
 .section .text
 .code16
-.global fparse_lines
+.global file_parse_lines
 
-# fparse_lines(*seg, *off, fsp *src)
-# <ret> file_lines
-fparse_lines:
+# file_parse_lines(ub16 *seg, ub16 *off, fsp *src)
+# <mod: file_linev, file_lines>
+file_parse_lines:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -44,33 +35,32 @@ fparse_lines:
 	add $0x02, %si # skip lines_c
 	xor %cx, %cx
 
-.lp:
-	# {end} (file_size == 0)
+1:
+	# (file_size == 0) {done}
 	test %dx, %dx
-	jz .end
+	jz 99f
 
-	# {line} (chr == CR)
+	# (chr == CR) ? {line}
 	push %ax # [s.l0:linev]
 	mov %es:(%bx), %al
 	cmp $CHR_CR, %al
-	je .line
+	je 2f
 	pop %ax # [s.l0:linev]
 
-	# {lp}
 	inc %ax # linev
-	add $0x01, %bx
-	add $0x01, %cx # line_size
-	sub $0x01, %dx # file_size
-	jmp .lp
+	inc %bx
+	inc %cx # line_size
+	dec %dx # file_size
+	jmp 1b
 
-.line:
+2: # line
 	# update line_s
 	mov %cx, (%si)
 	add $0x02, %si
 
 	# update lines_c
 	mov (file_lines), %ax
-	add $0x01, %ax
+	inc %ax
 	mov %ax, (file_lines)
 
 	pop %ax # [s.l0:linev]
@@ -80,15 +70,22 @@ fparse_lines:
 
 	xor %cx, %cx
 
-	# {lp} skip cr, lf
+	# skip cr, lf
 	add $0x02, %bx
 	sub $0x02, %dx # file_size
-	jmp .lp
+	jmp 1b
 
-.end:
+99:
 	pop %bx
 	pop %di
 	pop %si
 	pop %es
 	pop %bp
 	ret
+
+.section .data
+.global file_lines
+.global file_linev
+file_lines: .zero 0x100
+# lines_c, line_size, line_size, ... (word, word, word, ...)
+file_linev: .zero 0x100 # HACK

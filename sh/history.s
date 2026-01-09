@@ -121,7 +121,7 @@ history:
 	push $fsp+FSP_OFF_TMP
 	push %bx
 	push %es
-	call fparse_lines
+	call file_parse_lines
 	add $0x06, %sp
 
 	# upd hist_idx
@@ -200,7 +200,7 @@ hist_upd_cl:
 	push $fsp+FSP_OFF_TMP
 	push %bx
 	push %es
-	call fparse_lines
+	call file_parse_lines
 	add $0x06, %sp
 	# }
 
