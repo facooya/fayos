@@ -751,12 +751,12 @@ _kbd_hdl_right:
 
 # _kbd_hdl_page_up()
 _kbd_hdl_page_up:
-	call dbg_a
+	call vga_shd
 	ret
 
 # _kbd_hdl_page_down()
 _kbd_hdl_page_down:
-	call dbg_b
+	call vga_shu
 	ret
 
 .section .data

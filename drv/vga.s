@@ -15,6 +15,8 @@
 .global vga_outc
 .global vga_outs
 .global vga_outns
+.global vga_shu
+.global vga_shd
 
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
@@ -411,6 +413,7 @@ vga_outs:
 31: # shu
 	# init
 	push %si # [s.l0:str]
+
 	mov (VGA_ADDR_COL), %ax
 	sub %ax, %cx
 	mov %cx, %dx # curs_pos
@@ -614,6 +617,180 @@ vga_outns:
 	pop %si
 	pop %es
 	pop %bp
+	ret
+
+# vga_shu()
+vga_shu:
+	push %es
+	push %si
+	push %di
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	xor %si, %si
+
+	# { save top
+	mov (VGA_ADDR_COL), %cx
+	mov $disp_up_cbuf, %di
+	mov (%di), %ax
+	add $0x02, %di
+
+	xor %dx, %dx
+	mul %cx
+	add %ax, %di
+
+1:
+	# (column == 0) ? {end}
+	mov %es:(%si), %al
+	test %cx, %cx
+	jz 2f
+
+	mov %al, (%di)
+
+	add $0x02, %si
+	inc %di
+	dec %cx
+	jmp 1b
+
+2:
+	mov (disp_up_cbuf), %ax
+	inc %ax
+	mov %ax, (disp_up_cbuf)
+	# }
+
+	# { disp shift up
+	mov (VGA_ADDR_COL), %ax
+	mov %ax, %si
+	add %ax, %si
+	xor %di, %di
+
+	mov (_vga_last_row_off), %cx
+	push %ds # [s.s0:vga_seg]
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %ds
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
+	# }
+
+	# clr last line
+	mov (VGA_ADDR_COL), %cx
+	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
+	rep stosw
+
+	# { load bottom
+	# TODO: chk idx, last
+	mov (_vga_last_row_off), %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+	mov $disp_down_cbuf, %si
+	add $0x02, %si
+	push %si
+	mov (VGA_ADDR_COL), %cx
+	push %cx
+	call vga_outns
+	add $0x04, %sp
+	# }
+
+	pop %di
+	pop %si
+	pop %es
+	ret
+
+# vga_shd()
+vga_shd:
+	push %es
+	push %si
+	push %di
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+
+	# { save bottom
+	mov (_vga_last_row_off), %ax
+	mov %ax, %si
+	add %ax, %si
+
+	mov $disp_down_cbuf, %di
+	mov (%di), %ax
+	add $0x02, %di
+
+	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
+	mul %cx
+	add %ax, %di
+
+1:
+	# (column == 0) ? {end}
+	mov %es:(%si), %al
+	test %cx, %cx
+	jz 2f
+
+	mov %al, (%di)
+
+	add $0x02, %si
+	inc %di
+	dec %cx
+	jmp 1b
+
+2:
+	mov (disp_down_cbuf), %ax
+	inc %ax
+	mov %ax, (disp_down_cbuf)
+	# }
+
+	# { disp shift down
+	mov (_vga_last_row_off), %cx
+	mov %cx, %si
+	add %cx, %si
+	sub $0x02, %si # (x[last], y[last-1])
+
+	mov (_vga_size), %ax
+	mov %ax, %di
+	add %ax, %di
+	sub $0x02, %di # (x[last], y[last])
+
+	std
+	mov $(VGA_MEM>>0x10), %ax
+	push %ds # [s.s0:vga_seg]
+	mov %ax, %ds
+	rep movsw
+	pop %ds # [s.s0:vga_seg]
+	cld
+	# }
+
+	# clr first line
+	xor %di, %di
+	mov (VGA_ADDR_COL), %cx
+	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
+	rep stosw
+
+	# TODO: chk idx, last
+	xor %ax, %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+	# load top
+	mov $disp_up_cbuf, %si
+	add $0x02, %si
+	push %si
+	mov (VGA_ADDR_COL), %cx
+	push %cx
+	call vga_outns
+	add $0x04, %sp
+
+	xor %ax, %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+	pop %di
+	pop %si
+	pop %es
 	ret
 
 .section .data

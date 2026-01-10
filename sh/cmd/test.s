@@ -10,21 +10,14 @@
 cmd_test:
 	push %si
 
-	mov $file_line_cv, %si
+	mov $disp_down_cbuf, %si
+	add $0x02, %si
+	push %si
+	call vga_outs
+	add $0x02, %sp
+
+	mov $disp_down_cbuf, %si
 	mov (%si), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-	call dbg_a
-	mov 0x02(%si), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-	mov 0x04(%si), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-	mov 0x06(%si), %ax
 	push %ax
 	call dbg_reg
 	add $0x02, %sp

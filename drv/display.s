@@ -3,6 +3,7 @@
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
+.include "drv/vga.inc"
 .section .text
 .code16
 .global disp_shl_cl
@@ -149,3 +150,9 @@ disp_shr_cl:
 	pop %si
 	pop %bp
 	ret
+
+.section .data
+.global disp_up_cbuf
+.global disp_down_cbuf
+disp_up_cbuf: .zero 0x202
+disp_down_cbuf: .zero 0x202
