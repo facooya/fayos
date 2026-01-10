@@ -512,14 +512,13 @@ vga_shu:
 	push %si
 	push %di
 
-	mov (disp_idx), %ax
-	test %ax, %ax
-	jz 99f
+	#mov (disp_idx), %ax
+	#test %ax, %ax
+	#jz 99f
 
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %di
-	xor %si, %si
+	mov $(VGA_MEM&0xFFFF), %si
 
 	# { save top
 	mov $disp_top_buf, %di
@@ -530,12 +529,12 @@ vga_shu:
 	add %ax, %di
 
 	mov (_vga_shu_idx), %ax
-	inc %ax
+	#inc %ax
 	mov %ax, (_vga_shu_idx)
 
 1:
 	# (column == 0) ? {end}
-	mov %es:(%si), %al
+	mov %es:(%si), %ax
 	test %cx, %cx
 	jz 2f
 
@@ -569,7 +568,6 @@ vga_shu:
 	rep stosw
 
 	# { load bottom
-	# TODO: chk idx, last
 	mov (_vga_last_row_off), %ax
 	push %ax
 	call vga_set_curs
@@ -577,9 +575,10 @@ vga_shu:
 
 	mov $disp_bottom_buf, %si
 	mov (_vga_shd_idx), %ax
-	dec %ax
+	#dec %ax
 	mov %ax, (_vga_shd_idx)
 	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
 	mul %cx
 	add %ax, %si
 
@@ -610,9 +609,9 @@ vga_shd:
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
 
-	mov (disp_idx), %ax
-	cmp $VGA_SCROLL_CNT, %ax
-	je 99f
+	#mov (disp_idx), %ax
+	#cmp $VGA_SCROLL_CNT, %ax
+	#je 99f
 
 	# { save bottom
 	mov (_vga_last_row_off), %ax
@@ -627,12 +626,12 @@ vga_shd:
 	add %ax, %di
 
 	mov (_vga_shd_idx), %ax
-	inc %ax
+	#inc %ax
 	mov %ax, (_vga_shd_idx)
 
 1:
 	# (column == 0) ? {end}
-	mov %es:(%si), %al
+	mov %es:(%si), %ax
 	test %cx, %cx
 	jz 2f
 
@@ -673,7 +672,6 @@ vga_shd:
 	rep stosw
 
 	# { load top
-	# TODO: chk idx, last
 	xor %ax, %ax
 	push %ax
 	call vga_set_curs
@@ -681,9 +679,9 @@ vga_shd:
 
 	mov $disp_top_buf, %si
 	mov (_vga_shu_idx), %ax
-	dec %ax
-	mov %ax, (_vga_shu_idx)
+
 	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
 	mul %cx
 	add %ax, %si
 
@@ -703,6 +701,12 @@ vga_shd:
 	inc %ax
 	mov %ax, (disp_idx)
 
+	mov (_vga_shu_idx), %ax
+	test %ax, %ax
+	jz 99f
+	dec %ax
+	mov %ax, (_vga_shu_idx)
+
 99:
 	pop %di
 	pop %si
@@ -715,17 +719,81 @@ _vga_shu:
 	push %si
 	push %di
 
-	# { init
+	# init
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
+	mov %di, %si
 
+	# { save top
+	mov $disp_top_buf, %di
+	mov (_vga_shu_idx), %ax
+	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
+	mul %cx
+	add %ax, %di
+
+	mov (_vga_shu_idx), %ax
+	cmp $(VGA_SCROLL_CNT-0x01), %ax
+	je 3f
+	inc %ax
+	mov %ax, (_vga_shu_idx)
+	jmp 1f
+
+3: # update top buf
+	push %si
+	push %di
+	push %cx
+
+	mov $disp_top_buf, %di
+	mov (VGA_ADDR_COL), %ax
+	mov %di, %si
+	add %ax, %si
+
+	xor %dx, %dx
+	mov $(VGA_SCROLL_CNT-0x01), %cx
+	mul %cx
+	mov %ax, %cx
+
+4:
+	test %cx, %cx
+	jz 5f
+
+	mov (%si), %al
+	mov %al, (%di)
+
+	inc %di
+	inc %si
+	dec %cx
+	jmp 4b
+
+5:
+	pop %cx
+	pop %di
+	pop %si
+
+1:
+	# (column == 0) ? {end}
+	mov %es:(%si), %ax
+	test %cx, %cx
+	jz 2f
+
+	mov %al, (%di)
+
+	add $0x02, %si
+	inc %di
+	dec %cx
+	jmp 1b
+
+2:
+	# }
+
+	# init
 	mov (VGA_ADDR_COL), %ax
 	xor %si, %si
 	add %ax, %si
 	add %ax, %si
 	xor %di, %di
-	# }
 
 	# shift up
 	mov (_vga_last_row_off), %cx
