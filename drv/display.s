@@ -152,7 +152,9 @@ disp_shr_cl:
 	ret
 
 .section .data
-.global disp_up_cbuf
-.global disp_down_cbuf
-disp_up_cbuf: .zero 0x202
-disp_down_cbuf: .zero 0x202
+.global disp_top_buf
+.global disp_bottom_buf
+.global disp_idx
+disp_top_buf: .zero 0x200
+disp_bottom_buf: .zero 0x200
+disp_idx: .word 0x00

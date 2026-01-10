@@ -10,17 +10,10 @@
 cmd_test:
 	push %si
 
-	mov $disp_down_cbuf, %si
-	add $0x02, %si
-	push %si
-	call vga_outs
-	add $0x02, %sp
-
-	mov $disp_down_cbuf, %si
-	mov (%si), %ax
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
+1:
+	mov $0x41, %al
+	call vga_outc
+	jmp 1b
 
 	pop %si
 	ret

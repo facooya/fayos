@@ -16,3 +16,5 @@
 # command
 .equ VGA_CMD_CURS_POS_HI, 0x0E
 .equ VGA_CMD_CURS_POS_LO, 0x0F
+
+.equ VGA_SCROLL_CNT, 0x04
