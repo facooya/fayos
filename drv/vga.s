@@ -4,6 +4,8 @@
 
 .include "chr.inc"
 .include "drv/vga.inc"
+.include "drv/disk.inc"
+.include "fs/fs.inc"
 .section .text
 .code16
 .global vga_init
@@ -17,6 +19,8 @@
 .global vga_outns
 .global vga_shu
 .global vga_shd
+
+.global _vga_save_top # HACK
 
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
@@ -518,41 +522,15 @@ vga_shu:
 
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %si
+	mov $(VGA_MEM&0xFFFF), %di
+	mov %di, %si
 
-	# { save top
-	mov $disp_top_buf, %di
-	mov (_vga_shu_idx), %ax
-	mov (VGA_ADDR_COL), %cx
-	xor %dx, %dx
-	mul %cx
-	add %ax, %di
-
-	mov (_vga_shu_idx), %ax
-	#inc %ax
-	mov %ax, (_vga_shu_idx)
-
-1:
-	# (column == 0) ? {end}
-	mov %es:(%si), %ax
-	test %cx, %cx
-	jz 2f
-
-	mov %al, (%di)
-
-	add $0x02, %si
-	inc %di
-	dec %cx
-	jmp 1b
-
-2:
-	# }
+	call _vga_save_top
 
 	# { disp shift up
 	mov (VGA_ADDR_COL), %ax
 	mov %ax, %si
 	add %ax, %si
-	xor %di, %di
 
 	mov (_vga_last_row_off), %cx
 	push %ds # [s.s0:vga_seg]
@@ -608,6 +586,7 @@ vga_shd:
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
+	mov %di, %si
 
 	#mov (disp_idx), %ax
 	#cmp $VGA_SCROLL_CNT, %ax
@@ -678,7 +657,7 @@ vga_shd:
 	add $0x02, %sp
 
 	mov $disp_top_buf, %si
-	mov (_vga_shu_idx), %ax
+	mov (_vga_shu_idx), %ax # !!!
 
 	mov (VGA_ADDR_COL), %cx
 	xor %dx, %dx
@@ -725,75 +704,12 @@ _vga_shu:
 	mov $(VGA_MEM&0xFFFF), %di
 	mov %di, %si
 
-	# { save top
-	mov $disp_top_buf, %di
-	mov (_vga_shu_idx), %ax
-	mov (VGA_ADDR_COL), %cx
-	xor %dx, %dx
-	mul %cx
-	add %ax, %di
-
-	mov (_vga_shu_idx), %ax
-	cmp $(VGA_SCROLL_CNT-0x01), %ax
-	je 3f
-	inc %ax
-	mov %ax, (_vga_shu_idx)
-	jmp 1f
-
-3: # update top buf
-	push %si
-	push %di
-	push %cx
-
-	mov $disp_top_buf, %di
-	mov (VGA_ADDR_COL), %ax
-	mov %di, %si
-	add %ax, %si
-
-	xor %dx, %dx
-	mov $(VGA_SCROLL_CNT-0x01), %cx
-	mul %cx
-	mov %ax, %cx
-
-4:
-	test %cx, %cx
-	jz 5f
-
-	mov (%si), %al
-	mov %al, (%di)
-
-	inc %di
-	inc %si
-	dec %cx
-	jmp 4b
-
-5:
-	pop %cx
-	pop %di
-	pop %si
-
-1:
-	# (column == 0) ? {end}
-	mov %es:(%si), %ax
-	test %cx, %cx
-	jz 2f
-
-	mov %al, (%di)
-
-	add $0x02, %si
-	inc %di
-	dec %cx
-	jmp 1b
-
-2:
-	# }
+	call _vga_save_top
 
 	# init
 	mov (VGA_ADDR_COL), %ax
-	xor %si, %si
 	add %ax, %si
 	add %ax, %si
-	xor %di, %di
 
 	# shift up
 	mov (_vga_last_row_off), %cx
@@ -813,8 +729,111 @@ _vga_shu:
 	pop %es
 	ret
 
+_vga_save_top:
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	push $_path_top # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == neq_last) ? {create}
+	cmp $0x02, %ax
+	je 10f
+	# (path_parse() != done) ? {done} : {save}
+	test %ax, %ax
+	jnz 99f
+	# }
+
+	# cpy base -> tmp
+	xor %ax, %ax
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_BASE # (&s_off)
+	push %ax # (&s_seg)
+	push $fsp+FSP_OFF_TMP # (&d_off)
+	push %ax # (&d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+	jmp 11f # save
+
+10: # file create
+	push $F_TYPE_FILE # (f_type)
+	push $_path_top # (&name)
+	call fs_add
+	add $0x04, %sp
+	# <mod: fsp *tmp>
+	jmp 11f # save
+
+11: # file save
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# append init
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	add %ax, %bx
+
+	mov $(VGA_MEM&0xFFFF), %si
+	push %es # [s.0:mem_seg]
+	mov (VGA_ADDR_COL), %cx
+
+12: # append
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 19f
+
+	# cpy
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov %es:(%si), %ax
+	pop %es # [s.0:mem_seg]
+	mov %al, %es:(%bx)
+	push %es # [s.0:mem_seg]
+
+	add $0x02, %si
+	inc %bx
+	dec %cx
+	jmp 12b
+
+19:
+	pop %es # [s.0:mem_seg]
+
+	push $fsp+FSP_OFF_TMP
+	call disk_write_fsp
+	add $0x02, %sp
+
+	# upd file size
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov (VGA_ADDR_COL), %cx
+	add %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+	jmp 99f
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	ret
+
 .section .data
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
 _vga_shd_idx: .word 0x00
 _vga_shu_idx: .word 0x00
+_vga_shu_cnt: .word 0x00
+_path_top: .asciz "/.top"
+_name_top: .asciz ".top"

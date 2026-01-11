@@ -10,10 +10,7 @@
 cmd_test:
 	push %si
 
-1:
-	mov $0x41, %al
-	call vga_outc
-	jmp 1b
+	call _vga_save_top
 
 	pop %si
 	ret

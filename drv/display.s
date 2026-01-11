@@ -155,6 +155,6 @@ disp_shr_cl:
 .global disp_top_buf
 .global disp_bottom_buf
 .global disp_idx
-disp_top_buf: .zero 0x200
+disp_top_buf: .zero 0x0200
 disp_bottom_buf: .zero 0x200
 disp_idx: .word 0x00
