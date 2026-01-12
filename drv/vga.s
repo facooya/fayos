@@ -552,9 +552,6 @@ vga_shu:
 	add $0x02, %sp
 
 	mov $disp_bottom_buf, %si
-	mov (_vga_shd_idx), %ax
-	#dec %ax
-	mov %ax, (_vga_shd_idx)
 	mov (VGA_ADDR_COL), %cx
 	xor %dx, %dx
 	mul %cx
@@ -598,15 +595,10 @@ vga_shd:
 	add %ax, %si
 
 	mov $disp_bottom_buf, %di
-	mov (_vga_shd_idx), %ax
 	mov (VGA_ADDR_COL), %cx
 	xor %dx, %dx
 	mul %cx
 	add %ax, %di
-
-	mov (_vga_shd_idx), %ax
-	#inc %ax
-	mov %ax, (_vga_shd_idx)
 
 1:
 	# (column == 0) ? {end}
@@ -700,6 +692,7 @@ _vga_shu:
 	pop %es
 	ret
 
+# _vga_save_top()
 _vga_save_top:
 	push %es
 	push %si
@@ -719,29 +712,25 @@ _vga_save_top:
 	# (path_parse() != done) ? {done} : {save}
 	test %ax, %ax
 	jnz 99f
-	# }
-
-	# cpy base -> tmp
-	xor %ax, %ax
-	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_BASE # (&s_off)
-	push %ax # (&s_seg)
-	push $fsp+FSP_OFF_TMP # (&d_off)
-	push %ax # (&d_seg)
-	call mem_cpy
-	add $0x0A, %sp
 	jmp 11f # save
+	# }
 
 10: # file create
 	push $F_TYPE_FILE # (f_type)
 	push $_path_top # (&name)
 	call fs_add
 	add $0x04, %sp
-	# <mod: fsp *tmp>
+
+	push $_path_top # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
 	jmp 11f # save
 
 11: # file save
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push $fsp+FSP_OFF_BASE # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -780,7 +769,7 @@ _vga_save_top:
 
 29:
 	# upd size
-	mov $fsp+FSP_OFF_TMP, %si
+	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
 	mov (VGA_ADDR_COL), %cx
 	sub %cx, %ax
@@ -789,7 +778,7 @@ _vga_save_top:
 
 30: # append
 	# init
-	mov $fsp+FSP_OFF_TMP, %si
+	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
 	add %ax, %bx
 
@@ -818,12 +807,12 @@ _vga_save_top:
 39:
 	pop %es # [s.0:mem_seg]
 
-	push $fsp+FSP_OFF_TMP
+	push $fsp+FSP_OFF_BASE
 	call disk_write_fsp
 	add $0x02, %sp
 
 	# upd file size
-	mov $fsp+FSP_OFF_TMP, %si
+	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
 	mov (VGA_ADDR_COL), %cx
 	add %cx, %ax
@@ -944,8 +933,9 @@ _vga_load_top:
 .section .data
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
-_vga_shd_idx: .word 0x00
 _top_cnt: .word 0x00
-_vga_shu_cnt: .word 0x00
+_bottom_cnt: .word 0x00
 _path_top: .asciz "/.top"
+_path_bottom: .asciz "/.bottom"
 _name_top: .asciz ".top"
+_name_bottom: .asciz ".bottom"
