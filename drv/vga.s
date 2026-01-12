@@ -650,41 +650,12 @@ vga_shd:
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
-	# { load top
-	xor %ax, %ax
-	push %ax
-	call vga_set_curs
-	add $0x02, %sp
-
-	mov $disp_top_buf, %si
-	#mov (_vga_shu_idx), %ax # !!!
-
-	mov (VGA_ADDR_COL), %cx
-	xor %dx, %dx
-	mul %cx
-	add %ax, %si
-
-	push %si
-	push %cx
-	call vga_outns
-	add $0x04, %sp
-
-	xor %ax, %ax
-	push %ax
-	call vga_set_curs
-	add $0x02, %sp
-	# }
+	call _vga_load_top
 
 	# upd idx
 	mov (disp_idx), %ax
 	inc %ax
 	mov %ax, (disp_idx)
-
-	#mov (_vga_shu_idx), %ax
-	#test %ax, %ax
-	#jz 99f
-	#dec %ax
-	#mov %ax, (_vga_shu_idx)
 
 99:
 	pop %di
@@ -867,8 +838,101 @@ _vga_save_top:
 	je 99f
 	inc %ax
 	mov %ax, (_top_cnt)
-
 	jmp 99f
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	ret
+
+# _vga_load_top()
+_vga_load_top:
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	push $_path_top # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == done) ? {load} : {done}
+	test %ax, %ax
+	jz 10f
+	jmp 99f
+	# }
+
+10: # load
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# { calc off
+	mov (_top_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
+	dec %ax
+	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
+	mul %cx
+
+	# set off
+	add %ax, %bx
+	# }
+
+	# init
+	push %es # [s.0: file_seg]
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	mov $VGA_ATTR_COLOR, %ah
+
+11:
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 19f
+
+	# cpy
+	pop %es # [s.0: file_seg]
+	mov %es:(%bx), %al
+	push %es # [s.0: file_seg]
+	mov $(VGA_MEM>>0x10), %dx
+	mov %dx, %es
+	mov %ax, %es:(%di)
+
+	add $0x02, %di
+	inc %bx
+	dec %cx
+	jmp 11b
+
+19:
+	pop %es # [s.0: file_seg]
+
+	# upd file size
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %cx
+	mov (VGA_ADDR_COL), %ax
+	sub %ax, %cx
+	mov %cx, FSP_OFF_F_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	# TODO: cursor
+
+	# upd top cnt
+	mov (_top_cnt), %ax
+	dec %ax
+	mov %ax, (_top_cnt)
 
 99:
 	pop %bx
