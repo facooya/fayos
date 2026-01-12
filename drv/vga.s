@@ -657,7 +657,7 @@ vga_shd:
 	add $0x02, %sp
 
 	mov $disp_top_buf, %si
-	mov (_vga_shu_idx), %ax # !!!
+	#mov (_vga_shu_idx), %ax # !!!
 
 	mov (VGA_ADDR_COL), %cx
 	xor %dx, %dx
@@ -680,11 +680,11 @@ vga_shd:
 	inc %ax
 	mov %ax, (disp_idx)
 
-	mov (_vga_shu_idx), %ax
-	test %ax, %ax
-	jz 99f
-	dec %ax
-	mov %ax, (_vga_shu_idx)
+	#mov (_vga_shu_idx), %ax
+	#test %ax, %ax
+	#jz 99f
+	#dec %ax
+	#mov %ax, (_vga_shu_idx)
 
 99:
 	pop %di
@@ -777,19 +777,59 @@ _vga_save_top:
 	mov %dx, %es
 	mov %ax, %bx
 
-	# append init
+	mov (_top_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 20f
+	jmp 30f
+
+20: # circular
+	# init
+	mov %bx, %si
+	mov %si, %di
+	mov (VGA_ADDR_COL), %ax
+	add %ax, %si
+	xor %dx, %dx
+	mov $(VGA_SCROLL_CNT-0x01), %cx
+	mul %cx
+	mov %ax, %cx
+
+21:
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 29f
+
+	# cpy
+	mov %es:(%si), %al
+	mov %al, %es:(%di)
+
+	inc %si
+	inc %di
+	dec %cx
+	jmp 21b
+
+29:
+	# upd size
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov (VGA_ADDR_COL), %cx
+	sub %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	jmp 30f
+
+30: # append
+	# init
 	mov $fsp+FSP_OFF_TMP, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
 	add %ax, %bx
 
-	mov $(VGA_MEM&0xFFFF), %si
 	push %es # [s.0:mem_seg]
+	mov $(VGA_MEM&0xFFFF), %si
 	mov (VGA_ADDR_COL), %cx
 
-12: # append
+31: # append
 	# (cnt == 0) ? {end}
 	test %cx, %cx
-	jz 19f
+	jz 39f
 
 	# cpy
 	mov $(VGA_MEM>>0x10), %ax
@@ -802,9 +842,9 @@ _vga_save_top:
 	add $0x02, %si
 	inc %bx
 	dec %cx
-	jmp 12b
+	jmp 31b
 
-19:
+39:
 	pop %es # [s.0:mem_seg]
 
 	push $fsp+FSP_OFF_TMP
@@ -820,6 +860,14 @@ _vga_save_top:
 	push %si
 	call fsp_write
 	add $0x02, %sp
+
+	# upd cnt
+	mov (_top_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
+	inc %ax
+	mov %ax, (_top_cnt)
+
 	jmp 99f
 
 99:
@@ -833,7 +881,7 @@ _vga_save_top:
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
 _vga_shd_idx: .word 0x00
-_vga_shu_idx: .word 0x00
+_top_cnt: .word 0x00
 _vga_shu_cnt: .word 0x00
 _path_top: .asciz "/.top"
 _name_top: .asciz ".top"
