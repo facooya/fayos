@@ -2,8 +2,9 @@
 #
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
-.include "fs/fs.inc"
 .include "chr.inc"
+.include "fs/fs.inc"
+.include "drv/vga.inc"
 .section .text
 .code16
 .global dbg_a
@@ -16,6 +17,7 @@
 .global dbg_path_cv
 .global dbg_curs
 .global dbg_fsp
+.global dbg_file
 
 # dbg_a()
 dbg_a:
@@ -576,6 +578,63 @@ dbg_fsp:
 
 	pop %ax
 	pop %si
+	pop %bp
+	ret
+
+# dbg_file(ub8 *path)
+dbg_file:
+	push %bp
+	mov %sp, %bp
+	push %es
+	pusha
+
+	mov 0x04(%bp), %si
+
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+	push %es # [s.0: file_seg]
+
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %cx
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+
+1:
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 9f
+
+	pop %es # [s.0: file_seg]
+	mov %es:(%bx), %al
+	push %es # [s.0: file_seg]
+
+	mov $(VGA_MEM>>0x10), %dx
+	mov %dx, %es
+	mov $VGA_ATTR_COLOR, %ah
+	mov %ax, %es:(%di)
+
+	add $0x02, %di
+	inc %bx
+	dec %cx
+	jmp 1b
+
+9:
+	pop %es # [s.0: file_seg]
+
+	popa
+	pop %es
 	pop %bp
 	ret
 
