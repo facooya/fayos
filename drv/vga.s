@@ -21,6 +21,7 @@
 .global vga_shd
 
 .global _vga_save_top # HACK
+.global _vga_save_bottom # HACK
 
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
@@ -930,7 +931,113 @@ _vga_load_top:
 	pop %es
 	ret
 
+# _vga_save_bottom()
+_vga_save_bottom:
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	push $_path_bottom # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == neq_last) ? {create}
+	cmp $0x02, %ax
+	je 10f
+	# (path_parse() != done) ? {done} : {save}
+	test %ax, %ax
+	jnz 99f
+	jmp 20f # save
+	# }
+
+10: # file create
+	push $F_TYPE_FILE # (f_type)
+	push $_path_bottom # (&name)
+	call fs_add
+	add $0x04, %sp
+
+	push $_path_bottom # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+20: # file save
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# init
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	add %ax, %bx
+
+	push %es # [s.l0: mem_seg]
+	mov $(VGA_MEM&0xFFFF), %si
+	mov (_vga_last_row_off), %ax
+	add %ax, %si
+	add %ax, %si
+	mov (VGA_ADDR_COL), %cx
+
+21: # append
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 29f
+
+	# screen -> file
+	push %es # [s.0: mem_seg]
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov %es:(%si), %ax
+	pop %es # [s.0: mem_seg]
+	mov %al, %es:(%bx)
+
+	add $0x02, %si
+	inc %bx
+	dec %cx
+	jmp 21b
+
+29:
+	pop %es # [s.l0: mem_seg]
+
+	push $fsp+FSP_OFF_BASE
+	call disk_write_fsp
+	add $0x02, %sp
+
+	# upd file size
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov (VGA_ADDR_COL), %cx
+	add %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	# upd cnt
+	mov (_bottom_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
+	inc %ax
+	mov %ax, (_bottom_cnt)
+	jmp 99f
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	ret
+
 .section .data
+.global _vga_last_row_off # HACK
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
 _top_cnt: .word 0x00
