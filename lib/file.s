@@ -7,6 +7,7 @@
 .section .text
 .code16
 .global file_parse_lines
+.global file_write_pos
 
 # file_parse_lines(ub16 *seg, ub16 *off, fsp *src)
 # <mod: file_line_cv>
@@ -69,6 +70,108 @@ file_parse_lines:
 	pop %di
 	pop %si
 	pop %es
+	pop %bp
+	ret
+
+# file_write_pos(
+# ub8 *file_path,
+# ub16 file_curs_pos,
+# ub16 data_size,
+# ub16 data_seg,
+# ub16 data_off
+# )
+file_write_pos:
+	push %bp
+	mov %sp, %bp
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	mov 0x04(%bp), %si # (*file_path)
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == neq_last) ? {err}
+	cmp $0x02, %ax
+	je 80f
+	# (path_parse() != done) ? {err} : {write}
+	test %ax, %ax
+	jnz 80f
+	jmp 10f
+	# }
+
+10: # write
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+	push %es # [s.l0: file_seg]
+
+	mov 0x06(%bp), %ax # (file_curs_pos)
+	add %ax, %bx
+	mov 0x08(%bp), %cx # (data_size)
+	mov 0x0C(%bp), %si # (data_off)
+
+11:
+	# (size == 0) ? {end}
+	test %cx, %cx
+	jz 19f
+
+	# cpy
+	push %es # [s.0: file_seg]
+	mov 0x0A(%bp), %ax
+	mov %ax, %es
+	mov %es:(%si), %al
+	pop %es # [s.0: file_seg]
+	mov %al, %es:(%bx)
+
+	inc %si
+	inc %bx
+	dec %cx
+	jmp 11b
+
+19:
+	pop %es # [s.l0: file_seg]
+	mov $fsp+FSP_OFF_BASE, %si
+
+	# write disk
+	push %si # (fsp &src)
+	call disk_write_fsp
+	add $0x02, %sp
+
+	# { upd file size
+	mov FSP_OFF_F_SIZE(%si), %cx
+	mov 0x06(%bp), %ax # (file_curs_pos)
+	mov 0x08(%bp), %dx # (data_size)
+	add %dx, %ax
+
+	# (file_size <= (pos+size)) ? {skip} : {upd}
+	cmp %ax, %cx
+	jge 99f
+
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+	push %si
+	call fsp_write
+	add $0x02, %sp
+	jmp 99f
+	# }
+
+80:
+	# TODO: add error handler
+
+99:
+	pop %bx
+	pop %di
+	pop %si
 	pop %bp
 	ret
 
