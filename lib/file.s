@@ -74,6 +74,29 @@ file_parse_lines:
 	pop %bp
 	ret
 
+# file_read_pos(
+# ub8 *file_path,
+# ub16 file_curs_pos,
+# ub16 num,
+# ub16 buf_seg,
+# ub16 buf_off
+# )
+file_read_pos:
+	push %bp
+	mov %sp, %bp
+
+	push $0x01 # (flag)
+	push 0x0C(%bp) # (off)
+	push 0x0A(%bp) # (seg)
+	push 0x08(%bp) # (num)
+	push 0x06(%bp) # (file_curs_pos)
+	push 0x04(%bp) # (&file_path)
+	call _file_rw_pos
+	add $0x0C, %sp
+
+	pop %bp
+	ret
+
 # file_write_pos(
 # ub8 *file_path,
 # ub16 file_curs_pos,
@@ -82,6 +105,30 @@ file_parse_lines:
 # ub16 data_off
 # )
 file_write_pos:
+	push %bp
+	mov %sp, %bp
+
+	push $0x02 # (flag)
+	push 0x0C(%bp) # (off)
+	push 0x0A(%bp) # (seg)
+	push 0x08(%bp) # (num)
+	push 0x06(%bp) # (file_curs_pos)
+	push 0x04(%bp) # (&file_path)
+	call _file_rw_pos
+	add $0x0C, %sp
+
+	pop %bp
+	ret
+
+# _file_rw_pos(
+# ub8 *file_path,
+# ub16 file_curs_pos,
+# ub16 num,
+# ub16 seg,
+# ub16 off,
+# ub16 flag
+# )
+_file_rw_pos:
 	push %bp
 	mov %sp, %bp
 	push %es
@@ -100,13 +147,13 @@ file_write_pos:
 	# (path_parse() == neq_last) ? {err}
 	cmp $0x02, %ax
 	je 80f
-	# (path_parse() != done) ? {err} : {write}
+	# (path_parse() != done) ? {err} : {rw}
 	test %ax, %ax
 	jnz 80f
 	jmp 10f
 	# }
 
-10: # write
+10: # read/write
 	push $fsp+FSP_OFF_BASE # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
@@ -115,17 +162,50 @@ file_write_pos:
 	mov %ax, %bx
 	push %es # [s.l0: file_seg]
 
+	# (flag == write) ? {wirte}
+	mov 0x0E(%bp), %ax
+	cmp $0x02, %ax
+	je 1f
+
+	# init read
 	mov 0x06(%bp), %ax # (file_curs_pos)
 	add %ax, %bx
-	mov 0x08(%bp), %cx # (data_size)
-	mov 0x0C(%bp), %si # (data_off)
+	mov 0x08(%bp), %cx # (num)
+	mov 0x0C(%bp), %di # (buf_off)
+	jmp 11f
 
-11:
-	# (size == 0) ? {end}
+1:
+	# init write
+	mov 0x06(%bp), %ax # (file_curs_pos)
+	add %ax, %bx
+	mov 0x08(%bp), %cx # (num)
+	mov 0x0C(%bp), %si # (data_off)
+	jmp 12f
+
+11: # loop read
+	# (num == 0) ? {end}
 	test %cx, %cx
 	jz 19f
 
-	# cpy
+	# file -> buf
+	mov %es:(%bx), %al
+	push %es # [s.0: file_seg]
+	mov 0x0A(%bp), %dx # (seg)
+	mov %dx, %es
+	mov %al, %es:(%di)
+	pop %es # [s.0: file_seg]
+
+	inc %bx
+	inc %di
+	dec %cx
+	jmp 11b
+
+12: # loop write
+	# (num == 0) ? {end}
+	test %cx, %cx
+	jz 19f
+
+	# data -> file
 	push %es # [s.0: file_seg]
 	mov 0x0A(%bp), %ax
 	mov %ax, %es
@@ -136,10 +216,17 @@ file_write_pos:
 	inc %si
 	inc %bx
 	dec %cx
-	jmp 11b
+	jmp 12b
 
 19:
 	pop %es # [s.l0: file_seg]
+
+	# (flag == read) ? {done}
+	mov 0x0E(%bp), %ax
+	cmp $0x01, %ax
+	je 99f
+
+	# {{ final write
 	mov $fsp+FSP_OFF_BASE, %si
 
 	# write disk
@@ -163,88 +250,11 @@ file_write_pos:
 	add $0x02, %sp
 	jmp 99f
 	# }
-
-80:
-	# TODO: add error handler
-
-99:
-	pop %bx
-	pop %di
-	pop %si
-	pop %es
-	pop %bp
-	ret
-
-# file_read_pos(
-# ub8 *file_path,
-# ub16 file_curs_pos,
-# ub16 num,
-# ub16 buf_seg,
-# ub16 buf_off
-# )
-file_read_pos:
-	push %bp
-	mov %sp, %bp
-	push %es
-	push %si
-	push %di
-	push %bx
-
-	# { path
-	mov 0x04(%bp), %si # (*file_path)
-	push %si # (&path)
-	call path_parse
-	add $0x02, %sp
-	# <mod: (fsp *dir, *base)>
-	# <ax = {done:0, exit:1, neq_last:2}>
-
-	# (path_parse() == neq_last) ? {err}
-	cmp $0x02, %ax
-	je 80f
-	# (path_parse() != done) ? {err} : {read}
-	test %ax, %ax
-	jnz 80f
-	jmp 10f
-	# }
-
-10: # read
-	push $fsp+FSP_OFF_BASE # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-	push %es # [s.l0: file_seg]
-
-	mov 0x06(%bp), %ax # (file_curs_pos)
-	add %ax, %bx
-	mov 0x08(%bp), %cx # (num)
-	mov 0x0C(%bp), %di # (buf_off)
-
-11:
-	# (num == 0) ? {end}
-	test %cx, %cx
-	jz 90f
-
-	# file -> buf
-	mov %es:(%bx), %al
-	push %es # [s.0: file_seg]
-	mov 0x0A(%bp), %dx # (buf_seg)
-	mov %dx, %es
-	mov %al, %es:(%di)
-	pop %es # [s.0: file_seg]
-
-	inc %di
-	inc %bx
-	dec %cx
-	jmp 11b
+	# }}
 
 80:
 	# TODO: error handler
 	jmp 99f
-
-90:
-	pop %es # [s.l0: file_seg]
 
 99:
 	pop %bx
