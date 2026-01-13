@@ -7,6 +7,7 @@
 .section .text
 .code16
 .global file_parse_lines
+.global file_read_pos
 .global file_write_pos
 
 # file_parse_lines(ub16 *seg, ub16 *off, fsp *src)
@@ -83,6 +84,7 @@ file_parse_lines:
 file_write_pos:
 	push %bp
 	mov %sp, %bp
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -156,9 +158,6 @@ file_write_pos:
 	jge 99f
 
 	mov %ax, FSP_OFF_F_SIZE(%si)
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
 	push %si
 	call fsp_write
 	add $0x02, %sp
@@ -172,6 +171,86 @@ file_write_pos:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
+	pop %bp
+	ret
+
+# file_read_pos(
+# ub8 *file_path,
+# ub16 file_curs_pos,
+# ub16 num,
+# ub16 buf_seg,
+# ub16 buf_off
+# )
+file_read_pos:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	mov 0x04(%bp), %si # (*file_path)
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == neq_last) ? {err}
+	cmp $0x02, %ax
+	je 80f
+	# (path_parse() != done) ? {err} : {read}
+	test %ax, %ax
+	jnz 80f
+	jmp 10f
+	# }
+
+10: # read
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+	push %es # [s.l0: file_seg]
+
+	mov 0x06(%bp), %ax # (file_curs_pos)
+	add %ax, %bx
+	mov 0x08(%bp), %cx # (num)
+	mov 0x0C(%bp), %di # (buf_off)
+
+11:
+	# (num == 0) ? {end}
+	test %cx, %cx
+	jz 90f
+
+	# file -> buf
+	mov %es:(%bx), %al
+	push %es # [s.0: file_seg]
+	mov 0x0A(%bp), %dx # (buf_seg)
+	mov %dx, %es
+	mov %al, %es:(%di)
+	pop %es # [s.0: file_seg]
+
+	inc %di
+	inc %bx
+	dec %cx
+	jmp 11b
+
+80:
+	# TODO: error handler
+	jmp 99f
+
+90:
+	pop %es # [s.l0: file_seg]
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
 	pop %bp
 	ret
 

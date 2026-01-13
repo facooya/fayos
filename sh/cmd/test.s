@@ -23,14 +23,19 @@ cmd_test:
 	call file_write_pos
 	add $0x0A, %sp
 
-	push $_test_data2 # (data_off)
+	push $_test_buf # (buf_off)
 	xor %ax, %ax
-	push %ax # (data_seg)
-	push $0x04 # (data_size)
-	push $0x05 # (file_curs_pos)
+	push %ax # (buf_seg)
+	push $0x05 # (num)
+	push $0x01 # (file_curs_pos)
 	push $_test_file # (&file_path)
-	call file_write_pos
+	call file_read_pos
 	add $0x0A, %sp
+
+	mov $_test_buf, %si
+	push %si
+	call vga_outs
+	add $0x02, %sp
 
 	pop %si
 	ret
@@ -38,5 +43,5 @@ cmd_test:
 .section .data
 _path_top: .asciz "/.top"
 _test_data: .asciz "test data\r\n"
-_test_data2: .asciz "AAAA"
 _test_file: .asciz "/test"
+_test_buf: .zero 0x10
