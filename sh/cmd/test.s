@@ -16,7 +16,7 @@ cmd_test:
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %si
 
-	mov (_vga_last_row_off), %ax
+	#mov (_vga_last_row_off), %ax
 	add %ax, %si
 	add %ax, %si
 
@@ -31,16 +31,9 @@ cmd_test:
 	mov $VGA_ATTR_COLOR, %ah
 	mov %ax, %es:(%si)
 
-	#call _vga_save_bottom
-
-	push $_path_bottom # (&path)
-	#call dbg_file
-	add $0x02, %sp
-
 	pop %si
 	pop %es
 	ret
 
 .section .data
 _test_data: .asciz "test data"
-_path_bottom: .asciz "/.bottom"

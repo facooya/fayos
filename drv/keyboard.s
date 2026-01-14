@@ -751,12 +751,26 @@ _kbd_hdl_right:
 
 # _kbd_hdl_page_up()
 _kbd_hdl_page_up:
+	# (cnt == 0) ? {done} : {shd}
+	mov (_top_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
 	call vga_shd
+
+99:
 	ret
 
 # _kbd_hdl_page_down()
 _kbd_hdl_page_down:
+	# (cnt == 0) ? {done} : {shd}
+	mov (_bottom_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
 	call vga_shu
+
+99:
 	ret
 
 .section .data

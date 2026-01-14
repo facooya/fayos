@@ -20,9 +20,6 @@
 .global vga_shu
 .global vga_shd
 
-.global _vga_save_top # HACK
-.global _vga_save_bottom # HACK
-
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
 vga_init:
@@ -517,9 +514,10 @@ vga_shu:
 	push %si
 	push %di
 
-	#mov (disp_idx), %ax
-	#test %ax, %ax
-	#jz 99f
+	# (cnt == max) ? {done}
+	mov (_vga_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
 
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
@@ -549,10 +547,10 @@ vga_shu:
 	call _vga_load_bottom
 
 1:
-	# upd idx
-	mov (disp_idx), %ax
-	dec %ax
-	mov %ax, (disp_idx)
+	# upd cnt
+	mov (_vga_cnt), %ax
+	inc %ax
+	mov %ax, (_vga_cnt)
 
 99:
 	pop %di
@@ -571,9 +569,10 @@ vga_shd:
 	mov $(VGA_MEM&0xFFFF), %di
 	mov %di, %si
 
-	#mov (disp_idx), %ax
-	#cmp $VGA_SCROLL_CNT, %ax
-	#je 99f
+	# (cnt == 0) ? {done}
+	mov (_vga_cnt), %ax
+	test %ax, %ax
+	je 99f
 
 	call _vga_save_bottom
 
@@ -605,10 +604,10 @@ vga_shd:
 
 	call _vga_load_top
 
-	# upd idx
-	mov (disp_idx), %ax
-	inc %ax
-	mov %ax, (disp_idx)
+	# upd cnt
+	mov (_vga_cnt), %ax
+	dec %ax
+	mov %ax, (_vga_cnt)
 
 99:
 	pop %di
@@ -648,6 +647,14 @@ _vga_shu:
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
+	# (cnt == max) ? {done} : {cnt++}
+	mov (_vga_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
+	inc %ax
+	mov %ax, (_vga_cnt)
+
+99:
 	pop %di
 	pop %si
 	pop %es
@@ -1092,11 +1099,13 @@ _vga_load_bottom:
 	ret
 
 .section .data
-.global _vga_last_row_off # HACK
+.global _top_cnt # HACK
+.global _bottom_cnt # HACK
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
 _top_cnt: .word 0x00
 _bottom_cnt: .word 0x00
+_vga_cnt: .word 0x00
 _path_top: .asciz "/.top"
 _path_bottom: .asciz "/.bottom"
 _name_top: .asciz ".top"
