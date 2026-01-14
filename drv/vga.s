@@ -546,24 +546,9 @@ vga_shu:
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
-	# { load bottom
-	mov (_vga_last_row_off), %ax
-	push %ax
-	call vga_set_curs
-	add $0x02, %sp
+	call _vga_load_bottom
 
-	mov $disp_bottom_buf, %si
-	mov (VGA_ADDR_COL), %cx
-	xor %dx, %dx
-	mul %cx
-	add %ax, %si
-
-	push %si
-	push %cx
-	call vga_outns
-	add $0x04, %sp
-	# }
-
+1:
 	# upd idx
 	mov (disp_idx), %ax
 	dec %ax
@@ -590,32 +575,7 @@ vga_shd:
 	#cmp $VGA_SCROLL_CNT, %ax
 	#je 99f
 
-	# { save bottom
-	mov (_vga_last_row_off), %ax
-	mov %ax, %si
-	add %ax, %si
-
-	mov $disp_bottom_buf, %di
-	mov (VGA_ADDR_COL), %cx
-	xor %dx, %dx
-	mul %cx
-	add %ax, %di
-
-1:
-	# (column == 0) ? {end}
-	mov %es:(%si), %ax
-	test %cx, %cx
-	jz 2f
-
-	mov %al, (%di)
-
-	add $0x02, %si
-	inc %di
-	dec %cx
-	jmp 1b
-
-2:
-	# }
+	call _vga_save_bottom
 
 	# { disp shift down
 	mov (_vga_last_row_off), %cx
@@ -1028,6 +988,101 @@ _vga_save_bottom:
 	inc %ax
 	mov %ax, (_bottom_cnt)
 	jmp 99f
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	ret
+
+# _vga_load_bottom()
+_vga_load_bottom:
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	push $_path_bottom # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == done) ? {load} : {done}
+	test %ax, %ax
+	jz 10f
+	jmp 99f
+	# }
+
+10: # load
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# { calc off
+	mov (_bottom_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
+	dec %ax
+	mov (VGA_ADDR_COL), %cx
+	xor %dx, %dx
+	mul %cx
+
+	# set off
+	add %ax, %bx
+	# }
+
+	# init
+	push %es # [s.0: file_seg]
+	mov $(VGA_MEM&0xFFFF), %di
+	mov (_vga_last_row_off), %ax
+	add %ax, %di
+	add %ax, %di
+	mov $VGA_ATTR_COLOR, %ah
+
+11:
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 19f
+
+	# file -> screen
+	mov %es:(%bx), %al
+	push %es # [s.0: file_seg]
+	mov $(VGA_MEM>>0x10), %dx
+	mov %dx, %es
+	mov %ax, %es:(%di)
+	pop %es # [s.0: file_seg]
+
+	add $0x02, %di
+	inc %bx
+	dec %cx
+	jmp 11b
+
+19:
+	pop %es # [s.0: file_seg]
+
+	# upd file size
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %cx
+	mov (VGA_ADDR_COL), %ax
+	sub %ax, %cx
+	mov %cx, FSP_OFF_F_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	# TODO: cursor
+
+	# upd cnt
+	mov (_bottom_cnt), %ax
+	dec %ax
+	mov %ax, (_bottom_cnt)
 
 99:
 	pop %bx

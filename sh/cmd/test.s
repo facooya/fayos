@@ -24,10 +24,17 @@ cmd_test:
 	mov $VGA_ATTR_COLOR, %ah
 	mov %ax, %es:(%si)
 
-	call _vga_save_bottom
+	mov (VGA_ADDR_COL), %ax
+	sub %ax, %si
+	sub %ax, %si
+	mov $0x42, %al
+	mov $VGA_ATTR_COLOR, %ah
+	mov %ax, %es:(%si)
+
+	#call _vga_save_bottom
 
 	push $_path_bottom # (&path)
-	call dbg_file
+	#call dbg_file
 	add $0x02, %sp
 
 	pop %si
