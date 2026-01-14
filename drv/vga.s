@@ -524,7 +524,10 @@ vga_shu:
 	mov $(VGA_MEM&0xFFFF), %di
 	mov %di, %si
 
-	call _vga_save_top
+	#call _vga_save_top
+	push $0x00
+	call _vga_sl_tb
+	add $0x02, %sp
 
 	# { disp shift up
 	mov (VGA_ADDR_COL), %ax
@@ -574,7 +577,10 @@ vga_shd:
 	test %ax, %ax
 	je 99f
 
-	call _vga_save_bottom
+	#call _vga_save_bottom
+	push $0x02
+	call _vga_sl_tb
+	add $0x02, %sp
 
 	# { disp shift down
 	mov (_vga_last_row_off), %cx
@@ -627,7 +633,10 @@ _vga_shu:
 	mov $(VGA_MEM&0xFFFF), %di
 	mov %di, %si
 
-	call _vga_save_top
+	#call _vga_save_top
+	push $0x00
+	call _vga_sl_tb
+	add $0x02, %sp
 
 	# init
 	mov (VGA_ADDR_COL), %ax
@@ -658,6 +667,235 @@ _vga_shu:
 	pop %di
 	pop %si
 	pop %es
+	ret
+
+# _vga_sl_tb(ub16 flag)
+_vga_sl_tb:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	mov $_path_top, %si
+
+	# (flag == top) ? {top} : {bottom}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x01), %ax
+	jz 1f
+	mov $_path_bottom, %si
+1:
+
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() == neq_last) ? {create}
+	cmp $0x02, %ax
+	je 10f # create
+	# (path_parse() != done) ? {done} : {save}
+	test %ax, %ax
+	jnz 99f
+	# }
+
+	# (flag == save) ? {chk} : {load}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x00), %ax
+	jz 11f
+	jmp 30f
+
+10: # create
+	mov $_name_top, %di
+
+	# (flag == top) ? {top} : {bottom}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x01), %ax
+	jz 1f
+	mov $_name_bottom, %di
+
+1:
+	push $F_TYPE_FILE # (f_type)
+	push %di # (&name)
+	call fs_add
+	add $0x04, %sp
+
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+	jmp 20f
+
+11: # chk
+	# (flag != top) ? {save}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x01), %ax
+	jnz 20f
+
+	# (top_cnt == max) ? {circular} : {save}
+	mov (vga_top_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 40f
+	jmp 20f
+
+40: # circular for top
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	# init
+	mov %bx, %si
+	mov %si, %di
+	mov (VGA_ADDR_COL), %ax
+	add %ax, %si
+	xor %dx, %dx
+	mov $(VGA_SCROLL_CNT-0x01), %cx
+	mul %cx
+	mov %ax, %cx
+
+41:
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 49f
+
+	# line[i] -> line[i+1]
+	mov %es:(%si), %al
+	mov %al, %es:(%di)
+
+	inc %si
+	inc %di
+	dec %cx
+	jmp 41b
+
+49:
+	# upd size
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov (VGA_ADDR_COL), %cx
+	sub %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	jmp 1f
+
+20: # save
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+1:
+	# init
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	add %ax, %bx
+
+	push %es # [s.0: mem_seg]
+	mov $(VGA_MEM&0xFFFF), %si
+	mov (VGA_ADDR_COL), %cx
+
+	# (flag == top) ? {top} : {bottom}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x01), %ax
+	jz 21f
+
+	mov (_vga_last_row_off), %ax
+	add %ax, %si
+	add %ax, %si
+	jmp 22f
+
+21: # top
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 29f
+
+	# screen -> file
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov %es:(%si), %ax
+	pop %es # [s.1: mem_seg]
+	mov %al, %es:(%bx)
+	push %es # [s.1: mem_seg]
+
+	add $0x02, %si
+	inc %bx
+	dec %cx
+	jmp 21b
+
+22: # bottom
+	# (cnt == 0) ? {end}
+	test %cx, %cx
+	jz 29f
+
+	# screen -> file
+	push %es # [s.1: mem_seg]
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov %es:(%si), %ax
+	pop %es # [s.1: mem_seg]
+	mov %al, %es:(%bx)
+
+	add $0x02, %si
+	inc %bx
+	dec %cx
+	jmp 22b
+
+29:
+	pop %es # [s.0: mem_seg]
+
+	push $fsp+FSP_OFF_BASE
+	call disk_write_fsp
+	add $0x02, %sp
+
+	# upd file size
+	mov $fsp+FSP_OFF_BASE, %si
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov (VGA_ADDR_COL), %cx
+	add %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	# { upd cnt
+	# (flag == top) ? {top} : {bottom}
+	mov 0x04(%bp), %ax
+	test $(0x01<<0x01), %ax
+	jz 1f
+	jmp 2f
+
+1: # top cnt
+	mov (vga_top_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
+	inc %ax
+	mov %ax, (vga_top_cnt)
+	jmp 99f
+
+2: # bottom cnt
+	mov (vga_bottom_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
+	inc %ax
+	mov %ax, (vga_bottom_cnt)
+	jmp 99f
+	# }
+
+30: # load
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	pop %bp
 	ret
 
 # _vga_save_top()
