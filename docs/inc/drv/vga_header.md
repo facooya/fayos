@@ -14,8 +14,9 @@ Header for VGA.
 ## Constants
 | Name | Description |
 | --- | --- |
-| `VGA_MEM` | VGA Memory, segment:offset |
 | `VGA_ATTR_COLOR` | Attribute default color. `4-bit:4-bit = background:foreground`. Default color is `0:7 = black:light_gray` |
+| `VGA_SCROLL_CNT` | Screen scroll max count |
+| `VGA_MEM` | VGA Memory, segment:offset |
 | `VGA_PORT_CURS_CMD` | Port for cursor command |
 | `VGA_PORT_CURS_DATA` | Port for cursor data. Read/Write 1-byte |
 | `VGA_ADDR_ROW` | Address for row. Total row index. Read only 1-byte. |

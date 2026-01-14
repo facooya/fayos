@@ -705,7 +705,7 @@ _vga_save_top:
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov (_top_cnt), %ax
+	mov (vga_top_cnt), %ax
 	cmp $VGA_SCROLL_CNT, %ax
 	je 20f
 	jmp 30f
@@ -790,11 +790,11 @@ _vga_save_top:
 	add $0x02, %sp
 
 	# upd cnt
-	mov (_top_cnt), %ax
+	mov (vga_top_cnt), %ax
 	cmp $VGA_SCROLL_CNT, %ax
 	je 99f
 	inc %ax
-	mov %ax, (_top_cnt)
+	mov %ax, (vga_top_cnt)
 	jmp 99f
 
 99:
@@ -833,7 +833,7 @@ _vga_load_top:
 	mov %ax, %bx
 
 	# { calc off
-	mov (_top_cnt), %ax
+	mov (vga_top_cnt), %ax
 	test %ax, %ax
 	jz 99f
 
@@ -887,9 +887,9 @@ _vga_load_top:
 	# TODO: cursor
 
 	# upd top cnt
-	mov (_top_cnt), %ax
+	mov (vga_top_cnt), %ax
 	dec %ax
-	mov %ax, (_top_cnt)
+	mov %ax, (vga_top_cnt)
 
 99:
 	pop %bx
@@ -989,11 +989,11 @@ _vga_save_bottom:
 	add $0x02, %sp
 
 	# upd cnt
-	mov (_bottom_cnt), %ax
+	mov (vga_bottom_cnt), %ax
 	cmp $VGA_SCROLL_CNT, %ax
 	je 99f
 	inc %ax
-	mov %ax, (_bottom_cnt)
+	mov %ax, (vga_bottom_cnt)
 	jmp 99f
 
 99:
@@ -1032,7 +1032,7 @@ _vga_load_bottom:
 	mov %ax, %bx
 
 	# { calc off
-	mov (_bottom_cnt), %ax
+	mov (vga_bottom_cnt), %ax
 	test %ax, %ax
 	jz 99f
 
@@ -1087,9 +1087,9 @@ _vga_load_bottom:
 	# TODO: cursor
 
 	# upd cnt
-	mov (_bottom_cnt), %ax
+	mov (vga_bottom_cnt), %ax
 	dec %ax
-	mov %ax, (_bottom_cnt)
+	mov %ax, (vga_bottom_cnt)
 
 99:
 	pop %bx
@@ -1099,12 +1099,14 @@ _vga_load_bottom:
 	ret
 
 .section .data
-.global _top_cnt # HACK
-.global _bottom_cnt # HACK
+.global vga_top_cnt
+.global vga_bottom_cnt
+
+vga_top_cnt: .word 0x00
+vga_bottom_cnt: .word 0x00
+
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
-_top_cnt: .word 0x00
-_bottom_cnt: .word 0x00
 _vga_cnt: .word 0x00
 _path_top: .asciz "/.top"
 _path_bottom: .asciz "/.bottom"

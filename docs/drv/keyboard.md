@@ -19,6 +19,8 @@ Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2
 - - [`_kbd_hdl_down`](#_kbd_hdl_down)
 - - [`_kbd_hdl_left`](#_kbd_hdl_left)
 - - [`_kbd_hdl_right`](#_kbd_hdl_right)
+- - [`_kbd_hdl_pgup`](#_kbd_hdl_pgup)
+- - [`_kbd_hdl_pgdn`](#_kbd_hdl_pgdn)
 - [Terms](#terms)
 - [Reference Links](#reference-links)
 
@@ -318,6 +320,58 @@ Keyboard handler for right arrow key.
 ```mermaid
 graph TD
 Start([Setup]) --> Right[Cursor move right] --> End([Key handled])
+```
+
+---
+
+### `_kbd_hdl_pgup`
+#### Overview
+Keyboard handler for page up key.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `vga_top_cnt`
+
+#### Modifies
+- `N/A`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Start([Setup]) --> IfTop{"Is top?"}
+IfTop -- Yes --> End([Key handled])
+IfTop -- No --> A[["vga_shd()"]] --> End
+```
+
+---
+
+### `_kbd_hdl_pgdn`
+#### Overview
+Keyboard handler for page down key.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `vga_bottom_cnt`
+
+#### Modifies
+- `N/A`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Start([Setup]) --> IfBottom{"Is bottom?"}
+IfBottom -- Yes --> End([Key handled])
+IfBottom -- No --> A[["vga_shu()"]] --> End
 ```
 
 ---

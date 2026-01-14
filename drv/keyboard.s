@@ -463,10 +463,10 @@ _kbd_proc:
 
 # nav
 31: # page up
-	call _kbd_hdl_page_up
+	call _kbd_hdl_pgup
 	jmp 99f
 32: # page down
-	call _kbd_hdl_page_down
+	call _kbd_hdl_pgdn
 	jmp 99f
 
 99:
@@ -749,10 +749,11 @@ _kbd_hdl_right:
 99:
 	ret
 
-# _kbd_hdl_page_up()
-_kbd_hdl_page_up:
+# _kbd_hdl_pgup()
+# <req: vga_top_cnt>
+_kbd_hdl_pgup:
 	# (cnt == 0) ? {done} : {shd}
-	mov (_top_cnt), %ax
+	mov (vga_top_cnt), %ax
 	test %ax, %ax
 	jz 99f
 
@@ -761,10 +762,11 @@ _kbd_hdl_page_up:
 99:
 	ret
 
-# _kbd_hdl_page_down()
-_kbd_hdl_page_down:
-	# (cnt == 0) ? {done} : {shd}
-	mov (_bottom_cnt), %ax
+# _kbd_hdl_pgdn()
+# <req: vga_bottom_cnt>
+_kbd_hdl_pgdn:
+	# (cnt == 0) ? {done} : {shu}
+	mov (vga_bottom_cnt), %ax
 	test %ax, %ax
 	jz 99f
 

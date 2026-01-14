@@ -85,7 +85,7 @@ file_read_pos:
 	push %bp
 	mov %sp, %bp
 
-	push $0x01 # (flag)
+	push $0x00 # (flag)
 	push 0x0C(%bp) # (off)
 	push 0x0A(%bp) # (seg)
 	push 0x08(%bp) # (num)
@@ -108,7 +108,7 @@ file_write_pos:
 	push %bp
 	mov %sp, %bp
 
-	push $0x02 # (flag)
+	push $0x01 # (flag)
 	push 0x0C(%bp) # (off)
 	push 0x0A(%bp) # (seg)
 	push 0x08(%bp) # (num)
@@ -164,7 +164,7 @@ _file_rw_pos:
 
 	# (flag == write) ? {wirte}
 	mov 0x0E(%bp), %ax
-	cmp $0x02, %ax
+	cmp $0x01, %ax
 	je 1f
 
 	# init read
@@ -223,8 +223,8 @@ _file_rw_pos:
 
 	# (flag == read) ? {done}
 	mov 0x0E(%bp), %ax
-	cmp $0x01, %ax
-	je 99f
+	test %ax, %ax
+	jz 99f
 
 	# {{ final write
 	mov $fsp+FSP_OFF_BASE, %si
