@@ -770,7 +770,9 @@ _kbd_hdl_pgdn:
 	test %ax, %ax
 	jz 99f
 
+	push $0x01
 	call vga_shu
+	add $0x02, %sp
 
 99:
 	ret

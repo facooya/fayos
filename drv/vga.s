@@ -230,7 +230,9 @@ vga_outc:
 	jmp 90f
 
 30: # shu chr
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 
 	mov (_vga_last_row_off), %ax
 	mov %ax, %di
@@ -247,7 +249,9 @@ vga_outc:
 	mov (VGA_ADDR_COL), %ax
 	sub %ax, %bx # curs_pos
 
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 
 	mov %bx, %cx # curs_pos
 	jmp 90f
@@ -341,7 +345,9 @@ vga_outs:
 30: # shu in
 	push %ax # [s.l0:chr]
 
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 
 	# set curs pos
 	mov (_vga_last_row_off), %cx # curs_pos
@@ -353,7 +359,9 @@ vga_outs:
 
 31: # shu
 	push %cx # [s.f0:curs_pos]
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 	pop %cx # [s.f0:curs_pos]
 
 	mov (VGA_ADDR_COL), %ax
@@ -464,7 +472,9 @@ vga_outns:
 30: # shu in
 	push %ax # [s.l0:chr]
 
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 
 	mov (_vga_last_row_off), %cx # curs_pos
 	mov %cx, %di
@@ -477,7 +487,9 @@ vga_outns:
 	push %dx # [s.l1:num]
 
 	push %cx
-	call _vga_shu
+	push $0x00
+	call vga_shu
+	add $0x02, %sp
 	pop %cx
 
 	# { set curs pos
@@ -508,23 +520,32 @@ vga_outns:
 	pop %bp
 	ret
 
-# vga_shu()
+# vga_shu(ub16 flag)
+# (flag = [bit:clr/set] = {0:auto/manual}
 vga_shu:
+	push %bp
+	mov %sp, %bp
 	push %es
 	push %si
 	push %di
+
+	# (flag == auto) ? {pass} : {chk}
+	mov 0x04(%bp), %ax
+	test (0x01<<0x00), %ax
+	jz 1f
 
 	# (cnt == max) ? {done}
 	mov (_vga_cnt), %ax
 	cmp $VGA_SCROLL_CNT, %ax
 	je 99f
 
+1:
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
 	mov %di, %si
 
-	push $0x00
+	push $0x00 # (flag)
 	call _vga_sl_tb
 	add $0x02, %sp
 
@@ -546,13 +567,20 @@ vga_shu:
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
-	push $0x03
+	# (flag == auto) ? {pass} : {load}
+	mov 0x04(%bp), %ax
+	test (0x01<<0x00), %ax
+	jz 1f
+
+	push $0x03 # (flag)
 	call _vga_sl_tb
 	add $0x02, %sp
 
 1:
-	# upd cnt
+	# (cnt == max) ? {done} : {cnt++}
 	mov (_vga_cnt), %ax
+	cmp $VGA_SCROLL_CNT, %ax
+	je 99f
 	inc %ax
 	mov %ax, (_vga_cnt)
 
@@ -560,6 +588,7 @@ vga_shu:
 	pop %di
 	pop %si
 	pop %es
+	pop %bp
 	ret
 
 # vga_shd()
@@ -615,53 +644,6 @@ vga_shd:
 	# upd cnt
 	mov (_vga_cnt), %ax
 	dec %ax
-	mov %ax, (_vga_cnt)
-
-99:
-	pop %di
-	pop %si
-	pop %es
-	ret
-
-# _vga_shu()
-_vga_shu:
-	push %es
-	push %si
-	push %di
-
-	# init
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %di
-	mov %di, %si
-
-	push $0x00
-	call _vga_sl_tb
-	add $0x02, %sp
-
-	# init
-	mov (VGA_ADDR_COL), %ax
-	add %ax, %si
-	add %ax, %si
-
-	# shift up
-	mov (_vga_last_row_off), %cx
-	push %ds # [s.r0:vga_seg]
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %ds
-	rep movsw
-	pop %ds # [s.r0:vga_seg]
-
-	# clr last line
-	mov (VGA_ADDR_COL), %cx
-	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
-	rep stosw
-
-	# (cnt == max) ? {done} : {cnt++}
-	mov (_vga_cnt), %ax
-	cmp $VGA_SCROLL_CNT, %ax
-	je 99f
-	inc %ax
 	mov %ax, (_vga_cnt)
 
 99:

@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- common logic and add docs
+- Update docs for VGA
 
 ---
 
@@ -10,6 +10,7 @@
 
 ## TODO
 - more date format
+- `_vga_sl_tb()`: cursor, error handler
 
 ---
 
