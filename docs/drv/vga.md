@@ -470,10 +470,16 @@ Support create mode if no exist file.
 ```mermaid
 graph TD
 ChkExist{"Is file exist?"} -- No --> Create[Create file]
-ChkExist -- Yes --> ChkS{"Is save?"}
-ChkS -- Yes --> SaveChk{"Is top line?"}
+ChkExist -- Yes --> ChkS{"Is type save?"}
+ChkS -- Yes --> SaveChk{"Is type top?"}
+SaveChk -- Yes --> ChkTC
+SaveChk -- No --> Save
 ChkS -- No --> Load[Load file to screen]
-Create --> Save[Save screen to file]
+Create --> ChkTC{"Is max the top count?"}
+ChkTC -- Yes --> Circular[Update circular to file for top line] --> Save
+ChkTC -- No --> Save[Save screen to file]
+Save --> End([Done])
+Load --> End
 ```
 
 #### Implementation
