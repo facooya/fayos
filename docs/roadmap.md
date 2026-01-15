@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- Update docs for VGA
 
 ---
 

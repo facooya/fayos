@@ -791,17 +791,17 @@ _vga_sl_tb:
 	mov $(VGA_MEM&0xFFFF), %si
 	mov (VGA_ADDR_COL), %cx
 
-	# (flag == top) ? {top} : {bottom}
+	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %ax
 	test $(0x01<<0x01), %ax
 	jz 21f
 
+	# init bottom
 	mov (_vga_last_row_off), %ax
 	add %ax, %si
 	add %ax, %si
-	jmp 22f
 
-21: # top
+21: # top/bottom
 	# (cnt == 0) ? {end}
 	test %cx, %cx
 	jz 29f
@@ -818,24 +818,6 @@ _vga_sl_tb:
 	inc %bx
 	dec %cx
 	jmp 21b
-
-22: # bottom
-	# (cnt == 0) ? {end}
-	test %cx, %cx
-	jz 29f
-
-	# screen -> file
-	push %es # [s.1: mem_seg]
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %es
-	mov %es:(%si), %ax
-	pop %es # [s.1: mem_seg]
-	mov %al, %es:(%bx)
-
-	add $0x02, %si
-	inc %bx
-	dec %cx
-	jmp 22b
 
 29:
 	pop %es # [s.0: mem_seg]
@@ -913,17 +895,17 @@ _vga_sl_tb:
 	mov $(VGA_MEM&0xFFFF), %di
 	mov $VGA_ATTR_COLOR, %ah
 
-	# (flag == top) ? {top} : {bottom}
+	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %dx
 	test $(0x01<<0x01), %dx
 	jz 31f
 
+	# init bottom
 	mov (_vga_last_row_off), %dx
 	add %dx, %di
 	add %dx, %di
-	jmp 32f
 
-31: # top
+31: # top/bottom
 	# (cnt == 0) ? {end}
 	test %cx, %cx
 	jz 39f
@@ -940,24 +922,6 @@ _vga_sl_tb:
 	inc %bx
 	dec %cx
 	jmp 31b
-
-32: # bottom
-	# (cnt == 0) ? {end}
-	test %cx, %cx
-	jz 39f
-
-	# file -> screen
-	mov %es:(%bx), %al
-	push %es # [s.1: file_seg]
-	mov $(VGA_MEM>>0x10), %dx
-	mov %dx, %es
-	mov %ax, %es:(%di)
-	pop %es # [s.1: file_seg]
-
-	add $0x02, %di
-	inc %bx
-	dec %cx
-	jmp 32b
 
 39:
 	pop %es # [s.0: file_seg]
