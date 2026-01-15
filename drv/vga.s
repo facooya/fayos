@@ -522,6 +522,8 @@ vga_outns:
 
 # vga_shu(ub16 flag)
 # (flag = [bit:clr/set] = {0:auto/manual}
+# <req: _vga_last_row_off>
+# <mod: _vga_cnt>
 vga_shu:
 	push %bp
 	mov %sp, %bp
@@ -592,6 +594,8 @@ vga_shu:
 	ret
 
 # vga_shd()
+# <req: _vga_size, _vga_last_row_off>
+# <mod: _vga_cnt>
 vga_shd:
 	push %es
 	push %si
@@ -654,6 +658,8 @@ vga_shd:
 
 # _vga_sl_tb(ub16 flag)
 # (flag = [bit:clr/set] = {0:save/load, 1:top/bottom})
+# <req: _path_top, _path_bottom, _name_top, _name_bottom, _vga_last_row_off>
+# <mod: vga_top_cnt, vga_bottom_cnt>
 _vga_sl_tb:
 	push %bp
 	mov %sp, %bp

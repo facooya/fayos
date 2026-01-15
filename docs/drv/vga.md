@@ -18,6 +18,9 @@ Lower video interface.
 - - [`vga_outc`](#vga_outc)
 - - [`vga_outs`](#vga_outs)
 - - [`vga_outns`](#vga_outns)
+- - [`vga_shu`](#vga_shu)
+- - [`vga_shd`](#vga_shd)
+- - [`_vga_sl_tb`](#_vga_sl_tb)
 - [Notes](#notes)
 - [Terms](#terms)
 - [Reference Links](#reference-links)
@@ -368,6 +371,115 @@ ChkShu -- Yes --> Shu[Shift up screen] --> Out
     - `line_start_pos = curs_pos - (curs_pos % column)`
 - Calculate LF
     - `next_line = curs_pos + column`
+
+---
+
+### `vga_shu`
+#### Overview
+Shift up for screen.
+Support auto shift up and manual shift up.
+Manual shift up if press page down key.
+
+#### Parameters
+1. `ub16 flag`
+
+#### Requires
+- `_vga_last_row_off`
+
+#### Modifies
+- `_vga_cnt`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Chk{"Is auto?"} -- Yes --> SaveTop[Save top line to file]
+Chk -- No --> ChkMax{"Is max count?"} -- No --> SaveTop
+ChkMax -- Yes --> End2([Done])
+SaveTop --> A[Shift up] --> ChkAuto{"Is auto?"}
+ChkAuto -- Yes --> Cnt[Increase count or done]
+ChkAuto -- No --> LoadBottom["Load bottom line to screen"] --> Cnt --> End([Shifted])
+```
+
+#### Implementation
+- Color attribute
+    - background = black
+    - foreground = lightgray
+
+---
+
+### `vga_shd`
+#### Overview
+Shift down for screen.
+Manual shift down if press page up key.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `_vga_size`
+- `_vga_last_row_off`
+
+#### Modifies
+- `_vga_cnt`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+Chk{"Is count 0?"} -- Yes --> Done([Done])
+Chk -- No --> A[Save bottom line to file]
+A --> B[Shift down] --> C[Load top line to screen]
+C --> D[Decrease count] --> End([Shifted])
+```
+
+#### Implementation
+- Color attribute
+    - background = black
+    - foreground = lightgray
+
+---
+
+### `_vga_sl_tb`
+#### Overview
+Save screen top line or bottom line to file and load file top line or bottom line to screen.
+Support create mode if no exist file.
+
+#### Parameters
+1. `ub16 flag`
+
+#### Requires
+- `_vga_last_row_off`
+- `_path_top`
+- `_path_bottom`
+- `_name_top`
+- `_name_bottom`
+
+#### Modifies
+- `vga_top_cnt`
+- `vga_bottom_cnt`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+ChkExist{"Is file exist?"} -- No --> Create[Create file]
+ChkExist -- Yes --> ChkS{"Is save?"}
+ChkS -- Yes --> SaveChk{"Is top line?"}
+ChkS -- No --> Load[Load file to screen]
+Create --> Save[Save screen to file]
+```
+
+#### Implementation
+- Color attribute
+    - background = black
+    - foreground = lightgray
 
 ---
 
