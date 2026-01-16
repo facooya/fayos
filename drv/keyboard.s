@@ -287,10 +287,14 @@ _kbd_conv_kc:
 	je 26f
 
 	# nav
+	cmp $PS2_SC_HOME, %ax
+	je 33f
+	cmp $PS2_SC_END, %ax
+	je 34f
 	cmp $PS2_SC_PAGE_UP, %ax
-	je 31f
+	je 35f
 	cmp $PS2_SC_PAGE_DOWN, %ax
-	je 32f
+	je 36f
 	jmp 99f
 
 # arrow
@@ -322,12 +326,19 @@ _kbd_conv_kc:
 	jmp 99f
 
 # nav
-31: # page up
+33: # home
+	xor %ax, %ax
+	mov $KBD_KC_HOME, %al
+	jmp 99f
+34: # end
+	xor %ax, %ax
+	mov $KBD_KC_END, %al
+	jmp 99f
+35: # page up
 	xor %ax, %ax
 	mov $KBD_KC_PAGE_UP, %al
 	jmp 99f
-
-32: # page down
+36: # page down
 	xor %ax, %ax
 	mov $KBD_KC_PAGE_DOWN, %al
 	jmp 99f
@@ -390,10 +401,14 @@ _kbd_proc:
 	# }
 
 	# { nav
+	cmp $KBD_KC_HOME, %al
+	je 33f
+	cmp $KBD_KC_END, %al
+	je 34f
 	cmp $KBD_KC_PAGE_UP, %al
-	je 31f
+	je 35f
 	cmp $KBD_KC_PAGE_DOWN, %al
-	je 32f
+	je 36f
 	# }
 	jmp 10f
 
@@ -462,10 +477,16 @@ _kbd_proc:
 	jmp 99f
 
 # nav
-31: # page up
+33: # home
+	call _kbd_hdl_home
+	jmp 99f
+34: # end
+	call _kbd_hdl_end
+	jmp 99f
+35: # page up
 	call _kbd_hdl_pgup
 	jmp 99f
-32: # page down
+36: # page down
 	call _kbd_hdl_pgdn
 	jmp 99f
 
@@ -747,6 +768,16 @@ _kbd_hdl_right:
 	inc %si # <ret>
 
 99:
+	ret
+
+# _kbd_hdl_home()
+_kbd_hdl_home:
+	call dbg_a
+	ret
+
+# _kbd_hdl_end()
+_kbd_hdl_end:
+	call dbg_b
 	ret
 
 # _kbd_hdl_pgup()

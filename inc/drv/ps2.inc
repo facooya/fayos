@@ -46,6 +46,8 @@
 .equ PS2_SC_NUM_ENT, 0xE05A
 
 # nav
+.equ PS2_SC_HOME, 0xE06C
+.equ PS2_SC_END, 0xE069
 .equ PS2_SC_PAGE_UP, 0xE07D
 .equ PS2_SC_PAGE_DOWN, 0xE07A
 # }
