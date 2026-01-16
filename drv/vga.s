@@ -632,15 +632,15 @@ vga_shd:
 	push %si
 	push %di
 
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %di
-	mov %di, %si
-
 	# (cnt == 0) ? {done}
 	mov (_vga_cnt), %ax
 	test %ax, %ax
 	je 99f
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	mov %di, %si
 
 	push $0x02
 	call _vga_sl_tb
@@ -966,8 +966,6 @@ _vga_sl_tb:
 	push %si
 	call fsp_write
 	add $0x02, %sp
-
-	# TODO: cursor
 
 	# (flag == top) ? {top} : {bottom}
 	mov $vga_top_cnt, %si

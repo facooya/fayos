@@ -9,7 +9,6 @@
 
 ## TODO
 - more date format
-- `_vga_sl_tb()`: cursor, error handler
 
 ---
 

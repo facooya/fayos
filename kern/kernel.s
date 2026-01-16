@@ -173,5 +173,6 @@ mem_bm: .zero 0x20
 curs:
 	.word 0x00 # min_pos
 	.word 0x00 # max_pos
+	.word 0x00 # save_pos
 
 _kmsg_welcome: .asciz "\r\nWelcome to Fayos\r\n"
