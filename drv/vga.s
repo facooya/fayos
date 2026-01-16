@@ -14,6 +14,8 @@
 .global vga_init_curs
 .global vga_get_curs
 .global vga_set_curs
+.global vga_show_curs
+.global vga_hide_curs
 .global vga_outc
 .global vga_outs
 .global vga_outns
@@ -102,6 +104,7 @@ vga_clr_line:
 # vga_init_curs()
 # <mod: curs>
 vga_init_curs:
+	call vga_show_curs
 	call vga_get_curs
 	mov %ax, (curs)
 	mov %ax, (curs+0x02)
@@ -153,6 +156,34 @@ vga_set_curs:
 	out %al, %dx
 
 	pop %bp
+	ret
+
+# vga_show_curs()
+vga_show_curs:
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_START, %al
+	out %al, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_CURS_START_LINE, %al
+	out %al, %dx
+
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_END, %al
+	out %al, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_CURS_END_LINE, %al
+	out %al, %dx
+
+	ret
+
+# vga_hide_curs()
+vga_hide_curs:
+	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_CMD_CURS_START, %al
+	out %al, %dx
+	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_CURS_DISABLE, %al
+	out %al, %dx
 	ret
 
 # vga_outc()
@@ -771,7 +802,7 @@ _vga_sl_tb:
 	mov (VGA_ADDR_COL), %cx
 	sub %cx, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
-	jmp 1f
+	jmp 21f
 
 20: # save
 	push $fsp+FSP_OFF_BASE # (fsp &src)
@@ -781,7 +812,7 @@ _vga_sl_tb:
 	mov %dx, %es
 	mov %ax, %bx
 
-1:
+21:
 	# init
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
@@ -794,14 +825,14 @@ _vga_sl_tb:
 	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %ax
 	test $(0x01<<0x01), %ax
-	jz 21f
+	jz 22f
 
 	# init bottom
 	mov (_vga_last_row_off), %ax
 	add %ax, %si
 	add %ax, %si
 
-21: # top/bottom
+22: # top/bottom
 	# (cnt == 0) ? {end}
 	test %cx, %cx
 	jz 29f
@@ -817,7 +848,7 @@ _vga_sl_tb:
 	add $0x02, %si
 	inc %bx
 	dec %cx
-	jmp 21b
+	jmp 22b
 
 29:
 	pop %es # [s.0: mem_seg]

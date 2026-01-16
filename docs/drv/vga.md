@@ -48,6 +48,17 @@ Lower video interface.
 | `VGA_ADDR_ROW` | 0x0484 | 1 | IN |
 | `VGA_ADDR_COL` | 0x044A | 2 | IN |
 
+**Cursor Start Register**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0-4 | Line | 0x00-0x0F | Start draw line position |
+| 5 | Disable | 0=enable, 1=disable | Hide cursor |
+
+**Cursor End Register**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0-4 | Line | 0x00-0x0F | End draw line position |
+
 ---
 
 ## Data Reference
@@ -169,7 +180,7 @@ Initialization cursor structure refer for current cursor position.
 #### Process Flow
 ```mermaid
 graph TD
-Start([Setup]) --> End([Cursor structure set])
+A[Show cursor] --> B[Get cursor position] --> End([Cursor structure set])
 ```
 
 ---
