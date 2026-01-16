@@ -343,9 +343,9 @@ Keyboard handler for page up key.
 #### Process Flow
 ```mermaid
 graph TD
-Start([Setup]) --> IfTop{"Is top?"}
-IfTop -- Yes --> End([Key handled])
-IfTop -- No --> A[["vga_shd()"]] --> End
+IfStart{"Is scroll start?"}
+IfStart -- Yes --> Curs[Hide cursor] --> Shd
+IfStart -- No --> Shd[Shift down to screen] --> End([Key handled])
 ```
 
 ---
@@ -369,9 +369,9 @@ Keyboard handler for page down key.
 #### Process Flow
 ```mermaid
 graph TD
-Start([Setup]) --> IfBottom{"Is bottom?"}
-IfBottom -- Yes --> End([Key handled])
-IfBottom -- No --> A[["vga_shu()"]] --> End
+IfEnd{"Is scroll end?"}
+IfEnd -- Yes --> Curs[Show cursor] --> Shu
+IfEnd -- No --> Shu[Shift up to screen] --> End([Key handled])
 ```
 
 ---

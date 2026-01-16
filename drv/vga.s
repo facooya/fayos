@@ -707,8 +707,8 @@ _vga_sl_tb:
 	test $(0x01<<0x01), %ax
 	jz 1f
 	mov $_path_bottom, %si
-1:
 
+1:
 	push %si # (&path)
 	call path_parse
 	add $0x02, %sp
@@ -721,6 +721,7 @@ _vga_sl_tb:
 	# (path_parse() != done) ? {err} : {save}
 	test %ax, %ax
 	jnz 99f
+	# TODO: scroll error log
 	# }
 
 	# (flag == save) ? {chk} : {load}
