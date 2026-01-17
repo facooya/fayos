@@ -137,6 +137,8 @@ Normal keycode handler and special key dispatcher.
 
 #### Requires
 - `al = keycode`
+- `curs`
+- `vga_bottom_cnt`
 
 #### Modifies
 - `cl_sbuf`
@@ -153,7 +155,7 @@ End([Key handled])
 IfSpecial{"Is special key?"}
 Start --> IfSpecial
 IfSpecial -- Yes --> Special[Run each handler] --> End
-IfSpecial -- No --> Normal[Pre-update buffer size and cursor structure] --> IfShr{"Is need shift right?"}
+IfSpecial -- No --> Scroll[Scroll bottom if not bottom] --> Normal[Pre-update buffer size and cursor structure] --> IfShr{"Is need shift right?"}
 IfShr -- No --> Out[Out characeter] --> End
 IfShr -- Yes --> Shr[Insert character] --> End
 ```

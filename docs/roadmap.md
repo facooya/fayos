@@ -1,11 +1,9 @@
 # Roadmap
 ## WIP
-- Support home/end keys
 
 ---
 
 ## PRIORITY
-- Key input go to page end if scroll up
 
 ---
 

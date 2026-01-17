@@ -349,6 +349,7 @@ _kbd_conv_kc:
 
 # _kbd_proc()
 # <req: al = kc>
+# <req: curs, vga_bottom_cnt>
 _kbd_proc:
 	# {
 	# (kc == bs) ? {key.bs}
@@ -365,6 +366,56 @@ _kbd_proc:
 	cmp $KBD_KC_ESC, %al
 	je 99f
 	# }
+
+	# { fn
+	# (kc == f1) ? {key.f1}
+	cmp $KBD_KC_F1, %al
+	je 99f
+	# (kc == f2) ? {key.f2}
+	cmp $KBD_KC_F2, %al
+	je 99f
+	# }
+
+	# { nav
+	cmp $KBD_KC_HOME, %al
+	je 33f
+	cmp $KBD_KC_END, %al
+	je 34f
+	cmp $KBD_KC_PAGE_UP, %al
+	je 35f
+	cmp $KBD_KC_PAGE_DOWN, %al
+	je 36f
+	# }
+
+	# {{ scroll bottom
+	push %ax # [s.0: kc]
+	# (bottom_cnt == 0) ? {skip}
+	mov (vga_bottom_cnt), %ax
+	test %ax, %ax
+	jz 9f
+
+	# { shift up
+	mov %ax, %cx
+
+1:
+	push %cx
+	push $0x01
+	call vga_shu
+	add $0x02, %sp
+	pop %cx
+	loop 1b
+	# }
+
+	# show curs
+	call vga_show_curs
+	mov (curs+0x04), %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+	# }}
+
+9:
+	pop %ax # [s.0: kc]
 
 	# TODO: check (kc >= 0x80)
 	# { arrow
@@ -389,26 +440,6 @@ _kbd_proc:
 	# (kc == num_ent) ? {key.n.cr}
 	cmp $KBD_KC_NUM_ENT, %al
 	je 21f
-	# }
-
-	# { fn
-	# (kc == f1) ? {key.f1}
-	cmp $KBD_KC_F1, %al
-	je 99f
-	# (kc == f2) ? {key.f2}
-	cmp $KBD_KC_F2, %al
-	je 99f
-	# }
-
-	# { nav
-	cmp $KBD_KC_HOME, %al
-	je 33f
-	cmp $KBD_KC_END, %al
-	je 34f
-	cmp $KBD_KC_PAGE_UP, %al
-	je 35f
-	cmp $KBD_KC_PAGE_DOWN, %al
-	je 36f
 	# }
 	jmp 10f
 
