@@ -19,6 +19,8 @@ Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2
 - - [`_kbd_hdl_down`](#_kbd_hdl_down)
 - - [`_kbd_hdl_left`](#_kbd_hdl_left)
 - - [`_kbd_hdl_right`](#_kbd_hdl_right)
+- - [`_kbd_hdl_home`](#_kbd_hdl_home)
+- - [`_kbd_hdl_end`](#_kbd_hdl_end)
 - - [`_kbd_hdl_pgup`](#_kbd_hdl_pgup)
 - - [`_kbd_hdl_pgdn`](#_kbd_hdl_pgdn)
 - [Terms](#terms)
@@ -324,6 +326,56 @@ Start([Setup]) --> Right[Cursor move right] --> End([Key handled])
 
 ---
 
+### `_kbd_hdl_home`
+#### Overview
+Scroll top.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `curs`
+- `vga_top_cnt`
+
+#### Modifies
+- `N/A`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+A[Shift down to top] --> B[Hide cursor] --> End([Key handled])
+```
+
+---
+
+### `_kbd_hdl_end`
+#### Overview
+Scroll bottom.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `curs`
+- `vga_bottom_cnt`
+
+#### Modifies
+- `N/A`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+A[Shift up to bottom] --> B[Show cursor] --> End([Key handled])
+```
+
+---
+
 ### `_kbd_hdl_pgup`
 #### Overview
 Keyboard handler for page up key.
@@ -332,6 +384,7 @@ Keyboard handler for page up key.
 - `N/A`
 
 #### Requires
+- `curs`
 - `vga_top_cnt`
 
 #### Modifies
@@ -358,6 +411,7 @@ Keyboard handler for page down key.
 - `N/A`
 
 #### Requires
+- `curs`
 - `vga_bottom_cnt`
 
 #### Modifies

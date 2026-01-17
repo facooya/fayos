@@ -771,17 +771,57 @@ _kbd_hdl_right:
 	ret
 
 # _kbd_hdl_home()
+# <req: curs, vga_top_cnt>
 _kbd_hdl_home:
-	call dbg_a
+	# (top_cnt == 0) ? {done} : {shd}
+	mov (vga_top_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
+	mov %ax, %cx
+
+1:
+	call vga_shd
+	loop 1b
+
+	# hide curs
+	call vga_get_curs
+	mov %ax, (curs+0x04)
+	call vga_hide_curs
+
+99:
 	ret
 
 # _kbd_hdl_end()
+# <req: curs, vga_bottom_cnt>
 _kbd_hdl_end:
-	call dbg_b
+	# (bottom_cnt == 0) ? {done} : {shu}
+	mov (vga_bottom_cnt), %ax
+	test %ax, %ax
+	jz 99f
+
+	mov %ax, %cx
+
+1:
+	push %cx # [s.f0: cnt]
+	push $0x01
+	call vga_shu
+	add $0x02, %sp
+	pop %cx # [s.f0: cnt]
+	loop 1b
+
+	# show curs
+	call vga_show_curs
+	mov (curs+0x04), %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+99:
 	ret
 
 # _kbd_hdl_pgup()
-# <req: vga_top_cnt>
+# <req: curs, vga_top_cnt>
 _kbd_hdl_pgup:
 	# (top_cnt == 0) ? {done} : {shd}
 	mov (vga_top_cnt), %ax
@@ -805,7 +845,7 @@ _kbd_hdl_pgup:
 	ret
 
 # _kbd_hdl_pgdn()
-# <req: vga_bottom_cnt>
+# <req: curs, vga_bottom_cnt>
 _kbd_hdl_pgdn:
 	# (bottom_cnt == 0) ? {done} : {shu}
 	mov (vga_bottom_cnt), %ax
