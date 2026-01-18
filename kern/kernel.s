@@ -15,8 +15,9 @@ kern_run:
 	cli
 	call pic_init
 	call ivt_init
-	call vga_init
 
+	call vga_init
+	call apm_init
 	call ata_init
 	call ps2_init
 	call rtc_init

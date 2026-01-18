@@ -54,6 +54,7 @@ sh/cmd/rmdir.s
 
 # driver
 SRCS_DRV = \
+drv/apm.s \
 drv/ata.s \
 drv/vga.s \
 drv/ps2.s \
