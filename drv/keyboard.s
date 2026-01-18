@@ -363,36 +363,13 @@ _kbd_conv_kc:
 # <req: al = kc>
 # <req: curs, vga_bottom_cnt>
 _kbd_proc:
-	# {
-	# (kc == bs) ? {key.bs}
-	cmp $CHR_BS, %al
-	je 22f
-	# (kc == cr) ? {key.cr}
-	cmp $CHR_CR, %al
-	je 21f
-
-	# (kc == tab) ? {key.tab}
-	cmp $KBD_KC_TAB, %al
-	je 99f
-	# (kc == esc) ? {key.esc}
+	# {{ no scroll
 	cmp $KBD_KC_ESC, %al
 	je 99f
-	# }
-
-	# { fn
-	# (kc == f1) ? {key.f1}
-	cmp $KBD_KC_F1, %al
-	je 99f
-	# (kc == f2) ? {key.f2}
-	cmp $KBD_KC_F2, %al
-	je 99f
-	# }
 
 	# { nav
 	cmp $KBD_KC_INS, %al
 	je 31f
-	cmp $KBD_KC_DEL, %al
-	je 32f
 	cmp $KBD_KC_HOME, %al
 	je 33f
 	cmp $KBD_KC_END, %al
@@ -402,6 +379,7 @@ _kbd_proc:
 	cmp $KBD_KC_PAGE_DOWN, %al
 	je 36f
 	# }
+	# }}
 
 	# {{ scroll bottom
 	push %ax # [s.0: kc]
@@ -433,27 +411,39 @@ _kbd_proc:
 9:
 	pop %ax # [s.0: kc]
 
+	# {
+	cmp $CHR_BS, %al
+	je 22f
+	cmp $CHR_CR, %al
+	je 21f
+	cmp $KBD_KC_DEL, %al
+	je 32f
+	cmp $KBD_KC_TAB, %al
+	je 99f
+	# }
+
+	# { fn
+	cmp $KBD_KC_F1, %al
+	je 99f
+	cmp $KBD_KC_F2, %al
+	je 99f
+	# }
+
 	# TODO: check (kc >= 0x80)
 	# { arrow
-	# (kc == up) ? {key.up}
 	cmp $KBD_KC_UP, %al
 	je 23f
-	# (kc == down) ? {key.down}
 	cmp $KBD_KC_DOWN, %al
 	je 24f
-	# (kc == left) ? {key.left}
 	cmp $KBD_KC_LEFT, %al
 	je 25f
-	# (kc == right) ? {key.right}
 	cmp $KBD_KC_RIGHT, %al
 	je 26f
 	# }
 
 	# { numpad
-	# (kc == num_sl) ? {key.n.sl}
 	cmp $KBD_KC_NUM_SL, %al
 	je 27f
-	# (kc == num_ent) ? {key.n.cr}
 	cmp $KBD_KC_NUM_ENT, %al
 	je 21f
 	# }
@@ -829,8 +819,60 @@ _kbd_hdl_ins:
 	ret
 
 # _kbd_hdl_del()
+# <mod: cl_sbuf, curs>
 _kbd_hdl_del:
-	call dbg_b
+	call vga_get_curs
+	# <ax = curs_pos>
+
+	# (curs_pos == curs.max) ? {done}
+	cmp (curs+0x02), %ax
+	je 99f
+
+	# { pre-update
+	# dec curs max
+	mov (curs+0x02), %ax # curs.max
+	dec %ax
+	mov %ax, (curs+0x02)
+
+	# dec cl_sbuf
+	#dec %si # &cl_sbuf.data
+	mov (cl_sbuf), %ax # cl_sbuf.size
+	dec %ax
+	mov %ax, (cl_sbuf)
+	# }
+
+	# (*(cl_sbuf+1) != null) ? {shl}
+	mov 0x01(%si), %al
+	test %al, %al
+	jnz 10f
+
+	# { norm
+	call vga_get_curs
+	# <ax = curs_pos>
+	push %ax # [s.0: curs_pos]
+
+	# overwrite
+	mov $CHR_SP, %al
+	call vga_outc
+
+	pop %ax # [s.0: curs_pos]
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+	# store null
+	xor %al, %al
+	mov %al, (%si)
+	# }
+	jmp 99f
+
+10:
+	push %si
+	call disp_shl_cl2
+	add $0x02, %sp
+	jmp 99f
+
+99:
 	ret
 
 # _kbd_hdl_home()

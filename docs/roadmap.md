@@ -23,7 +23,7 @@
 - OBF, IBF timeout error
 - fs: block extends
 - fs: dentry size optimize
-- support more key (num\_lock, fN)
+- support more key (num\_lock, f1=help, f12=clear)
 
 ---
 

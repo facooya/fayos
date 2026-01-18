@@ -7,6 +7,7 @@
 .section .text
 .code16
 .global disp_shl_cl
+.global disp_shl_cl2
 .global disp_shr_cl
 
 # disp_shl_cl(ub8 *data)
@@ -71,6 +72,65 @@ disp_shl_cl:
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
+
+	pop %di
+	pop %si
+	pop %bp
+	ret
+
+# disp_shl_cl2(ub8 *data)
+disp_shl_cl2:
+	push %bp
+	mov %sp, %bp
+	push %si
+	push %di
+
+	mov 0x04(%bp), %si # (*data)
+
+	mov %si, %di
+	inc %di
+
+	# { size
+	xor %ax, %ax
+	push %di
+	push %ax
+	call mem_size
+	add $0x04, %sp
+
+	mov %ax, %cx # size
+	push %cx # [s.l0: size]
+	# }
+
+1: # shift left
+	mov (%di), %al
+	mov %al, -0x01(%di)
+	inc %di
+	loop 1b
+
+	# upd last null
+	pop %cx # [s.l0: size]
+	mov %si, %di
+	add %cx, %di
+	xor %al, %al
+	mov %al, (%di)
+
+	# { upd disp
+	call vga_get_curs
+	push %ax # [s.0: curs_pos]
+
+	push %si
+	call vga_outs
+	add $0x02, %sp
+
+	# overwrite last chr
+	mov $CHR_SP, %al
+	call vga_outc
+
+	pop %ax # [s.0: curs_pos]
+	push %ax # (curs_pos)
+	call vga_set_curs
+	add $0x02, %sp
+	# }
 
 	pop %di
 	pop %si
