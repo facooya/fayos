@@ -41,6 +41,7 @@ sh/cmd/echo.s \
 sh/cmd/date.s \
 sh/cmd/help.s \
 sh/cmd/clear.s \
+sh/cmd/poweroff.s \
 \
 sh/cmd/cat.s \
 sh/cmd/ls.s \

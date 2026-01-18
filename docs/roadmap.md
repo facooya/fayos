@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- APM init
 
 ---
 
@@ -33,7 +34,6 @@
 - read
 - grep
 - find
-- poweroff
 
 ---
 

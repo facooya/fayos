@@ -17,6 +17,8 @@ cmd_map:
 	.asciz "echo"
 	.word cmd_help
 	.asciz "help"
+	.word cmd_poweroff
+	.asciz "poweroff"
 
 	# dir
 	.word cmd_pwd

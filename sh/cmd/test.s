@@ -14,9 +14,6 @@ cmd_test:
 	push %di
 	push %bx
 
-	call vga_hide_curs
-	call vga_show_curs
-
 	pop %bx
 	pop %di
 	pop %si
