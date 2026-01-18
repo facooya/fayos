@@ -17,7 +17,7 @@ apm_init:
 	clc
 	mov $APM_CMD_CHK_VER, %ax
 	mov $APM_ID_SYS, %bx
-	int $BIOS_SYSTEM
+	int $BIOS_SYS
 	jc 81f
 	push %ax # [s.0: apm_ver]
 
@@ -25,7 +25,7 @@ apm_init:
 	clc
 	mov $APM_CMD_CONN_REAL, %ax
 	mov $APM_ID_SYS, %bx
-	int $BIOS_SYSTEM
+	int $BIOS_SYS
 	jc 82f
 
 	# (ver == old_ver) ? {skip}
@@ -37,7 +37,7 @@ apm_init:
 	clc
 	mov $APM_CMD_ENABLE, %ax
 	mov $APM_ID_SYS, %bx
-	int $BIOS_SYSTEM
+	int $BIOS_SYS
 	jc 83f
 	jmp 99f
 
@@ -71,10 +71,11 @@ apm_init:
 apm_off:
 	push %bx
 
-	mov $APM_CMD_STAT, %ax
-	mov $APM_STAT_ALL, %bx
-	mov $APM_STAT_OFF, %cx
-	int $BIOS_SYSTEM
+	clc
+	mov $APM_CMD_STATE, %ax
+	mov $APM_DEV_ALL, %bx
+	mov $APM_STATE_OFF, %cx
+	int $BIOS_SYS
 
 	# err
 	mov %ah, %al
