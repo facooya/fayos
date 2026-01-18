@@ -19,6 +19,8 @@
 .equ KBD_KC_RIGHT, 0xE3
 .equ KBD_KC_NUM_SL, 0xE4
 .equ KBD_KC_NUM_ENT, 0xE5
+.equ KBD_KC_INS, 0xD0
+.equ KBD_KC_DEL, 0xD1
 .equ KBD_KC_HOME, 0xD2
 .equ KBD_KC_END, 0xD3
 .equ KBD_KC_PAGE_UP, 0xD4

@@ -32,6 +32,8 @@ Header for keyboard.
 | `KBD_KC_RIGHT` | Keycode for arrow right key |
 | `KBD_KC_NUM_SL` | Keycode for slash key in number pad |
 | `KBD_KC_NUM_ENT` | Keycode for enter key in number pad |
+| `KBD_KC_INS` | Keycode for insert key |
+| `KBD_KC_DEL` | Keycode for delete key |
 | `KBD_KC_HOME` | Keycode for home key |
 | `KBD_KC_END` | Keycode for end key |
 | `KBD_KC_PAGE_UP` | Keycode for page up key |

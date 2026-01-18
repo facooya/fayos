@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- APM init
+- Add ins, del
 
 ---
 
@@ -23,7 +23,7 @@
 - OBF, IBF timeout error
 - fs: block extends
 - fs: dentry size optimize
-- support more key (num\_lock, fN, ins, del)
+- support more key (num\_lock, fN)
 
 ---
 

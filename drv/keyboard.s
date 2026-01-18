@@ -287,6 +287,10 @@ _kbd_conv_kc:
 	je 26f
 
 	# nav
+	cmp $PS2_SC_INS, %ax
+	je 31f
+	cmp $PS2_SC_DEL, %ax
+	je 32f
 	cmp $PS2_SC_HOME, %ax
 	je 33f
 	cmp $PS2_SC_END, %ax
@@ -326,6 +330,14 @@ _kbd_conv_kc:
 	jmp 99f
 
 # nav
+31: # insert
+	xor %ax, %ax
+	mov $KBD_KC_INS, %al
+	jmp 99f
+32: # delete
+	xor %ax, %ax
+	mov $KBD_KC_DEL, %al
+	jmp 99f
 33: # home
 	xor %ax, %ax
 	mov $KBD_KC_HOME, %al
@@ -377,6 +389,10 @@ _kbd_proc:
 	# }
 
 	# { nav
+	cmp $KBD_KC_INS, %al
+	je 31f
+	cmp $KBD_KC_DEL, %al
+	je 32f
 	cmp $KBD_KC_HOME, %al
 	je 33f
 	cmp $KBD_KC_END, %al
@@ -508,6 +524,12 @@ _kbd_proc:
 	jmp 99f
 
 # nav
+31: # ins
+	call _kbd_hdl_ins
+	jmp 99f
+32: # del
+	call _kbd_hdl_del
+	jmp 99f
 33: # home
 	call _kbd_hdl_home
 	jmp 99f
@@ -799,6 +821,16 @@ _kbd_hdl_right:
 	inc %si # <ret>
 
 99:
+	ret
+
+# _kbd_hdl_ins()
+_kbd_hdl_ins:
+	call dbg_a
+	ret
+
+# _kbd_hdl_del()
+_kbd_hdl_del:
+	call dbg_b
 	ret
 
 # _kbd_hdl_home()

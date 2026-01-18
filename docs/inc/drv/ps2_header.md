@@ -54,6 +54,8 @@ Header for PS2.
 | `PS2_SC_RIGHT` | Scancode for right arrow |
 | `PS2_SC_NUM_SL` | Scancode for slash in numpad |
 | `PS2_SC_NUM_ENT` | Scancode for enter in numpad |
+| `PS2_SC_INS` | Scancode for insert |
+| `PS2_SC_DEL` | Scancode for delete |
 | `PS2_SC_HOME` | Scancode for home |
 | `PS2_SC_END` | Scancode for end |
 | `PS2_SC_PAGE_UP` | Scancode for page up |
