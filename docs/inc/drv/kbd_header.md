@@ -22,6 +22,7 @@ Header for keyboard.
 | `KBD_MFLG_LALT` | Flag for left alternate key |
 | `KBD_MFLG_RALT` | Flag for right alternate key |
 | `KBD_MFLG_CAP` | Flag for capitals lock key |
+| `KBD_MFLG_INS` | Flag for insert key |
 
 **Keycode**
 | Name | Description |
@@ -32,7 +33,6 @@ Header for keyboard.
 | `KBD_KC_RIGHT` | Keycode for arrow right key |
 | `KBD_KC_NUM_SL` | Keycode for slash key in number pad |
 | `KBD_KC_NUM_ENT` | Keycode for enter key in number pad |
-| `KBD_KC_INS` | Keycode for insert key |
 | `KBD_KC_DEL` | Keycode for delete key |
 | `KBD_KC_HOME` | Keycode for home key |
 | `KBD_KC_END` | Keycode for end key |

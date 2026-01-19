@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- Add ins, del
+- Add ins
 
 ---
 

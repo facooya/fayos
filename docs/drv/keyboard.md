@@ -19,6 +19,7 @@ Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2
 - - [`_kbd_hdl_down`](#_kbd_hdl_down)
 - - [`_kbd_hdl_left`](#_kbd_hdl_left)
 - - [`_kbd_hdl_right`](#_kbd_hdl_right)
+- - [`_kbd_hdl_del`](#_kbd_hdl_del)
 - - [`_kbd_hdl_home`](#_kbd_hdl_home)
 - - [`_kbd_hdl_end`](#_kbd_hdl_end)
 - - [`_kbd_hdl_pgup`](#_kbd_hdl_pgup)
@@ -324,6 +325,33 @@ Keyboard handler for right arrow key.
 ```mermaid
 graph TD
 Start([Setup]) --> Right[Cursor move right] --> End([Key handled])
+```
+
+---
+
+### `_kbd_hdl_del`
+#### Overview
+Delete character at current cursor.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `N/A`
+
+#### Modifies
+- `cl_sbuf`
+- `curs`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+A[Pre-update for cursor strucutre and buffer] --> IfShl{"Is need shift left?"}
+IfShl -- Yes --> Shl[Delete with shift left] --> End([Key handled])
+IfShl -- No --> Del[Delete] --> End
 ```
 
 ---

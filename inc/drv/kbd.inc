@@ -10,6 +10,7 @@
 .equ KBD_MFLG_LALT, (0x01<<0x04)
 .equ KBD_MFLG_RALT, (0x01<<0x05)
 .equ KBD_MFLG_CAP, (0x01<<0x06)
+.equ KBD_MFLG_INS, (0x01<<0x07)
 
 # { keycode
 # 0xE0-0xEF
@@ -19,7 +20,6 @@
 .equ KBD_KC_RIGHT, 0xE3
 .equ KBD_KC_NUM_SL, 0xE4
 .equ KBD_KC_NUM_ENT, 0xE5
-.equ KBD_KC_INS, 0xD0
 .equ KBD_KC_DEL, 0xD1
 .equ KBD_KC_HOME, 0xD2
 .equ KBD_KC_END, 0xD3

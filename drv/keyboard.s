@@ -82,6 +82,9 @@ _kbd_upd_mflg:
 	# (sc == caps) ? {cap.set}
 	cmp $PS2_SC_CAP, %dx
 	je 17f
+	# (sc == ins) ? {ins.set}
+	cmp $PS2_SC_INS, %dx
+	je 18f
 	jmp 99f
 
 20: # clr
@@ -165,6 +168,16 @@ _kbd_upd_mflg:
 	jmp 91f
 27:
 	and $~KBD_MFLG_CAP, %cx
+	jmp 91f
+
+# ins
+18:
+	test $KBD_MFLG_INS, %cx
+	jnz 28f
+	or $KBD_MFLG_INS, %cx
+	jmp 91f
+28:
+	and $~KBD_MFLG_INS, %cx
 	jmp 91f
 
 91: # flag
@@ -287,8 +300,6 @@ _kbd_conv_kc:
 	je 26f
 
 	# nav
-	cmp $PS2_SC_INS, %ax
-	je 31f
 	cmp $PS2_SC_DEL, %ax
 	je 32f
 	cmp $PS2_SC_HOME, %ax
@@ -330,10 +341,6 @@ _kbd_conv_kc:
 	jmp 99f
 
 # nav
-31: # insert
-	xor %ax, %ax
-	mov $KBD_KC_INS, %al
-	jmp 99f
 32: # delete
 	xor %ax, %ax
 	mov $KBD_KC_DEL, %al
@@ -368,8 +375,6 @@ _kbd_proc:
 	je 99f
 
 	# { nav
-	cmp $KBD_KC_INS, %al
-	je 31f
 	cmp $KBD_KC_HOME, %al
 	je 33f
 	cmp $KBD_KC_END, %al
@@ -454,6 +459,11 @@ _kbd_proc:
 	jmp 10f
 
 10: # normal
+	# (flag == ins) ? {ins}
+	mov (_kbd_mflg), %dx
+	test $KBD_MFLG_INS, %dx
+	jnz 12f
+
 	# { pre-update
 	# update cl_sbuf
 	push %ax # [s.0:kc]
@@ -492,6 +502,10 @@ _kbd_proc:
 	add $0x04, %sp
 	jmp 99f
 
+12: # overwrite mode
+	call dbg_a
+	jmp 99f
+
 21:
 	call _kbd_hdl_cr
 	jmp 99f
@@ -514,9 +528,6 @@ _kbd_proc:
 	jmp 99f
 
 # nav
-31: # ins
-	call _kbd_hdl_ins
-	jmp 99f
 32: # del
 	call _kbd_hdl_del
 	jmp 99f
@@ -820,11 +831,6 @@ _kbd_hdl_right:
 	inc %si # <ret>
 
 99:
-	ret
-
-# _kbd_hdl_ins()
-_kbd_hdl_ins:
-	call dbg_a
 	ret
 
 # _kbd_hdl_del()
