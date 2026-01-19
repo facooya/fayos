@@ -621,9 +621,18 @@ _kbd_hdl_bs:
 	jmp 99f
 
 10:
+	# current curs-1
+	call vga_get_curs
+	dec %ax
+	push %ax
+	call vga_set_curs
+	add $0x02, %sp
+
+	inc %si
 	push %si
 	call disp_shl_cl
 	add $0x02, %sp
+	dec %si
 	jmp 99f
 
 99:
@@ -867,9 +876,11 @@ _kbd_hdl_del:
 	jmp 99f
 
 10:
+	inc %si
 	push %si
-	call disp_shl_cl2
+	call disp_shl_cl
 	add $0x02, %sp
+	dec %si
 	jmp 99f
 
 99:

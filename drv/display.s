@@ -7,7 +7,6 @@
 .section .text
 .code16
 .global disp_shl_cl
-.global disp_shl_cl2
 .global disp_shr_cl
 
 # disp_shl_cl(ub8 *data)
@@ -15,109 +14,35 @@ disp_shl_cl:
 	push %bp
 	mov %sp, %bp
 	push %si
-	push %di
 
 	mov 0x04(%bp), %si # (*data)
 
-	# cpy
-	mov %si, %di
-	inc %di
-
-	# { size
-	push %es # [s.f0:extra]
-	xor %ax, %ax
-	mov %ax, %es
-
-	push %di
-	push %es
-	call mem_size
-	add $0x04, %sp
-	pop %es # [s.f0:extra]
-
-	mov %ax, %cx # size
-	# }
-
-1:
-	# left shift
-	mov (%di), %al # data
-	mov %al, -0x01(%di)
-
-	# (str.size == 0) ? {end}
-	test %cx, %cx
-	jz 9f
-
-	inc %di # data
-	dec %cx # size
-	jmp 1b
-
-9:
-	# left curs
-	call vga_get_curs
-	dec %ax
-	push %ax # [s.1:curs_pos]
-	push %ax
-	call vga_set_curs
-	add $0x02, %sp
-
-	push %si
-	call vga_outs
-	add $0x02, %sp
-
-	# overwrite
-	mov $CHR_SP, %al
-	call vga_outc
-
-	# left curs
-	pop %ax # [s.1:curs_pos]
-	push %ax
-	call vga_set_curs
-	add $0x02, %sp
-
-	pop %di
-	pop %si
-	pop %bp
-	ret
-
-# disp_shl_cl2(ub8 *data)
-disp_shl_cl2:
-	push %bp
-	mov %sp, %bp
-	push %si
-	push %di
-
-	mov 0x04(%bp), %si # (*data)
-
-	mov %si, %di
-	inc %di
-
 	# { size
 	xor %ax, %ax
-	push %di
+	push %si
 	push %ax
 	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %cx # size
-	push %cx # [s.l0: size]
+	jcxz 99f
 	# }
 
 1: # shift left
-	mov (%di), %al
-	mov %al, -0x01(%di)
-	inc %di
+	mov (%si), %al
+	mov %al, -0x01(%si)
+	inc %si
 	loop 1b
 
-	# upd last null
-	pop %cx # [s.l0: size]
-	mov %si, %di
-	add %cx, %di
 	xor %al, %al
-	mov %al, (%di)
+	mov %al, -0x01(%si)
 
 	# { upd disp
 	call vga_get_curs
 	push %ax # [s.0: curs_pos]
 
+	mov 0x04(%bp), %si
+	dec %si
 	push %si
 	call vga_outs
 	add $0x02, %sp
@@ -132,7 +57,7 @@ disp_shl_cl2:
 	add $0x02, %sp
 	# }
 
-	pop %di
+99:
 	pop %si
 	pop %bp
 	ret

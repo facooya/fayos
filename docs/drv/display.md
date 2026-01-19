@@ -30,7 +30,7 @@ Screen shift left in command line.
 #### Parameters
 1. `ub8 *data`
     - string type
-    - point to `current_cursor_position - 1` in command line
+    - point to shift left target in command line
 
 #### Requires
 - `N/A`
@@ -44,9 +44,7 @@ Screen shift left in command line.
 #### Process Flow
 ```mermaid
 graph TD
-Start([Setup])
-End([Shift lefted])
-Start --> GetSize[Get command line size] --> ShfLeft[Shift left in memory] --> Out[Reprint command line] --> Overwrite[Overwirte last character to space] --> End
+GetSize[Get data size] --> ShfLeft[Shift left in memory] --> Out[Reprint command line] --> Overwrite[Overwirte last character to space] --> End([Shift lefted])
 ```
 
 ---
