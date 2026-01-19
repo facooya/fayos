@@ -156,7 +156,9 @@ End([Key handled])
 IfSpecial{"Is special key?"}
 Start --> IfSpecial
 IfSpecial -- Yes --> Special[Run each handler] --> End
-IfSpecial -- No --> Scroll[Scroll bottom if not bottom] --> Normal[Pre-update buffer size and cursor structure] --> IfShr{"Is need shift right?"}
+IfSpecial -- No --> Scroll[Scroll bottom if not bottom] --> IfIns{"Is overwrite mode?"}
+IfIns -- Yes --> Overwrite[Overwrite character] --> End
+IfIns -- No --> Normal[Pre-update buffer size and cursor structure] --> IfShr{"Is need shift right?"}
 IfShr -- No --> Out[Out characeter] --> End
 IfShr -- Yes --> Shr[Insert character] --> End
 ```

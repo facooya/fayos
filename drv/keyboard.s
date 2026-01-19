@@ -503,7 +503,30 @@ _kbd_proc:
 	jmp 99f
 
 12: # overwrite mode
-	call dbg_a
+	push %ax # [s.f0: kc]
+	call vga_outc
+	pop %ax # [s.f0: kc]
+
+	mov %al, (%si)
+	inc %si
+
+	call vga_get_curs
+	dec %ax
+
+	# (curs_max != (curs_pos-1)) ? {done}
+	cmp (curs+0x02), %ax
+	jne 99f
+
+	# { upd
+	mov (cl_sbuf), %ax # cl.size
+	inc %ax
+	mov %ax, (cl_sbuf)
+
+	# update curs max
+	mov (curs+0x02), %ax # curs.max
+	inc %ax
+	mov %ax, (curs+0x02)
+	# }
 	jmp 99f
 
 21:
