@@ -28,6 +28,7 @@ Header for VGA.
 | `VGA_CURS_DISABLE` | Cursor disable bit in cursor start register |
 | `VGA_CURS_START_LINE` | Cursor draw start line position |
 | `VGA_CURS_END_LINE` | Cursor draw end line position |
+| `VGA_CURS_BLOCK_START_LINE` | Block cursor start line position |
 
 ---
 

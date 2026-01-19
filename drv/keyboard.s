@@ -175,9 +175,21 @@ _kbd_upd_mflg:
 	test $KBD_MFLG_INS, %cx
 	jnz 28f
 	or $KBD_MFLG_INS, %cx
+
+	push %cx # [s.0: mflg]
+	push $0x01 # (flag)
+	call vga_show_curs
+	add $0x02, %sp
+	pop %cx # [s.0: mflg]
 	jmp 91f
 28:
 	and $~KBD_MFLG_INS, %cx
+
+	push %cx # [s.0: mflg]
+	push $0x00 # (flag)
+	call vga_show_curs
+	add $0x02, %sp
+	pop %cx # [s.0: mflg]
 	jmp 91f
 
 91: # flag
@@ -405,8 +417,20 @@ _kbd_proc:
 	loop 1b
 	# }
 
-	# show curs
+	# { show curs
+	xor %dx, %dx # flag
+	mov (_kbd_mflg), %ax
+
+	# (flg != ins) ? {skip}
+	test $KBD_MFLG_INS, %ax
+	jz 1f
+	mov $0x01, %dx
+
+1:
+	push %dx # (flag)
 	call vga_show_curs
+	add $0x02, %sp
+
 	mov (curs+0x04), %ax
 	push %ax
 	call vga_set_curs
@@ -955,8 +979,19 @@ _kbd_hdl_end:
 	pop %cx # [s.f0: cnt]
 	loop 1b
 
-	# show curs
+	# { show curs
+	xor %dx, %dx # flag
+	mov (_kbd_mflg), %ax
+
+	# (flg != ins) ? {skip}
+	test $KBD_MFLG_INS, %ax
+	jz 1f
+	mov $0x01, %dx
+
+1:
+	push %dx # (flag)
 	call vga_show_curs
+	add $0x02, %sp
 	mov (curs+0x04), %ax
 	push %ax
 	call vga_set_curs
@@ -1000,16 +1035,29 @@ _kbd_hdl_pgdn:
 	# (bottom_cnt == 1) ? {pass} : {curs}
 	mov (vga_bottom_cnt), %ax
 	cmp $0x01, %ax
-	jne 1f
+	jne 2f
 
-	# show curs
+	# { show curs
+	xor %dx, %dx # flag
+	mov (_kbd_mflg), %ax
+
+	# (flg != ins) ? {skip}
+	test $KBD_MFLG_INS, %ax
+	jz 1f
+	mov $0x01, %dx
+
+1:
+	push %dx # (flag)
 	call vga_show_curs
+	add $0x02, %sp
+	# }
+
 	mov (curs+0x04), %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
-1:
+2:
 	push $0x01
 	call vga_shu
 	add $0x02, %sp

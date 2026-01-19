@@ -104,7 +104,9 @@ vga_clr_line:
 # vga_init_curs()
 # <mod: curs>
 vga_init_curs:
+	push $0x00 # (flag)
 	call vga_show_curs
+	add $0x02, %sp
 	call vga_get_curs
 	mov %ax, (curs)
 	mov %ax, (curs+0x02)
@@ -158,13 +160,25 @@ vga_set_curs:
 	pop %bp
 	ret
 
-# vga_show_curs()
+# vga_show_curs(ub16 flag)
+# (flag = {0: norm, block})
 vga_show_curs:
+	push %bp
+	mov %sp, %bp
+
 	mov $VGA_PORT_CURS_CMD, %dx
 	mov $VGA_CMD_CURS_START, %al
 	out %al, %dx
 	mov $VGA_PORT_CURS_DATA, %dx
 	mov $VGA_CURS_START_LINE, %al
+
+	# (flag == norm) ? {skip}
+	mov 0x04(%bp), %cx
+	test %cx, %cx
+	jz 1f
+	mov $VGA_CURS_BLOCK_START_LINE, %al
+
+1:
 	out %al, %dx
 
 	mov $VGA_PORT_CURS_CMD, %dx
@@ -174,6 +188,7 @@ vga_show_curs:
 	mov $VGA_CURS_END_LINE, %al
 	out %al, %dx
 
+	pop %bp
 	ret
 
 # vga_hide_curs()
