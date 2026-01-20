@@ -174,7 +174,7 @@ Keryboard handler for carrage return (enter) key.
 - `N/A`
 
 #### Requires
-- `N/A`
+- `_kbd_mflg`
 
 #### Modifies
 - `cl_sbuf`

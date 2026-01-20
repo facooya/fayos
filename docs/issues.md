@@ -4,7 +4,6 @@
 ---
 
 ## FIXME
-- Overwrite mode enter, cursor shape not working
 
 ---
 

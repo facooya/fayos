@@ -218,8 +218,9 @@ _kbd_upd_mflg:
 	ret
 
 # _kbd_conv_kc()
-# <req: scancode, _kbd_mflg>
-# <ret: al = kc>
+# <req: scancode>
+# <mod: _kbd_mflg>
+# <ret: al = {kc, 0:skip}>
 _kbd_conv_kc:
 	push %si
 
@@ -589,14 +590,6 @@ _kbd_proc:
 	je 27f
 	cmp $KBD_KC_NUM_ENT, %al
 	je 21f
-	# (kc < 0xC0) ? {norm}
-	#cmp $0xC0, %al
-	#jb 10f
-	# (kc >= 0xD0) ? {norm} : {numpad}
-	#cmp $0xD0, %al
-	#jae 10f
-	#sub $0x90, %al
-	#jmp 13f
 	# }
 	jmp 10f
 
@@ -720,6 +713,7 @@ _kbd_proc:
 	ret
 
 # _kbd_hdl_cr()
+# <req: _kbd_mflg>
 # <mod: cl_sbuf>
 # <ret: si = &cl_sbuf.data>
 _kbd_hdl_cr:
@@ -729,7 +723,22 @@ _kbd_hdl_cr:
 	call vga_outs
 	add $0x02, %sp
 
+	# { curs
 	call vga_init_curs
+
+	xor %dx, %dx # flag
+	mov (_kbd_mflg), %ax
+
+	# (flag != ins) ? {skip}
+	test $KBD_MFLG_INS, %ax
+	jz 1f
+	mov $0x01, %dx
+
+1:
+	push %dx # (flag)
+	call vga_show_curs
+	add $0x02, %sp
+	# }
 
 	xor %ax, %ax
 	mov (cl_sbuf), %cx
