@@ -420,28 +420,47 @@ _kbd_conv_kc:
 	sub $PS2_OFF_NUMPAD_MAP, %ax
 	mov $_kbd_numpad_map, %si
 
-	# (mflg != num_lock) ? {pass}
+	# (mflg == shf) ? {shf} : {no_shf}
 	mov (_kbd_mflg), %cx
-	test $KBD_MFLG_NUM_LOCK, %cx
-	jz 1f
+	test $KBD_MFLG_LSHF, %cx
+	jnz 1f
+	test $KBD_MFLG_RSHF, %cx
+	jnz 1f
+	jmp 2f
+
+1: # shf
 	mov $_kbd_numpad_map_lock, %si
 
+	# (mflg != num_lock) ? {lock} : {norm}
+	test $KBD_MFLG_NUM_LOCK, %cx
+	jz 41f
+	mov $_kbd_numpad_map, %si
+	jmp 42f
+
+2: # no shf
+	# (mflg != num_lock) ? {norm} : {lock}
+	test $KBD_MFLG_NUM_LOCK, %cx
+	jz 42f
+	mov $_kbd_numpad_map_lock, %si
+	jmp 41f
+
+41: # lock
 	# conv
 	add %ax, %si
 	mov (%si), %al
 
 	# (kc == 0) ? {insert} : {done}
 	cmp $CHR_ZERO, %al
-	je 41f
+	je 43f
 	jmp 99f
 
-1:
+42: # norm
 	# conv
 	add %ax, %si
 	mov (%si), %al
 	jmp 99f
 
-41: # numpad insert
+43: # numpad insert
 	# (mflg != ins) ? {ins}
 	test $KBD_MFLG_INS, %cx
 	jnz 1f
