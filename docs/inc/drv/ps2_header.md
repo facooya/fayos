@@ -16,8 +16,9 @@ Header for PS2.
 **Common**
 | Name | Description |
 | --- | --- |
-| `PS2_ACK` | Acknowledge, Signal from data. |
-| `PS2_RESEND` | Resend, Signal from data. |
+| `PS2_ACK` | Acknowledge, signal from data |
+| `PS2_RESEND` | Resend, signal from data |
+| `PS2_OFF_NUMPAD_MAP` | Offset for numpad map |
 
 **Port**
 | Name | Description |
@@ -48,12 +49,23 @@ Header for PS2.
 | `PS2_SC_LALT` | Scancode for left alternate |
 | `PS2_SC_RALT` | Scancode for right alternate |
 | `PS2_SC_CAP` | Scancode for capital lock |
+| `PS2_SC_NUM_LOCK` | Scancode for number lock |
 | `PS2_SC_UP` | Scancode for up arrow |
 | `PS2_SC_DOWN` | Scancode for down arrow |
 | `PS2_SC_LEFT` | Scancode for left arrow |
 | `PS2_SC_RIGHT` | Scancode for right arrow |
 | `PS2_SC_NUM_SL` | Scancode for slash in numpad |
 | `PS2_SC_NUM_ENT` | Scancode for enter in numpad |
+| `PS2_SC_NUM_0` | Scancode for 0 in numpad |
+| `PS2_SC_NUM_1` | Scancode for 1 in numpad |
+| `PS2_SC_NUM_2` | Scancode for 2 in numpad |
+| `PS2_SC_NUM_3` | Scancode for 3 in numpad |
+| `PS2_SC_NUM_4` | Scancode for 4 in numpad |
+| `PS2_SC_NUM_6` | Scancode for 6 in numpad |
+| `PS2_SC_NUM_7` | Scancode for 7 in numpad |
+| `PS2_SC_NUM_8` | Scancode for 8 in numpad |
+| `PS2_SC_NUM_9` | Scancode for 9 in numpad |
+| `PS2_SC_NUM_DOT` | Scancode for dot in numpad |
 | `PS2_SC_INS` | Scancode for insert |
 | `PS2_SC_DEL` | Scancode for delete |
 | `PS2_SC_HOME` | Scancode for home |

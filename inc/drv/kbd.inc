@@ -11,8 +11,16 @@
 .equ KBD_MFLG_RALT, (0x01<<0x05)
 .equ KBD_MFLG_CAP, (0x01<<0x06)
 .equ KBD_MFLG_INS, (0x01<<0x07)
+.equ KBD_MFLG_NUM_LOCK, (0x01<<0x08)
 
 # { keycode
+# 0xD0-0xDF
+.equ KBD_KC_DEL, 0xD1
+.equ KBD_KC_HOME, 0xD2
+.equ KBD_KC_END, 0xD3
+.equ KBD_KC_PAGE_UP, 0xD4
+.equ KBD_KC_PAGE_DOWN, 0xD5
+
 # 0xE0-0xEF
 .equ KBD_KC_UP, 0xE0
 .equ KBD_KC_DOWN, 0xE1
@@ -20,11 +28,6 @@
 .equ KBD_KC_RIGHT, 0xE3
 .equ KBD_KC_NUM_SL, 0xE4
 .equ KBD_KC_NUM_ENT, 0xE5
-.equ KBD_KC_DEL, 0xD1
-.equ KBD_KC_HOME, 0xD2
-.equ KBD_KC_END, 0xD3
-.equ KBD_KC_PAGE_UP, 0xD4
-.equ KBD_KC_PAGE_DOWN, 0xD5
 
 # 0xF0-0xFF
 .equ KBD_KC_F1, 0xF1

@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- Add ins
 
 ---
 
@@ -23,7 +22,7 @@
 - OBF, IBF timeout error
 - fs: block extends
 - fs: dentry size optimize
-- support more key (num\_lock, f1=help, f12=clear)
+- support more key (f1=help, f12=clear)
 
 ---
 

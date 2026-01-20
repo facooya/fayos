@@ -5,6 +5,7 @@
 # common
 .equ PS2_ACK, 0xFA
 .equ PS2_RESEND, 0xFE
+.equ PS2_OFF_NUMPAD_MAP, 0x60
 
 # port
 .equ PS2_PORT_DATA, 0x60
@@ -34,6 +35,7 @@
 .equ PS2_SC_LALT, 0x0011
 .equ PS2_SC_RALT, 0xE011
 .equ PS2_SC_CAP, 0x0058
+.equ PS2_SC_NUM_LOCK, 0x0077
 
 # arrow
 .equ PS2_SC_UP, 0xE075
@@ -44,6 +46,16 @@
 # numpad
 .equ PS2_SC_NUM_SL, 0xE04A
 .equ PS2_SC_NUM_ENT, 0xE05A
+.equ PS2_SC_NUM_0, 0x70
+.equ PS2_SC_NUM_1, 0x69
+.equ PS2_SC_NUM_2, 0x72
+.equ PS2_SC_NUM_3, 0x7A
+.equ PS2_SC_NUM_4, 0x6B
+.equ PS2_SC_NUM_6, 0x74
+.equ PS2_SC_NUM_7, 0x6C
+.equ PS2_SC_NUM_8, 0x75
+.equ PS2_SC_NUM_9, 0x7D
+.equ PS2_SC_NUM_DOT, 0x71
 
 # nav
 .equ PS2_SC_INS, 0xE070

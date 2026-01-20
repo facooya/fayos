@@ -40,9 +40,11 @@ Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2
 ## Data Reference
 | Name | Description |
 | --- | --- |
-| `_kbd_mflg` | Modifier key flag. Size 2-byte. |
-| `_kbd_keymap` | Keymap for scancode convert to keycode. |
+| `_kbd_mflg` | Modifier key flag |
+| `_kbd_keymap` | Keymap for scancode convert to keycode |
 | `_kbd_keymap_shf` | Keymap shift key pressed for scancode convert to keycode |
+| `_kbd_numpad_map` | Numpad map for numpad scancode convert to keycode |
+| `_kbd_numpad_map_lock` | Number lock pressed numpad map for numpad scancode convert to keycode |
 
 ---
 
@@ -109,13 +111,12 @@ Convert scancode to keycode.
 
 #### Requires
 - `scancode`
-- `kbd_mflg`
 
 #### Modifies
-- `N/A`
+- `kbd_mflg`
 
 #### Returns
-- `al = keycode`
+- `al = {keycode, 0:skip}`
 
 #### Process Flow
 ```mermaid

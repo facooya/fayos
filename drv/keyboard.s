@@ -24,6 +24,10 @@ kbd_run:
 	# <req: scancode, _kbd_mflg>
 	# <al = kc>
 
+	# (_kbd_conv_kc() == 0) ? {done}
+	test %ax, %ax
+	jz 90f
+
 	call _kbd_proc
 	# <req: al = kc>
 
@@ -85,6 +89,9 @@ _kbd_upd_mflg:
 	# (sc == ins) ? {ins.set}
 	cmp $PS2_SC_INS, %dx
 	je 18f
+	# (sc == num_lock) ? {num_lock.set}
+	cmp $PS2_SC_NUM_LOCK, %dx
+	je 19f
 	jmp 99f
 
 20: # clr
@@ -192,6 +199,16 @@ _kbd_upd_mflg:
 	pop %cx # [s.0: mflg]
 	jmp 91f
 
+# num lock
+19:
+	test $KBD_MFLG_NUM_LOCK, %cx
+	jnz 29f
+	or $KBD_MFLG_NUM_LOCK, %cx
+	jmp 91f
+29:
+	and $~KBD_MFLG_NUM_LOCK, %cx
+	jmp 91f
+
 91: # flag
 	mov %cx, (_kbd_mflg)
 	xor %ax, %ax
@@ -212,7 +229,31 @@ _kbd_conv_kc:
 	test %ah, %ah
 	jnz 20f
 
+	# { numpad
+	cmp $PS2_SC_NUM_0, %al
+	je 40f
+	cmp $PS2_SC_NUM_1, %al
+	je 40f
+	cmp $PS2_SC_NUM_2, %al
+	je 40f
+	cmp $PS2_SC_NUM_3, %al
+	je 40f
+	cmp $PS2_SC_NUM_4, %al
+	je 40f
+	cmp $PS2_SC_NUM_6, %al
+	je 40f
+	cmp $PS2_SC_NUM_7, %al
+	je 40f
+	cmp $PS2_SC_NUM_8, %al
+	je 40f
+	cmp $PS2_SC_NUM_9, %al
+	je 40f
+	cmp $PS2_SC_NUM_DOT, %al
+	je 40f
+	# }
+
 	mov $_kbd_keymap, %si
+
 	# (mflg == 0) ? {norm}
 	mov (_kbd_mflg), %cx
 	test %cx, %cx
@@ -374,6 +415,59 @@ _kbd_conv_kc:
 	mov $KBD_KC_PAGE_DOWN, %al
 	jmp 99f
 
+# numpad
+40:
+	sub $PS2_OFF_NUMPAD_MAP, %ax
+	mov $_kbd_numpad_map, %si
+
+	# (mflg != num_lock) ? {pass}
+	mov (_kbd_mflg), %cx
+	test $KBD_MFLG_NUM_LOCK, %cx
+	jz 1f
+	mov $_kbd_numpad_map_lock, %si
+
+	# conv
+	add %ax, %si
+	mov (%si), %al
+
+	# (kc == 0) ? {insert} : {done}
+	cmp $CHR_ZERO, %al
+	je 41f
+	jmp 99f
+
+1:
+	# conv
+	add %ax, %si
+	mov (%si), %al
+	jmp 99f
+
+41: # numpad insert
+	# (mflg != ins) ? {ins}
+	test $KBD_MFLG_INS, %cx
+	jnz 1f
+	or $KBD_MFLG_INS, %cx
+	mov %cx, (_kbd_mflg)
+
+	# curs overwrite
+	push $0x01 # (flag)
+	call vga_show_curs
+	add $0x02, %sp
+	jmp 91f
+
+1:
+	and $~KBD_MFLG_INS, %cx
+	mov %cx, (_kbd_mflg)
+
+	# curs insert
+	push $0x00 # (flag)
+	call vga_show_curs
+	add $0x02, %sp
+	jmp 91f
+
+91: # skip
+	xor %ax, %ax
+	jmp 99f
+
 99:
 	pop %si
 	ret
@@ -430,15 +524,16 @@ _kbd_proc:
 	push %dx # (flag)
 	call vga_show_curs
 	add $0x02, %sp
+	# }
 
 	mov (curs+0x04), %ax
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
-	# }}
 
 9:
 	pop %ax # [s.0: kc]
+	# }}
 
 	# {
 	cmp $CHR_BS, %al
@@ -475,6 +570,14 @@ _kbd_proc:
 	je 27f
 	cmp $KBD_KC_NUM_ENT, %al
 	je 21f
+	# (kc < 0xC0) ? {norm}
+	#cmp $0xC0, %al
+	#jb 10f
+	# (kc >= 0xD0) ? {norm} : {numpad}
+	#cmp $0xD0, %al
+	#jae 10f
+	#sub $0x90, %al
+	#jmp 13f
 	# }
 	jmp 10f
 
@@ -551,6 +654,9 @@ _kbd_proc:
 	inc %ax
 	mov %ax, (curs+0x02)
 	# }
+	jmp 99f
+
+13: # numpad
 	jmp 99f
 
 21:
@@ -1140,3 +1246,21 @@ _kbd_keymap_shf:
 	# 0x80-0x8F
 	.byte 0x00, 0x00, 0x00, 0xF7, 0x00, 0x00, 0x00, 0x00
 	.byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+_kbd_numpad_map:
+	# 0x60-0x6F
+	.byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+	.byte 0x00, 0x31, 0x00, 0x34, 0x37, 0x00, 0x00, 0x00
+
+	# 0x70-0x7F
+	.byte 0x30, 0x2E, 0x32, 0x00, 0x36, 0x38, 0x00, 0x00
+	.byte 0x00, 0x00, 0x33, 0x00, 0x00, 0x39, 0x00, 0x00
+
+_kbd_numpad_map_lock:
+	# 0x60-0x6F
+	.byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+	.byte 0x00, KBD_KC_END, 0x00, KBD_KC_LEFT, KBD_KC_HOME, 0x00, 0x00, 0x00
+
+	# 0x70-0x7F
+	.byte 0x30, KBD_KC_DEL, KBD_KC_DOWN, 0x00, KBD_KC_RIGHT, KBD_KC_UP, 0x00, 0x00
+	.byte 0x00, 0x00, KBD_KC_PAGE_DOWN, 0x00, 0x00, KBD_KC_PAGE_UP, 0x00, 0x00

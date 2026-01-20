@@ -23,21 +23,22 @@ Header for keyboard.
 | `KBD_MFLG_RALT` | Flag for right alternate key |
 | `KBD_MFLG_CAP` | Flag for capitals lock key |
 | `KBD_MFLG_INS` | Flag for insert key |
+| `KBD_MFLG_NUM_LOCK` | Flag for number lock key |
 
 **Keycode**
 | Name | Description |
 | --- | --- |
+| `KBD_KC_DEL` | Keycode for delete key |
+| `KBD_KC_HOME` | Keycode for home key |
+| `KBD_KC_END` | Keycode for end key |
+| `KBD_KC_PAGE_UP` | Keycode for page up key |
+| `KBD_KC_PAGE_DOWN` | Keycode for page down key |
 | `KBD_KC_UP` | Keycode for arrow up key |
 | `KBD_KC_DOWN` | Keycode for arrow down key |
 | `KBD_KC_LEFT` | Keycode for arrow left key |
 | `KBD_KC_RIGHT` | Keycode for arrow right key |
 | `KBD_KC_NUM_SL` | Keycode for slash key in number pad |
 | `KBD_KC_NUM_ENT` | Keycode for enter key in number pad |
-| `KBD_KC_DEL` | Keycode for delete key |
-| `KBD_KC_HOME` | Keycode for home key |
-| `KBD_KC_END` | Keycode for end key |
-| `KBD_KC_PAGE_UP` | Keycode for page up key |
-| `KBD_KC_PAGE_DOWN` | Keycode for page down key |
 | `KBD_KC_F1` | Keycode for f1 key |
 | `KBD_KC_F2` | Keycode for f2 key |
 | `KBD_KC_F3` | Keycode for f3 key |
