@@ -45,6 +45,7 @@ Invoke keyboard driver scan code full in kernel main loop, Scan code full by PS2
 | `_kbd_keymap_shf` | Keymap shift key pressed for scancode convert to keycode |
 | `_kbd_numpad_map` | Numpad map for numpad scancode convert to keycode |
 | `_kbd_numpad_map_lock` | Number lock pressed numpad map for numpad scancode convert to keycode |
+| `_kbd_help` | Shortcut list |
 
 ---
 

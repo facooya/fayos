@@ -568,9 +568,7 @@ _kbd_proc:
 
 	# { fn
 	cmp $KBD_KC_F1, %al
-	je 99f
-	cmp $KBD_KC_F2, %al
-	je 99f
+	je 41f
 	# }
 
 	# TODO: check (kc >= 0x80)
@@ -707,6 +705,25 @@ _kbd_proc:
 	jmp 99f
 36: # page down
 	call _kbd_hdl_pgdn
+	jmp 99f
+
+# fn
+41: # f1
+	push $_kbd_help
+	call vga_outs
+	add $0x02, %sp
+
+	xor %ax, %ax
+	mov (cl_sbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_sbuf # (&off)
+	push %ax # (&seg)
+	call mem_set
+	add $0x08, %sp
+
+	call _kbd_hdl_cr
 	jmp 99f
 
 99:
@@ -1292,3 +1309,5 @@ _kbd_numpad_map_lock:
 	# 0x70-0x7F
 	.byte 0x30, KBD_KC_DEL, KBD_KC_DOWN, 0x00, KBD_KC_RIGHT, KBD_KC_UP, 0x00, 0x00
 	.byte 0x00, 0x00, KBD_KC_PAGE_DOWN, 0x00, 0x00, KBD_KC_PAGE_UP, 0x00, 0x00
+
+_kbd_help: .asciz "\r\n<F1> Help"
