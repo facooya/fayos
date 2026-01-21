@@ -12,7 +12,7 @@
 # disk
 .equ KERN_MEM, 0x00001000
 .equ KERN_SECT_CNT, 0x30
-.equ KERN_LBA, 0x0010
+.equ KERN_LBA, 0x0008
 
 # { vga
 .equ VGA_MEM, 0xB8000000

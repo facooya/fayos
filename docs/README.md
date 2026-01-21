@@ -77,6 +77,10 @@ Examples:
 | `0x7E00-0x9DFF` | Fayos | Reserved for kernel. Total 2 blocks. |
 | `0x9E00-0x9FBF` | Fayos | Unuse |
 | `0x9FC0-0x9FFF` | System | Extended BIOS data area |
+| `0xA000-0xAFFF` | Fayos | Block bitmap |
+| `0xB000-0xBFFF` | Fayos | Inum bitmap |
+| `0xC000-0xCFFF` | Fayos | Inode table |
+| `0xD000-0xFFFF` | Fayos | Reserved |
 
 **4-byte zero padding**
 | Memory | Defined By | Description |

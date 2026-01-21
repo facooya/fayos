@@ -28,23 +28,23 @@ isr_ps2:
 	je 2f
 	jmp 3f
 
-1:
+1: # brk
 	mov (scancode+0x01), %ah
 	or $PS2_SCF_BRK, %ah
 	mov %ah, (scancode+0x01)
 	jmp 99f
 
-2:
+2: # ext
 	mov (scancode+0x01), %ah
 	or $PS2_SCF_EXT, %ah
 	mov %ah, (scancode+0x01)
 	jmp 99f
 
-3:
+3: # norm
 	mov %al, (scancode)
 	jmp 99f
 
-4:
+4: # skip
 	in $PS2_PORT_DATA, %al
 	jmp 99f
 
