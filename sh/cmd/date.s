@@ -87,7 +87,7 @@ cmd_date:
 	call putc
 
 	# { week
-	mov $.week, %di
+	mov $_week, %di
 	xor %ax, %ax
 	mov RTC_DATE_WEEK(%si), %al
 	dec %al
@@ -95,9 +95,8 @@ cmd_date:
 	mul %cx
 	add %ax, %di
 
-	xor %ax, %ax
 	push %di
-	push %ax
+	push %ds
 	call puts
 	add $0x04, %sp
 	# }
@@ -170,7 +169,7 @@ cmd_date:
 	ret
 
 .section .data
-.week:
+_week:
 	.asciz "Sun",
 	.asciz "Mon",
 	.asciz "Tue",

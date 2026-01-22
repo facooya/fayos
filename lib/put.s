@@ -12,7 +12,7 @@
 .global putnl
 .global putsp
 
-# puts(ub16 *seg, ub16 *off)
+# puts(ub16 seg, ub16 off)
 # <mod: write_sbuf>
 puts:
 	push %bp
@@ -23,9 +23,9 @@ puts:
 	push %bx
 
 	# init
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %si # str
+	mov 0x06(%bp), %si # (off)
 	mov $write_sbuf, %di
 	mov (%di), %bx # buf.size
 	add $0x02, %di # skip size
@@ -57,7 +57,7 @@ puts:
 	pop %bp
 	ret
 
-# putns(ub16 *seg, ub16 *off, ub16 num)
+# putns(ub16 seg, ub16 off, ub16 num)
 putns:
 	push %bp
 	mov %sp, %bp
@@ -67,9 +67,9 @@ putns:
 	push %bx
 
 	# init
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %si # str
+	mov 0x06(%bp), %si # (off)
 	mov 0x08(%bp), %cx # num
 	mov $write_sbuf, %di
 	mov (%di), %bx # buf.size
@@ -103,7 +103,7 @@ putns:
 	pop %bp
 	ret
 
-# putf(ub16 *seg, ub16 *off)
+# putf(ub16 seg, ub16 off)
 # <mod: write_sbuf>
 putf:
 	push %bp
@@ -114,9 +114,9 @@ putf:
 	push %bx
 
 	# init
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %si # str
+	mov 0x06(%bp), %si # (off)
 	mov $write_sbuf, %di
 	mov (%di), %bx # buf.len
 	add $0x02, %di # skip len
@@ -143,7 +143,7 @@ putf:
 10: # disp backslash
 	mov %es:0x01(%si), %al
 
-	# (chr == null) {done}
+	# (chr == null) ? {done}
 	test %al, %al
 	jz 90f
 	

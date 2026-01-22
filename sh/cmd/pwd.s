@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] Show path-working-directory
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .section .text
 .code16
@@ -13,13 +11,11 @@ cmd_pwd:
 	push %si
 
 	mov $cwd, %si
-	xor %ax, %ax
-	push %si # (&off)
-	push %ax # (&seg)
+	push %si # (off)
+	push %ds # (seg)
 	call puts
 	add $0x04, %sp
 
-# {DONE}
 .done:
 	call putnl
 	xor %ax, %ax

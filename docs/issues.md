@@ -1,6 +1,5 @@
 # Issues
 ## WIP
-- Put family segment
 
 ---
 

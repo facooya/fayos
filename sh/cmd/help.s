@@ -24,14 +24,10 @@ cmd_help:
 
 	add $0x02, %si # cmd_map[cmd_str]
 
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
 	push %si
-	push %es
+	push %ds
 	call puts
 	add $0x04, %sp
-	pop %es
 
 	# {{{ len
 	push %si

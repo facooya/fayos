@@ -62,8 +62,8 @@ cmd_cat:
 	mov FSP_OFF_F_SIZE(%si), %cx
 
 	push %cx # (size)
-	push %bx # (&off)
-	push %es # (&seg)
+	push %bx # (off)
+	push %es # (seg)
 	call putns
 	add $0x06, %sp
 	jmp .done
