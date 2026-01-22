@@ -10,7 +10,7 @@
 .global mem_cpy
 .global mem_cmp
 
-# mem_size(ub16 *seg, ub16 *off)
+# mem_size(ub16 seg, ub16 off)
 # <ret: ax = size>
 mem_size:
 	push %bp
@@ -18,9 +18,9 @@ mem_size:
 	push %es
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 	xor %cx, %cx # size
 
 1:
@@ -41,7 +41,7 @@ mem_size:
 	pop %bp
 	ret
 
-# mem_size_val(ub16 *seg, ub16 *off, ub8 val)
+# mem_size_val(ub16 seg, ub16 off, ub8 val)
 # <ret: ax = size>
 mem_size_val:
 	push %bp
@@ -49,9 +49,9 @@ mem_size_val:
 	push %es
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 	mov 0x08(%bp), %dx # (val)
 	xor %cx, %cx # size
 
@@ -74,8 +74,8 @@ mem_size_val:
 	ret
 
 # mem_set(
-# ub16 *seg
-# ub16 *off
+# ub16 seg
+# ub16 off
 # ub8 value
 # ub16 size
 # )
@@ -86,9 +86,9 @@ mem_set:
 	push %si
 
 	# init
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %si # (*off)
+	mov 0x06(%bp), %si # (off)
 	mov 0x08(%bp), %dx # (value)
 	mov 0x0A(%bp), %cx # (size)
 
@@ -111,10 +111,10 @@ mem_set:
 	ret
 
 # mem_cpy(
-# ub16 *d_seg,
-# ub16 *d_off,
-# ub16 *s_seg,
-# ub16 *s_off,
+# ub16 d_seg,
+# ub16 d_off,
+# ub16 s_seg,
+# ub16 s_off,
 # ub16 size
 # )
 mem_cpy:
@@ -125,8 +125,8 @@ mem_cpy:
 	push %di
 
 	# init
-	mov 0x0A(%bp), %si # (*s_off)
-	mov 0x06(%bp), %di # (*d_off)
+	mov 0x0A(%bp), %si # (s_off)
+	mov 0x06(%bp), %di # (d_off)
 	mov 0x0C(%bp), %cx # (size)
 
 1:
@@ -135,11 +135,11 @@ mem_cpy:
 	jz 99f
 
 	# {{{ cpy
-	mov 0x08(%bp), %ax # (*s_seg)
+	mov 0x08(%bp), %ax # (s_seg)
 	mov %ax, %es
 	mov %es:(%si), %dl
 
-	mov 0x04(%bp), %ax # (*d_seg)
+	mov 0x04(%bp), %ax # (d_seg)
 	mov %ax, %es
 	mov %dl, %es:(%di)
 	# }}}
@@ -157,10 +157,10 @@ mem_cpy:
 	ret
 
 # mem_cmp(
-# ub16 *d_seg
-# ub16 *d_off
-# ub16 *s_seg
-# ub16 *s_off
+# ub16 d_seg
+# ub16 d_off
+# ub16 s_seg
+# ub16 s_off
 # ub16 size
 # )
 # <ret: ax = {0:true, 1:false}>
@@ -172,8 +172,8 @@ mem_cmp:
 	push %di
 
 	# init
-	mov 0x0A(%bp), %si # (*s_off)
-	mov 0x06(%bp), %di # (*d_off)
+	mov 0x0A(%bp), %si # (s_off)
+	mov 0x06(%bp), %di # (d_off)
 	mov 0x0C(%bp), %cx # (size)
 
 1:
@@ -182,11 +182,11 @@ mem_cmp:
 	jz 91f
 
 	# { get chr
-	mov 0x08(%bp), %ax # (*s_seg)
+	mov 0x08(%bp), %ax # (s_seg)
 	mov %ax, %es
 	mov %es:(%si), %dh # s_chr
 
-	mov 0x04(%bp), %ax # (*d_seg)
+	mov 0x04(%bp), %ax # (d_seg)
 	mov %ax, %es
 	mov %es:(%di), %dl # d_chr
 	# }

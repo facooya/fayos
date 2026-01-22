@@ -4,7 +4,6 @@
 
 .include "chr.inc"
 .include "drv/ps2.inc"
-.include "drv/vga.inc" # DEBUG
 .section .text
 .code16
 .global kern_run

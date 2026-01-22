@@ -49,8 +49,8 @@ _path_tok:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $path_sbuf # (&off)
-	push %ds # (&seg)
+	push $path_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -310,10 +310,10 @@ _path_read:
 91:
 	xor %ax, %ax
 	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_DIR # (&s_off)
-	push %ds # (&s_seg)
-	push $fsp+FSP_OFF_BASE # (&d_off)
-	push %ds # (&d_seg)
+	push $fsp+FSP_OFF_DIR # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_BASE # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

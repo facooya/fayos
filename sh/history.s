@@ -37,12 +37,11 @@ history:
 	# }
 
 	# cpy base -> tmp
-	xor %ax, %ax
 	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_BASE # (&s_off)
-	push %ax # (&s_seg)
-	push $fsp+FSP_OFF_TMP # (&d_off)
-	push %ax # (&d_seg)
+	push $fsp+FSP_OFF_BASE # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_TMP # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 	jmp 20f # save
@@ -134,8 +133,8 @@ history:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_hist_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_hist_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	# }
@@ -210,8 +209,8 @@ hist_upd_cl:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -235,8 +234,8 @@ hist_upd_cl:
 	xor %ax, %ax
 	mov $CHR_CR, %al
 	push %ax # (val)
-	push %bx # (&off)
-	push %es # (&seg)
+	push %bx # (off)
+	push %es # (seg)
 	call mem_size_val
 	add $0x06, %sp
 	# <ret: ax = size>

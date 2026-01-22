@@ -39,17 +39,12 @@ exec_cmd:
 	mov $cl_sbuf, %si
 	add $0x02, %si # *buf_data
 
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
-
 	push %si
-	push %es
+	push %ds
 	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %bx # cmd_size
-	pop %es
 	# }
 
 	mov $cmd_map, %di
@@ -57,17 +52,12 @@ exec_cmd:
 
 1:
 	# {{{ len
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
-
 	push %di
-	push %es
+	push %ds
 	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %cx # map_chr_size
-	pop %es
 	# }}}
 
 	# (map_chr_size == cmd_size) ? {chk}
@@ -87,20 +77,15 @@ exec_cmd:
 3:
 	# { cmp
 	push %cx # [s.f1:map_chr_size]
-	push %es # [s.f2:seg]
-
-	xor %ax, %ax
-	mov %ax, %es
 
 	push %cx
 	push %si
-	push %es
+	push %ds
 	push %di
-	push %es
+	push %ds
 	call mem_cmp
 	add $0x0A, %sp
 
-	pop %es # [s.f2:seg]
 	pop %cx # [s.f1:map_chr_size]
 	# }
 
@@ -142,8 +127,8 @@ exec_cmd:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $write_sbuf # (&off)
-	push %ax # (&seg)
+	push $write_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -229,12 +214,11 @@ _exec_redir:
 	cmp $F_TYPE_FILE, %ax
 	jne 803f # file type
 
-	xor %ax, %ax
 	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_BASE # (&s_off)
-	push %ax # (&s_seg)
-	push $fsp+FSP_OFF_TMP # (&d_off)
-	push %ax # (&d_seg)
+	push $fsp+FSP_OFF_BASE # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_TMP # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

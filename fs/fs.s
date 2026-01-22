@@ -474,12 +474,11 @@ fs_rm:
 	jne 90f
 
 	# { upd cur
-	xor %ax, %ax
 	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_DIR # (&s_off)
-	push %ax # (&s_seg)
-	push $fsp+FSP_OFF_CUR # (&d_off)
-	push %ax # (&d_seg)
+	push $fsp+FSP_OFF_DIR # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_CUR # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

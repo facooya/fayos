@@ -70,8 +70,8 @@ args_proc:
 
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	call _args_zero
@@ -102,8 +102,8 @@ _args_zero:
 
 	push %cx # (size)
 	push %ax # (value)
-	push $tmp_sbuf # (&off)
-	push %ax # (&seg)
+	push $tmp_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	# }
@@ -116,8 +116,8 @@ _args_zero:
 
 	push %cx # (size)
 	push %ax # (value)
-	push $redir_hsbuf # (&off)
-	push %ax # (&seg)
+	push $redir_hsbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	# }
@@ -308,8 +308,8 @@ _args_tok:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	pop %cx # [s.f0:tmp_sbuf.size]
@@ -649,8 +649,8 @@ _args_parse:
 	xor %cx, %cx
 	push %dx # (size)
 	push %cx # (value)
-	push %di # (&off)
-	push %cx # (&seg)
+	push %di # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 	pop %cx # [s.f1:arg_c]

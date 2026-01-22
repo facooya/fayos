@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# Command help - show commands list
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .section .text
 .code16
@@ -36,17 +34,12 @@ cmd_help:
 	pop %es
 
 	# {{{ len
-	push %es
-	xor %ax, %ax
-	mov %ax, %es
-
 	push %si
-	push %es
+	push %ds
 	call mem_size
 	add $0x04, %sp
 
 	add %ax, %si
-	pop %es
 	# }}}
 
 	call putnl

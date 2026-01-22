@@ -51,8 +51,7 @@ de_add:
 	mov %al, %es:DE_OFF_F_TYPE(%bx)
 	mov 0x08(%bp), %si # (*name)
 	push %si
-	xor %ax, %ax
-	push %ax
+	push %ds
 	call mem_size
 	add $0x04, %sp
 	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
@@ -225,9 +224,8 @@ de_seek:
 
 	push %cx # [s.f0:file_size]
 	mov 0x06(%bp), %si # (*name)
-	push %si # (*off)
-	xor %ax, %ax
-	push %ax # (*seg)
+	push %si # (off)
+	push %ds # (seg)
 	call mem_size
 	add $0x04, %sp
 	mov %ax, %dx # s_name_size
@@ -253,13 +251,12 @@ de_seek:
 	push %cx # [s.f0:file_size]
 	push %dx # [s.f1:s_name_size]
 	push %dx # (size)
-	push %si # (*s_off)
-	xor %ax, %ax
-	push %ax # (*s_seg)
+	push %si # (s_off)
+	push %ds # (s_seg)
 	mov %bx, %di
 	add $DE_OFF_NAME, %di
-	push %di # (*d_off)
-	push %es # (*d_seg)
+	push %di # (d_off)
+	push %es # (d_seg)
 	call mem_cmp
 	add $0x0A, %sp
 	# <ax = true:0, false:1>

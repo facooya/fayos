@@ -4,6 +4,7 @@
 ---
 
 ## FIXME
+- LBA setting
 
 ---
 

@@ -25,9 +25,11 @@
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
 vga_init:
+	push %es
 	xor %ax, %ax
-	mov (VGA_ADDR_ROW), %al
-	mov (VGA_ADDR_COL), %cx
+	mov %ax, %es
+	mov %es:(VGA_ADDR_ROW), %al
+	mov %es:(VGA_ADDR_COL), %cx
 
 	xor %dx, %dx
 	mul %cx
@@ -35,6 +37,7 @@ vga_init:
 
 	add %cx, %ax
 	mov %ax, (_vga_size)
+	pop %es
 	ret
 
 # vga_clr()

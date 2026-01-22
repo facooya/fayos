@@ -18,9 +18,8 @@ disp_shl_cl:
 	mov 0x04(%bp), %si # (*data)
 
 	# { size
-	xor %ax, %ax
 	push %si
-	push %ax
+	push %ds
 	call mem_size
 	add $0x04, %sp
 
@@ -79,13 +78,9 @@ disp_shr_cl:
 
 	# { size
 	push %ax
-	push %es
-
-	xor %ax, %ax
-	mov %ax, %es
 
 	push %di
-	push %es
+	push %ds
 	call mem_size
 	add $0x04, %sp
 
@@ -93,7 +88,6 @@ disp_shr_cl:
 	add %ax, %di # data.end
 	dec %di # data.last
 
-	pop %es
 	pop %ax
 	# }
 

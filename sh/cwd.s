@@ -76,16 +76,14 @@ cwd_build:
 
 3: # add
 	push %cx # [s.f1:path_c]
-	xor %ax, %ax
 	push %si # (&off)
-	push %ax # (&seg)
+	push %ds # (&seg)
 	call mem_size
 	add $0x04, %sp
 
 	push %ax # (size)
-	xor %ax, %ax
 	push %si # (&off)
-	push %ax # (&seg)
+	push %ds # (&seg)
 	call _cwd_add
 	add $0x06, %sp
 	pop %cx # [s.f1:path_c]
@@ -124,7 +122,7 @@ cwd_init:
 	pop %di
 	ret
 
-# _cwd_add(ub16 *seg, ub16 *off, ub16 size)
+# _cwd_add(ub16 seg, ub16 off, ub16 size)
 # <mod: cwd>
 _cwd_add:
 	push %bp
@@ -133,17 +131,16 @@ _cwd_add:
 	push %si
 	push %di
 
-	mov 0x04(%bp), %es # (*seg)
-	mov 0x06(%bp), %si # (*off)
+	mov 0x04(%bp), %es # (seg)
+	mov 0x06(%bp), %si # (off)
 	mov $cwd, %di
 
 	mov (%si), %al
 	cmp $CHR_SL, %al
 	je 90f
 
-	xor %ax, %ax
 	push %di # (&off)
-	push %ax # (&seg)
+	push %ds # (&seg)
 	call mem_size
 	add $0x04, %sp
 	add %ax, %di
@@ -160,12 +157,11 @@ _cwd_add:
 1:
 	# mem cpy
 	mov 0x08(%bp), %cx # (size)
-	xor %ax, %ax
 	push %cx # (size)
-	push %si # (&s_off)
-	push %es # (&s_seg)
-	push %di # (&d_off)
-	push %ax # (&d_seg)
+	push %si # (s_off)
+	push %es # (s_seg)
+	push %di # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
@@ -190,9 +186,8 @@ _cwd_sub:
 	push %di
 
 	mov $cwd, %si
-	xor %ax, %ax
 	push %si # (&off)
-	push %ax # (&seg)
+	push %ds # (&seg)
 	call mem_size
 	add $0x04, %sp
 	add %ax, %si
@@ -212,9 +207,8 @@ _cwd_sub:
 
 1:
 	mov $cwd, %di
-	xor %ax, %ax
-	push %di # (&off)
-	push %ax # (&seg)
+	push %di # (off)
+	push %ds # (seg)
 	call mem_size
 	add $0x04, %sp
 

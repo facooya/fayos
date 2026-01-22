@@ -718,8 +718,8 @@ _kbd_proc:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -762,8 +762,8 @@ _kbd_hdl_cr:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -880,20 +880,19 @@ _kbd_hdl_up:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_hist_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_hist_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
 	# cpy
-	xor %ax, %ax
 	mov (cl_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
-	push $cl_sbuf # (*s_off)
-	push %ax # (*s_seg)
-	push $cl_hist_sbuf # (*d_off)
-	push %ax # (*d_seg)
+	push $cl_sbuf # (s_off)
+	push %ds # (s_seg)
+	push $cl_hist_sbuf # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
@@ -934,20 +933,19 @@ _kbd_hdl_down:
 	add $0x02, %cx
 	push %cx # (size)
 	push %ax # (value)
-	push $cl_sbuf # (&off)
-	push %ax # (&seg)
+	push $cl_sbuf # (off)
+	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
 
 	# cpy
-	xor %ax, %ax
 	mov (cl_hist_sbuf), %cx
 	add $0x02, %cx
 	push %cx # (size)
-	push $cl_hist_sbuf # (&s_off)
-	push %ax # (&s_seg)
-	push $cl_sbuf # (&d_off)
-	push %ax # (&d_seg)
+	push $cl_hist_sbuf # (s_off)
+	push %ds # (s_seg)
+	push $cl_sbuf # (d_off)
+	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

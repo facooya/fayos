@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
 .include "fs/fs.inc"
@@ -10,8 +10,8 @@
 .global ind_add
 .global ind_clr
 
-# [public] ind_add(ub8 f_type)
-# <ret> ax = inum
+# ind_add(ub8 f_type)
+# <ret: ax = inum>
 ind_add:
 	push %bp
 	mov %sp, %bp
@@ -85,8 +85,8 @@ ind_add:
 
 	pop %ax # [s.0:inum]
 	push %ax # (bm_num)
-	push %bx # (&off)
-	push %es # (&seg)
+	push %bx # (off)
+	push %es # (seg)
 	call bm_set
 	add $0x06, %sp
 
@@ -102,8 +102,8 @@ ind_add:
 
 	pop %ax # [s.1:blk_num]
 	push %ax # (bm_num)
-	push %bx # (&off)
-	push %es # (&seg)
+	push %bx # (off)
+	push %es # (seg)
 	call bm_set
 	add $0x06, %sp
 
@@ -121,7 +121,7 @@ ind_add:
 	pop %bp
 	ret
 
-# [public] ind_clr(ub16 inum)
+# ind_clr(ub16 inum)
 ind_clr:
 	push %bp
 	mov %sp, %bp
