@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 # chr
 .equ CHR_NL, 0x0A
@@ -10,9 +10,9 @@
 .equ STACK_PTR, 0x7C00
 
 # disk
-.equ KERN_MEM, 0x00001000
+.equ KERN_MEM, 0x10000000
 .equ KERN_SECT_CNT, 0x30
-.equ KERN_LBA, 0x0008
+.equ KERN_LBA, 0x80
 
 # { vga
 .equ VGA_MEM, 0xB8000000

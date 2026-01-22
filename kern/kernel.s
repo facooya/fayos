@@ -4,6 +4,7 @@
 
 .include "chr.inc"
 .include "drv/ps2.inc"
+.include "drv/vga.inc" # DEBUG
 .section .text
 .code16
 .global kern_run
@@ -12,6 +13,9 @@
 
 # kern_run()
 kern_run:
+	mov %cs, %ax
+	mov %ax, %ds
+
 	cli
 	call pic_init
 	call ivt_init

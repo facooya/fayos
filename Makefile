@@ -97,7 +97,7 @@ all: $(FAYOS_IMG)
 $(FAYOS_IMG): $(BOOT_BIN) $(KERN_BIN) | ./build/
 	dd if=/dev/zero of=$(FAYOS_IMG) bs=512 count=$(TOT_SECT_CNT)
 	dd if=$(BOOT_BIN) of=$(FAYOS_IMG) bs=512 count=1 conv=notrunc
-	dd if=$(KERN_BIN) of=$(FAYOS_IMG) bs=512 seek=8 conv=notrunc
+	dd if=$(KERN_BIN) of=$(FAYOS_IMG) bs=512 seek=128 conv=notrunc
 
 $(BOOT_BIN): $(OBJ_BOOT) | ./build/
 	ld -T ./boot/boot.lds -o $@ $^

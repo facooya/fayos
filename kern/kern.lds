@@ -6,10 +6,10 @@
 
 OUTPUT_FORMAT(binary)
 OUTPUT_ARCH(i386)
-ENTRY(_start)
+ENTRY(kern_run)
 
 SECTIONS {
-	. = 0x1000;
+	. = 0x0000;
 	.text : { *(.text) }
 	.rodata : { *(.rodata) }
 	.data : { *(.data) }

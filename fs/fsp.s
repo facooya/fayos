@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
 .include "fs/fs.inc"
@@ -12,7 +12,7 @@
 .global fsp_read
 .global fsp_write
 
-# [public] fsp_init()
+# fsp_init()
 fsp_init:
 	push %di
 
@@ -107,7 +107,7 @@ fsp_init:
 	pop %di
 	ret
 
-# [public] fsp_read(fsp *dst, ub16 inum)
+# fsp_read(fsp *dst, ub16 inum)
 fsp_read:
 	push %bp
 	mov %sp, %bp
@@ -169,7 +169,7 @@ fsp_read:
 	pop %bp
 	ret
 
-# [public] fsp_write(fsp *src)
+# fsp_write(fsp *src)
 fsp_write:
 	push %bp
 	mov %sp, %bp
@@ -199,7 +199,7 @@ fsp_write:
 	pop %bp
 	ret
 
-# [private] _fsp_blk_to_lba(ub16 blk_num)
+# _fsp_blk_to_lba(ub16 blk_num)
 # <ret> ax = lba
 _fsp_blk_to_lba:
 	push %bp
@@ -224,7 +224,6 @@ _fsp_blk_to_lba:
 	pop %bp
 	ret
 
-# [data]
 .section .data
 .global fsp
 # fsp: ind, ind_ptr, inum, d_sect_cnt, d_mem, d_lba

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .section .text
 .code16
@@ -8,7 +8,7 @@
 .global bm_set
 .global bm_clr
 
-# [public] bm_alloc(ub16 *seg, ub16 *off)
+# bm_alloc(ub16 seg, ub16 off)
 # <ret: ax=bit_num>
 bm_alloc:
 	push %bp
@@ -17,9 +17,9 @@ bm_alloc:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 	xor %dx, %dx # word cnt
 
 1:
@@ -65,7 +65,7 @@ bm_alloc:
 	pop %bp
 	ret
 
-# [public] bm_set(ub16 *seg, ub16 *off, ub16 bit_num)
+# bm_set(ub16 seg, ub16 off, ub16 bit_num)
 bm_set:
 	push %bp
 	mov %sp, %bp
@@ -73,9 +73,9 @@ bm_set:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 	mov 0x08(%bp), %ax # (bit_num)
 
 	xor %dx, %dx
@@ -101,7 +101,7 @@ bm_set:
 	pop %bp
 	ret
 
-# [public] bm_clr(ub16 *seg, ub16 *off, ub16 bit_num)
+# bm_clr(ub16 seg, ub16 off, ub16 bit_num)
 bm_clr:
 	push %bp
 	mov %sp, %bp
@@ -109,9 +109,9 @@ bm_clr:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 	mov 0x08(%bp), %ax # (bit_num)
 
 	xor %dx, %dx

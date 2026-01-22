@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "fs/fs.inc"
 .include "fs/sb.inc"
@@ -10,7 +10,7 @@
 .code16
 .global sb_run
 
-# [public] sb_run()
+# sb_run()
 sb_run:
 	push %es
 	push %si
@@ -50,11 +50,11 @@ sb_run:
 	add $SB_OFF_TOT_SECT, %si
 	call ata_get_sect
 	# <dx:ax = tot_sect_hi:tot_sect_lo>
-	mov %ax, (%si)
-	mov %dx, 0x02(%si)
+	mov %ax, %es:(%si)
+	mov %dx, %es:0x02(%si)
 
-	push %bx
-	push %es
+	push %bx # (off)
+	push %es # (seg)
 	call _sb_alloc_lba
 	add $0x04, %sp
 
@@ -68,8 +68,8 @@ sb_run:
 
 	push $DISK_SB_SECT_CNT # (sect_cnt)
 	push $DISK_SB_LBA # (lba)
-	push $(DISK_SB_MEM&0xFFFF) # (&off)
-	push $(DISK_SB_MEM>>0x10) # (&seg)
+	push $(DISK_SB_MEM&0xFFFF) # (off)
+	push $(DISK_SB_MEM>>0x10) # (seg)
 	call ata_write_sect
 	add $0x08, %sp
 	# }}}
@@ -109,7 +109,7 @@ sb_run:
 	pop %es
 	ret
 
-# [private] _sb_alloc_lba(ub16 *seg, ub16 *off)
+# _sb_alloc_lba(ub16 seg, ub16 off)
 _sb_alloc_lba:
 	push %bp
 	mov %sp, %bp
@@ -117,17 +117,17 @@ _sb_alloc_lba:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %ax # (*seg)
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x06(%bp), %bx # (off)
 
+	mov $_flag, %si
 	mov %es:SB_OFF_TOT_SECT(%bx), %ax
 	mov %es:SB_OFF_TOT_SECT+0x02(%bx), %dx
 	test %dx, %dx
 	jz 1f
 
 	mov $0xFFFF, %ax # max for calc
-	mov $_flag, %si
 	mov $(0x01<<0x00), %dx
 	mov %dx, (%si)
 
@@ -291,7 +291,7 @@ _sb_alloc_lba:
 	pop %bp
 	ret
 
-# [private] _sb_write_dpi()
+# _sb_write_dpi()
 _sb_write_dpi:
 	push %es
 	push %si
@@ -370,7 +370,7 @@ _sb_write_dpi:
 	pop %es
 	ret
 
-# [private] _sb_set_bm()
+# _sb_set_bm()
 _sb_set_bm:
 	push %es
 	push %si
@@ -415,7 +415,6 @@ _sb_set_bm:
 	pop %es
 	ret
 
-# [data]
 .section .data
 _kmsg_try: .asciz "\r\nSuperblock not found. Try creating ...\r\n"
 _kmsg_found: .asciz "\r\nSuperblock found.\r\n"

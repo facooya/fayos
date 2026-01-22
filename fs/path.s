@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "drv/disk.inc"
@@ -11,7 +11,7 @@
 .code16
 .global path_parse
 
-# [public] path_parse(ub8 *path)
+# path_parse(ub8 *path)
 # <req> fsp *root
 # <mod> (fsp *dir, *base), path_cv, path_sbuf
 # <ret> ax = {done:0, exit:1, neq_last:2}
@@ -35,7 +35,7 @@ path_parse:
 	pop %bp
 	ret
 
-# [private] _path_tok(ub8 *path)
+# _path_tok(ub8 *path)
 # <mod> path_sbuf
 _path_tok:
 	push %bp
@@ -50,7 +50,7 @@ _path_tok:
 	push %cx # (size)
 	push %ax # (value)
 	push $path_sbuf # (&off)
-	push %ax # (&seg)
+	push %ds # (&seg)
 	call mem_set
 	add $0x08, %sp
 
@@ -123,7 +123,7 @@ _path_tok:
 	pop %bp
 	ret
 
-# [private] _path_build()
+# _path_build()
 # <req> path_sbuf
 # <mod> path_cv
 _path_build:
@@ -183,7 +183,7 @@ _path_build:
 	pop %si
 	ret
 
-# [private] _path_read()
+# _path_read()
 # <req> fsp *root, path_cv, path_sbuf
 # <mod> (fsp *dir, *base)
 # <ret> ax = {done:0, exit:1, neq_last:2}
@@ -311,9 +311,9 @@ _path_read:
 	xor %ax, %ax
 	push $FSP_SIZE # (size)
 	push $fsp+FSP_OFF_DIR # (&s_off)
-	push %ax # (&s_seg)
+	push %ds # (&s_seg)
 	push $fsp+FSP_OFF_BASE # (&d_off)
-	push %ax # (&d_seg)
+	push %ds # (&d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 

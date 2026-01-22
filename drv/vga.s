@@ -313,7 +313,7 @@ vga_outc:
 	pop %es
 	ret
 
-# vga_outs(*str)
+# vga_outs(ub8 *str)
 # <req: _vga_size, _vga_last_row_off>
 vga_outs:
 	push %bp
@@ -579,7 +579,7 @@ vga_shu:
 
 	# (flag == auto) ? {pass} : {chk}
 	mov 0x04(%bp), %ax
-	test (0x01<<0x00), %ax
+	test $(0x01<<0x00), %ax
 	jz 1f
 
 	# (cnt == max) ? {done}
@@ -617,7 +617,7 @@ vga_shu:
 
 	# (flag == auto) ? {pass} : {load}
 	mov 0x04(%bp), %ax
-	test (0x01<<0x00), %ax
+	test $(0x01<<0x00), %ax
 	jz 1f
 
 	push $0x03 # (flag)

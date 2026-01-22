@@ -34,15 +34,15 @@ disk_set_dpi:
 	jz 99f
 
 	mov %es:DP_OFF_SECT_CNT(%si), %ax
-	mov %ax, %es:DP_OFF_SECT_CNT(%di)
+	mov %ax, DP_OFF_SECT_CNT(%di)
 
 	mov %es:DP_OFF_MEM+0x02(%si), %ax
-	mov %ax, %es:DP_OFF_MEM(%di)
+	mov %ax, DP_OFF_MEM(%di)
 	mov %es:DP_OFF_MEM(%si), %ax
-	mov %ax, %es:DP_OFF_MEM(%di)
+	mov %ax, DP_OFF_MEM(%di)
 
 	mov %es:DP_OFF_LBA(%si), %ax
-	mov %ax, %es:DP_OFF_LBA(%di)
+	mov %ax, DP_OFF_LBA(%di)
 
 	add $DP_SIZE, %si
 	add $DP_SIZE, %di

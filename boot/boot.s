@@ -201,6 +201,9 @@ _vga_outs:
 
 # _ata_read()
 _ata_read:
+	push %es
+	push %di
+
 	# set mode
 	mov $ATA_PORT_DRV, %dx
 	mov $ATA_DRV_MA_LBA, %al
@@ -244,6 +247,10 @@ _ata_read:
 	in %dx, %al
 	in %dx, %al
 	in %dx, %al
+
+	mov $(KERN_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(KERN_MEM&0xFFFF), %di
 	jmp 2f
 
 1:
@@ -280,6 +287,8 @@ _ata_read:
 	jmp 1b
 
 99:
+	pop %di
+	pop %es
 	ret
 
 # [rodata]

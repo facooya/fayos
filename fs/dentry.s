@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "drv/disk.inc"
 .include "fs/fs.inc"
@@ -12,13 +12,13 @@
 .global de_add_dots
 .global de_seek
 
-# [public] de_add(
+# de_add(
 # fsp *dst
 # fsp *src
 # ub8 *name,
 # ub8 f_type
 # )
-# <ret> ax = rec_size
+# <ret: ax = rec_size>
 de_add:
 	push %bp
 	mov %sp, %bp
@@ -106,7 +106,7 @@ de_add:
 	pop %bp
 	ret
 
-# [public] de_add_dots(fsp *dst, fsp *src)
+# de_add_dots(fsp *dst, fsp *src)
 de_add_dots:
 	push %bp
 	mov %sp, %bp
@@ -200,11 +200,11 @@ de_add_dots:
 	pop %bp
 	ret
 
-# [public] de_seek(
+# de_seek(
 # fsp *src
 # ub8 *name
 # )
-# <ret> ax = {true:off, false:1}
+# <ret: ax = {true:off, false:1}>
 de_seek:
 	push %bp
 	mov %sp, %bp

@@ -7,6 +7,7 @@
 .include "drv/vga.inc"
 .section .text
 .code16
+.global dbg_screen
 .global dbg_a
 .global dbg_b
 .global dbg_c
@@ -18,6 +19,28 @@
 .global dbg_curs
 .global dbg_fsp
 .global dbg_file
+
+# dbg_screen()
+# <req: al = chr>
+dbg_screen:
+	push %es
+	push %di
+	push %ax
+
+	mov $0xB800, %ax
+	mov %ax, %es
+	xor %di, %di
+
+	pop %ax
+	push %ax
+
+	mov $0x07, %ah
+	mov %ax, %es:(%di)
+
+	pop %ax
+	pop %di
+	pop %es
+	ret
 
 # dbg_a()
 dbg_a:
