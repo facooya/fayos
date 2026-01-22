@@ -78,24 +78,38 @@ vga_clr_line:
 
 	call vga_get_curs
 
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 
 	# get current line [line_idx=curs_pos/col]
 	xor %dx, %dx
 	div %cx
 	mov %ax, %cx # line_idx
 
-	# [line_start_pos=col*line_idx]
-	mov (VGA_ADDR_COL), %ax
+	# { [line_start_pos=col*line_idx]
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
+
 	mul %cx
 	add %ax, %di
 	add %ax, %di
+	# }
 
 	push %ax
 	call vga_set_curs
 	add $0x02, %sp
 
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
@@ -248,7 +262,13 @@ vga_outc:
 	call vga_get_curs
 	mov %ax, %bx # curs_pos
 
-	mov (VGA_ADDR_COL), %cx
+	push %ax # [s.0: curs_pos]
+	push %es # [s.1: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.1: vga_seg]
+	pop %ax # [s.0: curs_pos]
 
 	# [curs_pos - (curs_pos % col)]
 	xor %dx, %dx
@@ -265,7 +285,11 @@ vga_outc:
 	call vga_get_curs
 	mov %ax, %bx # cur_curs_pos
 
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	add %cx, %bx # curs_pos
 	add %cx, %di
 	add %cx, %di
@@ -295,7 +319,11 @@ vga_outc:
 
 31: # shu lf
 	# init
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	sub %ax, %bx # curs_pos
 
 	push $0x00
@@ -365,7 +393,12 @@ vga_outs:
 20: # cr
 	push %bx # [s.l0:_vga_size]
 	mov %cx, %ax # cur_curs
-	mov (VGA_ADDR_COL), %bx # col
+
+	push %es # [s.0: vga_seg]
+	xor %dx, %dx
+	mov %dx, %es
+	mov %es:(VGA_ADDR_COL), %bx # col
+	pop %es # [s.0: vga_seg]
 
 	# [cur_curs - (cur_curs % col)]
 	xor %dx, %dx
@@ -379,7 +412,11 @@ vga_outs:
 	jmp 10b
 
 21: # lf
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	add %ax, %cx
 	add %ax, %di
 	add %ax, %di
@@ -413,7 +450,11 @@ vga_outs:
 	add $0x02, %sp
 	pop %cx # [s.f0:curs_pos]
 
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	sub %ax, %cx
 	mov %cx, %dx # curs_pos
 
@@ -489,7 +530,12 @@ vga_outns:
 	push %bx # [s.l0:_vga_size]
 	push %dx # [s.l1:num]
 	mov %cx, %ax # cur_curs
-	mov (VGA_ADDR_COL), %bx # col
+
+	push %es # [s.0: vga_seg]
+	xor %dx, %dx
+	mov %dx, %es
+	mov %es:(VGA_ADDR_COL), %bx # col
+	pop %es # [s.0: vga_seg]
 
 	# [cur_curs - (cur_curs % col)]
 	xor %dx, %dx
@@ -505,7 +551,11 @@ vga_outns:
 	jmp 10b
 
 21: # lf
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	add %ax, %cx
 	add %ax, %di
 	add %ax, %di
@@ -542,7 +592,11 @@ vga_outns:
 	pop %cx
 
 	# { set curs pos
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	sub %ax, %cx
 	mov %cx, %dx # curs_pos
 
@@ -601,7 +655,11 @@ vga_shu:
 	add $0x02, %sp
 
 	# { disp shift up
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	mov %ax, %si
 	add %ax, %si
 
@@ -614,7 +672,11 @@ vga_shu:
 	# }
 
 	# clr last line
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
@@ -686,7 +748,11 @@ vga_shd:
 
 	# clr first line
 	xor %di, %di
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	mov $((VGA_ATTR_COLOR<<0x08)|CHR_SP), %ax
 	rep stosw
 
@@ -793,7 +859,11 @@ _vga_sl_tb:
 	# init
 	mov %bx, %si
 	mov %si, %di
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	add %ax, %si
 	xor %dx, %dx
 	mov $(VGA_SCROLL_CNT-0x01), %cx
@@ -818,7 +888,11 @@ _vga_sl_tb:
 	# upd size
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	sub %cx, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
 	jmp 21f
@@ -839,7 +913,11 @@ _vga_sl_tb:
 
 	push %es # [s.0: mem_seg]
 	mov $(VGA_MEM&0xFFFF), %si
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 
 	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %ax
@@ -879,7 +957,11 @@ _vga_sl_tb:
 	# upd file size
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %ax
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	add %cx, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
 	push %si
@@ -932,7 +1014,11 @@ _vga_sl_tb:
 	jz 99f
 
 	dec %ax
-	mov (VGA_ADDR_COL), %cx
+	push %es # [s.0: vga_seg]
+	xor %cx, %cx
+	mov %cx, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	pop %es # [s.0: vga_seg]
 	xor %dx, %dx
 	mul %cx
 
@@ -979,7 +1065,11 @@ _vga_sl_tb:
 	# upd file size
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
-	mov (VGA_ADDR_COL), %ax
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
 	sub %ax, %cx
 	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si

@@ -1,10 +1,11 @@
 # Issues
 ## WIP
+- Put family segment
 
 ---
 
 ## FIXME
-- LBA setting
+- LBA recalculate
 
 ---
 
