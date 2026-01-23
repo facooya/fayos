@@ -1,11 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [File System] Constants
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .equ FS_ROOT_INUM, 0x0001
-.equ FS_START_LBA, 0x40
+.equ FS_START_LBA, 0x0100
 .equ FS_BLK_SIZE, 0x1000
 
 .equ FT_SIZE, 0x0A

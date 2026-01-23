@@ -4,7 +4,6 @@
 ---
 
 ## FIXME
-- LBA recalculate
 
 ---
 

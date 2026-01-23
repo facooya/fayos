@@ -70,22 +70,23 @@ Examples:
 | `0x0400-0x04FF` | System | BIOS data area. Fayos read. |
 | `0x0500-0x05FF` | Fayos | Padding for superblock |
 | `0x0600-0x07FF` | Fayos | Superblock. Size 1 sector. |
-| `0x0800-0x0FFF` | Fayos | Padding for kernel. Align to `0x1000`. |
-| `0x1000-0x6FFF` | Fayos | Kernel. Total 48 sectors. |
+| `0x0800-0x0FFF` | Fayos | Padding for align `0x1000` |
+| `0x1000-0x6FFF` | Fayos | Reserved for read/write disk memory |
 | `0x7000-0x7BFF` | Fayos | Stack. Start to `0x7C00`. Maximum 1536 stacks. Grow down. |
 | `0x7C00-0x7DFF` | System | Boot area. Size 1 sector. Fayos entry point. |
-| `0x7E00-0x9DFF` | Fayos | Reserved for kernel. Total 2 blocks. |
+| `0x7E00-0x9DFF` | Fayos | Reserved for read/write disk extend memory |
 | `0x9E00-0x9FBF` | Fayos | Unuse |
 | `0x9FC0-0x9FFF` | System | Extended BIOS data area |
 | `0xA000-0xAFFF` | Fayos | Block bitmap |
 | `0xB000-0xBFFF` | Fayos | Inum bitmap |
 | `0xC000-0xCFFF` | Fayos | Inode table |
-| `0xD000-0xFFFF` | Fayos | Reserved |
+| `0xD000-0xFFFF` | Fayos | Reserved for extend inode table |
 
 **4-byte zero padding**
 | Memory | Defined By | Description |
 | :---: | :---: | --- |
-| `0x00010000-0x0009FFFF` | Fayos | Reserved for kernel or program. Total 144 blocks. May use segment `0x1000` area for kernel. |
+| `0x00010000-0x0001FFFF` | Fayos | Kernel and shell |
+| `0x00020000-0x0009FFFF` | Fayos | User area |
 | `0x000A0000-0x000AFFFF` | System | VGA graphic memory |
 | `0x000B0000-0x000B7FFF` | System | VGA monochrome text memory |
 | `0x000B8000-0x000BFFFF` | System | VGA color text memory. Fayos read/write. |
@@ -104,17 +105,17 @@ Examples:
 | --- | :---: | --- |
 | `0x0000` | 1 | Bootloader |
 | `0x0001` | 1 | Superblock |
-| `0x0002-0x000F` | 14 | Unuse |
-| `0x0010-0x003F` | 48 | Kernel |
+| `0x0002-0x007F` | 126 | Unuse, align for kernel LBA |
+| `0x0080-0x00FF` | 128 | Kernel |
 
 **Base block count per inum is 1**
 **Mutable by disk size**
 | Description | LBA (min) | Block count (min) | LBA (max) | Block count (max) |
 | --- | --- | :---: | --- | :---: |
-| Block bitmap | `0x0040-0x0047` | 1 | `0x0040-0x0047` | 1 |
-| Inum bitmap | `0x0047-0x004F` | 1 | `0x0048-0x004F`| 1 |
-| Inode table | `0x0050-0x0057` | 1 | `0x0050-0x024F` | 64 |
-| Usable area | `0x0058-0x02D7` | 1-80 | `0x024F-0xFFFF` | 8118 |
+| Block bitmap | `0x0100-0x0107` | 1 | `0x0100-0x0107` | 1 |
+| Inum bitmap | `0x0107-0x010F` | 1 | `0x0108-0x010F`| 1 |
+| Inode table | `0x0110-0x0117` | 1 | `0x0110-0x042F` | 64 |
+| Usable area | `0x0118-0x0517` | 1-80 | `0x0430-0xFFFF` | 8058 |
 
 > [!NOTE]
 > Note for minimum usable area.
