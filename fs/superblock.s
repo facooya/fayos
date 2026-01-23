@@ -275,13 +275,16 @@ _sb_alloc_lba:
 	add %cx, %ax
 	mov %ax, %es:SB_OFF_IT_LBA(%bx)
 
+	# HACK
 	# normal
-	mov %es:SB_OFF_IT_BC(%bx), %ax
-	xor %dx, %dx
-	mov $RATIO_SC_BLK, %cx
-	mul %cx
-	mov %es:SB_OFF_IT_LBA(%bx), %cx
-	add %cx, %ax
+	#mov %es:SB_OFF_IT_BC(%bx), %ax
+	#xor %dx, %dx
+	#mov $RATIO_SC_BLK, %cx
+	#mul %cx
+	#mov %es:SB_OFF_IT_LBA(%bx), %cx
+	#add %cx, %ax
+	#mov %ax, %es:SB_OFF_NORM_LBA(%bx)
+	mov $0x100, %ax
 	mov %ax, %es:SB_OFF_NORM_LBA(%bx)
 	# }}}
 

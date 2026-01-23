@@ -10,7 +10,7 @@
 .global file_read_pos
 .global file_write_pos
 
-# file_parse_lines(ub16 *seg, ub16 *off, fsp *src)
+# file_parse_lines(ub16 seg, ub16 off, fsp *src)
 # <mod: file_line_cv>
 file_parse_lines:
 	push %bp
@@ -20,9 +20,9 @@ file_parse_lines:
 	push %di
 	push %bx
 
-	mov 0x04(%bp), %ax
+	mov 0x04(%bp), %ax # (seg)
 	mov %ax, %es
-	mov 0x06(%bp), %bx
+	mov 0x06(%bp), %bx # (off)
 	mov 0x08(%bp), %si # (fsp *src)
 	mov FSP_OFF_F_SIZE(%si), %dx
 

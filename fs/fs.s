@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
@@ -11,9 +11,9 @@
 .global fs_add
 .global fs_rm
 
-# [public] fs_add(ub8 *path, ub16 f_type)
-# <req> fsp {dir, par, cur, tmp}, path_cv, path_sbuf
-# <ret> ax = {done:0, exit:1}
+# fs_add(ub8 *path, ub16 f_type)
+# <req: fsp {dir, par, cur, tmp}, path_cv, path_sbuf>
+# <ret: ax = {done:0, exit:1}>
 fs_add:
 	push %bp
 	mov %sp, %bp
@@ -47,9 +47,8 @@ fs_add:
 	add $0x02, %si
 	add %ax, %si # name
 
-	xor %ax, %ax
-	push %si # (&off)
-	push %ax # (&seg)
+	push %si # (off)
+	push %ds # (seg)
 	call regex_name
 	add $0x04, %sp
 	# <ax = {true:0, false:1}>

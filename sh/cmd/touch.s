@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] Create file
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "drv/disk.inc"
@@ -14,7 +12,7 @@
 .global cmd_touch
 
 # cmd_touch()
-# <req> arg_ccv, path_cv, path_sbuf
+# <req: arg_ccv, path_cv, path_sbuf>
 cmd_touch:
 	push %es
 	push %si
@@ -53,7 +51,6 @@ cmd_touch:
 	dec %cx
 	jmp .lp
 
-# {DONE}
 .done:
 	xor %ax, %ax
 	jmp .epil
@@ -69,7 +66,6 @@ cmd_touch:
 	pop %es
 	ret
 
-# {ERR}
 .err_arg_req:
 	push $emsg_arg_req
 	jmp .err_hdl

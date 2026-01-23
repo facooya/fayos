@@ -12,9 +12,9 @@
 .global path_parse
 
 # path_parse(ub8 *path)
-# <req> fsp *root
-# <mod> (fsp *dir, *base), path_cv, path_sbuf
-# <ret> ax = {done:0, exit:1, neq_last:2}
+# <req: fsp *root>
+# <mod: (fsp *dir, *base), path_cv, path_sbuf>
+# <ret: ax = {done:0, exit:1, neq_last:2}>
 path_parse:
 	push %bp
 	mov %sp, %bp
@@ -36,7 +36,7 @@ path_parse:
 	ret
 
 # _path_tok(ub8 *path)
-# <mod> path_sbuf
+# <mod: path_sbuf>
 _path_tok:
 	push %bp
 	mov %sp, %bp
@@ -72,7 +72,7 @@ _path_tok:
 	mov %al, 0x01(%di)
 	add $0x02, %di
 	add $0x02, %cx
-	add $0x01, %si
+	inc %si
 
 	# (*path[1] == null) ? {end.pre}
 	mov (%si), %al
@@ -111,8 +111,8 @@ _path_tok:
 	# store last null
 	xor %al, %al
 	mov %al, (%di)
-	add $0x01, %di
-	add $0x01, %cx
+	inc %di
+	inc %cx
 
 91:
 	mov $path_sbuf, %di
@@ -124,8 +124,8 @@ _path_tok:
 	ret
 
 # _path_build()
-# <req> path_sbuf
-# <mod> path_cv
+# <req: path_sbuf>
+# <mod: path_cv>
 _path_build:
 	push %si
 	push %di
@@ -137,11 +137,11 @@ _path_build:
 
 	mov $path_cv, %di
 	add $0x02, %di # skip pathc
-	mov %ax, %ax
+	xor %ax, %ax
 	mov %ax, (%di)
 	add $0x02, %di # skip pathv[0]
 	xor %cx, %cx # pathc
-	add $0x01, %cx
+	inc %cx
 	xor %dx, %dx # pathv
 
 10:
@@ -184,9 +184,9 @@ _path_build:
 	ret
 
 # _path_read()
-# <req> fsp *root, path_cv, path_sbuf
-# <mod> (fsp *dir, *base)
-# <ret> ax = {done:0, exit:1, neq_last:2}
+# <req: fsp *root, path_cv, path_sbuf>
+# <mod: (fsp *dir, *base)>
+# <ret: ax = {done:0, exit:1, neq_last:2}>
 _path_read:
 	push %es
 	push %si
@@ -293,7 +293,7 @@ _path_read:
 	jmp 20b
 
 21:
-	sub $0x01, %cx
+	dec %cx
 	test %cx, %cx
 	jz 91f
 	jmp 80f
@@ -308,7 +308,6 @@ _path_read:
 	jmp 99f
 
 91:
-	xor %ax, %ax
 	push $FSP_SIZE # (size)
 	push $fsp+FSP_OFF_DIR # (s_off)
 	push %ds # (s_seg)
@@ -331,7 +330,6 @@ _path_read:
 	pop %es
 	ret
 
-# [data]
 .section .data
 .global path_sbuf
 .global path_cv

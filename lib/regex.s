@@ -38,7 +38,7 @@ regex_alpha:
 	pop %bp
 	ret
 
-# regex_name(ub16 *seg, ub16 *off)
+# regex_name(ub16 seg, ub16 off)
 # <ret: ax = {true:0, false:1}>
 regex_name:
 	push %bp
@@ -47,8 +47,8 @@ regex_name:
 	push %si
 	push %bx
 
-	mov 0x04(%bp), %es # (*seg)
-	mov 0x06(%bp), %bx # (*off)
+	mov 0x04(%bp), %es # (seg)
+	mov 0x06(%bp), %bx # (off)
 	xor %cx, %cx # cnt
 
 1:
