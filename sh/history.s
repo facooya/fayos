@@ -286,7 +286,6 @@ hist_upd_cl:
 	pop %es
 	ret
 
-# [data]
 .section .data
 .global hist_idx
 hist_idx: .word 0x00

@@ -79,8 +79,8 @@ vga_clr_line:
 	call vga_get_curs
 
 	push %es # [s.0: vga_seg]
-	xor %ax, %ax
-	mov %ax, %es
+	xor %cx, %cx
+	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
 
