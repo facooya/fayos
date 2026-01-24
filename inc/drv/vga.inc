@@ -4,7 +4,7 @@
 
 # conf
 .equ VGA_ATTR_COLOR, 0x07
-.equ VGA_SCROLL_CNT, 0x10
+.equ VGA_SCROLL_CNT, 0x70
 
 # common
 .equ VGA_MEM, 0xB8000000

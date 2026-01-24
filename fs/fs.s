@@ -181,10 +181,10 @@ fs_add:
 	call vga_outc
 	jmp 80b # exit
 
-# [public] fs_rm(ub8 *path, ub8 f_type)
-# <req> fsp {base, dir, cur}, path_sbuf
-# <mod> fsp tmp, path_cv
-# <ret> ax = {done:0, exit:1}
+# fs_rm(ub8 *path, ub8 f_type)
+# <req: fsp {base, dir, cur}, path_sbuf>
+# <mod: fsp tmp, path_cv>
+# <ret: ax = {done:0, exit:1}>
 fs_rm:
 	push %bp
 	mov %sp, %bp
@@ -542,7 +542,7 @@ fs_rm:
 	call vga_outc
 	jmp 80b
 
-# [private] _err_print_name()
+# _err_print_name()
 _err_print_name:
 	mov $path_cv, %si
 	mov (%si), %ax # pathc

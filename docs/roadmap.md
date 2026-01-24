@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- fs: block extends
 
 ---
 
@@ -19,7 +20,6 @@
 - using allocate memory and free
 - record log, error log
 - OBF, IBF timeout error
-- fs: block extends
 - fs: dentry size optimize
 - Auto shift down
 - Support ctrl family

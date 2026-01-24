@@ -59,8 +59,8 @@ bm_alloc:
 	pop %cx # bit cnt
 	add %cx, %ax # <ret:bit_num>
 
-	pop %si
 	pop %bx
+	pop %si
 	pop %es
 	pop %bp
 	ret

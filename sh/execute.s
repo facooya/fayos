@@ -210,8 +210,8 @@ _exec_redir:
 11:
 	# (f_type != file) ? {err}
 	mov $fsp+FSP_OFF_BASE, %si
-	mov FSP_OFF_F_TYPE(%si), %ax
-	cmp $F_TYPE_FILE, %ax
+	mov FSP_OFF_F_TYPE(%si), %al
+	cmp $F_TYPE_FILE, %al
 	jne 803f # file type
 
 	push $FSP_SIZE # (size)

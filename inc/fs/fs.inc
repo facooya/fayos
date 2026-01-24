@@ -22,7 +22,7 @@
 # Inode
 .equ FSP_OFF_F_SIZE, 0x00 # [2-byte]
 .equ FSP_OFF_F_TYPE, 0x02 # [1-byte]
-.equ FSP_OFF_BLK_SIZE, 0x03 # [1-byte]
+.equ FSP_OFF_BLK_CNT, 0x03 # [1-byte]
 .equ FSP_OFF_BLK, 0x04 # [2-byte] * 14
 
 # Info

@@ -52,8 +52,8 @@ cmd_cd:
 	# { %si
 	mov $fsp+FSP_OFF_BASE, %si
 	# (f_type != dir) ? {err}
-	mov FSP_OFF_F_TYPE(%si), %ax
-	cmp $F_TYPE_DIR, %ax
+	mov FSP_OFF_F_TYPE(%si), %al
+	cmp $F_TYPE_DIR, %al
 	jne .err_dir_type
 
 	push FSP_OFF_INUM(%si) # (inum)

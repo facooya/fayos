@@ -72,6 +72,10 @@ ind_add:
 	mov 0x04(%bp), %ax # (f_type)
 	mov %al, %es:IND_OFF_F_TYPE(%bx)
 
+	# blk cnt
+	mov $0x01, %al
+	mov %al, %es:IND_OFF_BLK_CNT(%bx)
+
 	# write inode table
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi
@@ -141,20 +145,13 @@ ind_clr:
 	mul %cx # ax *= cx
 	add %ax, %bx # set mem
 
-	# { clr blk
-	# TODO: clear all block
-	# clear_bit(mem, bitnum)
-	mov %es:IND_OFF_BLK(%bx), %ax
-	push %ax # [s.0:blk_num]
+	# { clr
+	mov $F_TYPE_RM, %al
+	mov %al, %es:IND_OFF_F_TYPE(%bx)
 
-	# clr blk
+	# clr size
 	xor %ax, %ax
 	mov %ax, %es:IND_OFF_F_SIZE(%bx)
-	mov %ax, %es:IND_OFF_BLK(%bx)
-	# }
-
-	mov $F_TYPE_RM, %ax
-	mov %ax, %es:IND_OFF_F_TYPE(%bx)
 
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi
@@ -162,16 +159,45 @@ ind_clr:
 	# }} push bitnum
 
 	# { clear block bit
+	xor %cx, %cx
+	mov %es:IND_OFF_BLK_CNT(%bx), %cl
+
+1:
+	# (blk_cnt == 0) ? {end}
+	test %cx, %cx
+	jz 9f
+
+	push %es # [s.0: it_seg]
+	push %bx # [s.1: it_off]
+
+	mov %es:IND_OFF_BLK(%bx), %ax # blk_num
+
+	mov $(DISK_BBM_MEM>>0x10), %dx
+	mov %dx, %es
+	mov $(DISK_BBM_MEM&0xFFFF), %bx
+
+	push %cx # [s.f0: blk_cnt]
+	push %ax # (blk_num)
+	push %bx # (off)
+	push %es # (seg)
+	call bm_clr
+	add $0x06, %sp
+	pop %cx # [s.f0: blk_cnt]
+
+	pop %bx # [s.1: it_off]
+	pop %es # [s.0: it_seg]
+
+	xor %ax, %ax
+	mov %ax, %es:IND_OFF_BLK(%bx)
+
+	add $0x02, %bx
+	dec %cx
+	jmp 1b
+
+9:
 	mov $(DISK_BBM_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_BBM_MEM&0xFFFF), %bx
-
-	pop %ax # [s.0:blk_num]
-	push %ax
-	push %bx
-	push %es
-	call bm_clr
-	add $0x06, %sp
 
 	push $dpi+DPI_OFF_BBM
 	call disk_write_dpi
