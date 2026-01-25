@@ -15,24 +15,14 @@ cmd_test:
 	push %di
 	push %bx
 
-	mov $(DISK_BBM_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(DISK_BBM_MEM&0xFFFF), %bx
+	mov $file_write_buf, %di
+	movw $0x4142, (%di)
 
-	push %bx
-	push %es
-	call bm_alloc
-	add $0x04, %sp
-
-	push %ax
-	push %bx
-	push %es
-	call bm_set
+	push $0x02
+	push $0x01
+	push $_path_hist
+	call fs_write
 	add $0x06, %sp
-
-	push $dpi+DPI_OFF_BBM
-	call disk_write_dpi
-	add $0x02, %sp
 
 	pop %bx
 	pop %di
@@ -41,4 +31,5 @@ cmd_test:
 	ret
 
 .section .data
+_path_hist: .asciz "/.history"
 _test_data: .asciz "test data"

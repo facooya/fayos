@@ -3,6 +3,8 @@
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
+.include "drv/disk.inc"
+.include "fs/sb.inc"
 .include "fs/fs.inc"
 .include "fs/ind.inc"
 .include "fs/de.inc"
@@ -10,6 +12,9 @@
 .code16
 .global fs_add
 .global fs_rm
+.global fs_read
+.global fs_write
+.global fs_blk_to_lba
 
 # fs_add(ub8 *path, ub16 f_type)
 # <req: fsp {dir, par, cur, tmp}, path_cv, path_sbuf>
@@ -543,6 +548,7 @@ fs_rm:
 	jmp 80b
 
 # _err_print_name()
+# <req: path_cv, path_sbuf>
 _err_print_name:
 	mov $path_cv, %si
 	mov (%si), %ax # pathc
@@ -563,3 +569,220 @@ _err_print_name:
 	mov $CHR_SP, %al
 	call vga_outc
 	ret
+
+# fs_read(
+# ub8 *file_path,
+# ub16 idx,
+# ub16 size
+# )
+fs_read:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	mov 0x04(%bp), %si # (*file_path)
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+	# }
+
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_BASE # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_TMP # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x06(%bp), %ax # (idx)
+	mov $0x1000, %cx
+	xor %dx, %dx
+	div %cx
+
+	add %ax, %si
+	add %ax, %si
+	mov FSP_OFF_BLK(%si), %ax # read blk
+
+	push %ax
+	call fs_blk_to_lba
+	add $0x02, %sp
+	# <ax = lba>
+
+	mov %ax, FSP_OFF_DISK_LBA(%si)
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	push $0x1000 # (size)
+	push %bx # (s_off)
+	push %es # (s_seg)
+	push $file_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	# TODO: idx + size > blk_size
+
+	mov 0x06(%bp), %ax # (idx)
+	mov $file_buf, %si
+	add %ax, %si
+	mov 0x08(%bp), %cx # (size)
+
+	push %cx # (size)
+	push %si # (s_off)
+	push %ds # (s_seg)
+	push $file_read_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	pop %bp
+	ret
+
+# fs_write(
+# ub8 *file_path,
+# ub16 idx,
+# ub16 size
+# )
+fs_write:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %si
+	push %di
+	push %bx
+
+	# { path
+	mov 0x04(%bp), %si # (*file_path)
+	push %si # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+	# }
+
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_BASE # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_TMP # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x06(%bp), %ax # (idx)
+	mov $0x1000, %cx
+	xor %dx, %dx
+	div %cx
+	push %dx # [s.0: idx_off]
+
+	add %ax, %si
+	add %ax, %si
+	mov FSP_OFF_BLK(%si), %ax # write blk
+
+	push %ax
+	call fs_blk_to_lba
+	add $0x02, %sp
+	# <ax = lba>
+	mov %ax, FSP_OFF_DISK_LBA(%si)
+
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	push $0x1000 # (size)
+	push %bx # (s_off)
+	push %es # (s_seg)
+	push $file_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	pop %dx # [s.0: idx_off]
+	mov $file_buf, %di
+	add %dx, %di
+
+	push 0x08(%bp) # (size)
+	push $file_write_buf # (s_off)
+	push %ds # (s_seg)
+	push %di # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	push $0x1000 # (size)
+	push $file_buf # (s_off)
+	push %ds # (s_seg)
+	push %bx # (d_off)
+	push %es # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call disk_write_fsp
+	add $0x02, %sp
+
+	pop %bx
+	pop %di
+	pop %si
+	pop %es
+	pop %bp
+	ret
+
+# fs_blk_to_lba(ub16 blk_num)
+# <ret: ax = lba>
+fs_blk_to_lba:
+	push %bp
+	mov %sp, %bp
+	push %es
+	push %bx
+
+	mov 0x04(%bp), %ax # (blk_num)
+	xor %dx, %dx
+	mov $DISK_BLK_SECT_CNT, %cx
+	mul %cx
+
+	# get norm lba
+	mov $(DISK_SB_MEM>>0x10), %cx
+	mov %cx, %es
+	mov $(DISK_SB_MEM&0xFFFF), %bx
+	mov %es:SB_OFF_NORM_LBA(%bx), %cx
+	add %cx, %ax # <ret:lba>
+
+	pop %bx
+	pop %es
+	pop %bp
+	ret
+
+
+.section .data
+.global file_buf
+.global file_tmp_buf
+.global file_read_buf
+.global file_write_buf
+.global file_buf_idx
+.global file_tmp_buf_idx
+
+file_buf: .zero 0x1000
+file_tmp_buf: .zero 0x1000
+file_read_buf: .zero 0x1000
+file_write_buf: .zero 0x1000
+file_buf_idx: .word 0x00
+file_tmp_buf_idx: .word 0x00

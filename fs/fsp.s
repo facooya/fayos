@@ -27,7 +27,7 @@ fsp_init:
 	movw $(DISK_CUR_MEM&0xFFFF), FSP_OFF_DISK_MEM(%di)
 
 	push FSP_OFF_BLK(%di)
-	call _fsp_blk_to_lba
+	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
 	mov %ax, FSP_OFF_DISK_LBA(%di)
@@ -151,7 +151,7 @@ fsp_read:
 
 	# set lba
 	push FSP_OFF_BLK(%di)
-	call _fsp_blk_to_lba
+	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
 	mov %ax, FSP_OFF_DISK_LBA(%di)
@@ -202,13 +202,36 @@ fsp_write:
 	# }
 
 10: # alloc blk
-	# upd blk cnt
+	# { upd
 	xor %ax, %ax
 	mov FSP_OFF_BLK_CNT(%si), %al
-	# TODO: blk max, f_size cut
+
+	# (blk_cnt < max) ? {cont}
+	cmp $IND_MAX_BLK_CNT, %al
+	jb 11f
+
+	# calc blk size
+	inc %al
+	mov $FS_BLK_SIZE, %cx
+	xor %dx, %dx
+	mul %cx
+
+	# (f_size <= blk_size) ? {cont}
+	mov FSP_OFF_F_SIZE(%si), %dx
+	cmp %ax, %dx
+	jbe 11f
+
+	# cut file size
+	mov %dx, FSP_OFF_F_SIZE(%si)
+	mov %dx, %es:IND_OFF_F_SIZE(%di)
+	jmp 20f
+
+11:
+	mov FSP_OFF_BLK_CNT(%si), %al
 	inc %ax
 	mov %al, FSP_OFF_BLK_CNT(%si)
 	mov %al, %es:IND_OFF_BLK_CNT(%di)
+	# }
 
 	# { init
 	xor %ax, %ax
@@ -257,31 +280,6 @@ fsp_write:
 	pop %bx
 	pop %di
 	pop %si
-	pop %es
-	pop %bp
-	ret
-
-# _fsp_blk_to_lba(ub16 blk_num)
-# <ret> ax = lba
-_fsp_blk_to_lba:
-	push %bp
-	mov %sp, %bp
-	push %es
-	push %bx
-
-	mov 0x04(%bp), %ax # (blk_num)
-	xor %dx, %dx
-	mov $DISK_BLK_SECT_CNT, %cx
-	mul %cx
-
-	# get norm lba
-	mov $(DISK_SB_MEM>>0x10), %cx
-	mov %cx, %es
-	mov $(DISK_SB_MEM&0xFFFF), %bx
-	mov %es:SB_OFF_NORM_LBA(%bx), %cx
-	add %cx, %ax # <ret:lba>
-
-	pop %bx
 	pop %es
 	pop %bp
 	ret
