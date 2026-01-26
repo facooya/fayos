@@ -174,105 +174,20 @@ fsp_write:
 
 	mov 0x04(%bp), %si
 
+	# TODO: calc inum for ind_tbl offset
+
 	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	mov %ax, %es
 	mov FSP_OFF_IND_PTR(%si), %di
 
-	mov FSP_OFF_BLK_CNT(%si), %al
-	mov %al, %es:IND_OFF_BLK_CNT(%di)
+	push $IND_SIZE
+	push %si # (s_off)
+	push %ds # (s_seg)
+	push %di # (d_off)
+	push %es # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
 
-	mov FSP_OFF_BLK(%si), %ax
-	mov %ax, %es:IND_OFF_BLK(%di)
-
-	mov FSP_OFF_F_SIZE(%si), %ax
-	mov %ax, %es:IND_OFF_F_SIZE(%di)
-
-	# { blk calc
-	xor %ax, %ax
-	mov FSP_OFF_BLK_CNT(%si), %al
-	mov $FS_BLK_SIZE, %cx
-	xor %dx, %dx
-	mul %cx
-
-	# (f_size > blk_size) ? {alloc} : {write_disk}
-	mov FSP_OFF_F_SIZE(%si), %dx
-	cmp %ax, %dx
-	ja 10f
-	jmp 20f
-	# }
-
-10: # alloc blk
-	# { upd
-	xor %ax, %ax
-	mov FSP_OFF_BLK_CNT(%si), %al
-
-	# (blk_cnt < max) ? {cont}
-	cmp $IND_MAX_BLK_CNT, %al
-	jb 11f
-
-	# calc blk size
-	inc %al
-	mov $FS_BLK_SIZE, %cx
-	xor %dx, %dx
-	mul %cx
-
-	# (f_size <= blk_size) ? {cont}
-	mov FSP_OFF_F_SIZE(%si), %dx
-	cmp %ax, %dx
-	jbe 11f
-
-	# cut file size
-	mov %dx, FSP_OFF_F_SIZE(%si)
-	mov %dx, %es:IND_OFF_F_SIZE(%di)
-	jmp 20f
-
-11:
-	mov FSP_OFF_BLK_CNT(%si), %al
-	inc %ax
-	mov %al, FSP_OFF_BLK_CNT(%si)
-	mov %al, %es:IND_OFF_BLK_CNT(%di)
-	# }
-
-	# { init
-	xor %ax, %ax
-	mov FSP_OFF_BLK_CNT(%si), %al
-	dec %ax
-	add %ax, %si
-	add %ax, %si
-	add %ax, %di
-	add %ax, %di
-
-	push %es # [s.0: it_seg]
-	mov $(DISK_BBM_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(DISK_BBM_MEM&0xFFFF), %bx
-	# }
-
-	push %bx # (off)
-	push %es # (seg)
-	call bm_alloc
-	add $0x04, %sp
-	# <ax = bit_num>
-
-	push %ax # [s.f0: bit_num]
-	push %ax # (bit_num)
-	push %bx # (off)
-	push %es # (seg)
-	call bm_set
-	add $0x06, %sp
-
-	push $dpi+DPI_OFF_BBM
-	call disk_write_dpi
-	add $0x02, %sp
-	pop %ax # [s.f0: bit_num]
-
-	# store blk num
-	pop %es # [s.0: it_seg]
-	mov %ax, FSP_OFF_BLK(%si)
-	mov %ax, %es:IND_OFF_BLK(%di)
-	jmp 20f
-
-20:
 	push $dpi+DPI_OFF_IT
 	call disk_write_dpi
 	add $0x02, %sp

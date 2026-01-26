@@ -19,7 +19,16 @@ cmd_test:
 	movw $0x4142, (%di)
 
 	push $0x02
-	push $0x01
+	push $0x1000
+	push $_path_hist
+	call fs_write
+	add $0x06, %sp
+
+	mov $file_write_buf, %di
+	movw $0x4344, (%di)
+
+	push $0x02
+	push $0x2000
 	push $_path_hist
 	call fs_write
 	add $0x06, %sp

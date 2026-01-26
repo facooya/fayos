@@ -689,7 +689,56 @@ fs_write:
 	xor %dx, %dx
 	div %cx
 	push %dx # [s.0: idx_off]
+	push %ax # [s.1: blk_idx]
 
+	# TODO: block max, file_size, cut file_size
+
+	# (blk_cnt >= calc_blk_cnt) ? {write}
+	mov %al, %dh
+	inc %dh
+	mov FSP_OFF_BLK_CNT(%si), %dl
+	cmp %dh, %dl
+	jae 11f
+
+	mov FSP_OFF_BLK_CNT(%si), %dl
+	inc %dl
+	mov %dl, FSP_OFF_BLK_CNT(%si)
+
+	xor %dh, %dh
+	dec %dx
+	add %dx, %si
+	add %dx, %si
+
+	push %es # [s.0: it_seg]
+	mov $(DISK_BBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_BBM_MEM&0xFFFF), %bx
+
+	push %bx # (off)
+	push %es # (seg)
+	call bm_alloc
+	add $0x04, %sp
+	# <ax = bit_num>
+
+	push %ax # [s.f0: bit_num]
+	push %ax # (bit_num)
+	push %bx # (off)
+	push %es # (seg)
+	call bm_set
+	add $0x06, %sp
+
+	push $dpi+DPI_OFF_BBM
+	call disk_write_dpi
+	add $0x02, %sp
+	pop %ax # [s.f0: bit_num]
+
+	# store blk num
+	pop %es # [s.0: it_seg]
+	mov %ax, FSP_OFF_BLK(%si)
+
+11: # write
+	mov $fsp+FSP_OFF_TMP, %si
+	pop %ax # [s.1: blk_idx]
 	add %ax, %si
 	add %ax, %si
 	mov FSP_OFF_BLK(%si), %ax # write blk
@@ -698,7 +747,13 @@ fs_write:
 	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
+	mov $fsp+FSP_OFF_TMP, %si
 	mov %ax, FSP_OFF_DISK_LBA(%si)
+
+	# upd ind
+	push $fsp+FSP_OFF_TMP
+	call fsp_write
+	add $0x02, %sp
 
 	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp

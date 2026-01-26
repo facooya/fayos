@@ -10,6 +10,7 @@
 
 ## TODO
 - more date format
+- Inode table block offset
 
 ---
 
