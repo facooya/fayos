@@ -16,22 +16,24 @@ cmd_test:
 	push %bx
 
 	mov $file_write_buf, %di
-	movw $0x4142, (%di)
+	movw $0x4241, (%di)
+	movw $0x4443, 0x02(%di)
 
-	push $0x02
-	push $0x1000
+	push $0x04
+	push $0x0FFD
 	push $_path_hist
 	call fs_write
 	add $0x06, %sp
 
-	mov $file_write_buf, %di
-	movw $0x4344, (%di)
-
 	push $0x02
-	push $0x2000
+	push $0x0FFF
 	push $_path_hist
-	call fs_write
+	#call fs_read
 	add $0x06, %sp
+
+	push $file_read_buf
+	#call vga_outs
+	add $0x02, %sp
 
 	pop %bx
 	pop %di
