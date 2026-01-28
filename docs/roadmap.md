@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- fs: block extends
 
 ---
 

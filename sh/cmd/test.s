@@ -25,14 +25,15 @@ cmd_test:
 	call fs_write
 	add $0x06, %sp
 
-	push $0x02
-	push $0x0FFF
+	push $0x04
+	push $0x0FFD
 	push $_path_hist
-	#call fs_read
+	call fs_read
 	add $0x06, %sp
 
-	push $file_read_buf
-	#call vga_outs
+	mov $file_read_buf, %si
+	push %si
+	call vga_outs
 	add $0x02, %sp
 
 	pop %bx
