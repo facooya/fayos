@@ -174,9 +174,9 @@ hist_upd_cl:
 	# }
 
 	# { fparse
-	push $fsp+FSP_OFF_TMP
-	push %bx
-	push %es
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push %bx # (off)
+	push %es # (seg)
 	call file_parse_lines
 	add $0x06, %sp
 	# }
@@ -201,6 +201,7 @@ hist_upd_cl:
 	call vga_init_curs
 	# }
 
+	# calc file off
 	mov $file_line_cv, %si
 	add $0x02, %si
 	mov (hist_idx), %ax
@@ -209,6 +210,7 @@ hist_upd_cl:
 	mov (%si), %dx # line_v
 	add %dx, %bx # hist_file
 
+	# get str size
 	xor %ax, %ax
 	mov $CHR_CR, %al
 	push %ax # (val)
@@ -219,32 +221,28 @@ hist_upd_cl:
 	# <ret: ax = size>
 	mov %ax, %cx
 
+	# { file -> buf
 	mov $cl_sbuf, %di
 	mov %cx, (%di)
 	add $0x02, %di
 
-1:
-	# (size == 0) ? {end}
-	test %cx, %cx
-	jz 9f
+	push %cx # (size)
+	push %bx # (s_off)
+	push %es # (s_seg)
+	push %di # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+	# }
 
-	mov %es:(%bx), %al
-	mov %al, (%di)
-
-	inc %di
-	inc %bx
-	dec %cx
-	jmp 1b
-
-9:
 	# { upd disp
 	mov $cl_sbuf, %si
 	mov (%si), %cx
 	add $0x02, %si
 
 	push %cx # [s.f0:size]
-	push %si
-	push %cx
+	push %si # (&str)
+	push %cx # (num)
 	call vga_outns
 	add $0x04, %sp
 	pop %cx # [s.f0:size]
