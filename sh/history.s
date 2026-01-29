@@ -55,6 +55,75 @@ history:
 	jmp 20f # save
 
 20: # save
+
+	# { TEST
+	mov $cl_sbuf, %si
+	mov (%si), %ax
+	add $0x02, %si
+
+	push %ax # [s.f0: buf_size]
+	push %ax # (size)
+	push %si # (s_off)
+	push %ds # (s_seg)
+	push $fs_write_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+	pop %ax # [s.f0: buf_size]
+
+	push %ax # [s.0: buf_size]
+	mov $fs_write_buf, %si
+	add %ax, %si
+	mov $CHR_CR, %al
+	mov %al, (%si)
+	mov $CHR_LF, %al
+	mov %al, 0x01(%si)
+
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_F_SIZE(%si), %cx
+
+	pop %ax # [s.0: buf_size]
+	add $0x02, %ax
+	push %ax # (size)
+	push %cx # (idx)
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call fs_write
+	add $0x06, %sp
+	jmp 99f
+
+	# { fparse history
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
+	add $0x02, %sp
+	mov %dx, %es
+	mov %ax, %bx
+
+	push $fsp+FSP_OFF_TMP
+	push %bx
+	push %es
+	call file_parse_lines
+	add $0x06, %sp
+
+	# upd hist_idx
+	mov (file_line_cv), %ax
+	mov %ax, (hist_idx)
+
+	# zero
+	xor %ax, %ax
+	mov (cl_hist_sbuf), %cx
+	add $0x02, %cx
+	push %cx # (size)
+	push %ax # (value)
+	push $cl_hist_sbuf # (off)
+	push %ds # (seg)
+	call mem_set
+	add $0x08, %sp
+	# }
+
+	jmp 99f
+	# }
+
+1:
 	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp

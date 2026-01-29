@@ -575,6 +575,8 @@ _err_print_name:
 # ub16 idx,
 # ub16 size
 # )
+# <req: (dpi bbm)>
+# <mod: fs_buf, fs_read_buf>
 fs_read:
 	push %bp
 	mov %sp, %bp
@@ -589,15 +591,15 @@ fs_read:
 	mov %ax, -0x0C(%bp) # (l.6: sec_size)
 
 	mov 0x06(%bp), %ax # (idx)
-	and $0x0FFF, %ax
+	and $FS_MASK_OFF, %ax
 	mov 0x08(%bp), %dx # (size)
 	add %dx, %ax
 
 	# (total_size < blk_size) ? {pass}
-	cmp $0x1000, %ax
+	cmp $FS_BLK_SIZE, %ax
 	jl 1f
 
-	sub $0x1000, %ax
+	sub $FS_BLK_SIZE, %ax
 	mov %ax, -0x0C(%bp) # (l.6: sec_size)
 	mov 0x08(%bp), %cx # (size)
 	sub %ax, %cx
@@ -607,7 +609,7 @@ fs_read:
 1:
 	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	xor %dx, %dx
 	div %cx
 
@@ -628,7 +630,7 @@ fs_read:
 	mov 0x08(%bp), %cx # (size)
 	add %cx, %ax
 
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	xor %dx, %dx
 	div %cx
 
@@ -657,10 +659,10 @@ fs_read:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
@@ -669,14 +671,14 @@ fs_read:
 
 	mov 0x06(%bp), %ax # (idx)
 	mov -0x04(%bp), %dx # (l.2: idx_off)
-	mov $file_buf, %si
+	mov $fs_buf, %si
 	add %dx, %si
 	mov 0x08(%bp), %cx # (size)
 
 	push %cx # (size)
 	push %si # (s_off)
 	push %ds # (s_seg)
-	push $file_read_buf # (d_off)
+	push $fs_read_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
@@ -704,10 +706,10 @@ fs_read:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
@@ -716,14 +718,14 @@ fs_read:
 
 	mov 0x06(%bp), %ax # (idx)
 	and $0x0FFF, %ax
-	mov $file_buf, %si
+	mov $fs_buf, %si
 	add %ax, %si
 	mov -0x0A(%bp), %cx # (l.5: fst_size)
 
 	push %cx # (size)
 	push %si # (s_off)
 	push %ds # (s_seg)
-	push $file_read_buf # (d_off)
+	push $fs_read_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
@@ -750,19 +752,19 @@ fs_read:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
 	# TODO: idx + size > blk_size
 
-	mov $file_buf, %si
+	mov $fs_buf, %si
 	mov -0x08(%bp), %cx # (l.4: sec_size)
-	mov $file_read_buf, %di
+	mov $fs_read_buf, %di
 	mov -0x0A(%bp), %ax # (l.5: fst_size
 	add %ax, %di
 
@@ -791,6 +793,8 @@ fs_read:
 # ub16 idx,
 # ub16 size
 # )
+# <req: fs_write_buf, (dpi bbm)>
+# <mod: fs_buf>
 fs_write:
 	push %bp
 	mov %sp, %bp
@@ -810,10 +814,10 @@ fs_write:
 	add %dx, %ax
 
 	# (total_size < blk_size) ? {pass}
-	cmp $0x1000, %ax
+	cmp $FS_BLK_SIZE, %ax
 	jl 1f
 
-	sub $0x1000, %ax
+	sub $FS_BLK_SIZE, %ax
 	mov %ax, -0x0C(%bp) # (l.6: sec_size)
 	mov 0x08(%bp), %cx # (size)
 	sub %ax, %cx
@@ -823,7 +827,7 @@ fs_write:
 1:
 	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	xor %dx, %dx
 	div %cx
 
@@ -853,7 +857,7 @@ fs_write:
 	mov 0x08(%bp), %cx # (size)
 	add %cx, %ax
 
-	mov $0x1000, %cx
+	mov $FS_BLK_SIZE, %cx
 	xor %dx, %dx
 	div %cx
 
@@ -915,6 +919,10 @@ fs_write:
 
 50: # write
 	mov 0x04(%bp), %si # (fsp *src)
+	mov 0x06(%bp), %ax # (idx)
+	mov 0x08(%bp), %cx # (size)
+	add %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -939,29 +947,29 @@ fs_write:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
 	mov 0x06(%bp), %dx # (idx)
 	and $0x0FFF, %dx
-	mov $file_buf, %di
+	mov $fs_buf, %di
 	add %dx, %di
 
 	push 0x08(%bp) # (size)
-	push $file_write_buf # (s_off)
+	push $fs_write_buf # (s_off)
 	push %ds # (s_seg)
 	push %di # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $0x1000 # (size)
-	push $file_buf # (s_off)
+	push $FS_BLK_SIZE # (size)
+	push $fs_buf # (s_off)
 	push %ds # (s_seg)
 	push %bx # (d_off)
 	push %es # (d_seg)
@@ -977,6 +985,10 @@ fs_write:
 60: # frag write
 	# { fst blk
 	mov 0x04(%bp), %si # (fsp *src)
+	mov 0x06(%bp), %ax # (idx)
+	mov 0x08(%bp), %cx # (size)
+	add %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -1001,29 +1013,29 @@ fs_write:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
 	mov 0x06(%bp), %dx # (idx)
 	and $0x0FFF, %dx
-	mov $file_buf, %di
+	mov $fs_buf, %di
 	add %dx, %di
 
 	push -0x0A(%bp) # (fst_size)
-	push $file_write_buf # (s_off)
+	push $fs_write_buf # (s_off)
 	push %ds # (s_seg)
 	push %di # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $0x1000 # (size)
-	push $file_buf # (s_off)
+	push $FS_BLK_SIZE # (size)
+	push $fs_buf # (s_off)
 	push %ds # (s_seg)
 	push %bx # (d_off)
 	push %es # (d_seg)
@@ -1061,16 +1073,16 @@ fs_write:
 	mov %dx, %es
 	mov %ax, %bx
 
-	push $0x1000 # (size)
+	push $FS_BLK_SIZE # (size)
 	push %bx # (s_off)
 	push %es # (s_seg)
-	push $file_buf # (d_off)
+	push $fs_buf # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
 
-	mov $file_buf, %di
-	mov $file_write_buf, %si
+	mov $fs_buf, %di
+	mov $fs_write_buf, %si
 	mov -0x0A(%bp), %ax # (l.5: fst_size)
 	add %ax, %si
 
@@ -1082,8 +1094,8 @@ fs_write:
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $0x1000 # (size)
-	push $file_buf # (s_off)
+	push $FS_BLK_SIZE # (size)
+	push $fs_buf # (s_off)
 	push %ds # (s_seg)
 	push %bx # (d_off)
 	push %es # (d_seg)
@@ -1133,16 +1145,10 @@ fs_blk_to_lba:
 
 
 .section .data
-.global file_buf
-.global file_tmp_buf
-.global file_read_buf
-.global file_write_buf
-.global file_buf_idx
-.global file_tmp_buf_idx
+.global fs_buf
+.global fs_read_buf
+.global fs_write_buf
 
-file_buf: .zero 0x1000
-file_tmp_buf: .zero 0x1000
-file_read_buf: .zero 0x1000
-file_write_buf: .zero 0x1000
-file_buf_idx: .word 0x00
-file_tmp_buf_idx: .word 0x00
+fs_buf: .zero FS_BLK_SIZE
+fs_read_buf: .zero FS_BLK_SIZE
+fs_write_buf: .zero FS_BLK_SIZE

@@ -16,7 +16,7 @@ cmd_test:
 	push %di
 	push %bx
 
-	mov $file_write_buf, %di
+	mov $fs_write_buf, %di
 	movw $0x4241, (%di)
 	movw $0x4443, 0x02(%di)
 
@@ -36,7 +36,7 @@ cmd_test:
 	call fs_read
 	add $0x06, %sp
 
-	mov $file_read_buf, %si
+	mov $fs_read_buf, %si
 	push %si
 	call vga_outs
 	add $0x02, %sp
