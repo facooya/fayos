@@ -25,13 +25,13 @@ cmd_test:
 	add $0x02, %sp
 
 	push $0x04
-	push $0x0FFD
+	push $0x0FFA
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
 	push $0x04
-	push $0x0FFD
+	push $0x0FFA
 	push $fsp+FSP_OFF_BASE
 	call fs_read
 	add $0x06, %sp
