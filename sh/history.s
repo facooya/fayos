@@ -55,8 +55,6 @@ history:
 	jmp 20f # save
 
 20: # save
-
-	# { TEST
 	mov $cl_sbuf, %si
 	mov (%si), %ax
 	add $0x02, %si
@@ -89,104 +87,15 @@ history:
 	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call fs_write
 	add $0x06, %sp
-	jmp 99f
 
 	# { fparse history
-	push $fsp+FSP_OFF_TMP
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $fsp+FSP_OFF_TMP
-	push %bx
-	push %es
-	call file_parse_lines
-	add $0x06, %sp
-
-	# upd hist_idx
-	mov (file_line_cv), %ax
-	mov %ax, (hist_idx)
-
-	# zero
-	xor %ax, %ax
-	mov (cl_hist_sbuf), %cx
-	add $0x02, %cx
-	push %cx # (size)
-	push %ax # (value)
-	push $cl_hist_sbuf # (off)
-	push %ds # (seg)
-	call mem_set
-	add $0x08, %sp
-	# }
-
-	jmp 99f
-	# }
-
-1:
 	push $fsp+FSP_OFF_TMP # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
-	# <dx:ax = seg:off>
 	mov %dx, %es
 	mov %ax, %bx
 
-	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_F_SIZE(%si), %ax
-	add %ax, %bx
-
-	mov $cl_sbuf, %si
-	mov (%si), %cx # buf.size
-	push %cx # [s.4] buf.size
-	add $0x02, %si # skip size
-
-1: # append
-	mov (%si), %al
-
-	# (size == 0) ? {end}
-	test %cx, %cx
-	jz 9f
-
-	mov %al, %es:(%bx)
-
-	inc %si # buf.data
-	inc %bx # mem
-	dec %cx # buf.size
-	jmp 1b
-
-9:
-	pop %cx # [s.4] buf.size
-	mov $CHR_CR, %al
-	mov %al, %es:(%bx)
-	mov $CHR_LF, %al
-	mov %al, %es:0x01(%bx)
-	add $0x02, %bx # mem
-	add $0x02, %cx # his.size
-
-	push %cx
-	push $fsp+FSP_OFF_TMP
-	call disk_write_fsp
-	add $0x02, %sp
-	pop %cx
-
-	# { update .history size
-	mov $fsp+FSP_OFF_TMP, %si
-	mov FSP_OFF_F_SIZE(%si), %ax
-	add %cx, %ax
-	mov %ax, FSP_OFF_F_SIZE(%si)
-	push %si
-	call fsp_write
-	add $0x02, %sp
-	# }
-
-	# { fparse history
-	push $fsp+FSP_OFF_TMP
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $fsp+FSP_OFF_TMP
+	push $fsp+FSP_OFF_TMP # (fsp &src)
 	push %bx
 	push %es
 	call file_parse_lines
