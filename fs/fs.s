@@ -571,7 +571,7 @@ _err_print_name:
 	ret
 
 # fs_read(
-# ub8 *file_path,
+# fsp *src,
 # ub16 idx,
 # ub16 size
 # )
@@ -583,24 +583,6 @@ fs_read:
 	push %si
 	push %di
 	push %bx
-
-	# { path
-	mov 0x04(%bp), %si # (*file_path)
-	push %si # (&path)
-	call path_parse
-	add $0x02, %sp
-	# <mod: (fsp *dir, *base)>
-	# <ax = {done:0, exit:1, neq_last:2}>
-	# TODO: add error handler
-	# }
-
-	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_BASE # (s_off)
-	push %ds # (s_seg)
-	push $fsp+FSP_OFF_TMP # (d_off)
-	push %ds # (d_seg)
-	call mem_cpy
-	add $0x0A, %sp
 
 	# { calc size
 	xor %ax, %ax
@@ -623,7 +605,7 @@ fs_read:
 	# }
 
 1:
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
 	mov $0x1000, %cx
 	xor %dx, %dx
@@ -641,8 +623,7 @@ fs_read:
 	# TODO: chk size + idx > file_size
 
 1: # fragment
-	mov $fsp+FSP_OFF_TMP, %si
-
+	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
 	mov 0x08(%bp), %cx # (size)
 	add %cx, %ax
@@ -656,7 +637,7 @@ fs_read:
 	jmp 20f
 
 10:
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -667,9 +648,9 @@ fs_read:
 	add $0x02, %sp
 	# <ax = lba>
 
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -703,7 +684,7 @@ fs_read:
 
 20:
 	# { fst_blk
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -714,9 +695,9 @@ fs_read:
 	add $0x02, %sp
 	# <ax = lba>
 
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -749,7 +730,7 @@ fs_read:
 	# }
 
 	# { sec_blk
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x06(%bp), %ax # (l.3: sec_blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -760,9 +741,9 @@ fs_read:
 	add $0x02, %sp
 	# <ax = lba>
 
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -806,7 +787,7 @@ fs_read:
 	ret
 
 # fs_write(
-# ub8 *file_path,
+# fsp *src,
 # ub16 idx,
 # ub16 size
 # )
@@ -818,24 +799,6 @@ fs_write:
 	push %si
 	push %di
 	push %bx
-
-	# { path
-	mov 0x04(%bp), %si # (*file_path)
-	push %si # (&path)
-	call path_parse
-	add $0x02, %sp
-	# <mod: (fsp *dir, *base)>
-	# <ax = {done:0, exit:1, neq_last:2}>
-	# TODO: add error handler
-	# }
-
-	push $FSP_SIZE # (size)
-	push $fsp+FSP_OFF_BASE # (s_off)
-	push %ds # (s_seg)
-	push $fsp+FSP_OFF_TMP # (d_off)
-	push %ds # (d_seg)
-	call mem_cpy
-	add $0x0A, %sp
 
 	# { calc size
 	xor %ax, %ax
@@ -858,7 +821,7 @@ fs_write:
 	# }
 
 1:
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
 	mov $0x1000, %cx
 	xor %dx, %dx
@@ -884,8 +847,8 @@ fs_write:
 	# TODO: block max, file_size, cut file_size
 
 1: # fragment
-	mov $fsp+FSP_OFF_TMP, %si
 	# { chk blk
+	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
 	mov 0x08(%bp), %cx # (size)
 	add %cx, %ax
@@ -907,7 +870,7 @@ fs_write:
 	# }
 
 10: # new blk
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov FSP_OFF_BLK_CNT(%si), %dl
 	inc %dl
 	mov %dl, FSP_OFF_BLK_CNT(%si)
@@ -951,7 +914,7 @@ fs_write:
 	jmp 60f
 
 50: # write
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -961,15 +924,15 @@ fs_write:
 	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
 
 	# upd ind
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call fsp_write
 	add $0x02, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push %si
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -1005,14 +968,15 @@ fs_write:
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	mov 0x04(%bp), %si # (fsp *src)
+	push %si # (fsp &src)
 	call disk_write_fsp
 	add $0x02, %sp
 	jmp 99f
 
 60: # frag write
 	# { fst blk
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x02(%bp), %ax # (l.1: blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -1022,15 +986,15 @@ fs_write:
 	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
 
 	# upd ind
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call fsp_write
 	add $0x02, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push %si # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -1066,13 +1030,13 @@ fs_write:
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push %si # (fsp &src)
 	call disk_write_fsp
 	add $0x02, %sp
 	# }
 
 	# { sec blk
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x06(%bp), %ax # (l.3: sec_blk_idx)
 	add %ax, %si
 	add %ax, %si
@@ -1082,15 +1046,15 @@ fs_write:
 	call fs_blk_to_lba
 	add $0x02, %sp
 	# <ax = lba>
-	mov $fsp+FSP_OFF_TMP, %si
+	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
 
 	# upd ind
-	push $fsp+FSP_OFF_TMP
+	push %si
 	call fsp_write
 	add $0x02, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	push %si # (fsp &src)
 	call disk_read_fsp
 	add $0x02, %sp
 	# <dx:ax = seg:off>
@@ -1126,7 +1090,8 @@ fs_write:
 	call mem_cpy
 	add $0x0A, %sp
 
-	push $fsp+FSP_OFF_TMP # (fsp &src)
+	mov 0x04(%bp), %si # (fsp *src)
+	push %si # (fsp &src)
 	call disk_write_fsp
 	add $0x02, %sp
 	# }

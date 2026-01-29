@@ -2,6 +2,7 @@
 #
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
+.include "fs/fs.inc"
 .include "drv/vga.inc"
 .include "drv/disk.inc"
 .section .text
@@ -19,15 +20,19 @@ cmd_test:
 	movw $0x4241, (%di)
 	movw $0x4443, 0x02(%di)
 
+	push $_path_hist
+	call path_parse
+	add $0x02, %sp
+
 	push $0x04
 	push $0x0FFD
-	push $_path_hist
+	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
 	push $0x04
 	push $0x0FFD
-	push $_path_hist
+	push $fsp+FSP_OFF_BASE
 	call fs_read
 	add $0x06, %sp
 
