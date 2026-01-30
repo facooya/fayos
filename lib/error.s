@@ -14,6 +14,9 @@
 .global emsg_file_type
 .global emsg_file_dup
 
+.global emsg_fs_size
+.global emsg_fs_blk_cnt
+
 .global emsg_dir_no
 .global emsg_dir_type
 .global emsg_dir_dup
@@ -42,6 +45,9 @@ emsg_redir_extra: .asciz "Too many redirection target"
 emsg_file_no: .asciz "File not found."
 emsg_file_type: .asciz "Not a file."
 emsg_file_dup: .asciz "File already exists."
+
+emsg_fs_size: .asciz "FS: Over size"
+emsg_fs_blk_cnt: .asciz "FS: Over block count"
 
 emsg_dir_no: .asciz "Directory not found."
 emsg_dir_type: .asciz "Not a directory."

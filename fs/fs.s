@@ -575,8 +575,9 @@ _err_print_name:
 # ub16 idx,
 # ub16 size
 # )
-# <req: (dpi bbm)>
-# <mod: fs_buf, fs_read_buf>
+# <ro: (dpi bbm)>
+# <rw: fs_buf>
+# <ret: ax = code, fs_read_buf>
 fs_read:
 	push %bp
 	mov %sp, %bp
@@ -585,6 +586,18 @@ fs_read:
 	push %si
 	push %di
 	push %bx
+
+	# { chk size
+	mov 0x04(%bp), %si # (fsp *src)
+	mov 0x06(%bp), %dx # (idx)
+	mov 0x08(%bp), %ax # (size)
+	add %ax, %dx
+	mov FSP_OFF_F_SIZE(%si), %cx # file_size
+
+	# (file_size < total_size) ? {err}
+	cmp %dx, %cx
+	jb 8001f
+	# }
 
 	# { calc size
 	xor %ax, %ax
@@ -621,8 +634,6 @@ fs_read:
 	test %ax, %ax
 	jnz 1f
 	jmp 10f
-
-	# TODO: chk size + idx > file_size
 
 1: # fragment
 	mov 0x04(%bp), %si # (fsp *src)
@@ -667,8 +678,6 @@ fs_read:
 	call mem_cpy
 	add $0x0A, %sp
 
-	# TODO: idx + size > blk_size
-
 	mov 0x06(%bp), %ax # (idx)
 	and $0x0FFF, %ax
 	mov $fs_buf, %si
@@ -692,10 +701,9 @@ fs_read:
 	mov -0x0C(%bp), %ax # (l.6: sec_size)
 	test %ax, %ax
 	jnz 20f
-	jmp 99f
+	jmp 90f
 
 20:
-	# { sec_blk
 	mov 0x04(%bp), %si # (fsp *src)
 	mov -0x06(%bp), %ax # (l.3: sec_blk_idx)
 	add %ax, %si
@@ -724,8 +732,6 @@ fs_read:
 	call mem_cpy
 	add $0x0A, %sp
 
-	# TODO: idx + size > blk_size
-
 	mov $fs_buf, %si
 	mov -0x08(%bp), %cx # (l.4: sec_size)
 	mov $fs_read_buf, %di
@@ -739,8 +745,14 @@ fs_read:
 	push %ds # (d_seg)
 	call mem_cpy
 	add $0x0A, %sp
-	# }
+	jmp 90f
 
+80:
+	mov $0x01, %ax
+	jmp 99f
+
+90:
+	xor %ax, %ax
 	jmp 99f
 
 99:
@@ -752,13 +764,24 @@ fs_read:
 	pop %bp
 	ret
 
+8001:
+	push $emsg_fs_size
+	call vga_outs
+	add $0x02, %sp
+	mov $CHR_CR, %al
+	call vga_outc
+	mov $CHR_LF, %al
+	call vga_outc
+	jmp 80b
+
 # fs_write(
 # fsp *src,
 # ub16 idx,
 # ub16 size
 # )
-# <req: fs_write_buf, (dpi bbm)>
-# <mod: fs_buf>
+# <req: fs_write_buf>
+# <ro: (dpi bbm)>
+# <rw: fs_buf>
 fs_write:
 	push %bp
 	mov %sp, %bp
@@ -767,6 +790,16 @@ fs_write:
 	push %si
 	push %di
 	push %bx
+
+	# { chk f_size
+	mov 0x06(%bp), %ax # (idx)
+	mov 0x08(%bp), %cx # (size)
+	add %cx, %ax
+
+	# (total_size > max_f_size) ? {err}
+	cmp $IND_MAX_F_SIZE, %ax
+	ja 8001f
+	# }
 
 	# { calc size
 	xor %ax, %ax
@@ -779,7 +812,7 @@ fs_write:
 
 	# (total_size < blk_size) ? {pass}
 	cmp $FS_BLK_SIZE, %ax
-	jl 1f
+	jb 1f
 
 	sub $FS_BLK_SIZE, %ax
 	mov %ax, -0x0C(%bp) # (l.6: sec_size)
@@ -838,10 +871,17 @@ fs_write:
 	# }
 
 10: # new blk
+	# { upd blk cnt
 	mov 0x04(%bp), %si # (fsp *src)
 	mov FSP_OFF_BLK_CNT(%si), %dl
+
+	# (blk_cnt == blk_max) ? {err}
+	cmp $IND_MAX_BLK_CNT, %dl
+	je 8002f
+
 	inc %dl
 	mov %dl, FSP_OFF_BLK_CNT(%si)
+	# }
 
 	xor %dh, %dh
 	dec %dx
@@ -957,7 +997,7 @@ fs_write:
 	mov -0x0C(%bp), %ax # (l.6: sec_size)
 	test %ax, %ax
 	jnz 60f
-	jmp 99f
+	jmp 90f
 
 60: # sec write
 	mov 0x04(%bp), %si # (fsp *src)
@@ -1018,6 +1058,14 @@ fs_write:
 	push %si # (fsp &src)
 	call disk_write_fsp
 	add $0x02, %sp
+	jmp 90f
+
+80:
+	mov $0x01, %ax
+	jmp 99f
+
+90:
+	xor %ax, %ax
 	jmp 99f
 
 99:
@@ -1028,6 +1076,26 @@ fs_write:
 	mov %bp, %sp
 	pop %bp
 	ret
+
+8001:
+	push $emsg_fs_size
+	call vga_outs
+	add $0x02, %sp
+	mov $CHR_CR, %al
+	call vga_outc
+	mov $CHR_LF, %al
+	call vga_outc
+	jmp 80b
+
+8002:
+	push $emsg_fs_blk_cnt
+	call vga_outs
+	add $0x02, %sp
+	mov $CHR_CR, %al
+	call vga_outc
+	mov $CHR_LF, %al
+	call vga_outc
+	jmp 80b
 
 # fs_blk_to_lba(ub16 blk_num)
 # <ret: ax = lba>

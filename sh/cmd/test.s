@@ -24,14 +24,26 @@ cmd_test:
 	call path_parse
 	add $0x02, %sp
 
+	mov $0x10, %cx
+	mov $0x0FFE, %bx
+
+1:
+	push %cx
 	push $0x04
-	push $0x0FFA
+	push %bx
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
+	pop %cx
 
+	add $0x1000, %bx
+	cmp $0xF000, %bx
+	ja 9f
+	loop 1b
+
+9:
 	push $0x04
-	push $0x0FFA
+	push $0x0FFE
 	push $fsp+FSP_OFF_BASE
 	call fs_read
 	add $0x06, %sp

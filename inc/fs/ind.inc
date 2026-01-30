@@ -4,6 +4,7 @@
 
 .equ IND_SIZE, 0x20
 .equ IND_MAX_BLK_CNT, 0x0E
+.equ IND_MAX_F_SIZE, 0xE000
 
 .equ IND_OFF_F_SIZE, 0x00 # [2-byte]
 .equ IND_OFF_F_TYPE, 0x02 # [1-byte]
