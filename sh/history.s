@@ -13,8 +13,8 @@
 .global hist_upd_cl
 
 # history()
-# <req: cl_sbuf, file_line_cv>
-# <mod: cl_hist_sbuf, hist_idx, fsp {base, tmp}>
+# <req: cl_sbuf>
+# <mod: cl_hist_sbuf, hist_idx, hist_cv, fsp {base, tmp}>
 history:
 	push %es
 	push %si
@@ -31,7 +31,7 @@ history:
 	# (path_parse() == neq_last) ? {create}
 	cmp $0x02, %ax
 	je 10f # create
-	# (path_parse() != done) ? {done} : {save}
+	# (path_parse() != done) ? {exit}
 	test %ax, %ax
 	jnz 99f
 	# }
@@ -88,22 +88,33 @@ history:
 	call fs_write
 	add $0x06, %sp
 
-	# { fparse history
-	push $fsp+FSP_OFF_TMP # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $fsp+FSP_OFF_TMP # (fsp &src)
-	push %bx
-	push %es
-	call file_parse_lines
-	add $0x06, %sp
-
-	# upd hist_idx
-	mov (file_line_cv), %ax
+	# upd cnt
+	mov (hist_cv), %ax
+	inc %ax
+	mov %ax, (hist_cv)
 	mov %ax, (hist_idx)
+
+	# { upd hist_cv
+	xor %ax, %ax
+	mov $CHR_LF, %al
+	push %ax
+	push $fs_write_buf # (off)
+	push %ds # (seg)
+	call mem_size_val
+	add $0x06, %sp
+	# <ax = size>
+	inc %ax
+
+	mov $fsp+FSP_OFF_TMP, %si
+	mov FSP_OFF_F_SIZE(%si), %dx
+	sub %ax, %dx
+
+	mov $hist_cv, %di
+	mov (%di), %cx
+	add %cx, %di
+	add %cx, %di
+	mov %dx, (%di)
+	# }
 
 	# zero
 	xor %ax, %ax
@@ -115,7 +126,6 @@ history:
 	push %ds # (seg)
 	call mem_set
 	add $0x08, %sp
-	# }
 
 99:
 	pop %bx
@@ -125,7 +135,7 @@ history:
 	ret
 
 # hist_upd_cl()
-# <req: ps1, hist_idx, file_line_cv>
+# <req: ps1, hist_idx, hist_cv>
 # <mod: cl_sbuf, curs, fsp {root, tmp}>
 # <ret: ax = cl_pos>
 hist_upd_cl:
@@ -133,53 +143,6 @@ hist_upd_cl:
 	push %si
 	push %di
 	push %bx
-
-	mov $fsp+FSP_OFF_ROOT, %si
-	push FSP_OFF_INUM(%si) # (inum)
-	push $fsp+FSP_OFF_ROOT # (fsp &dst)
-	call fsp_read
-	add $0x04, %sp
-
-	push $fsp+FSP_OFF_ROOT
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
-	push $_name_hist # (&name)
-	push $fsp+FSP_OFF_ROOT # (fsp &src)
-	call de_seek
-	add $0x04, %sp
-	# <ax = {true:off, false:1}
-
-	# (de_seek == false) ? {done}
-	cmp $0x01, %ax
-	je 90f
-	add %ax, %bx
-
-	# { read history file
-	mov %es:DE_OFF_INUM(%bx), %ax
-	push %ax # (inum)
-	push $fsp+FSP_OFF_TMP # (fsp &dst)
-	call fsp_read
-	add $0x04, %sp
-
-	push $fsp+FSP_OFF_TMP
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-	# }
-
-	# { fparse
-	push $fsp+FSP_OFF_TMP # (fsp &src)
-	push %bx # (off)
-	push %es # (seg)
-	call file_parse_lines
-	add $0x06, %sp
-	# }
 
 	# { clear
 	xor %ax, %ax
@@ -201,16 +164,44 @@ hist_upd_cl:
 	call vga_init_curs
 	# }
 
+	# { file -> buf
+	push $_fpath_hist # (&path)
+	call path_parse
+	add $0x02, %sp
+	# <mod: (fsp *dir, *base)>
+	# <ax = {done:0, exit:1, neq_last:2}>
+
+	# (path_parse() != 0) ? {exit}
+	test %ax, %ax
+	jnz 99f
+
+	# cpy base -> tmp
+	push $FSP_SIZE # (size)
+	push $fsp+FSP_OFF_BASE # (s_off)
+	push %ds # (s_seg)
+	push $fsp+FSP_OFF_TMP # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	push $fsp+FSP_OFF_TMP
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
 	# calc file off
-	mov $file_line_cv, %si
+	mov $hist_cv, %si
 	add $0x02, %si
 	mov (hist_idx), %ax
 	add %ax, %si
 	add %ax, %si
 	mov (%si), %dx # line_v
-	add %dx, %bx # hist_file
+	add %dx, %bx
 
 	# get str size
+	push %dx # [s.f0: line_v]
 	xor %ax, %ax
 	mov $CHR_CR, %al
 	push %ax # (val)
@@ -219,16 +210,23 @@ hist_upd_cl:
 	call mem_size_val
 	add $0x06, %sp
 	# <ret: ax = size>
-	mov %ax, %cx
+	pop %dx # [s.f0: line_v]
 
-	# { file -> buf
+	push %ax # [s.f0: size]
+	push %ax # (size)
+	push %dx # (idx)
+	push $fsp+FSP_OFF_TMP # (fsp &src)
+	call fs_read
+	add $0x06, %sp
+	pop %ax # [s.f0: size]
+
 	mov $cl_sbuf, %di
-	mov %cx, (%di)
+	mov %ax, (%di)
 	add $0x02, %di
 
-	push %cx # (size)
-	push %bx # (s_off)
-	push %es # (s_seg)
+	push %ax # (size)
+	push $fs_read_buf # (s_off)
+	push %ds # (s_seg)
 	push %di # (d_off)
 	push %ds # (d_seg)
 	call mem_cpy
@@ -256,6 +254,7 @@ hist_upd_cl:
 90:
 	mov %si, %ax # <ret:cl_pos>
 
+99:
 	pop %bx
 	pop %di
 	pop %si
@@ -264,6 +263,8 @@ hist_upd_cl:
 
 .section .data
 .global hist_idx
+.global hist_cv
 hist_idx: .word 0x00
+hist_cv: .zero 0x100
 _fpath_hist: .asciz "/.history"
 _name_hist: .asciz ".history"

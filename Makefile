@@ -76,7 +76,6 @@ lib/error.s \
 lib/regex.s \
 lib/conversion.s \
 lib/put.s \
-lib/file.s \
 lib/memory.s
 
 # kernel group

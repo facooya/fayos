@@ -848,7 +848,7 @@ _kbd_hdl_bs:
 	ret
 
 # _kbd_hdl_up()
-# <req: file_line_cv>
+# <req: hist_cv>
 # <mod: cl_sbuf, cl_hist_sbuf, hist_idx>
 # <ret: si = &cl_sbuf.data+last_i>
 _kbd_hdl_up:
@@ -857,8 +857,8 @@ _kbd_hdl_up:
 	test %ax, %ax
 	jz 99f
 
-	# (hist_idx == line_count) ? {save} : {pass}
-	mov (file_line_cv), %cx
+	# (hist_idx == hist_cnt) ? {save} : {pass}
+	mov (hist_cv), %cx
 	cmp %cx, %ax
 	je 10f
 	dec %ax
@@ -906,13 +906,13 @@ _kbd_hdl_up:
 	ret
 
 # _kbd_hdl_down()
-# <req: cl_hist_sbuf, file_line_cv>
+# <req: cl_hist_sbuf, hist_cv>
 # <mod: cl_sbuf, hist_idx>
 # <ret: si = &cl_sbuf.data+last_i>
 _kbd_hdl_down:
 	# upd hist_idx
 	mov (hist_idx), %ax
-	mov (file_line_cv), %cx
+	mov (hist_cv), %cx
 
 	# (hist_idx == line_count) ? {done}
 	cmp %cx, %ax

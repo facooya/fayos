@@ -23,6 +23,7 @@
 - fs: dentry size optimize
 - Auto shift down
 - Support ctrl family
+- Add fs\_ins(), fs\_del()
 
 ---
 
