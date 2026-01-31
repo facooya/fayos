@@ -341,6 +341,7 @@ vga_outc:
 	jmp 90f
 
 90:
+	movb $ATTR_STD, (vga_attr)
 	push %cx
 	call vga_set_curs
 	add $0x02, %sp
@@ -708,6 +709,7 @@ vga_shu:
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	movb $ATTR_STD, (vga_attr)
 	mov (vga_attr), %ah
 	mov $CHR_SP, %al
 	rep stosw
@@ -720,8 +722,20 @@ vga_shu:
 	push $0x03 # (flag)
 	call _vga_sl_tb
 	add $0x02, %sp
+	jmp 2f
 
-1:
+1: # upd curs
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
+	mov (curs), %ax
+	sub %cx, %ax
+	mov %ax, (curs)
+	mov (curs+0x02), %ax
+	sub %cx, %ax
+	mov %ax, (curs+0x02)
+
+2:
 	# (cnt == max) ? {done} : {cnt++}
 	mov (_vga_cnt), %ax
 	cmp $VGA_SCROLL_CNT, %ax
@@ -785,6 +799,7 @@ vga_shd:
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	movb $ATTR_STD, (vga_attr)
 	mov (vga_attr), %ah
 	mov $CHR_SP, %al
 	rep stosw

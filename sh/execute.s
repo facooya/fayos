@@ -48,14 +48,14 @@ exec_cmd:
 	add $0x02, %di # map_chr
 
 1:
-	# {{{ len
+	# { size
 	push %di
 	push %ds
 	call mem_size
 	add $0x04, %sp
 
 	mov %ax, %cx # map_chr_size
-	# }}}
+	# }
 
 	# (map_chr_size == cmd_size) ? {chk}
 	cmp %bx, %cx
