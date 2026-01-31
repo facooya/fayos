@@ -485,6 +485,7 @@ vga_outs:
 	jmp 10b
 
 90:
+	movb $ATTR_STD, (vga_attr)
 	push %cx # cur_curs
 	call vga_set_curs
 	add $0x02, %sp
@@ -641,6 +642,7 @@ vga_outns:
 	jmp 10b
 
 90:
+	movb $ATTR_STD, (vga_attr)
 	push %cx # cur_curs
 	call vga_set_curs
 	add $0x02, %sp

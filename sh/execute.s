@@ -135,6 +135,7 @@ exec_cmd:
 	ret
 
 801:
+	movb $ATTR_ERR, (vga_attr)
 	push $emsg_cmd_not
 	jmp 890f
 

@@ -83,6 +83,27 @@ cmd_ls:
 	mov %bx, %si
 	add $DE_OFF_NAME, %si
 
+	# (f_type == dir) ? {dir} : {std}
+	mov %es:DE_OFF_F_TYPE(%bx), %cl
+	cmp $F_TYPE_DIR, %cl
+	je 1f
+	jmp 2f
+
+1:
+	mov $ATTR_MARK, %al
+	call putc
+	mov $ATTR_DIR, %al
+	call putc
+	jmp 3f
+
+2:
+	mov $ATTR_MARK, %al
+	call putc
+	mov $ATTR_STD, %al
+	call putc
+	jmp 3f
+
+3:
 	# get name size
 	xor %cx, %cx
 	mov %es:DE_OFF_NAME_SIZE(%bx), %cl

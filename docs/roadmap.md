@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- VGA color print
 
 ---
 
@@ -26,7 +25,7 @@
 ---
 
 ## Command
-- ls: color, add option
+- ls: add option
 - cp
 - mv
 - printf
