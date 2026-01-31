@@ -70,14 +70,17 @@ dbg_c:
 	jmp 90f
 
 90:
-	call vga_outc
-	mov $CHR_SP, %al
-	call vga_outc
-	call _line
-	push $((ATTR_STD<<0x08)|CHR_CR)
+	push %ax # (chr)
 	call vga_outc
 	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
+	push $CHR_SP # (chr)
+	call vga_outc
+	add $0x02, %sp
+	call _line
+	push $CHR_CR # (chr)
+	call vga_outc
+	add $0x02, %sp
+	push $CHR_LF # (chr)
 	call vga_outc
 	add $0x02, %sp
 
@@ -96,41 +99,28 @@ dbg_sbuf:
 	push %cx
 	push %dx
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	mov 0x04(%bp), %si
-	mov (%si), %cx # buf.len
-	add $0x02, %si # skip len
+	mov (%si), %cx # buf.size
+	add $0x02, %si # skip size
 
-	mov %cx, %ax # buf.len
+	mov %cx, %ax # buf.size
 	add $0x30, %al
-	push %cx
+	push %cx # [s.f0: size]
+	push %ax # (chr)
 	call vga_outc
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
-	pop %cx
+	add $0x02, %sp
+	NEWLINE
+	pop %cx # [s.f0: size]
 
 	call _data
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %dx
 	pop %cx
@@ -190,10 +180,7 @@ dbg_reg:
 	add $0x02, %sp
 
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %dx
 	pop %cx
@@ -218,23 +205,28 @@ dbg_num:
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 	mov %dl, %al
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 
 	mov (%si), %dx
 	add $0x30, %dh
 	add $0x30, %dl
 	mov %dh, %al
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 	mov %dl, %al
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %dx
 	pop %ax
@@ -251,15 +243,9 @@ dbg_arg_ccv:
 	push %cx
 	push %dx
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	mov $cl_sbuf, %si
 	mov (%si), %bx
@@ -280,11 +266,10 @@ dbg_arg_ccv:
 	add $0x30, %al
 
 	# arg_c
+	push %ax
 	call vga_outc
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	add $0x02, %sp
+	NEWLINE
 
 	push $_opt_c_str
 	call vga_outs
@@ -298,11 +283,10 @@ dbg_arg_ccv:
 	add $0x30, %al
 
 	# opt_c
+	push %ax
 	call vga_outc
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	add $0x02, %sp
+	NEWLINE
 	pop %cx # [s.0:arg_c]
 
 	# (arg_c == 0) ? {done}
@@ -324,7 +308,9 @@ dbg_arg_ccv:
 	# idx
 	mov %dl, %al # idx
 	add $0x30, %al
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 
 	push $_arg_v_end_str
 	call vga_outs
@@ -357,24 +343,15 @@ dbg_arg_ccv:
 
 	push %cx # [s.f0:arg_c]
 	push %dx # [s.f1:idx]
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	pop %dx # [s.f1:idx]
 	pop %cx # [s.f0:arg_c]
 	jmp 1b
 
 90:
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %dx
 	pop %cx
@@ -393,15 +370,9 @@ dbg_path_cv:
 	push %cx
 	push %dx
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	# { pathc
 	mov $path_cv, %si
@@ -417,12 +388,11 @@ dbg_path_cv:
 	push %cx # [s.f0:pathc]
 	mov %cx, %ax
 	add $0x30, %al
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	pop %cx # [s.f0:pathc]
 	# }
 
@@ -442,7 +412,9 @@ dbg_path_cv:
 
 	mov %dl, %al
 	add $0x30, %al
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 
 	push $_pathv_end_str
 	call vga_outs
@@ -473,24 +445,15 @@ dbg_path_cv:
 
 	push %cx
 	push %dx
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	pop %dx
 	pop %cx
 	jmp 1b
 
 90:
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %dx
 	pop %cx
@@ -506,33 +469,25 @@ dbg_curs:
 	
 	mov $curs, %si
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	mov (%si), %al
 	add $0x30, %al
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 
 	mov 0x01(%si), %al
 	add $0x30, %al
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 
 	pop %si
 	ret
@@ -564,10 +519,7 @@ dbg_fsp:
 	push $_ind_ptr_str
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	mov FSP_OFF_IND_PTR+0x02(%si), %ax
 	push %ax
 	call dbg_reg
@@ -580,10 +532,7 @@ dbg_fsp:
 	push $_inum_str
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	mov FSP_OFF_INUM(%si), %ax
 	push %ax
 	call dbg_reg
@@ -592,10 +541,7 @@ dbg_fsp:
 	push $_disk_lba_str
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	mov FSP_OFF_DISK_LBA(%si), %ax
 	push %ax
 	call dbg_reg
@@ -681,21 +627,27 @@ _data:
 	jz 3f
 
 	push %cx
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 	pop %cx
 	jmp 9f
 
 2: # space
 	mov $CHR_PRD, %al
 	push %cx
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 	pop %cx
 	jmp 9f
 
 3: # null
 	mov $CHR_ZERO, %al
 	push %cx
+	push %ax # (chr)
 	call vga_outc
+	add $0x02, %sp
 	pop %cx
 	jmp 9f
 
@@ -713,13 +665,11 @@ _data:
 
 # _trace_prol()
 _trace_prol:
-	mov $CHR_CR, %al
-	call vga_outc
-	mov $CHR_LF, %al
-	call vga_outc
+	NEWLINE
 	call _line
-	mov $CHR_SP, %al
+	push $CHR_SP # (chr)
 	call vga_outc
+	add $0x02, %sp
 	ret
 
 # _line()
@@ -734,8 +684,9 @@ _line:
 	jz 99f
 
 	push %cx
-	mov $CHR_EQ, %al
+	push $CHR_EQ # (chr)
 	call vga_outc
+	add $0x02, %sp
 	pop %cx
 
 	dec %cx

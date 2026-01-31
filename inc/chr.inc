@@ -32,3 +32,12 @@
 # attribute
 .equ ATTR_STD, 0x07
 .equ ATTR_DIR, 0x09
+
+.macro NEWLINE
+	push $CHR_CR
+	call vga_outc
+	add $0x02, %sp
+	push $CHR_LF
+	call vga_outc
+	add $0x02, %sp
+.endm

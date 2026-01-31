@@ -365,22 +365,12 @@ _args_tok:
 	ret
 
 8001:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_qt_no
 	jmp 8090f
 
 8002:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_tok_syn
 	jmp 8090f
 
@@ -388,12 +378,7 @@ _args_tok:
 	call vga_outs
 	add $0x02, %sp
 
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	jmp 80b
 
 # _args_build()
@@ -766,64 +751,34 @@ _args_parse:
 	ret
 
 8001:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_cmd_syn
 	jmp 8090f
 
 8002:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_opt_syn
 	jmp 8090f
 
 8003:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_redir_type
 	jmp 8090f
 
 8004:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_redir_req
 	jmp 8090f
 
 8005:
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	push $emsg_redir_extra
 	jmp 8090f
 
 8090:
 	call vga_outs
 	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	jmp 80b
 
 .section .data

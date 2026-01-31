@@ -17,9 +17,12 @@ cmd_test:
 	push %di
 	push %bx
 
-	push $((ATTR_DIR<<0x08)|CHR_UC_A)
+	movb $ATTR_DIR, (vga_attr)
+	push $CHR_UC_A
 	call vga_outc
 	add $0x02, %sp
+	movb $ATTR_STD, (vga_attr)
+	NEWLINE
 	jmp 99f
 
 	mov $fs_write_buf, %di

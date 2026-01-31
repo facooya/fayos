@@ -58,12 +58,7 @@ apm_init:
 	call vga_outs
 	add $0x02, %sp
 
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 	jmp 99f
 
 99:
@@ -82,26 +77,20 @@ apm_off:
 
 	# err
 	mov %ah, %al
-	mov $ATTR_STD, %ah
-	push %ax
+	push %ax # (chr)
 	call vga_outc
 	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_COL)
+	push $CHR_COL # (chr)
 	call vga_outc
 	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_SP)
+	push $CHR_SP # (chr)
 	call vga_outc
 	add $0x02, %sp
 	push $_emsg_cmd_fail
 	call vga_outs
 	add $0x02, %sp
 
-	push $((ATTR_STD<<0x08)|CHR_CR)
-	call vga_outc
-	add $0x02, %sp
-	push $((ATTR_STD<<0x08)|CHR_LF)
-	call vga_outc
-	add $0x02, %sp
+	NEWLINE
 
 	pop %bx
 	ret
