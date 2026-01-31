@@ -4,6 +4,7 @@
 ---
 
 ## FIXME
+- Cursor min/max auto shift up issue
 
 ---
 

@@ -161,10 +161,12 @@ fs_add:
 	call vga_outs
 	add $0x02, %sp
 
-	mov $CHR_COL, %al
+	push $((ATTR_STD<<0x08)|CHR_COL)
 	call vga_outc
-	mov $CHR_SP, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 
 	push $emsg_name_dup
 	jmp 890f
@@ -180,10 +182,13 @@ fs_add:
 890: # err hdl
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b # exit
 
 # fs_rm(ub8 *path, ub8 f_type)
@@ -541,10 +546,13 @@ fs_rm:
 890: # err hdl
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b
 
 # _err_print_name()
@@ -564,10 +572,12 @@ _err_print_name:
 	call vga_outs
 	add $0x02, %sp
 
-	mov $CHR_COL, %al
+	push $((ATTR_STD<<0x08)|CHR_COL)
 	call vga_outc
-	mov $CHR_SP, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 	ret
 
 # fs_read(
@@ -768,10 +778,13 @@ fs_read:
 	push $emsg_fs_size
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b
 
 # fs_write(
@@ -1081,20 +1094,26 @@ fs_write:
 	push $emsg_fs_size
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b
 
 8002:
 	push $emsg_fs_blk_cnt
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b
 
 # fs_blk_to_lba(ub16 blk_num)

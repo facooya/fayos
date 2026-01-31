@@ -17,10 +17,12 @@ exec_cmd:
 	push %di
 	push %bx
 
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 
 	# { args_proc
 	call args_proc
@@ -144,10 +146,12 @@ exec_cmd:
 890:
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 90b
 
 # [private] _exec_redir()
@@ -317,8 +321,10 @@ _exec_redir:
 890:
 	call vga_outs
 	add $0x02, %sp
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 	jmp 80b

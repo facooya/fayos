@@ -28,3 +28,7 @@
 .equ CHR_LC_N, 0x6E
 .equ CHR_LC_Z, 0x7A
 .equ CHR_CASE_MASK, 0x20
+
+# attribute
+.equ ATTR_STD, 0x07
+.equ ATTR_DIR, 0x09

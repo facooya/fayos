@@ -36,10 +36,12 @@ kern_run:
 	call vga_outs
 	add $0x02, %sp
 
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 
 	call cwd_init
 	call ps1_build

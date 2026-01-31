@@ -623,7 +623,10 @@ _kbd_proc:
 
 	# {
 	push %ax # [s.f0:kc]
+	mov $ATTR_STD, %ah
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 	pop %ax # [s.f0:kc]
 
 	# store chr
@@ -641,7 +644,10 @@ _kbd_proc:
 
 12: # overwrite mode
 	push %ax # [s.f0: kc]
+	mov $ATTR_STD, %ah
+	push %ax
 	call vga_outc
+	add $0x02, %sp
 	pop %ax # [s.f0: kc]
 
 	mov %al, (%si)
@@ -814,8 +820,9 @@ _kbd_hdl_bs:
 	add $0x02, %sp
 
 	# overwrite
-	mov $CHR_SP, %al # space
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 
 	# left curs
 	pop %ax # [s.0:curs_pos]
@@ -1063,8 +1070,9 @@ _kbd_hdl_del:
 	push %ax # [s.0: curs_pos]
 
 	# overwrite
-	mov $CHR_SP, %al
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 
 	pop %ax # [s.0: curs_pos]
 	push %ax

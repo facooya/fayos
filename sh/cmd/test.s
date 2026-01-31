@@ -2,6 +2,7 @@
 #
 # Copyright 2025-2026 Facooya and Fanone Facooya
 
+.include "chr.inc"
 .include "fs/fs.inc"
 .include "drv/vga.inc"
 .include "drv/disk.inc"
@@ -15,6 +16,11 @@ cmd_test:
 	push %si
 	push %di
 	push %bx
+
+	push $((ATTR_DIR<<0x08)|CHR_UC_A)
+	call vga_outc
+	add $0x02, %sp
+	jmp 99f
 
 	mov $fs_write_buf, %di
 	movw $0x4241, (%di)
@@ -53,6 +59,7 @@ cmd_test:
 	call vga_outs
 	add $0x02, %sp
 
+99:
 	pop %bx
 	pop %di
 	pop %si

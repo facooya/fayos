@@ -74,10 +74,12 @@ dbg_c:
 	mov $CHR_SP, %al
 	call vga_outc
 	call _line
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 
 	pop %dx
 	pop %cx

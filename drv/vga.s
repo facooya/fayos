@@ -218,14 +218,17 @@ vga_hide_curs:
 	out %al, %dx
 	ret
 
-# vga_outc()
-# <req: al = chr>
+# vga_outc(ub16 vga_chr)
 # <req: _vga_size, _vga_last_row_off>
 vga_outc:
+	push %bp
+	mov %sp, %bp
 	push %es
 	push %si
 	push %di
 	push %bx
+
+	mov 0x04(%bp), %ax # (vga_chr)
 
 	# esc chrs
 	cmp $CHR_CR, %al
@@ -234,7 +237,7 @@ vga_outc:
 	je 21f
 
 	# init
-	push %ax # [s.0:chr]
+	push %ax # [s.0: *vga_chr]
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
@@ -250,10 +253,10 @@ vga_outc:
 	add %ax, %di
 	mov %ax, %cx
 	inc %cx
-	pop %ax # [s.0:chr]
+	pop %ax # [s.0: *vga_chr]
 
 10: # out
-	mov $VGA_ATTR_COLOR, %ah
+	#mov $VGA_ATTR_COLOR, %ah
 	mov %ax, %es:(%di)
 	add $0x02, %di
 	jmp 90f
@@ -342,9 +345,10 @@ vga_outc:
 	pop %di
 	pop %si
 	pop %es
+	pop %bp
 	ret
 
-# vga_outs(ub8 *str)
+# vga_outs(ub16 *vga_str)
 # <req: _vga_size, _vga_last_row_off>
 vga_outs:
 	push %bp
@@ -478,7 +482,7 @@ vga_outs:
 	pop %bp
 	ret
 
-# vga_outns(num, *str)
+# vga_outns(ub16 num, ub16 *vga_str)
 # <req: _vga_size, _vga_last_row_off>
 vga_outns:
 	push %bp

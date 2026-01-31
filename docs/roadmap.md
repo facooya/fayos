@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- VGA color print
 
 ---
 
@@ -15,19 +16,17 @@
 
 ## Feature
 - tab: autocomplete file or dir
-- ls: colorful file or dir, add option
-- color
 - using allocate memory and free
 - record log, error log
-- OBF, IBF timeout error
 - fs: dentry size optimize
-- Auto shift down
 - Support ctrl family
 - Add fs\_ins(), fs\_del()
+- Top bar
 
 ---
 
 ## Command
+- ls: color, add option
 - cp
 - mv
 - printf

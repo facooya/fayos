@@ -177,11 +177,16 @@ cmd_echo:
 .err_opt_inv:
 	# print opt err
 	mov (%si), %al # opt err char
+	mov $ATTR_STD, %ah
+	push %ax
 	call vga_outc
-	mov $CHR_COL, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_COL)
 	call vga_outc
-	mov $CHR_SP, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 
 	push $emsg_opt_inv
 	jmp .err_hdl
@@ -194,10 +199,12 @@ cmd_echo:
 	call vga_outs
 	add $0x02, %sp
 
-	mov $CHR_CR, %al
+	push $((ATTR_STD<<0x08)|CHR_CR)
 	call vga_outc
-	mov $CHR_LF, %al
+	add $0x02, %sp
+	push $((ATTR_STD<<0x08)|CHR_LF)
 	call vga_outc
+	add $0x02, %sp
 
 	mov $0x01, %ax
 	jmp .done

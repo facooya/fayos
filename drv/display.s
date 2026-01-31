@@ -47,8 +47,9 @@ disp_shl_cl:
 	add $0x02, %sp
 
 	# overwrite last chr
-	mov $CHR_SP, %al
+	push $((ATTR_STD<<0x08)|CHR_SP)
 	call vga_outc
+	add $0x02, %sp
 
 	pop %ax # [s.0: curs_pos]
 	push %ax # (curs_pos)
