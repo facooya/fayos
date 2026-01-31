@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
-#
-# [Command] list - show file and directory list
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"

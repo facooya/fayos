@@ -390,6 +390,16 @@ vga_outs:
 	jge 30f
 
 11: # out
+	# (chr != mark) ? {pass}
+	cmp $ATTR_MARK, %al
+	jne 1f
+
+	movb 0x01(%si), %ah
+	mov %ah, (vga_attr)
+	add $0x02, %si
+	mov (%si), %al # upd chr
+
+1:
 	mov (vga_attr), %ah
 	mov %ax, %es:(%di)
 	add $0x02, %di
@@ -525,6 +535,17 @@ vga_outns:
 	jge 30f
 
 11:
+	# (chr != mark) ? {pass}
+	cmp $ATTR_MARK, %al
+	jne 1f
+
+	movb 0x01(%si), %ah
+	mov %ah, (vga_attr)
+	add $0x02, %si
+	sub $0x02, %dx
+	mov (%si), %al # upd chr
+
+1:
 	mov (vga_attr), %ah
 	mov %ax, %es:(%di)
 	add $0x02, %di

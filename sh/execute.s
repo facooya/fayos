@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Copyright 2025 Facooya and Fanone Facooya
+# Copyright 2025-2026 Facooya and Fanone Facooya
 
 .include "chr.inc"
 .include "fs/fs.inc"
@@ -9,9 +9,9 @@
 .code16
 .global exec_cmd
 
-# [public] exec_cmd()
-# <req> cmd_map, cl_sbuf, redir_hsbuf
-# <mod> write_sbuf
+# exec_cmd()
+# <ro: cmd_map, cl_sbuf, redir_hsbuf>
+# <rw: write_sbuf>
 exec_cmd:
 	push %si
 	push %di
@@ -144,9 +144,9 @@ exec_cmd:
 	NEWLINE
 	jmp 90b
 
-# [private] _exec_redir()
-# <req> redir_hsbuf, write_sbuf
-# <mod> fsp
+# _exec_redir()
+# <ro: redir_hsbuf, write_sbuf>
+# <rw: fsp>
 _exec_redir:
 	push %es
 	push %si

@@ -17,12 +17,18 @@ cmd_test:
 	push %di
 	push %bx
 
-	movb $ATTR_DIR, (vga_attr)
-	push $CHR_UC_A
-	call vga_outc
-	add $0x02, %sp
-	movb $ATTR_STD, (vga_attr)
-	NEWLINE
+	mov $_buf, %di
+	mov $0x4241, (%di)
+	mov $0x0901, 0x02(%di)
+	mov $0x4443, 0x04(%di)
+	mov $0x0701, 0x06(%di)
+	mov $0x4645, 0x08(%di)
+	mov $(CHR_LF<<0x08|CHR_CR), 0x0A(%di)
+
+	push $_buf
+	push $0x0C
+	call vga_outns
+	add $0x04, %sp
 	jmp 99f
 
 	mov $fs_write_buf, %di
@@ -72,3 +78,4 @@ cmd_test:
 .section .data
 _path_hist: .asciz "/.history"
 _test_data: .asciz "test data"
+_buf: .zero 0x20

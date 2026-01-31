@@ -30,6 +30,7 @@
 .equ CHR_CASE_MASK, 0x20
 
 # attribute
+.equ ATTR_MARK, 0x01
 .equ ATTR_STD, 0x07
 .equ ATTR_DIR, 0x09
 
