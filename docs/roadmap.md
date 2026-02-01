@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- ls: add option
 
 ---
 
@@ -25,7 +26,6 @@
 ---
 
 ## Command
-- ls: add option
 - cp
 - mv
 - printf
