@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- ls: add option
+- Top bar
 
 ---
 
@@ -11,6 +11,7 @@
 ## TODO
 - more date format
 - Inode table block offset
+- Scroll color
 
 ---
 
@@ -21,7 +22,6 @@
 - fs: dentry size optimize
 - Support ctrl family
 - Add fs\_ins(), fs\_del()
-- Top bar
 
 ---
 

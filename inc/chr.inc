@@ -35,6 +35,7 @@
 .equ ATTR_DIR, 0x09
 .equ ATTR_ERR, 0x0C
 .equ ATTR_WARN, 0x0E
+.equ ATTR_TOP, 0x70
 
 .macro NEWLINE
 	push $CHR_CR

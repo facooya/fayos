@@ -21,17 +21,19 @@
 .global vga_outns
 .global vga_shu
 .global vga_shd
+.global vga_upd_top
 
 # vga_init()
 # <mod: _vga_last_row_off, _vga_size>
 vga_init:
 	push %es
+	push %di
+
 	xor %ax, %ax
 	mov %ax, %es
 	mov %es:(VGA_ADDR_ROW), %al
 	mov %es:(VGA_ADDR_COL), %cx
 
-	movb $ATTR_STD, (vga_attr)
 
 	xor %dx, %dx
 	mul %cx
@@ -39,6 +41,17 @@ vga_init:
 
 	add %cx, %ax
 	mov %ax, (_vga_size)
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	mov $ATTR_TOP, %ah
+	mov $CHR_SP, %al
+	rep stosw
+
+	movb $ATTR_STD, (vga_attr)
+
+	pop %di
 	pop %es
 	ret
 
@@ -1142,6 +1155,50 @@ _vga_sl_tb:
 	pop %si
 	pop %es
 	pop %bp
+	ret
+
+# vga_upd_top()
+vga_upd_top:
+	push %es
+	push %si
+	push %di
+
+	mov $time_date, %si
+	push %si # (off)
+	push %ds # (seg)
+	call mem_size
+	add $0x04, %sp
+	mov %ax, %cx
+
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %dx
+	sub %cx, %dx
+
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	add %dx, %di
+	add %dx, %di
+
+1:
+	# (cnt == 0) ? {done}
+	test %cx, %cx
+	jz 99f
+
+	mov (%si), %al
+	mov $ATTR_TOP, %ah
+	mov %ax, %es:(%di)
+
+	add $0x02, %di
+	inc %si
+	dec %cx
+	jmp 1b
+
+99:
+	pop %di
+	pop %si
+	pop %es
 	ret
 
 .section .data

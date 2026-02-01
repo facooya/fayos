@@ -17,58 +17,6 @@ cmd_test:
 	push %di
 	push %bx
 
-	mov $_buf, %di
-	mov $0x4241, (%di)
-	mov $0x0901, 0x02(%di)
-	mov $0x4443, 0x04(%di)
-	mov $0x0701, 0x06(%di)
-	mov $0x4645, 0x08(%di)
-	mov $(CHR_LF<<0x08|CHR_CR), 0x0A(%di)
-
-	push $_buf
-	push $0x0C
-	call vga_outns
-	add $0x04, %sp
-	jmp 99f
-
-	mov $fs_write_buf, %di
-	movw $0x4241, (%di)
-	movw $0x4443, 0x02(%di)
-
-	push $_path_hist
-	call path_parse
-	add $0x02, %sp
-
-	mov $0x10, %cx
-	mov $0x0FFE, %bx
-
-1:
-	push %cx
-	push $0x04
-	push %bx
-	push $fsp+FSP_OFF_BASE
-	call fs_write
-	add $0x06, %sp
-	pop %cx
-
-	add $0x1000, %bx
-	cmp $0xF000, %bx
-	ja 9f
-	loop 1b
-
-9:
-	push $0x04
-	push $0x0FFE
-	push $fsp+FSP_OFF_BASE
-	call fs_read
-	add $0x06, %sp
-
-	mov $fs_read_buf, %si
-	push %si
-	call vga_outs
-	add $0x02, %sp
-
-99:
 	pop %bx
 	pop %di
 	pop %si
