@@ -695,25 +695,30 @@ vga_shu:
 	je 99f
 
 1:
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %di
-	mov %di, %si
-
 	push $0x00 # (flag)
 	call _vga_sl_tb
 	add $0x02, %sp
 
 	# { disp shift up
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+
 	push %es # [s.0: vga_seg]
 	xor %ax, %ax
 	mov %ax, %es
 	mov %es:(VGA_ADDR_COL), %ax
 	pop %es # [s.0: vga_seg]
-	mov %ax, %si
-	add %ax, %si
 
+	# skip top bar
+	add %ax, %di
+	add %ax, %di
+	mov %di, %si
+	add %ax, %si
+	add %ax, %si
 	mov (_vga_last_row_off), %cx
+	sub %ax, %cx
+
 	push %ds # [s.s0:vga_seg]
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %ds
@@ -781,16 +786,16 @@ vga_shd:
 	test %ax, %ax
 	je 99f
 
-	mov $(VGA_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(VGA_MEM&0xFFFF), %di
-	mov %di, %si
-
 	push $0x02
 	call _vga_sl_tb
 	add $0x02, %sp
 
 	# { disp shift down
+	mov $(VGA_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(VGA_MEM&0xFFFF), %di
+	mov %di, %si
+
 	mov (_vga_last_row_off), %cx
 	mov %cx, %si
 	add %cx, %si
@@ -801,6 +806,15 @@ vga_shd:
 	add %ax, %di
 	sub $0x02, %di # (x[last], y[last])
 
+	# skip top bar cnt
+	mov (_vga_last_row_off), %cx
+	push %es # [s.0: vga_seg]
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %ax
+	pop %es # [s.0: vga_seg]
+	sub %ax, %cx
+
 	std
 	mov $(VGA_MEM>>0x10), %ax
 	push %ds # [s.s0:vga_seg]
@@ -810,17 +824,21 @@ vga_shd:
 	cld
 	# }
 
-	# clr first line
+	# { clr first line
 	xor %di, %di
 	push %es # [s.0: vga_seg]
 	xor %cx, %cx
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	add %cx, %di
+	add %cx, %di
+
 	movb $ATTR_STD, (vga_attr)
 	mov (vga_attr), %ah
 	mov $CHR_SP, %al
 	rep stosw
+	# }
 
 	push $0x01
 	call _vga_sl_tb
@@ -984,6 +1002,8 @@ _vga_sl_tb:
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	add %cx, %si
+	add %cx, %si
 
 	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %ax
@@ -991,6 +1011,7 @@ _vga_sl_tb:
 	jz 22f
 
 	# init bottom
+	xor %si, %si
 	mov (_vga_last_row_off), %ax
 	add %ax, %si
 	add %ax, %si
@@ -1080,11 +1101,11 @@ _vga_sl_tb:
 	jz 99f
 
 	dec %ax
-	push %es # [s.0: vga_seg]
+	push %es # [s.0: file_seg]
 	xor %cx, %cx
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
-	pop %es # [s.0: vga_seg]
+	pop %es # [s.0: file_seg]
 	xor %dx, %dx
 	mul %cx
 
@@ -1095,6 +1116,8 @@ _vga_sl_tb:
 	# init
 	push %es # [s.0: file_seg]
 	mov $(VGA_MEM&0xFFFF), %di
+	add %cx, %di
+	add %cx, %di
 	mov (vga_attr), %ah
 
 	# (flag == top) ? {loop} : {bottom}
@@ -1103,6 +1126,7 @@ _vga_sl_tb:
 	jz 31f
 
 	# init bottom
+	xor %di, %di
 	mov (_vga_last_row_off), %dx
 	add %dx, %di
 	add %dx, %di
