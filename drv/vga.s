@@ -62,18 +62,23 @@ vga_clr:
 	push %di
 	push %bx
 
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
+	add %cx, %di
+	add %cx, %di
+	push %cx # [s.0: fst_off]
 
 	mov (_vga_size), %cx
-
 	mov (vga_attr), %ah
 	mov $CHR_SP, %al
 	rep stosw
 
-	xor %ax, %ax
-	push %ax
+	pop %cx # [s.0: fst_off]
+	push %cx
 	call vga_set_curs
 	add $0x02, %sp
 

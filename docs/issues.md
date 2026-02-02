@@ -1,5 +1,6 @@
 # Issues
 ## WIP
+- Top bar scroll fix
 
 ---
 

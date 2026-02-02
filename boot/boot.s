@@ -44,11 +44,11 @@ _vga_clr:
 
 	# { get disp
 	xor %dx, %dx
-	mov $DISP_ADDR_ROW, %bx
+	mov $VGA_ADDR_ROW, %bx
 	mov (%bx), %dl
 	inc %dl
 
-	mov $DISP_ADDR_COL, %bx
+	mov $VGA_ADDR_COL, %bx
 	mov (%bx), %ax
 	# }
 
@@ -102,9 +102,14 @@ _vga_outs:
 	mov 0x04(%bp), %si # (*str)
 
 	# init
+	xor %ax, %ax
+	mov %ax, %es
+	mov %es:(VGA_ADDR_COL), %cx
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
+	add %cx, %di
+	add %cx, %di
 
 	# { get curs
 	mov $VGA_CMD_CURS_POS_HI, %al
@@ -153,7 +158,7 @@ _vga_outs:
 2: # newline
 	# { newline
 	push %cx
-	mov $DISP_ADDR_COL, %bx
+	mov $VGA_ADDR_COL, %bx
 	mov (%bx), %cx # col
 
 	xor %dx, %dx

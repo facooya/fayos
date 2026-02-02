@@ -23,11 +23,10 @@
 .equ VGA_CMD_CURS_POS_LO, 0x0F
 
 .equ VGA_ATTR_COLOR, 0x07
-# }
 
-# disp
-.equ DISP_ADDR_ROW, 0x0484
-.equ DISP_ADDR_COL, 0x044A
+.equ VGA_ADDR_ROW, 0x0484
+.equ VGA_ADDR_COL, 0x044A
+# }
 
 # { ata
 .equ ATA_PORT_DATA, 0x01F0
