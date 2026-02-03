@@ -949,6 +949,7 @@ _vga_sl_tb:
 	mov %es:(VGA_ADDR_COL), %ax
 	pop %es # [s.0: vga_seg]
 	add %ax, %si
+	add %ax, %si
 	xor %dx, %dx
 	mov $(VGA_SCROLL_CNT-0x01), %cx
 	mul %cx
@@ -960,11 +961,11 @@ _vga_sl_tb:
 	jz 49f
 
 	# line[i] -> line[i+1]
-	mov %es:(%si), %al
-	mov %al, %es:(%di)
+	mov %es:(%si), %ax
+	mov %ax, %es:(%di)
 
-	inc %si
-	inc %di
+	add $0x02, %si
+	add $0x02, %di
 	dec %cx
 	jmp 41b
 
@@ -977,6 +978,7 @@ _vga_sl_tb:
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	sub %cx, %ax
 	sub %cx, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
 	jmp 21f
@@ -1027,10 +1029,10 @@ _vga_sl_tb:
 	mov %ax, %es
 	mov %es:(%si), %ax
 	pop %es # [s.1: mem_seg]
-	mov %al, %es:(%bx)
+	mov %ax, %es:(%bx)
 
 	add $0x02, %si
-	inc %bx
+	add $0x02, %bx
 	dec %cx
 	jmp 22b
 
@@ -1049,6 +1051,7 @@ _vga_sl_tb:
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
 	pop %es # [s.0: vga_seg]
+	add %cx, %ax
 	add %cx, %ax
 	mov %ax, FSP_OFF_F_SIZE(%si)
 	push %si
@@ -1111,6 +1114,7 @@ _vga_sl_tb:
 
 	# set off
 	add %ax, %bx
+	add %ax, %bx
 	# }
 
 	# init
@@ -1118,7 +1122,6 @@ _vga_sl_tb:
 	mov $(VGA_MEM&0xFFFF), %di
 	add %cx, %di
 	add %cx, %di
-	mov (vga_attr), %ah
 
 	# (flag == top) ? {loop} : {bottom}
 	mov 0x04(%bp), %dx
@@ -1137,7 +1140,7 @@ _vga_sl_tb:
 	jz 39f
 
 	# file -> screen
-	mov %es:(%bx), %al
+	mov %es:(%bx), %ax
 	push %es # [s.1: file_seg]
 	mov $(VGA_MEM>>0x10), %dx
 	mov %dx, %es
@@ -1145,7 +1148,7 @@ _vga_sl_tb:
 	pop %es # [s.1: file_seg]
 
 	add $0x02, %di
-	inc %bx
+	add $0x02, %bx
 	dec %cx
 	jmp 31b
 
@@ -1160,6 +1163,7 @@ _vga_sl_tb:
 	mov %ax, %es
 	mov %es:(VGA_ADDR_COL), %ax
 	pop %es # [s.0: vga_seg]
+	sub %ax, %cx
 	sub %ax, %cx
 	mov %cx, FSP_OFF_F_SIZE(%si)
 	push %si
@@ -1242,7 +1246,7 @@ vga_attr: .byte 0x00
 _vga_size: .word 0x00
 _vga_last_row_off: .word 0x00
 _vga_cnt: .word 0x00
-_path_top: .asciz "/.top"
-_path_bottom: .asciz "/.bottom"
-_name_top: .asciz ".top"
-_name_bottom: .asciz ".bottom"
+_path_top: .asciz "/.top.vga"
+_path_bottom: .asciz "/.bottom.vga"
+_name_top: .asciz ".top.vga"
+_name_bottom: .asciz ".bottom.vga"

@@ -10,7 +10,6 @@
 ## TODO
 - more date format
 - Inode table block offset
-- Scroll color
 
 ---
 
