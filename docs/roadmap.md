@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- Inode table block offset
 
 ---
 
@@ -9,7 +10,6 @@
 
 ## TODO
 - more date format
-- Inode table block offset
 
 ---
 
