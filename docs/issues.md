@@ -4,6 +4,7 @@
 ---
 
 ## FIXME
+- Scroll file `.top.vga`, not allocate new block.
 
 ---
 

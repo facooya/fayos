@@ -17,6 +17,17 @@ cmd_test:
 	push %di
 	push %bx
 
+	push $0x08
+	call ind_calc_lba
+	add $0x02, %sp
+
+	push %ax
+	call dbg_reg
+	add $0x02, %sp
+	push %dx
+	call dbg_reg
+	add $0x02, %sp
+
 	pop %bx
 	pop %di
 	pop %si

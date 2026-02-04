@@ -105,7 +105,6 @@ fsp_init:
 fsp_read:
 	push %bp
 	mov %sp, %bp
-	sub $0x10, %sp
 	push %es
 	push %si
 	push %di
@@ -116,40 +115,11 @@ fsp_read:
 	mov 0x06(%bp), %ax # (inum)
 	mov %ax, FSP_OFF_INUM(%di)
 
-	# (blk_size / ind_size = ind_per_blk)
-	mov $FS_BLK_SIZE, %ax
-	mov $IND_SIZE, %cx
-	xor %dx, %dx
-	div %cx
-	# <ax = ind_per_blk>
-	mov %ax, -0x06(%bp) # (l.3: ind_per_blk)
-
-	# get it_lba
-	mov $(DISK_SB_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(DISK_SB_MEM&0xFFFF), %si
-	add $SB_OFF_DPI_IT, %si
-	add $DP_OFF_LBA, %si
-	mov %es:(%si), %ax # it_lba
-	mov %ax, -0x08(%bp) # (l.4: it_lba)
-
-	# (inum / ind_per_blk = blk_cnt)
-	mov 0x06(%bp), %ax # (inum)
-	mov -0x06(%bp), %cx # (l.3: ind_per_blk)
-	xor %dx, %dx
-	div %cx
-	# <ax = blk_cnt>
-	# <dx = inum_off>
-	mov %ax, -0x0A(%bp) # (l.5: blk_cnt)
-	mov %dx, -0x0C(%bp) # (l.6: inum_mem)
-
-	# (blk_cnt * blk_sect_cnt + it_lba = tgt_lba)
-	mov $DISK_BLK_SECT_CNT, %cx
-	xor %dx, %dx
-	mul %cx
-	mov -0x08(%bp), %dx # (l.4: it_lba)
-	add %dx, %ax
-	# <ax = tgt_lba>
+	push %ax # (inum)
+	call ind_calc_lba
+	add $0x02, %sp
+	# <ax = lba, dx = ind_off>
+	push %dx # [s.0: ind_off]
 
 	# upd lba
 	mov $dpi+DPI_OFF_IT, %si
@@ -163,12 +133,8 @@ fsp_read:
 	mov $(DISK_IT_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(DISK_IT_MEM&0xFFFF), %bx
-
-	xor %dx, %dx
-	mov -0x0C(%bp), %ax # (l.6: inum_mem)
-	mov $IND_SIZE, %cx
-	mul %cx
-	add %ax, %bx
+	pop %dx # [s.0: ind_off]
+	add %dx, %bx
 
 	mov %es, %ax
 	mov %ax, FSP_OFF_IND_PTR+0x02(%di)
@@ -204,7 +170,6 @@ fsp_read:
 	pop %di
 	pop %si
 	pop %es
-	mov %bp, %sp
 	pop %bp
 	ret
 
@@ -212,51 +177,18 @@ fsp_read:
 fsp_write:
 	push %bp
 	mov %sp, %bp
-	sub $0x10, %sp
 	push %es
 	push %si
 	push %di
 	push %bx
 
 	mov 0x04(%bp), %si
-
 	mov FSP_OFF_INUM(%si), %ax
-	mov %ax, -0x04(%bp) # (l.2: inum)
 
-	# (blk_size / ind_size = ind_per_blk)
-	mov $FS_BLK_SIZE, %ax
-	mov $IND_SIZE, %cx
-	xor %dx, %dx
-	div %cx
-	# <ax = ind_per_blk>
-	mov %ax, -0x06(%bp) # (l.3: ind_per_blk)
-
-	# get it_lba
-	mov $(DISK_SB_MEM>>0x10), %ax
-	mov %ax, %es
-	mov $(DISK_SB_MEM&0xFFFF), %si
-	add $SB_OFF_DPI_IT, %si
-	add $DP_OFF_LBA, %si
-	mov %es:(%si), %ax # it_lba
-	mov %ax, -0x08(%bp) # (l.4: it_lba)
-
-	# (inum / ind_per_blk = blk_cnt)
-	mov -0x04(%bp), %ax # (l.2: inum)
-	mov -0x06(%bp), %cx # (l.3: ind_per_blk)
-	xor %dx, %dx
-	div %cx
-	# <ax = blk_cnt>
-	# <dx = inum_off>
-	mov %ax, -0x0A(%bp) # (l.5: blk_cnt)
-	mov %dx, -0x0C(%bp) # (l.6: inum_mem)
-
-	# (blk_cnt * blk_sect_cnt + it_lba = tgt_lba)
-	mov $DISK_BLK_SECT_CNT, %cx
-	xor %dx, %dx
-	mul %cx
-	mov -0x08(%bp), %dx # (l.4: it_lba)
-	add %dx, %ax
-	# <ax = tgt_lba>
+	push %ax # (inum)
+	call ind_calc_lba
+	add $0x02, %sp
+	# <ax = lba, dx = ind_off>
 
 	# upd lba
 	mov $dpi+DPI_OFF_IT, %si
@@ -287,7 +219,6 @@ fsp_write:
 	pop %di
 	pop %si
 	pop %es
-	mov %bp, %sp
 	pop %bp
 	ret
 

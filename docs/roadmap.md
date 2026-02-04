@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- Inode table block offset
 
 ---
 
