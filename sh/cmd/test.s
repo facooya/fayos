@@ -17,16 +17,31 @@ cmd_test:
 	push %di
 	push %bx
 
-	push $0x08
-	call ind_calc_lba
+	push $F_TYPE_FILE
+	push $_path_a
+	call fs_add
+	add $0x04, %sp
+
+	push $_path_a
+	call path_parse
 	add $0x02, %sp
 
-	push %ax
-	call dbg_reg
-	add $0x02, %sp
-	push %dx
-	call dbg_reg
-	add $0x02, %sp
+	mov $fs_write_buf, %si
+	mov $0x4241, (%si)
+	mov $0x4443, 0x02(%si)
+	mov $0x4645, 0x04(%si)
+
+	push $0x06
+	push $0x00
+	push $fsp+FSP_OFF_BASE
+	call fs_write
+	add $0x06, %sp
+
+	push $0x02
+	push $0x02
+	push $fsp+FSP_OFF_BASE
+	call fs_del
+	add $0x06, %sp
 
 	pop %bx
 	pop %di
@@ -35,6 +50,7 @@ cmd_test:
 	ret
 
 .section .data
+_path_a: .asciz "/abc"
 _path_hist: .asciz "/.history"
 _test_data: .asciz "test data"
 _buf: .zero 0x20

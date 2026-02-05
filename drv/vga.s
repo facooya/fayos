@@ -960,7 +960,7 @@ _vga_sl_tb:
 	test %cx, %cx
 	jz 49f
 
-	# line[i] -> line[i+1]
+	# line[i+1] -> line[i]
 	mov %es:(%si), %ax
 	mov %ax, %es:(%di)
 

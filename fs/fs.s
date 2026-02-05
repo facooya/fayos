@@ -15,6 +15,7 @@
 .global fs_read
 .global fs_write
 .global fs_blk_to_lba
+.global fs_del
 
 # fs_add(ub8 *path, ub16 f_type)
 # <req: fsp {dir, par, cur, tmp}, path_cv, path_sbuf>
@@ -1116,6 +1117,181 @@ fs_blk_to_lba:
 	pop %bp
 	ret
 
+# fs_del(
+# fsp *src,
+# ub16 idx,
+# ub16 size
+# )
+fs_del:
+	push %bp
+	mov %sp, %bp
+	sub $0x10, %sp
+	push %si
+	push %di
+	push %bx
+
+	mov 0x04(%bp), %si # (fsp *src)
+
+	# { sec chk
+	xor %ax, %ax
+	mov %ax, -0x02(%bp) # (l.1: sec_size)
+
+	mov 0x06(%bp), %ax # (idx)
+	and $FS_MASK_OFF, %ax
+	mov 0x08(%bp), %dx # (size)
+	add %dx, %ax
+
+	# (total_size < blk_size) ? {pass}
+	cmp $FS_BLK_SIZE, %ax
+	jl 1f
+
+	sub $FS_BLK_SIZE, %ax
+	mov %ax, -0x02(%bp) # (l.1: sec_size)
+	mov 0x08(%bp), %cx # (size)
+	sub %ax, %cx
+	mov %cx, -0x04(%bp) # (l.2: fst_size)
+	# }
+
+1:
+	mov 0x04(%bp), %si # (fsp *src)
+	mov 0x06(%bp), %ax # (idx)
+	mov $FS_BLK_SIZE, %cx
+	xor %dx, %dx
+	div %cx
+
+	mov %ax, -0x06(%bp) # (l.3: blk_idx)
+	mov %dx, -0x08(%bp) # (l.4: idx_off)
+
+	# (sec_size != 0) ? {frag} : {norm}
+	mov -0x02(%bp), %ax # (l.1: sec_size)
+	test %ax, %ax
+	jnz 1f
+	jmp 10f
+
+1: # fragment
+	mov 0x04(%bp), %si # (fsp *src)
+	mov 0x06(%bp), %ax # (idx)
+	mov 0x08(%bp), %cx # (size)
+	add %cx, %ax
+
+	mov $FS_BLK_SIZE, %cx
+	xor %dx, %dx
+	div %cx
+
+	mov %ax, -0x0A(%bp) # (l.5: sec_blk_idx)
+	mov %dx, -0x0C(%bp) # (l.6: sec_size)
+	jmp 10f
+
+10:
+	mov 0x04(%bp), %si # (fsp *src)
+	mov -0x02(%bp), %ax # (l.1: blk_idx)
+	add %ax, %si
+	add %ax, %si
+	mov FSP_OFF_BLK(%si), %ax # read blk
+
+	push %ax
+	call fs_blk_to_lba
+	add $0x02, %sp
+	# <ax = lba>
+	mov 0x04(%bp), %si # (fsp *src)
+	mov %ax, FSP_OFF_DISK_LBA(%si)
+
+	# upd ind
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	mov 0x04(%bp), %si # (fsp *src)
+	push %si # (fsp &src)
+	call disk_read_fsp
+	add $0x02, %sp
+	# <dx:ax = seg:off>
+	mov %dx, %es
+	mov %ax, %bx
+
+	push $FS_BLK_SIZE # (size)
+	push %bx # (s_off)
+	push %es # (s_seg)
+	push $fs_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	mov 0x06(%bp), %ax # (idx)
+	and $FS_MASK_OFF, %ax
+	mov $fs_buf, %si
+	add %ax, %si
+
+	mov -0x02(%bp), %ax # (l.2: sec_size)
+	test %ax, %ax
+	jnz 90f # frag
+
+	xor %ax, %ax
+	mov 0x08(%bp), %cx # (size)
+	mov %si, %di
+	add %cx, %si
+
+11: # shl
+	# (size == 0) ? {next}
+	test %cx, %cx
+	jz 19f
+
+	mov %es:(%si), %al
+	mov %al, %es:(%di)
+
+	inc %si
+	dec %cx
+	jmp 11b
+
+19:
+	mov 0x04(%bp), %si # (fsp *src)
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov 0x08(%bp), %cx # (size)
+	sub %cx, %ax
+	mov %ax, FSP_OFF_F_SIZE(%si)
+	push %ax
+
+	push %si
+	call fsp_write
+	add $0x02, %sp
+
+	push $FS_BLK_SIZE # (size)
+	push $fs_buf # (s_off)
+	push %ds # (s_seg)
+	push %bx # (d_off)
+	push %es # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+
+	mov 0x04(%bp), %si # (fsp *src)
+	push %si # (fsp &src)
+	call disk_write_fsp
+	add $0x02, %sp
+	jmp 90f
+
+80:
+	mov $0x01, %ax
+	jmp 99f
+
+90:
+	xor %ax, %ax
+	jmp 99f
+
+99:
+	pop %bx
+	pop %di
+	pop %si
+	mov %bp, %sp
+	pop %bp
+	ret
+
+8001:
+	push $emsg_fs_size
+	call vga_outs
+	add $0x02, %sp
+
+	NEWLINE
+	jmp 80b
 
 .section .data
 .global fs_buf
