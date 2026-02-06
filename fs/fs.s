@@ -1139,12 +1139,27 @@ fs_del:
 	sub %dx, %cx
 	mov %cx, -0x02(%bp) # (l.1: shl_size)
 
-10:
+	# { dispatch
+	mov 0x06(%bp), %dx # (idx)
+	and $FS_MASK_OFF, %dx
+	mov 0x08(%bp), %ax # (size)
+	mov -0x02(%bp), %cx # (l.1: shl_size)
+	add %ax, %dx
+	add %cx, %dx
+
+	# ((i+s+ss) < blk_size) ? {one}
+	cmp $FS_BLK_SIZE, %dx
+	jb 10f
+	jmp 20f
+	# }
+
+10: # one
 	mov 0x04(%bp), %si # (fsp *src)
-	#mov 0x06(%bp), %dx # (idx)
-	#and $FS_MASK_BLK, %dx # (blk_idx)
-	#add %ax, %si
-	#add %ax, %si
+	mov 0x06(%bp), %ax # (idx)
+	and $FS_MASK_BLK, %ax
+	shr $0x0C, %ax
+	add %ax, %si
+	add %ax, %si
 	mov FSP_OFF_BLK(%si), %ax
 
 	push %ax # (blk_num)
@@ -1222,6 +1237,9 @@ fs_del:
 	call disk_write_fsp
 	add $0x02, %sp
 	jmp 90f
+
+20:
+	jmp 99f
 
 80:
 	mov $0x01, %ax
