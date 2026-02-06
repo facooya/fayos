@@ -6,6 +6,7 @@
 .equ FS_START_LBA, 0x0100
 .equ FS_BLK_SIZE, 0x1000
 .equ FS_MASK_OFF, 0x0FFF
+.equ FS_MASK_BLK, 0xF000
 
 .equ FT_SIZE, 0x0A
 .equ FT_OFF_FLG, 0x00

@@ -32,16 +32,27 @@ cmd_test:
 	mov $0x4645, 0x04(%si)
 
 	push $0x06
-	push $0x00
+	push $0x0000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
 	push $0x02
-	push $0x02
+	push $0x0000
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp
+
+	mov $fs_buf, %si
+	add $0x0000, %si
+	push %si
+	push $0x04
+	call vga_outns
+	add $0x04, %sp
+
+	push $fs_tmp_buf
+	#call vga_outs
+	add $0x02, %sp
 
 	pop %bx
 	pop %di
