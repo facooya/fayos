@@ -1239,6 +1239,9 @@ fs_del:
 	jmp 90f
 
 20:
+	mov $0x01, %ax
+	mov %ax, -0x0C(%bp) # (l.6: fst)
+
 	mov 0x06(%bp), %ax # (idx)
 	and $FS_MASK_BLK, %ax
 	shr $0x0C, %ax
@@ -1322,30 +1325,81 @@ fs_del:
 	call mem_cpy
 	add $0x0A, %sp
 
-	# TODO: fs_buf == BLK_SIZE : next shl
-	#mov 0x06(%bp), %ax # (idx)
-	#and $FS_MASK_OFF, %ax
-	#mov $fs_buf, %si
-	#add %ax, %si
-#
-	#mov 0x06(%bp), %dx # (idx)
-	#mov 0x08(%bp), %cx # (size)
-	#mov %si, %di
-	#add %cx, %si
-	#mov -0x02(%bp), %cx # (l.1: shl_size)
-#
-#22: # shl
-	## (shl_size == 0) ? {end}
-	#test %cx, %cx
-	#jz 29f
-#
-	#mov (%si), %al
-	#mov %al, (%di)
-#
-	#inc %si
-	#inc %di
-	#dec %cx
-	#jmp 22b
+	# { init shl
+	mov $fs_buf, %si
+	mov %si, %di
+	mov 0x08(%bp), %ax # (size)
+	add %ax, %si
+
+	# (!fst) ? {pass}
+	mov -0x0C(%bp), %ax # (l.6: fst)
+	test %ax, %ax
+	jz 1f
+
+	mov 0x06(%bp), %ax # (idx)
+	and $FS_MASK_OFF, %ax
+	mov $fs_buf, %si
+	add %ax, %si
+	mov %si, %di
+	mov 0x08(%bp), %ax # (size)
+	add %ax, %si
+	xor %ax, %ax
+	mov %ax, -0x0C(%bp) # (l.6: fst)
+
+1:
+	mov $FS_BLK_SIZE, %cx
+	sub %ax, %cx
+	mov %cx, -0x08(%bp) # (l.4: blk_end)
+	mov 0x08(%bp), %ax # (size)
+	sub %ax, %cx
+	mov %cx, -0x0A(%bp) # (l.5: blk_end_tmp)
+
+	mov -0x08(%bp), %cx # (l.4: blk_end)
+	mov -0x06(%bp), %ax # (l.3: chk_end)
+	shr $0x0C, %ax
+	test %ax, %ax
+	jz 22f
+	mov -0x0A(%bp), %cx # (l.5: blk_end_tmp)
+	# }
+
+22: # shl
+	# (cnt == 0) ? {next}
+	test %cx, %cx
+	jz 23f
+
+	mov (%si), %al
+	mov %al, (%di)
+
+	inc %si
+	inc %di
+	dec %cx
+	jmp 22b
+
+23:
+	# (end == 0) ? {end}
+	mov -0x06(%bp), %ax # (l.3: chk_end)
+	shr $0x0C, %ax
+	test %ax, %ax
+	jz 29f
+
+	mov $fs_tmp_buf, %si
+	mov -0x08(%bp), %cx # (l.4: blk_end)
+	mov -0x0A(%bp), %ax # (l.5: blk_end_tmp)
+	sub %ax, %cx
+	jmp 24f
+
+24: # shl
+	# (cnt == 0) ? {next}
+	test %cx, %cx
+	jz 29f
+
+	mov (%si), %al
+	mov %al, (%di)
+
+	inc %si
+	inc %di
+	dec %cx
+	jmp 24b
 
 29:
 	push $FS_BLK_SIZE # (size)

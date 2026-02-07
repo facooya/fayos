@@ -49,8 +49,14 @@ cmd_test:
 	call fs_write
 	add $0x06, %sp
 
-	push $0x02
-	push $0x0FF0
+	push $0x06
+	push $0x3000
+	push $fsp+FSP_OFF_BASE
+	call fs_write
+	add $0x06, %sp
+
+	push $0x03
+	push $0x0002
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp

@@ -1,5 +1,6 @@
 # Issues
 ## WIP
+- fs\_del(), (3 >= size) only second block bug
 
 ---
 
