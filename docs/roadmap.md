@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- Make fs\_del()
 
 ---
 

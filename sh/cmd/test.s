@@ -32,13 +32,25 @@ cmd_test:
 	mov $0x4645, 0x04(%si)
 
 	push $0x06
-	push $0x0FFE
+	push $0x0000
+	push $fsp+FSP_OFF_BASE
+	call fs_write
+	add $0x06, %sp
+
+	push $0x06
+	push $0x1000
+	push $fsp+FSP_OFF_BASE
+	call fs_write
+	add $0x06, %sp
+
+	push $0x06
+	push $0x2000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
 	push $0x02
-	push $0x0FFE
+	push $0x0FF0
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp
