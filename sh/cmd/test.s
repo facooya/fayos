@@ -60,7 +60,7 @@ cmd_test:
 	add $0x06, %sp
 
 	push $0x06
-	push $0x1002
+	push $0x1000
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp

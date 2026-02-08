@@ -18,7 +18,6 @@
 - record log, error log
 - fs: dentry size optimize
 - Support ctrl family
-- Add fs\_ins(), fs\_del()
 
 ---
 
@@ -33,6 +32,8 @@
 ---
 
 ## Function
+- `fs_ins()`: Add
+- `fs_del()`: free unuse block
 
 ---
 

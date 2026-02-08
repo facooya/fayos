@@ -1249,7 +1249,9 @@ fs_del:
 
 	mov 0x04(%bp), %si # (fsp *src)
 	mov 0x06(%bp), %ax # (idx)
+	and $FS_MASK_BLK, %ax
 	mov FSP_OFF_F_SIZE(%si), %cx
+	and $FS_MASK_BLK, %cx
 	sub %ax, %cx
 	mov %cx, -0x06(%bp) # (l.3: chk_end)
 

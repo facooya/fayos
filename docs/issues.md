@@ -1,6 +1,5 @@
 # Issues
 ## WIP
-- fs\_del(): (size=0x04, idx=0xFFFE)
 
 ---
 
