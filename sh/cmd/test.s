@@ -31,32 +31,36 @@ cmd_test:
 	mov $0x4443, 0x02(%si)
 	mov $0x4645, 0x04(%si)
 
+	# 0x02d000
 	push $0x06
 	push $0x0000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
+	# 0x02e000
 	push $0x06
 	push $0x1000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
+	# 0x02f000
 	push $0x06
 	push $0x2000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
+	# 0x030000
 	push $0x06
 	push $0x3000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
-	push $0x04
-	push $0x0000
+	push $0x06
+	push $0x1002
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp

@@ -1254,6 +1254,14 @@ fs_del:
 	mov %cx, -0x06(%bp) # (l.3: chk_end)
 
 21:
+	xor %ax, %ax
+	push $FS_BLK_SIZE # (size)
+	push %ax # (val)
+	push $fs_tmp_buf # (d_off)
+	push %ds # (d_seg)
+	call mem_set
+	add $0x0A, %sp
+
 	# { read tmp
 	# ((chk_end>>0x0C) == 0) ? {pass}
 	mov -0x06(%bp), %ax # (l.3: chk_end)
@@ -1363,6 +1371,7 @@ fs_del:
 	test %ax, %ax
 	jz 22f
 	mov -0x0A(%bp), %cx # (l.5: blk_end_tmp)
+	and $FS_MASK_OFF, %cx
 	jmp 22f
 	# }
 
