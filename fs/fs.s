@@ -1330,10 +1330,11 @@ fs_del:
 	mov %si, %di
 	mov 0x08(%bp), %ax # (size)
 	add %ax, %si
+	xor %ax, %ax
 
 	# (!fst) ? {pass}
-	mov -0x0C(%bp), %ax # (l.6: fst)
-	test %ax, %ax
+	mov -0x0C(%bp), %dx # (l.6: fst)
+	test %dx, %dx
 	jz 1f
 
 	mov 0x06(%bp), %ax # (idx)
@@ -1343,8 +1344,10 @@ fs_del:
 	mov %si, %di
 	mov 0x08(%bp), %ax # (size)
 	add %ax, %si
+
 	xor %ax, %ax
 	mov %ax, -0x0C(%bp) # (l.6: fst)
+	mov 0x06(%bp), %ax # (idx)
 
 1:
 	mov $FS_BLK_SIZE, %cx
@@ -1360,6 +1363,7 @@ fs_del:
 	test %ax, %ax
 	jz 22f
 	mov -0x0A(%bp), %cx # (l.5: blk_end_tmp)
+	jmp 22f
 	# }
 
 22: # shl
