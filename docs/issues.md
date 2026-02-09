@@ -4,7 +4,7 @@
 ---
 
 ## FIXME
-- Scroll file `.top.vga`, not allocate new block. Require fs\_read/write(), fs\_shl().
+- Scroll file broken if allocate new block.
 
 ---
 
