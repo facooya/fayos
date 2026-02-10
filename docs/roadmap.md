@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- fs: dentry size optimize
 
 ---
 
@@ -16,7 +17,6 @@
 - tab: autocomplete file or dir
 - using allocate memory and free
 - record log, error log
-- fs: dentry size optimize
 - Support ctrl family
 
 ---

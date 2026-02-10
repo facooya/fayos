@@ -83,29 +83,13 @@ fs_add:
 	add $0x02, %si
 	add %ax, %si # name
 
-	push $fsp+FSP_OFF_DIR # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
 	push 0x06(%bp) # (f_type)
 	push %si # (&name)
 	push $fsp+FSP_OFF_DIR # (fsp &src)
 	push $fsp+FSP_OFF_TMP # (fsp &dst)
 	call de_add
 	add $0x08, %sp
-	# <ax = rec_size>
 	# }
-
-	mov $fsp+FSP_OFF_DIR, %si
-	mov FSP_OFF_F_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, FSP_OFF_F_SIZE(%si)
-	push %si # (fsp &src)
-	call fsp_write
-	add $0x02, %sp
 
 	# { upd f_size if fsp_dir is fsp_cur, fsp_par
 	mov $fsp+FSP_OFF_CUR, %si

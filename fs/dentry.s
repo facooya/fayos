@@ -18,7 +18,7 @@
 # ub8 *name,
 # ub8 f_type
 # )
-# <ret: ax = rec_size>
+# <rw: fs_write_buf>
 de_add:
 	push %bp
 	mov %sp, %bp
@@ -27,76 +27,49 @@ de_add:
 	push %di
 	push %bx
 
-	mov 0x06(%bp), %si # (fsp *src)
-	mov FSP_OFF_F_SIZE(%si), %ax
-	push %ax # [s.0:file_size]
-
-	push %si # (fsp *src)
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
-
-	pop %ax # [s.0:file_size]
-	add %ax, %bx
-
-	# { write normal
-	# write inum
 	mov 0x04(%bp), %si # (fsp *dst)
-	mov FSP_OFF_INUM(%si), %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
+	mov $fs_write_buf, %di
 
-	# write info
+	mov FSP_OFF_INUM(%si), %ax
+	mov %ax, DE_OFF_INUM(%di)
+
 	mov 0x0A(%bp), %ax # (f_type)
-	mov %al, %es:DE_OFF_F_TYPE(%bx)
+	mov %al, DE_OFF_F_TYPE(%di)
+
+	# get name size
 	mov 0x08(%bp), %si # (*name)
 	push %si
 	push %ds
 	call mem_size
 	add $0x04, %sp
-	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
+	mov %al, DE_OFF_NAME_SIZE(%di)
 
-	# write rec_size
-	xor %cx, %cx
-	mov %al, %cl
+	# name -> fs_write_buf
+	add $DE_OFF_NAME, %di
+	push %ax # [s.f0: name_size]
+	push %ax # (size)
+	push %si # (s_off)
+	push %ds # (s_seg)
+	push %di # (d_off)
+	push %ds # (d_seg)
+	call mem_cpy
+	add $0x0A, %sp
+	pop %cx # [s.f0: name_size]
+	mov $fs_write_buf, %di
+
+	# calc rec size
 	add $(DE_SIZE+DE_ALIGN_2), %cx
 	and $DE_MASK, %cx
-	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
-	push %cx # [s.0:rec_size]
-	# }
+	mov %cx, DE_OFF_REC_SIZE(%di)
 
-	# { write name
-	# dest name
-	mov %bx, %di
-	add $DE_OFF_NAME, %di
-
-	mov 0x08(%bp), %si # (*name_str)
-	xor %cx, %cx
-	mov %al, %cl # name_size
-
-# TODO: mem_cpy
-1:
-	# (name_size == 0) ? {end}
-	test %cl, %cl
-	jz 1f
-
-	# cpy
-	mov (%si), %al
-	mov %al, %es:(%di)
-
-	inc %si
-	inc %di
-	dec %cl
-	jmp 1b
-
-1:
-	# }
 	mov 0x06(%bp), %si # (fsp *src)
-	push %si # (fsp &src)
-	call disk_write_fsp
-	add $0x02, %sp
+	mov FSP_OFF_F_SIZE(%si), %ax
 
-	pop %ax # [s.0:rec_size] <ret.0:rec_size>
+	push %cx # (size)
+	push %ax # (idx)
+	push %si # (fsp &src)
+	call fs_write
+	add $0x06, %sp
 
 	pop %bx
 	pop %di
