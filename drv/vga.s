@@ -1017,43 +1017,6 @@ _vga_sl_tb:
 	jmp 99f
 
 30: # load
-	# {{ TEST
-	# (flag == top) ? {top} : {bottom}
-	#mov $vga_top_cnt, %si
-	#mov 0x04(%bp), %ax
-	#test $(0x01<<0x01), %ax
-	#jz 1f
-	#mov $vga_bottom_cnt, %si
-#
-#1:
-	## { calc off
-	#mov (%si), %ax
-	#test %ax, %ax
-	#jz 99f
-#
-	#xor %si, %si
-	#dec %ax
-	#push %es # [s.0: file_seg]
-	#xor %cx, %cx
-	#mov %cx, %es
-	#mov %es:(VGA_ADDR_COL), %cx
-	#pop %es # [s.0: file_seg]
-	#xor %dx, %dx
-	#mul %cx
-#
-	## set off
-	#add %ax, %si
-	#add %ax, %si
-	# }
-	# }}
-
-	push $fsp+FSP_OFF_BASE # (fsp &src)
-	call disk_read_fsp
-	add $0x02, %sp
-	# <dx:ax = seg:off>
-	mov %dx, %es
-	mov %ax, %bx
-
 	# (flag == top) ? {top} : {bottom}
 	mov $vga_top_cnt, %si
 	mov 0x04(%bp), %ax
@@ -1068,27 +1031,33 @@ _vga_sl_tb:
 	jz 99f
 
 	dec %ax
-	push %es # [s.0: file_seg]
+	push %es # [s.0: vga_seg]
 	xor %cx, %cx
 	mov %cx, %es
 	mov %es:(VGA_ADDR_COL), %cx
-	pop %es # [s.0: file_seg]
+	pop %es # [s.0: vga_seg]
 	xor %dx, %dx
 	mul %cx
-
-	# set off
-	add %ax, %bx
-	add %ax, %bx
+	add %ax, %ax
+	add %cx, %cx
 	# }
 
-	# init
-	push %es # [s.0: file_seg]
-	mov $(VGA_MEM&0xFFFF), %di
-	add %cx, %di
+	push %cx # [s.f0: line_cnt]
+	push %cx # (size)
+	push %ax # (idx)
+	push $fsp+FSP_OFF_BASE # (fsp &src)
+	call fs_read
+	add $0x06, %sp
+	pop %cx # [s.f0: line_cnt]
+
+	mov $fs_read_buf, %si
+
+	# init top
+	xor %di, %di
 	add %cx, %di
 
 	# (flag == top) ? {loop} : {bottom}
-	mov 0x04(%bp), %dx
+	mov 0x04(%bp), %dx # (flag)
 	test $(0x01<<0x01), %dx
 	jz 31f
 
@@ -1098,28 +1067,22 @@ _vga_sl_tb:
 	add %dx, %di
 	add %dx, %di
 
-31: # top/bottom
+31:
 	# (cnt == 0) ? {end}
 	test %cx, %cx
 	jz 39f
 
-	# file -> screen
-	mov %es:(%bx), %ax
-	push %es # [s.1: file_seg]
-	mov $(VGA_MEM>>0x10), %dx
-	mov %dx, %es
+	# file -> vga
+	mov (%si), %ax
 	mov %ax, %es:(%di)
-	pop %es # [s.1: file_seg]
 
+	add $0x02, %si
 	add $0x02, %di
-	add $0x02, %bx
-	dec %cx
+	sub $0x02, %cx
 	jmp 31b
 
 39:
-	pop %es # [s.0: file_seg]
-
-	# upd file size
+	# { upd file size
 	mov $fsp+FSP_OFF_BASE, %si
 	mov FSP_OFF_F_SIZE(%si), %cx
 	push %es # [s.0: vga_seg]
@@ -1130,9 +1093,11 @@ _vga_sl_tb:
 	sub %ax, %cx
 	sub %ax, %cx
 	mov %cx, FSP_OFF_F_SIZE(%si)
+
 	push %si
 	call fsp_write
 	add $0x02, %sp
+	# }
 
 	# (flag == top) ? {top} : {bottom}
 	mov $vga_top_cnt, %si
@@ -1145,6 +1110,7 @@ _vga_sl_tb:
 	mov (%si), %ax
 	dec %ax
 	mov %ax, (%si)
+	jmp 99f
 
 99:
 	pop %bx
