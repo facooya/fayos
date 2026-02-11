@@ -87,83 +87,64 @@ de_add_dots:
 	push %di
 	push %bx
 
+	# { single dot
 	mov 0x04(%bp), %si # (fsp *dst)
-	push %si
-	call disk_read_fsp
-	add $0x02, %sp
-	mov %dx, %es
-	mov %ax, %bx
+	mov $fs_write_buf, %di
 
-	# { dot
-	# write inum
 	mov FSP_OFF_INUM(%si), %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
+	mov %ax, DE_OFF_INUM(%di)
 
-	# write info
 	mov $DE_S_DOT_INFO, %ax
-	mov %ah, %es:DE_OFF_F_TYPE(%bx)
-	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
+	mov %ah, DE_OFF_F_TYPE(%di)
+	mov %al, DE_OFF_NAME_SIZE(%di)
 
-	# write rec_size
-	xor %cx, %cx
-	mov %al, %cl
-	add $(DE_SIZE+DE_ALIGN_2), %cx
-	and $DE_MASK, %cx
-	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
-	push %cx # [s.0:rec_size]
-
-	# write name
 	mov $DE_S_DOT_NAME, %al
-	mov %al, %es:DE_OFF_NAME(%bx)
+	mov %al, DE_OFF_NAME(%di)
 
-	mov 0x04(%bp), %si # (fsp *dst)
-	push %si
-	call disk_write_fsp
-	add $0x02, %sp
-	# }
-
-	pop %ax # [s.0:rec_size]
-	mov 0x04(%bp), %si # (fsp *dst)
-	mov %ax, FSP_OFF_F_SIZE(%si)
-	add %ax, %bx
-
-	# { dots
-	# write inum
-	mov 0x06(%bp), %si # (fsp *src)
-	mov FSP_OFF_INUM(%si), %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
-
-	# write info
-	mov $DE_D_DOT_INFO, %ax
-	mov %ah, %es:DE_OFF_F_TYPE(%bx)
-	mov %al, %es:DE_OFF_NAME_SIZE(%bx)
-
-	# write rec_size
+	# calc rec size
 	xor %cx, %cx
 	mov %al, %cl
 	add $(DE_SIZE+DE_ALIGN_2), %cx
 	and $DE_MASK, %cx
-	mov %cx, %es:DE_OFF_REC_SIZE(%bx)
-	push %cx # [s.0:rec_size]
+	mov %cx, DE_OFF_REC_SIZE(%di)
 
-	# write name
-	mov $DE_D_DOT_NAME, %ax
-	mov %ax, %es:DE_OFF_NAME(%bx)
-
-	mov 0x04(%bp), %si # (fsp *dst)
-	push %si
-	call disk_write_fsp
-	add $0x02, %sp
+	mov FSP_OFF_F_SIZE(%si), %ax
+	push %cx # (size)
+	push %ax # (idx)
+	push %si # (fsp &src)
+	call fs_write
+	add $0x06, %sp
 	# }
 
-	pop %ax # [s.0:rec_size]
+	# { double dot
+	mov 0x06(%bp), %si # (fsp *src)
+	mov $fs_write_buf, %di
+
+	mov FSP_OFF_INUM(%si), %ax
+	mov %ax, DE_OFF_INUM(%di)
+
+	mov $DE_D_DOT_INFO, %ax
+	mov %ah, DE_OFF_F_TYPE(%di)
+	mov %al, DE_OFF_NAME_SIZE(%di)
+
+	# calc rec size
+	xor %cx, %cx
+	mov %al, %cl
+	add $(DE_SIZE+DE_ALIGN_2), %cx
+	and $DE_MASK, %cx
+	mov %cx, DE_OFF_REC_SIZE(%di)
+
+	mov $DE_D_DOT_NAME, %ax
+	mov %ax, DE_OFF_NAME(%di)
+
 	mov 0x04(%bp), %si # (fsp *dst)
-	mov FSP_OFF_F_SIZE(%si), %cx
-	add %ax, %cx
-	mov %cx, FSP_OFF_F_SIZE(%si)
+	mov FSP_OFF_F_SIZE(%si), %ax
+	push %cx # (size)
+	push %ax # (idx)
 	push %si # (fsp &src)
-	call fsp_write
-	add $0x02, %sp
+	call fs_write
+	add $0x06, %sp
+	# }
 
 	pop %bx
 	pop %di
