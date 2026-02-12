@@ -1,6 +1,5 @@
 # Roadmap
 ## WIP
-- fs: dentry size optimize
 
 ---
 
@@ -10,6 +9,7 @@
 
 ## TODO
 - more date format
+- fs: dentry remove use `fs_del()`
 
 ---
 

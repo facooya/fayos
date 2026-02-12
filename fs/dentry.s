@@ -94,12 +94,12 @@ de_add_dots:
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, DE_OFF_INUM(%di)
 
+	mov $DE_S_DOT_NAME, %al
+	mov %al, DE_OFF_NAME(%di)
+
 	mov $DE_S_DOT_INFO, %ax
 	mov %ah, DE_OFF_F_TYPE(%di)
 	mov %al, DE_OFF_NAME_SIZE(%di)
-
-	mov $DE_S_DOT_NAME, %al
-	mov %al, DE_OFF_NAME(%di)
 
 	# calc rec size
 	xor %cx, %cx
@@ -123,6 +123,9 @@ de_add_dots:
 	mov FSP_OFF_INUM(%si), %ax
 	mov %ax, DE_OFF_INUM(%di)
 
+	mov $DE_D_DOT_NAME, %ax
+	mov %ax, DE_OFF_NAME(%di)
+
 	mov $DE_D_DOT_INFO, %ax
 	mov %ah, DE_OFF_F_TYPE(%di)
 	mov %al, DE_OFF_NAME_SIZE(%di)
@@ -133,9 +136,6 @@ de_add_dots:
 	add $(DE_SIZE+DE_ALIGN_2), %cx
 	and $DE_MASK, %cx
 	mov %cx, DE_OFF_REC_SIZE(%di)
-
-	mov $DE_D_DOT_NAME, %ax
-	mov %ax, DE_OFF_NAME(%di)
 
 	mov 0x04(%bp), %si # (fsp *dst)
 	mov FSP_OFF_F_SIZE(%si), %ax
