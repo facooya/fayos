@@ -244,6 +244,7 @@ fs_rm:
 	add $0x04, %sp
 	# <ax = {true:off, false:1}>
 	add %ax, %bx
+	mov %ax, -0x02(%bp) # (l.1: idx)
 
 	# (f_type == dir) ? {dir}
 	mov %es:DE_OFF_F_TYPE(%bx), %al
@@ -443,13 +444,13 @@ fs_rm:
 	call ind_clr
 	add $0x02, %sp
 
-	# clr inum
-	xor %ax, %ax
-	mov %ax, %es:DE_OFF_INUM(%bx)
-
-	push $fsp+FSP_OFF_DIR
-	call disk_write_fsp
-	add $0x02, %sp
+	mov %es:DE_OFF_REC_SIZE(%bx), %ax
+	mov -0x02(%bp), %cx # (l.1: idx)
+	push %ax # (size)
+	push %cx # (idx)
+	push $fsp+FSP_OFF_DIR # (fsp &src)
+	call fs_del
+	add $0x06, %sp
 
 	# {{ chk cur
 	mov $fsp+FSP_OFF_CUR, %si
