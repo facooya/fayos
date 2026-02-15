@@ -829,8 +829,6 @@ fs_write:
 	jae 50f
 	jmp 10f
 
-	# TODO: block max, file_size, cut file_size
-
 1: # fragment
 	# { chk blk
 	mov 0x04(%bp), %si # (fsp *src)
@@ -1111,6 +1109,7 @@ fs_del:
 	push %bp
 	mov %sp, %bp
 	sub $0x10, %sp
+	push %es
 	push %si
 	push %di
 	push %bx
@@ -1442,6 +1441,57 @@ fs_del:
 	push %si # (fsp &src)
 	call fsp_write
 	add $0x02, %sp
+	# }
+
+	# { clr blk
+	# (blk_size / f_size)
+	mov FSP_OFF_F_SIZE(%si), %ax
+	mov $FS_BLK_SIZE, %cx
+	xor %dx, %dx
+	div %cx
+	# <ax = real_blk_cnt>
+
+	# (remain != 0) ? {pass}
+	test %dx, %dx
+	jnz 1f
+	dec %ax
+
+1:
+	xor %cx, %cx
+	mov FSP_OFF_BLK_CNT(%si), %cl
+
+	# (real_blk_cnt == blk_cnt) ? {done}
+	cmp %cx, %ax
+	je 90f
+	dec %cx
+
+	add %cx, %si
+	add %cx, %si
+	mov FSP_OFF_BLK(%si), %cx
+
+	xor %ax, %ax
+	mov %ax, FSP_OFF_BLK(%si)
+
+	push %cx # [s.f0: blk_num]
+	mov 0x04(%bp), %si
+	push %si # (fsp &src)
+	call fsp_write
+	add $0x02, %sp
+	pop %cx # [s.f0: blk_num]
+
+	mov $(DISK_BBM_MEM>>0x10), %ax
+	mov %ax, %es
+	mov $(DISK_BBM_MEM&0xFFFF), %bx
+
+	push %cx # (bit_num)
+	push %bx # (off)
+	push %es # (seg)
+	call bm_clr
+	add $0x06, %sp
+
+	push $dpi+DPI_OFF_BBM
+	call disk_write_dpi
+	add $0x02, %sp
 	jmp 90f
 	# }
 
@@ -1457,6 +1507,7 @@ fs_del:
 	pop %bx
 	pop %di
 	pop %si
+	pop %es
 	mov %bp, %sp
 	pop %bp
 	ret

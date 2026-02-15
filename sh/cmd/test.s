@@ -27,33 +27,27 @@ cmd_test:
 	add $0x02, %sp
 
 	mov $fs_write_buf, %si
-	#mov $0x4241, (%si)
-	#mov $0x4443, 0x02(%si)
-	#mov $0x4645, 0x04(%si)
-	mov $0x4107, %ax
-	mov $0xA0, %cx
+	mov $0x4241, (%si)
+	mov $0x4443, 0x02(%si)
+	mov $0x4645, 0x04(%si)
 
-1:
-	test %cx, %cx
-	jz 2f
-
-	mov %ax, (%si)
-	add $0x02, %si
-	sub $0x02, %cx
-	jmp 1b
-
-2:
 	# 0x02d000
-	push $0xA0
-	push $0x0FA0
+	push $0x06
+	push $0x00
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
-	push $0x06
-	push $0x1000
+	push $0x07
+	push $0x0FFF
 	push $fsp+FSP_OFF_BASE
-	#call fs_del
+	call fs_write
+	add $0x06, %sp
+
+	push $0x07
+	push $0x0FFF
+	push $fsp+FSP_OFF_BASE
+	call fs_del
 	add $0x06, %sp
 
 	mov $fs_buf, %si

@@ -1,5 +1,6 @@
 # Roadmap
 ## WIP
+- `fs_del()`: free unuse block
 
 ---
 
@@ -32,7 +33,6 @@
 
 ## Function
 - `fs_ins()`: Add
-- `fs_del()`: free unuse block
 
 ---
 
