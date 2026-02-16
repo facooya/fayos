@@ -38,14 +38,20 @@ cmd_test:
 	call fs_write
 	add $0x06, %sp
 
-	push $0x07
-	push $0x0FFF
+	push $0x06
+	push $0x1000
 	push $fsp+FSP_OFF_BASE
 	call fs_write
 	add $0x06, %sp
 
-	push $0x07
-	push $0x0FFF
+	push $0x06
+	push $0x1006
+	push $fsp+FSP_OFF_BASE
+	call fs_write
+	add $0x06, %sp
+
+	push $0x06
+	push $0x1000
 	push $fsp+FSP_OFF_BASE
 	call fs_del
 	add $0x06, %sp
