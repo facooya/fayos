@@ -1242,6 +1242,9 @@ fs_del:
 	je 90f
 	dec %cx
 
+	# HACK 
+	jmp 90f
+
 	add %cx, %si
 	add %cx, %si
 	mov FSP_OFF_BLK(%si), %cx

@@ -39,6 +39,8 @@ cmd_map:
 	.asciz "touch"
 	.word cmd_rm
 	.asciz "rm"
+	.word cmd_mv
+	.asciz "mv"
 
 	# end of cmd_map
 	.long 0x00

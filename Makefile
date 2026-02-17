@@ -49,6 +49,7 @@ sh/cmd/pwd.s \
 sh/cmd/cd.s \
 sh/cmd/touch.s \
 sh/cmd/rm.s \
+sh/cmd/mv.s \
 sh/cmd/mkdir.s \
 sh/cmd/rmdir.s
 

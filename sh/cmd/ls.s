@@ -82,6 +82,16 @@ cmd_ls:
 	jmp 10f
 
 .cmd_only:
+	# { upd self fsp
+	mov $fsp+FSP_OFF_CUR, %si
+	mov FSP_OFF_INUM(%si), %ax
+
+	push %ax # (inum)
+	push $fsp+FSP_OFF_CUR # (fsp &dst)
+	call fsp_read
+	add $0x04, %sp
+	# }
+
 	mov $fsp+FSP_OFF_CUR, %si
 	mov FSP_OFF_F_SIZE(%si), %dx
 	push %dx # [s.f0: f_size]

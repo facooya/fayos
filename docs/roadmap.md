@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- `fs_del()`: free unuse block
+- mv
 
 ---
 
@@ -23,7 +23,6 @@
 
 ## Command
 - cp
-- mv
 - printf
 - read
 - grep
