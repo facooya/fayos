@@ -1153,6 +1153,7 @@ fs_del:
 
 	mov 0x04(%bp), %si # (fsp *src)
 	mov %ax, FSP_OFF_DISK_LBA(%si)
+	mov FSP_OFF_F_SIZE(%si), %ax
 
 	push %si # (fsp &src)
 	call fsp_write
@@ -1179,9 +1180,10 @@ fs_del:
 	add %ax, %si
 
 	mov 0x06(%bp), %dx # (idx)
-	mov 0x08(%bp), %cx # (size)
+	mov 0x08(%bp), %ax # (size)
 	mov %si, %di
-	add %cx, %si
+	add %ax, %si
+	mov -0x02(%bp), %cx # (l.1: shl_size)
 
 11: # shl
 	# (size == 0) ? {end}
@@ -1228,6 +1230,10 @@ fs_del:
 	div %cx
 	# <ax = real_blk_cnt>
 
+	# (real_blk_cnt == 0) ? {done}
+	test %ax, %ax
+	jz 90f
+
 	# (remain != 0) ? {pass}
 	test %dx, %dx
 	jnz 1f
@@ -1241,9 +1247,6 @@ fs_del:
 	cmp %cx, %ax
 	je 90f
 	dec %cx
-
-	# HACK 
-	jmp 90f
 
 	add %cx, %si
 	add %cx, %si
