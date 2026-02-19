@@ -41,6 +41,8 @@ cmd_map:
 	.asciz "rm"
 	.word cmd_mv
 	.asciz "mv"
+	.word cmd_cp
+	.asciz "cp"
 
 	# end of cmd_map
 	.long 0x00

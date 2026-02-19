@@ -1,6 +1,6 @@
 # Roadmap
 ## WIP
-- mv
+- cp
 
 ---
 
@@ -22,11 +22,11 @@
 ---
 
 ## Command
-- cp
 - printf
 - read
 - grep
 - find
+- mv: check dir
 
 ---
 
