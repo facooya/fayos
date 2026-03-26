@@ -38,6 +38,7 @@ sh/history.s \
 sh/cmd/command.s \
 sh/cmd/test.s \
 sh/cmd/echo.s \
+sh/cmd/printf.s \
 sh/cmd/date.s \
 sh/cmd/help.s \
 sh/cmd/clear.s \

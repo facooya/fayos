@@ -15,6 +15,8 @@ cmd_map:
 	.asciz "date"
 	.word cmd_echo
 	.asciz "echo"
+	.word cmd_printf
+	.asciz "printf"
 	.word cmd_help
 	.asciz "help"
 	.word cmd_poweroff

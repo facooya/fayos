@@ -21,12 +21,12 @@
 ---
 
 ## Command
-- printf
 - read
 - grep
 - find
 - mv: check dir
 - cp: support dir and blocks
+- printf: support decimal
 
 ---
 
