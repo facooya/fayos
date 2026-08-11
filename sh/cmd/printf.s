@@ -96,6 +96,7 @@ cmd_printf:
 	jmp 3b
 
 4:
+	inc %bx
 	add $0x02, %si
 	sub $0x02, %cx
 	jmp 1b
