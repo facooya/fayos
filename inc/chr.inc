@@ -21,6 +21,7 @@
 .equ CHR_EQ, 0x3D
 .equ CHR_GT, 0x3E
 .equ CHR_ZERO, 0x30
+.equ CHR_NINE, 0x39
 
 .equ CHR_UC_A, 0x41
 .equ CHR_UC_Z, 0x5A 

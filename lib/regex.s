@@ -59,17 +59,24 @@ regex_name:
 
 	# alpha chk
 	cmp $CHR_UC_A, %al
-	jb 2f
+	jb 11f
 	cmp $CHR_UC_A, %al
-	jb 2f
+	jb 11f
 	cmp $CHR_UC_Z, %al
 	jbe 4f
 	cmp $CHR_LC_A, %al
-	jb 2f
+	jb 11f
 	cmp $CHR_LC_Z, %al
 	jbe 4f
 
-2: # alpha false
+11: # num chk
+	cmp $CHR_ZERO, %al
+	jb 2f
+	cmp $CHR_NINE, %al
+	jbe 4f
+	jmp 2f
+
+2: # alpha and num false
 	# spcial chk
 	cmp $CHR_US, %al
 	je 4f
@@ -85,7 +92,7 @@ regex_name:
 	jz 92f
 	jmp 4f
 
-4:
+4: # continue
 	inc %cx
 	inc %bx
 	jmp 1b
