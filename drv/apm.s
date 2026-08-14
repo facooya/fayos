@@ -55,6 +55,7 @@ apm_init:
 	jmp 8090f
 
 8090:
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 
@@ -86,6 +87,7 @@ apm_off:
 	push $CHR_SP # (chr)
 	call vga_outc
 	add $0x02, %sp
+	movb $ATTR_ERR, (vga_attr)
 	push $_emsg_cmd_fail
 	call vga_outs
 	add $0x02, %sp

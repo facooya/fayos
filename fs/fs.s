@@ -165,6 +165,7 @@ fs_add:
 	jmp 890f
 
 890: # err hdl
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 
@@ -525,6 +526,7 @@ fs_rm:
 	jmp 890f
 
 890: # err hdl
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 
@@ -751,6 +753,7 @@ fs_read:
 	ret
 
 8001:
+	movb $ATTR_ERR, (vga_attr)
 	push $emsg_fs_size
 	call vga_outs
 	add $0x02, %sp
@@ -1060,6 +1063,7 @@ fs_write:
 	ret
 
 8001:
+	movb $ATTR_ERR, (vga_attr)
 	push $emsg_fs_size
 	call vga_outs
 	add $0x02, %sp
@@ -1068,6 +1072,7 @@ fs_write:
 	jmp 80b
 
 8002:
+	movb $ATTR_ERR, (vga_attr)
 	push $emsg_fs_blk_cnt
 	call vga_outs
 	add $0x02, %sp
@@ -1568,6 +1573,7 @@ fs_del:
 	ret
 
 8001:
+	movb $ATTR_ERR, (vga_attr)
 	push $emsg_fs_size
 	call vga_outs
 	add $0x02, %sp

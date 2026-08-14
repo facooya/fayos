@@ -107,6 +107,7 @@ cmd_cd:
 	jmp .err_hdl
 
 .err_hdl:
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 	NEWLINE

@@ -135,11 +135,11 @@ exec_cmd:
 	ret
 
 801:
-	movb $ATTR_ERR, (vga_attr)
 	push $emsg_cmd_not
 	jmp 890f
 
 890:
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 	NEWLINE
@@ -310,6 +310,7 @@ _exec_redir:
 	jmp 890f
 
 890:
+	movb $ATTR_ERR, (vga_attr)
 	call vga_outs
 	add $0x02, %sp
 	NEWLINE
