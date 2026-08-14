@@ -226,6 +226,10 @@ _args_tok:
 	jmp 1b
 
 13: # hash
+	# (cx == 0) ? {skip}
+	test %cx, %cx
+	jz 91f
+
 	dec %cx
 
 1301:
