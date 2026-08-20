@@ -23,6 +23,7 @@ _start:
 	mov $STACK_PTR, %sp
 
 	# display
+	call _vga_init_row_col
 	call _vga_clr
 	push $_bmsg_fayos
 	call _vga_outs
@@ -33,6 +34,89 @@ _start:
 	call _ata_read
 	ljmp $(KERN_MEM>>0x10), $(KERN_MEM&0xFFFF)
 
+# _vga_init_row_col()
+# <mod: _vga_row, _vga_col>
+_vga_init_row_col:
+	push %bx
+
+	# { get columns
+	mov $VGA_PORT_CRTC_CMD, %dx
+	mov $VGA_CMD_COL, %al
+	out %al, %dx
+
+	mov $VGA_PORT_CRTC_DATA, %dx
+	in %dx, %al
+	xor %ah, %ah
+	inc %ax
+
+	mov %ax, (_vga_col)
+	# }
+
+	# {{ get rows
+	# { char height
+	mov $VGA_PORT_CRTC_CMD, %dx
+	mov $VGA_CMD_CHR_H, %al
+	out %al, %dx
+
+	mov $VGA_PORT_CRTC_DATA, %dx
+	in %dx, %al
+	and $VGA_MASK_CHR_H, %al
+	inc %al
+
+	xor %bx, %bx
+	mov %al, %bl
+	# <bx=char_height>
+	# }
+
+	# { full height low
+	mov $VGA_PORT_CRTC_CMD, %dx
+	mov $VGA_CMD_ROW_LO, %al
+	out %al, %dx
+	
+	mov $VGA_PORT_CRTC_DATA, %dx
+	in %dx, %al
+
+	xor %cx, %cx
+	mov %al, %cl
+	# <cl=full_height_lo>
+	# }
+
+	# { full height high
+	mov $VGA_PORT_CRTC_CMD, %dx
+	mov $VGA_CMD_ROW_HI, %al
+	out %al, %dx
+
+	mov $VGA_PORT_CRTC_DATA, %dx
+	in %dx, %al
+
+	test $VGA_ROW_HI_8, %al
+	jz 1f
+	or $(0x01<<0x00), %ch
+	# <ch=full_height_hi>
+
+1:
+	test $VGA_ROW_HI_9, %al
+	jz 2f
+	or $(0x01<<0x01), %ch
+	# <ch=full_height_hi>
+	# }
+
+2:
+	inc %cx
+	# <cx=full_height>
+
+	# (full_height / char_height = rows)
+	xor %dx, %dx
+	mov %cx, %ax
+	div %bx
+	xor %ah, %ah
+	# <ax = rows>
+	mov %ax, (_vga_row)
+	# }}
+
+	pop %bx
+	ret
+
 # _vga_clr()
 _vga_clr:
 	push %es
@@ -42,15 +126,9 @@ _vga_clr:
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
 
-	# { get disp
-	xor %dx, %dx
-	mov $VGA_ADDR_ROW, %bx
-	mov (%bx), %dl
-	inc %dl
-
-	mov $VGA_ADDR_COL, %bx
-	mov (%bx), %ax
-	# }
+	# get size
+	mov (_vga_row), %dx
+	mov (_vga_col), %cx
 
 	mul %dx
 	mov %ax, %cx
@@ -76,16 +154,16 @@ _vga_clr:
 9:
 	# { set curs
 	mov $VGA_CMD_CURS_POS_HI, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	xor %al, %al
 	out %al, %dx
 
 	mov $VGA_CMD_CURS_POS_LO, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	xor %al, %al
 	out %al, %dx
 	# }
@@ -102,9 +180,8 @@ _vga_outs:
 	mov 0x04(%bp), %si # (*str)
 
 	# init
-	xor %ax, %ax
-	mov %ax, %es
-	mov %es:(VGA_ADDR_COL), %cx
+	mov (_vga_col), %cx
+
 	mov $(VGA_MEM>>0x10), %ax
 	mov %ax, %es
 	mov $(VGA_MEM&0xFFFF), %di
@@ -113,16 +190,16 @@ _vga_outs:
 
 	# { get curs
 	mov $VGA_CMD_CURS_POS_HI, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	in %dx, %al
 	mov %al, %ah
 
 	mov $VGA_CMD_CURS_POS_LO, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	in %dx, %al
 
 	# skip outc, conf
@@ -158,8 +235,7 @@ _vga_outs:
 2: # newline
 	# { newline
 	push %cx
-	mov $VGA_ADDR_COL, %bx
-	mov (%bx), %cx # col
+	mov (_vga_col), %cx
 
 	xor %dx, %dx
 	mov %di, %ax
@@ -186,16 +262,16 @@ _vga_outs:
 9:
 	# { set curs
 	mov $VGA_CMD_CURS_POS_HI, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	mov %ch, %al
 	out %al, %dx
 
 	mov $VGA_CMD_CURS_POS_LO, %al
-	mov $VGA_PORT_CURS_CMD, %dx
+	mov $VGA_PORT_CRTC_CMD, %dx
 	out %al, %dx
-	mov $VGA_PORT_CURS_DATA, %dx
+	mov $VGA_PORT_CRTC_DATA, %dx
 	mov %cl, %al
 	out %al, %dx
 	# }
@@ -296,6 +372,9 @@ _ata_read:
 	pop %es
 	ret
 
-# [rodata]
 .section .rodata
 _bmsg_fayos: .asciz "FAYOS\n"
+
+.section .data
+_vga_row: .word 0x00
+_vga_col: .word 0x00
