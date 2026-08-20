@@ -12,6 +12,7 @@ Write the boot signature via linker script.
 - [Memory Map](#memory-map)
 - [Function Reference](#function-reference)
 - - [`_start`](#_start)
+- - [`_vga_init_row_col`](#_vga_init_row_col)
 - - [`_vga_clr`](#_vga_clr)
 - - [`_vga_puts`](#_vga_puts)
 - - [`_ata_read`](#_ata_read)
@@ -36,7 +37,7 @@ Write the boot signature via linker script.
 | --- | --- |
 | `0x7000-0x7BFF` | Stack memory Stack start `0x7C00`. Supports 1546 stacks. Stack segment always 0. |
 | `0x7C00-0x7DFF` | Bootloader memory |
-| `0x1000-0x6FFF` | Kernel memory |
+| `0x10000-0x1FFFF` | Kernel memory |
 
 ---
 
@@ -62,7 +63,8 @@ Boot entry point.
 graph TD
 Init([Initialization])
 Init --> Stack[Set stack pointer]
-Stack --> VGA_Clear[[_vga_clr]]
+Stack --> VGA_Init[[_vga_init_row_col]]
+VGA_Init --> VGA_Clear[[_vga_clr]]
 VGA_Clear --> VGA_Puts[[_vga_puts]]
 VGA_Puts --> KernelMemory[Set memory for kernel]
 KernelMemory --> ATA_Read[[_ata_read]]
@@ -85,6 +87,34 @@ ATA_Read --> JumpKernel([Jump to kernel memory])
 | Clear interrupt | [docs: cli](#note-clear-interrupt) |
 | Clear Direction | [docs: cld](#note-clear-direction) |
 | Stack work | [docs: stack](#note-stack) |
+
+---
+
+### `_vga_init_row_col`
+#### Overview
+VGA calculate rows and get columns.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `N/A`
+
+#### Modifies
+- `_vga_row`
+- `_vga_col`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+GetColumns([GetColumns]) --> GetCharHeight[Get character height] --> GetHeight[Get display height] --> GetRows([Calculate for row count])
+```
+
+#### Implementation
+`row_count = display_height / char_height`
 
 ---
 
@@ -246,6 +276,7 @@ If nessless `ax` value, Manualy add 2-byte to stack pointer for clean like `add 
 | DRQ | Data Request |
 | BG | Backgroud |
 | FG | Foreground |
+| CRTC | Cathode Ray Tube Controller |
 
 ---
 
@@ -259,4 +290,4 @@ If nessless `ax` value, Manualy add 2-byte to stack pointer for clean like `add 
 
 ---
 
-> Authors 2025-2026 Facooya and Fanone Facooya
+> Maintained by Facooya and Fanone Facooya, 2025-2026

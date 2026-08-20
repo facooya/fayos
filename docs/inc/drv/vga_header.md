@@ -17,14 +17,19 @@ Header for VGA.
 | `VGA_ATTR_COLOR` | Attribute default color. `4-bit:4-bit = background:foreground`. Default color is `0:7 = black:light_gray` |
 | `VGA_SCROLL_CNT` | Screen scroll max count |
 | `VGA_MEM` | VGA Memory, segment:offset |
-| `VGA_PORT_CURS_CMD` | Port for cursor command |
-| `VGA_PORT_CURS_DATA` | Port for cursor data. Read/Write 1-byte |
-| `VGA_ADDR_ROW` | Address for row. Total row index. Read only 1-byte. |
-| `VGA_ADDR_COL` | Addres for column. Total column size. Read only 2-byte. |
+| `VGA_PORT_CRTC_CMD` | Command port for CRTC. |
+| `VGA_PORT_CRTC_DATA` | Data port for CRTC. Read/Write 1-byte |
+| `VGA_CMD_COL` | Return columns count |
+| `VGA_CMD_CHR_H` | Character height in bits 0-4 |
+| `VGA_CMD_ROW_HI` | Dispaly height high value in bit 1 and bit 6 |
+| `VGA_CMD_ROW_LO` | Display height low value in bits 0-7 |
 | `VGA_CMD_CURS_START` | Command for cursor start |
 | `VGA_CMD_CURS_END` | Command for cursor end |
 | `VGA_CMD_CURS_POS_HI` | Command for cursor position high area |
 | `VGA_CMD_CURS_POS_LO` | Command for cursor position low area |
+| `VGA_MASK_CHR_H` | Mask for character height |
+| `VGA_ROW_HI_8` | Display height high value point to bit 8 |
+| `VGA_ROW_HI_9` | Display height high value point to bit 9 |
 | `VGA_CURS_DISABLE` | Cursor disable bit in cursor start register |
 | `VGA_CURS_START_LINE` | Cursor draw start line position |
 | `VGA_CURS_END_LINE` | Cursor draw end line position |
@@ -37,6 +42,7 @@ Header for VGA.
 | --- | --- |
 | VGA | Video Graphic Array |
 | CURS | Cursor |
+| CRTC | Cathode Ray Tube Contoller |
 
 ---
 
@@ -48,4 +54,4 @@ Header for VGA.
 
 ---
 
-> Authors 2025-2026 Facooya and Fanone Facooya
+> Maintained by Facooya and Fanone Facooya, 2025-2026

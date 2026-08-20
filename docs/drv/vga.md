@@ -21,6 +21,7 @@ Lower video interface.
 - - [`vga_shu`](#vga_shu)
 - - [`vga_shd`](#vga_shd)
 - - [`_vga_sl_tb`](#_vga_sl_tb)
+- - [`_vga_init_row_col`](#_vga_init_row_col)
 - [Notes](#notes)
 - [Terms](#terms)
 - [Reference Links](#reference-links)
@@ -39,14 +40,8 @@ Lower video interface.
 **Port**
 | Name | Port | Byte | Mode |
 | :--- | :---: | :---: | :---: |
-| `VGA_PORT_CURS_CMD` | 0x03D4 | 1 | OUT |
-| `VGA_PORT_CURS_DATA` | 0x03D5 | 1 | IO |
-
-**Address**
-| Name | Port | Byte | Mode |
-| :--- | :---: | :---: | :---: |
-| `VGA_ADDR_ROW` | 0x0484 | 1 | IN |
-| `VGA_ADDR_COL` | 0x044A | 2 | IN |
+| `VGA_PORT_CRTC_CMD` | 0x03D4 | 1 | OUT |
+| `VGA_PORT_CRTC_DATA` | 0x03D5 | 1 | IO |
 
 **Cursor Start Register**
 | Bit | Name | Value | Description |
@@ -58,6 +53,27 @@ Lower video interface.
 | Bit | Name | Value | Description |
 | :---: | --- | --- | --- |
 | 0-4 | Line | 0x00-0x0F | End draw line position |
+
+**Horizontal Display End Register (VGA_CMD_COL)**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0-7 | Horizontal Display End | 0x00-0xFF | Total character columns, return total minus 1 |
+
+**Maximum Scan Line Register (VGA_CMD_CHR_H)**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0-4 | Character height | 0x00-0x1F | Character hieght pixel size, return size minus 1 |
+
+**Overflow Register (VGA_CMD_ROW_HI)**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 1 | VDE bit 8 | 0-1 | Display height pixel size |
+| 6 | VDE bit 9 | 0-1 | Display height pixel size |
+
+**Vertical Display End Register (VGA_CMD_ROW_LO)**
+| Bit | Name | Value | Description |
+| :---: | --- | --- | --- |
+| 0-7 | VDE bit 0-7 | 0x00-0xFF | Display height pixel size, return size minus 1 |
 
 ---
 
@@ -500,6 +516,34 @@ Load --> End
 
 ---
 
+### `_vga_init_row_col`
+#### Overview
+VGA calculate rows and get columns.
+
+#### Parameters
+- `N/A`
+
+#### Requires
+- `N/A`
+
+#### Modifies
+- `_vga_row`
+- `_vga_col`
+
+#### Returns
+- `N/A`
+
+#### Process Flow
+```mermaid
+graph TD
+GetColumns([GetColumns]) --> GetCharHeight[Get character height] --> GetHeight[Get display height] --> GetRows([Calculate for row count])
+```
+
+#### Implementation
+`row_count = display_height / char_height`
+
+---
+
 ## Notes
 ### Note VGA Size
 - ROW: `TOTAL_ROW - 1` in screen
@@ -522,6 +566,7 @@ Load --> End
 | DISP | Display |
 | CURS | Cursor |
 | SHU | Shift Up |
+| CRTC | Cathode Ray Tube Contoller |
 
 ---
 
@@ -533,4 +578,4 @@ Load --> End
 
 ---
 
-> Authors 2025-2026 Facooya and Fanone Facooya
+> Maintained by Facooya and Fanone Facooya, 2025-2026
